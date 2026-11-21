@@ -1,0 +1,245 @@
+name: Release
+
+# S11 (docs/06 section 7): a tagged release builds a signed APK and attaches it to a GitHub Release, at no cost (RN-01).
+#
+# - Push a tag `vX.Y.Z` (X.Y.Z must equal `expo.version` in app.json): the APK is signed with the owner's key and published as a
+#   GitHub Release. If the signing secrets are missing the run FAILS before building: an unsigned or debug-signed build is never
+#   published.
+# - Run it by hand (Actions -> Release -> Run workflow): the APK is uploaded as a workflow artifact, never as a release. With the
+#   signing secrets it is signed with the owner's key; without them it is debug-signed and its file name says it is not for
+#   distribution.
+#
+# How the owner creates the key and the secrets: docs/release.md. Nothing in this file creates, prints, or stores a key.
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-*'
+  workflow_dispatch:
+
+# No permission by default; each job asks for what it needs.
+permissions: {}
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  # Free for public repositories: standard GitHub-hosted runners, and artifact storage (docs.github.com, "GitHub Actions billing").
+  # Verified 2026-11-21. Never switch to a larger runner: those are billed even in public repositories.
+  APK_ABIS: arm64-v8a,armeabi-v7a
+
+jobs:
+  build:
+    name: Build the APK
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    # Reads the repository only. The job runs npm scripts and Gradle, so it never gets a token that can write.
+    permissions:
+      contents: read
+    outputs:
+      apk-name: ${{ steps.name.outputs.apk }}
+      version: ${{ steps.version.outputs.version }}
+      signed: ${{ steps.signing.outputs.signed }}
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Read the version
+        id: version
+        run: |
+          set -euo pipefail
+          version="$(node -p "require('./app.json').expo.version")"
+          code="$(node -p "require('./app.json').expo.android.versionCode ?? ''")"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            tag_version="${GITHUB_REF_NAME#v}"
+            tag_version="${tag_version%%-*}"
+            if [[ "${version%%-*}" != "$tag_version" ]]; then
+              echo "::error title=Tag and app version differ::The tag is $GITHUB_REF_NAME but expo.version in app.json is $version. Change one of them and tag again."
+              exit 1
+            fi
+            if ! [[ "$code" =~ ^[1-9][0-9]*$ ]]; then
+              echo "::error title=No versionCode::Set expo.android.versionCode in app.json to a whole number higher than the last release, so phones accept the update."
+              exit 1
+            fi
+          fi
+
+      - name: Check the signing secrets
+        id: signing
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          missing=""
+          for name in ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD; do
+            if [[ -z "${!name}" ]]; then missing="$missing $name"; fi
+          done
+          if [[ -z "$missing" ]]; then
+            echo "signed=true" >> "$GITHUB_OUTPUT"
+          elif [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            echo "::error title=Signing secrets are missing::A release is never published unsigned. Missing repository secrets:$missing. See docs/release.md, section \"Store the secrets\"."
+            exit 1
+          else
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=Debug-signed build::The signing secrets are not set ($missing ). This APK is signed with the public debug key and is NOT FOR DISTRIBUTION."
+          fi
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+          cache: npm
+
+      - name: Set up Java
+        uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          distribution: temurin
+          # React Native's setup guide recommends JDK 17; Gradle 9 needs 17 or newer.
+          java-version: '17'
+          cache: gradle
+
+      - name: Install the dependencies
+        # Also writes catalog-build/licenses.json (the About screen's license list) in the postinstall step.
+        run: npm ci
+
+      - name: Run the checks
+        run: |
+          npm run typecheck
+          npm run lint
+          npm test -- --ci
+
+      - name: Build the food catalog
+        # Downloads the public-domain USDA files (about 14 MB) and builds catalog-build/catalog.db, which the app bundles.
+        run: npm run catalog:build
+
+      - name: Generate the Android project
+        run: npx expo prebuild --platform android --no-install
+
+      - name: Accept the Android SDK licenses
+        # The runner image carries the SDK; Gradle may still fetch a component (for example the NDK) and needs the licenses accepted.
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+
+      - name: Build the APK with Gradle
+        working-directory: android
+        run: ./gradlew assembleRelease --no-daemon --console=plain -PreactNativeArchitectures="$APK_ABIS" -Dorg.gradle.jvmargs="-Xmx4g -XX:MaxMetaspaceSize=1g"
+
+      - name: Name the APK
+        id: name
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          SIGNED: ${{ steps.signing.outputs.signed }}
+        run: |
+          set -euo pipefail
+          if [[ "$SIGNED" == "true" ]]; then
+            apk="qbit-nutrition-$VERSION.apk"
+          else
+            apk="qbit-nutrition-$VERSION-debug-signed-NOT-FOR-DISTRIBUTION.apk"
+          fi
+          mkdir -p dist-apk
+          cp android/app/build/outputs/apk/release/app-release.apk "dist-apk/$apk"
+          echo "apk=$apk" >> "$GITHUB_OUTPUT"
+
+      - name: Sign the APK with the release key
+        if: steps.signing.outputs.signed == 'true'
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          APK: dist-apk/${{ steps.name.outputs.apk }}
+        run: |
+          set -euo pipefail
+          apksigner="$(ls -d "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)"
+          keystore="$RUNNER_TEMP/release.keystore"
+          umask 077
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$keystore"
+          # The Gradle release build is signed with the public debug key (Expo's template); this replaces that signature.
+          # The passwords are read from the environment, never from the command line.
+          "$apksigner" sign \
+            --ks "$keystore" \
+            --ks-key-alias "$ANDROID_KEY_ALIAS" \
+            --ks-pass env:ANDROID_KEYSTORE_PASSWORD \
+            --key-pass env:ANDROID_KEY_PASSWORD \
+            "$APK"
+          rm -f "$keystore"
+
+      - name: Check the signature
+        env:
+          APK: dist-apk/${{ steps.name.outputs.apk }}
+          SIGNED: ${{ steps.signing.outputs.signed }}
+        run: |
+          set -euo pipefail
+          apksigner="$(ls -d "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)"
+          certs="$("$apksigner" verify --print-certs "$APK")"
+          echo "$certs" | grep -E "Signer #1 certificate (DN|SHA-256 digest)"
+          if [[ "$SIGNED" == "true" ]] && echo "$certs" | grep -q "CN=Android Debug"; then
+            echo "::error title=Debug signature::The APK still carries the debug certificate. It will not be published."
+            exit 1
+          fi
+          if [[ "$SIGNED" != "true" ]] && ! echo "$certs" | grep -q "CN=Android Debug"; then
+            echo "::error title=Unexpected signature::An unsigned-run APK should carry the debug certificate."
+            exit 1
+          fi
+
+      - name: Write the checksum
+        working-directory: dist-apk
+        env:
+          APK: ${{ steps.name.outputs.apk }}
+        run: sha256sum "$APK" | tee "$APK.sha256"
+
+      - name: Upload the APK
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.name.outputs.apk }}
+          path: dist-apk/*
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: Publish the GitHub Release
+    # Tag runs only. Manual runs end above, with the APK as an artifact.
+    if: github.ref_type == 'tag'
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Download the APK
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ${{ needs.build.outputs.apk-name }}
+          path: dist-apk
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          VERSION: ${{ needs.build.outputs.version }}
+          APK: ${{ needs.build.outputs.apk-name }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          prerelease=""
+          if [[ "$TAG" == *-* ]]; then prerelease="--prerelease"; fi
+          cat > notes.md <<'NOTES'
+          **Not medical advice.** Values estimated from a photo are approximate and can be wrong. See the health notice in the app (Settings -> About).
+
+          Status of this build: it has not been verified by the maintainers on an Android device, and the accuracy of the photo analysis has not been measured. The privacy policy (PRIVACY.md) is a draft pending legal review.
+
+          Install: download the APK below, allow installs from your browser or file manager when Android asks, and open it. Check the download against the `.sha256` file if you like.
+          NOTES
+          gh release create "$TAG" "dist-apk/$APK" "dist-apk/$APK.sha256" \
+            --repo "$REPO" \
+            --verify-tag \
+            --title "Qbit Nutrition $VERSION" \
+            --notes-file notes.md \
+            --generate-notes \
+            $prerelease
