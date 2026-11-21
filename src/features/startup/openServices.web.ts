@@ -1,4 +1,5 @@
 import { openServicesOnce } from './openServicesCore';
+import { withWebSearchFallback } from './webFtsFallback';
 import type { AppServices } from './types';
 
 const WORKER_LOADING = /worker has not finished loading/i;
@@ -15,7 +16,7 @@ export async function openAppServices(): Promise<AppServices> {
   const startedAt = Date.now();
   for (;;) {
     try {
-      return await openServicesOnce();
+      return await openServicesOnce(withWebSearchFallback);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       const waiting = WORKER_LOADING.test(message) || WORKER_LOADING.test(String((error as { cause?: unknown })?.cause ?? ''));

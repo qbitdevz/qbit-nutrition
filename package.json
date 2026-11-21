@@ -13,7 +13,8 @@
     "catalog:build": "tsx scripts/catalog/build.ts",
     "bench": "tsx bench/run.ts",
     "db:generate": "drizzle-kit generate",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "preview": "node scripts/dev/preview.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/figtree": "^0.4.1",

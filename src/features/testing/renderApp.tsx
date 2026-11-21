@@ -11,6 +11,7 @@ import type { Repositories } from '@/data';
 import i18n from '@/i18n';
 import type { Locale } from '@/i18n/locale';
 import { MotionProvider, SnackbarProvider, ThemeProvider } from '@/ui';
+import { MealDraftProvider } from '../logging/draft';
 import { AppProvider } from '../startup/AppProvider';
 import type { AppServices } from '../startup/types';
 
@@ -29,7 +30,9 @@ export async function renderApp(ui: ReactElement, { services, locale = 'en', red
       <ThemeProvider scheme={scheme}>
         <MotionProvider reduced={reducedMotion}>
           <AppProvider open={async () => services}>
-            <SnackbarProvider>{ui}</SnackbarProvider>
+            <SnackbarProvider>
+              <MealDraftProvider>{ui}</MealDraftProvider>
+            </SnackbarProvider>
           </AppProvider>
         </MotionProvider>
       </ThemeProvider>

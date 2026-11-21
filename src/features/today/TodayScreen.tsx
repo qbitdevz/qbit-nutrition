@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useImperativeHandle, useState, type Ref } from 'react';
+import { useCallback, useEffect, useImperativeHandle, useRef, useState, type Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
@@ -22,6 +22,7 @@ import {
   layout,
   spacing,
 } from '@/ui';
+import { useSession } from '../session/AppSession';
 import { useServices } from '../startup/AppProvider';
 import type { TodayData } from './loadToday';
 import { insightMessage } from './insightText';
@@ -40,6 +41,10 @@ export interface TodayScreenHandle {
 
 interface TodayScreenProps {
   onOpenSettings: () => void;
+  /** Opens the meal behind a row (meal detail); without it the rows are information only. */
+  onOpenMeal?: (mealId: string) => void;
+  /** The action of the "no targets" notice: leads to the goal setup. */
+  onSetupTargets?: () => void;
   /** The clock; tests pass a fixed one. */
   now?: () => Date;
   /** Tells the dock to pulse its scan button (the first-day prompt). */
@@ -54,7 +59,7 @@ const systemNow = () => new Date();
  * insight, and the day's meals; the arrows open past days (S7). All data comes through the
  * repositories in `useTodayData`; this file only lays it out.
  */
-export function TodayScreen({ onOpenSettings, now = systemNow, onEmptyDayChange, handleRef }: TodayScreenProps) {
+export function TodayScreen({ onOpenSettings, onOpenMeal, onSetupTargets, now = systemNow, onEmptyDayChange, handleRef }: TodayScreenProps) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language as Locale;
   const { repos } = useServices();
@@ -65,6 +70,16 @@ export function TodayScreen({ onOpenSettings, now = systemNow, onEmptyDayChange,
   const localDate = picked ?? today;
   const state = useTodayData(repos, localDate, now);
   useImperativeHandle(handleRef, () => ({ reload: state.reload }), [state.reload]);
+
+  // A change made away from this screen (an undo from a snackbar) is read again without a loading state.
+  const { revision } = useSession();
+  const seenRevision = useRef(revision);
+  const { reload } = state;
+  useEffect(() => {
+    if (seenRevision.current === revision) return;
+    seenRevision.current = revision;
+    reload();
+  }, [revision, reload]);
 
   const goTo = useCallback(
     (date: string) => setPicked(date >= today ? null : date),
@@ -90,7 +105,7 @@ export function TodayScreen({ onOpenSettings, now = systemNow, onEmptyDayChange,
           </ErrorState>
         </View>
       ) : null}
-      {state.status === 'ready' ? <TodayContent key={state.data.localDate} data={state.data} locale={locale} onSeeded={state.reload} /> : null}
+      {state.status === 'ready' ? <TodayContent key={state.data.localDate} data={state.data} locale={locale} onSeeded={state.reload} onOpenMeal={onOpenMeal} onSetupTargets={onSetupTargets} /> : null}
     </ScreenFrame>
   );
 }
@@ -126,7 +141,19 @@ function DayNavigation({ locale, localDate, today, onGo }: { locale: Locale; loc
   );
 }
 
-function TodayContent({ data, locale, onSeeded }: { data: TodayData; locale: Locale; onSeeded: () => void }) {
+function TodayContent({
+  data,
+  locale,
+  onSeeded,
+  onOpenMeal,
+  onSetupTargets,
+}: {
+  data: TodayData;
+  locale: Locale;
+  onSeeded: () => void;
+  onOpenMeal?: (mealId: string) => void;
+  onSetupTargets?: () => void;
+}) {
   const { t } = useTranslation();
   const n = useCallback((value: number) => formatNumber(locale, value), [locale]);
   const { totals, targets, meals } = data;
@@ -201,7 +228,7 @@ function TodayContent({ data, locale, onSeeded }: { data: TodayData; locale: Loc
 
       {!hasKcalTarget ? (
         <View style={styles.notice}>
-          <InsightLine text={t('today.noTargets')} />
+          <InsightLine text={t('today.noTargets')} actionLabel={onSetupTargets ? t('today.setupTargets') : undefined} onAction={onSetupTargets} />
         </View>
       ) : null}
       {insight ? (
@@ -233,6 +260,7 @@ function TodayContent({ data, locale, onSeeded }: { data: TodayData; locale: Loc
                   kcal={kcal}
                   kcalUnit={t('today.kcalUnit')}
                   summary={t('today.mealSummary', { name: meal.name, slot, time, kcal })}
+                  onPress={onOpenMeal ? () => onOpenMeal(meal.id) : undefined}
                 />
               );
             })}

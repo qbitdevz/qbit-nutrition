@@ -17,5 +17,13 @@ export default function TodayRoute() {
     }, []),
   );
 
-  return <TodayScreen handleRef={handle} onEmptyDayChange={setEmpty} onOpenSettings={() => router.push('/settings')} />;
+  return (
+    <TodayScreen
+      handleRef={handle}
+      onEmptyDayChange={setEmpty}
+      onOpenSettings={() => router.push('/settings')}
+      onOpenMeal={(id) => router.push({ pathname: '/meal/[id]', params: { id } })}
+      onSetupTargets={() => router.push('/settings/goal')}
+    />
+  );
 }

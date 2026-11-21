@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Modal, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { KeyboardAvoidingView, Modal, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -53,7 +53,7 @@ export function BottomSheet({ visible, onClose, title, closeLabel, children }: B
 
   return (
     <Modal visible={mounted} transparent animationType="none" onRequestClose={onClose} statusBarTranslucent>
-      <View style={styles.root} accessibilityViewIsModal>
+      <KeyboardAvoidingView style={styles.root} behavior="padding" accessibilityViewIsModal>
         <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: colors.scrim }, scrim]}>
           <Pressable accessibilityRole="button" accessibilityLabel={closeLabel} onPress={onClose} style={StyleSheet.absoluteFill} />
         </Animated.View>
@@ -63,9 +63,11 @@ export function BottomSheet({ visible, onClose, title, closeLabel, children }: B
           <AppText variant="titleSm" accessibilityRole="header">
             {title}
           </AppText>
-          {children}
+          <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} style={{ maxHeight: height * 0.72 }} contentContainerStyle={styles.content}>
+            {children}
+          </ScrollView>
         </Animated.View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
@@ -73,5 +75,6 @@ export function BottomSheet({ visible, onClose, title, closeLabel, children }: B
 const styles = StyleSheet.create({
   root: { flex: 1, justifyContent: 'flex-end' },
   sheet: { borderTopLeftRadius: radius.xl, borderTopRightRadius: radius.xl, paddingHorizontal: spacing.s6, paddingTop: spacing.s3, gap: spacing.s3 },
+  content: { gap: spacing.s3 },
   grabber: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, marginBottom: spacing.s2 },
 });

@@ -1,4 +1,4 @@
-import { createCatalog, type Catalog, type FoodRef } from '@/core/catalog';
+import { createCatalog, type Catalog, type CatalogDb, type FoodRef } from '@/core/catalog';
 import { createRepositories } from '@/data';
 import { openAppDatabase } from '@/data/expo/appDatabase';
 import { openCatalogDatabase } from '@/data/expo/catalogDatabase';
@@ -13,7 +13,7 @@ import type { AppServices } from './types';
  * catalog needs the settings repository (it records which catalog build is installed), so the
  * repositories get a small forwarding catalog that is filled in one step later.
  */
-export async function openServicesOnce(): Promise<AppServices> {
+export async function openServicesOnce(wrapCatalogDb: (db: CatalogDb) => CatalogDb = (db) => db): Promise<AppServices> {
   const db = await openAppDatabase();
 
   let catalog: Catalog | null = null;
@@ -26,6 +26,6 @@ export async function openServicesOnce(): Promise<AppServices> {
   const repos = createRepositories({ db, catalog: forwarding });
 
   const catalogDb = await openCatalogDatabase(repos.settings);
-  catalog = createCatalog({ db: catalogDb, memory: repos.matchMemory });
+  catalog = createCatalog({ db: wrapCatalogDb(catalogDb), memory: repos.matchMemory });
   return { repos, catalog };
 }

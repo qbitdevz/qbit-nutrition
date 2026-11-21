@@ -20,6 +20,10 @@ const ICONS = {
   swap: ['M5 8h13l-3-3M19 16H6l3 3'],
   clock: [{ circle: [12, 12, 9] }, 'M12 7v5l3 2'],
   plate: [{ circle: [12, 12, 8.5] }, { circle: [12, 12, 4.5] }],
+  search: [{ circle: [11, 11, 6.5] }, 'M16 16l4.5 4.5'],
+  star: ['M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z'],
+  trash: ['M5 7h14M10 7V4.5h4V7M7 7l1 12.5h8L17 7M10 11v5M14 11v5'],
+  copy: ['M9 9h10v11H9z', 'M5 15V4h10'],
 } as const;
 
 export type IconName = keyof typeof ICONS;
@@ -31,9 +35,11 @@ interface IconProps {
   color: string;
   size?: number;
   strokeWidth?: number;
+  /** Fills the shape with the colour too (a selected star). */
+  filled?: boolean;
 }
 
-export function Icon({ name, color, size = 24, strokeWidth = 2 }: IconProps) {
+export function Icon({ name, color, size = 24, strokeWidth = 2, filled = false }: IconProps) {
   return (
     <Svg
       width={size}
@@ -43,7 +49,7 @@ export function Icon({ name, color, size = 24, strokeWidth = 2 }: IconProps) {
       aria-hidden>
       {(ICONS[name] as readonly Piece[]).map((piece, index) =>
         typeof piece === 'string' ? (
-          <Path key={index} d={piece} stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
+          <Path key={index} d={piece} stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" fill={filled ? color : 'none'} />
         ) : (
           <Circle key={index} cx={piece.circle[0]} cy={piece.circle[1]} r={piece.circle[2]} stroke={color} strokeWidth={strokeWidth} />
         ),

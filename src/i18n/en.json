@@ -5,7 +5,17 @@
   },
   "common": {
     "retry": "Try again",
-    "loading": "Loading"
+    "loading": "Loading",
+    "continue": "Continue",
+    "back": "Back",
+    "skip": "Skip",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "undo": "Undo",
+    "close": "Close",
+    "optional": "Optional",
+    "gramUnit": "g"
   },
   "tabs": {
     "today": "Today",
@@ -62,7 +72,8 @@
       "message": "Your data is still on this phone. Try again, and restart the app if it keeps failing."
     },
     "devSeed": "Load sample data (development only)",
-    "devSeedDone": "Sample day added"
+    "devSeedDone": "Sample day added",
+    "setupTargets": "Set up targets"
   },
   "insight": {
     "protein_low_late": "{{remainingG}} g of protein left to reach your target.",
@@ -89,10 +100,419 @@
   },
   "scan": {
     "title": "Scan",
-    "unavailable": "Photo analysis is not available yet."
+    "unavailable": "Photo analysis is not available yet.",
+    "manual": "Add manually",
+    "manualHint": "Search a food and enter the amount"
   },
   "settings": {
     "title": "Settings",
-    "language": "Language"
+    "language": "Language",
+    "profile": "Profile and units",
+    "goal": "Goal and targets",
+    "minimum": "Minimum daily energy",
+    "about": "About and health notice",
+    "languageSaved": "Language saved",
+    "languageNotSaved": "The language changed, but the choice could not be saved for the next start."
+  },
+  "legal": {
+    "disclaimer": {
+      "title": "This app is not medical advice",
+      "intro": "Qbit Nutrition is a tool for keeping a personal food log. It is not a medical device and does not diagnose, treat, or prevent any condition.",
+      "estimates": {
+        "lead": "Values are estimates.",
+        "body": "Calories and nutrients calculated from a photo are approximations produced with the help of an AI model you chose. They can be wrong, sometimes by a lot. Do not rely on them for medical decisions, such as insulin dosing or managing an allergy."
+      },
+      "targets": {
+        "lead": "Targets are general guidance.",
+        "body": "Suggested calorie and nutrient targets come from standard formulas for healthy adults. They do not take your medical history into account."
+      },
+      "professional": {
+        "lead": "Talk to a professional.",
+        "body": "Consult a doctor or a registered dietitian before changing your diet, especially if you are pregnant or breastfeeding, under 18, have a medical condition, or have or have had an eating disorder."
+      },
+      "allergens": {
+        "lead": "The app cannot detect allergens.",
+        "body": "Never use it to decide whether a food is safe for you."
+      },
+      "closing": "If tracking food causes you distress, stop using the app and seek support from a health professional."
+    }
+  },
+  "onboarding": {
+    "stepOf": "Step {{current}} of {{total}}",
+    "language": {
+      "title": "Choose your language",
+      "body": "You can change it later in Settings.",
+      "group": "Language"
+    },
+    "disclaimer": {
+      "accept": "I understand and accept",
+      "decline": "I do not accept",
+      "declinedTitle": "You need to accept to continue",
+      "declinedBody": "Qbit Nutrition can only be used after you accept the health notice. Nothing has been saved.",
+      "readAgain": "Read it again",
+      "close": "Close the app"
+    },
+    "profile": {
+      "title": "About you",
+      "intro": "Optional. This is used only to suggest daily targets and stays on this phone. You can skip it and enter your targets yourself."
+    },
+    "goal": {
+      "title": "What is your goal?",
+      "intro": "Pick a goal and, if it applies, a pace."
+    }
+  },
+  "profile": {
+    "units": {
+      "label": "Units",
+      "metric": "Metric (kg, cm)",
+      "imperial": "Imperial (lb, ft, in)"
+    },
+    "sex": {
+      "label": "Sex",
+      "female": "Female",
+      "male": "Male",
+      "hint": "The energy formula differs by sex."
+    },
+    "birth": {
+      "label": "Birth date",
+      "day": "Day",
+      "month": "Month",
+      "year": "Year",
+      "hint": "Used to work out your age."
+    },
+    "height": {
+      "cm": "Height (cm)",
+      "ft": "Height (ft)",
+      "in": "Height (in)",
+      "group": "Height"
+    },
+    "weight": {
+      "kg": "Weight (kg)",
+      "lb": "Weight (lb)"
+    },
+    "activity": {
+      "label": "Activity level",
+      "sedentary": "Sedentary",
+      "sedentaryHint": "Little exercise, mostly sitting",
+      "light": "Lightly active",
+      "lightHint": "Light exercise or walking most days",
+      "moderate": "Moderately active",
+      "moderateHint": "Exercise 3 to 5 days a week",
+      "active": "Active",
+      "activeHint": "Hard exercise most days",
+      "very_active": "Very active",
+      "very_activeHint": "Hard exercise daily or a physical job"
+    },
+    "condition": {
+      "label": "Pregnancy or breastfeeding",
+      "none": "Neither",
+      "pregnant": "Pregnant",
+      "breastfeeding": "Breastfeeding",
+      "hint": "Targets are not suggested during pregnancy or breastfeeding."
+    },
+    "errors": {
+      "number": "Enter a number, like 70.5.",
+      "height": "Height must be between {{min}} and {{max}} {{unit}}.",
+      "weight": "Weight must be between {{min}} and {{max}} {{unit}}.",
+      "feet": "Enter feet from {{min}} to {{max}}.",
+      "inches": "Enter inches from 0 to 11.",
+      "heightIncomplete": "Enter feet, and inches if you know them.",
+      "birthIncomplete": "Enter the day, month and year, or leave all three empty.",
+      "birthInvalid": "That date does not exist.",
+      "birthFuture": "The birth date cannot be in the future.",
+      "birthOld": "Enter a birth year after {{year}}.",
+      "heightImperial": "Height must be between 1 ft 8 in and 8 ft 6 in."
+    },
+    "fixErrors": "Fix the highlighted fields to continue.",
+    "save": "Save profile",
+    "saved": "Profile saved",
+    "loadError": "Your profile could not be read. Try again.",
+    "saveError": "Your profile could not be saved. Your entries are still here. Try again."
+  },
+  "goal": {
+    "type": {
+      "label": "Goal",
+      "lose_fat": "Lose fat",
+      "maintain": "Maintain weight",
+      "gain_muscle": "Gain muscle"
+    },
+    "pace": {
+      "label": "Pace",
+      "gentle": "Gentle",
+      "moderate": "Moderate",
+      "gentleHint": "A smaller change from your maintenance calories",
+      "moderateHint": "A larger change from your maintenance calories"
+    },
+    "periodNote": "Changing your goal starts a new period from today. Earlier days keep the targets they had.",
+    "current": "Current goal",
+    "since": "Since {{date}}",
+    "none": "No targets are set. Your meals are still counted.",
+    "custom": "Your own numbers",
+    "suggested": "Suggested numbers",
+    "change": "Change goal or targets",
+    "setup": "Set up targets",
+    "loadError": "Your goal could not be read. Try again.",
+    "saved": "Targets saved",
+    "saveError": "The targets could not be saved. Your entries are still here. Try again.",
+    "noneTitle": "No targets yet"
+  },
+  "targets": {
+    "title": "Your daily targets",
+    "proposalIntro": "Suggested from your profile for this goal. Change any number you like; edited numbers are saved as your own.",
+    "manualIntro": "Enter the targets you want to track. Leave a field empty to track without that target.",
+    "skippedIntro": "You skipped your profile, so no targets can be suggested. Enter your own targets, or track without them.",
+    "kcal": "Calories (kcal)",
+    "protein": "Protein (g)",
+    "carbs": "Carbs (g)",
+    "fat": "Fat (g)",
+    "edited": "Edited by you",
+    "how": "How this is calculated",
+    "save": "Save targets",
+    "saveContinue": "Save and continue",
+    "none": "Continue without targets",
+    "enterOwn": "Enter my own targets",
+    "editProfile": "Add or change my details",
+    "changeGoal": "Choose a different goal or pace",
+    "adjustMinimum": "Change the minimum",
+    "errors": {
+      "whole": "Enter a whole number, like 2000.",
+      "range": "Enter a number from {{min}} to {{max}}.",
+      "fixErrors": "Fix the highlighted fields to save."
+    },
+    "refusal": {
+      "under_18": {
+        "title": "Targets are not suggested under 18",
+        "body": "Needs change a lot while growing, and a general formula can mislead. A doctor or registered dietitian can give you targets that fit. You can still log your meals here."
+      },
+      "pregnant": {
+        "title": "Targets are not suggested during pregnancy",
+        "body": "Needs change during pregnancy and a general formula does not cover them. Talk to your doctor or a registered dietitian. You can still log your meals, and you can enter targets they give you."
+      },
+      "breastfeeding": {
+        "title": "Targets are not suggested while breastfeeding",
+        "body": "Needs change while breastfeeding and a general formula does not cover them. Talk to your doctor or a registered dietitian. You can still log your meals, and you can enter targets they give you."
+      },
+      "missing_data": {
+        "title": "More details are needed",
+        "body": "To suggest targets we also need: {{fields}}."
+      },
+      "below_minimum": {
+        "title": "This goal is below the minimum",
+        "body": "With your details, this goal and pace would give fewer calories than the minimum daily energy of {{minimum}} kcal, so no targets are suggested. Choose a different goal or pace, change the minimum, or enter your own targets."
+      }
+    },
+    "missing": {
+      "sex": "sex",
+      "birthDate": "birth date",
+      "heightCm": "height",
+      "weightKg": "weight",
+      "activityLevel": "activity level",
+      "pace": "a pace"
+    }
+  },
+  "calc": {
+    "title": "How this is calculated",
+    "intro": "Targets come from published formulas and guidelines. Each value shows where it comes from. They are general guidance for healthy adults, not medical advice.",
+    "english": "Titles, quotes and notes of the sources are shown in English, as published.",
+    "yourNumbers": "Your numbers",
+    "resting": "Resting energy: {{kcal}} kcal",
+    "maintenance": "Maintenance energy: {{kcal}} kcal",
+    "adjustment": "Goal adjustment: {{percent}}",
+    "age": "Age used: {{years}}",
+    "value": "Value",
+    "source": "Source",
+    "where": "Where",
+    "quote": "Quote",
+    "note": "Note",
+    "openSource": "Open source",
+    "status": {
+      "sourced": "Published value",
+      "sourced_range": "A point chosen inside a published range",
+      "unsourced": "No published source found: our own conservative choice"
+    },
+    "constants": {
+      "restingEnergy_mifflinStJeor": "Resting energy formula (Mifflin-St Jeor)",
+      "activityFactor_sedentary": "Activity factor: sedentary",
+      "activityFactor_light": "Activity factor: lightly active",
+      "activityFactor_moderate": "Activity factor: moderately active",
+      "activityFactor_active": "Activity factor: active",
+      "activityFactor_very_active": "Activity factor: very active",
+      "goalAdjustment_lose_fat_gentle": "Fat loss, gentle pace",
+      "goalAdjustment_lose_fat_moderate": "Fat loss, moderate pace",
+      "goalAdjustment_gain_muscle_gentle": "Muscle gain, gentle pace",
+      "goalAdjustment_gain_muscle_moderate": "Muscle gain, moderate pace",
+      "proteinPerKg_maintain": "Protein per kg, maintain",
+      "proteinPerKg_gain_muscle": "Protein per kg, gain muscle",
+      "proteinPerKg_lose_fat": "Protein per kg, lose fat",
+      "fatMinShare": "Minimum share of energy from fat",
+      "proteinMaxShare": "Maximum share of energy from protein",
+      "kcalPerGram": "Energy per gram of protein, carbs and fat",
+      "minimumKcal_female": "Default minimum daily energy, women",
+      "minimumKcal_male": "Default minimum daily energy, men",
+      "insight_fiberMinGramsPer1000Kcal": "Fiber suggestion threshold",
+      "insight_sodiumLimitMg": "Sodium suggestion threshold"
+    }
+  },
+  "minimum": {
+    "title": "Minimum daily energy",
+    "intro": "The app does not suggest targets below this many calories a day.",
+    "default": "Default: {{female}} kcal for women, {{male}} kcal for men.",
+    "unconfirmed": "The default is a proposal that has not been confirmed yet.",
+    "sourceLabel": "Source",
+    "current": "In use: {{kcal}} kcal",
+    "field": "Minimum daily energy (kcal)",
+    "warning": "A lower minimum lets the app suggest lower targets. Talk to a doctor or registered dietitian before eating very little.",
+    "save": "Save minimum",
+    "reset": "Use the default",
+    "saved": "Minimum saved",
+    "resetDone": "Default minimum restored",
+    "error": "Enter a whole number from {{min}} to {{max}}.",
+    "loadError": "The minimum could not be read. Try again.",
+    "saveError": "The minimum could not be saved. Try again."
+  },
+  "log": {
+    "search": {
+      "title": "Add food",
+      "label": "Search foods",
+      "hint": "Search works without internet.",
+      "empty": "Type a food name to search. Foods you log often show up here first.",
+      "favorites": "Favorites",
+      "recents": "Recent",
+      "results": "Results",
+      "noResults": "No results for “{{query}}”",
+      "noResultsBody": "Check the spelling, try another word, or create the food yourself.",
+      "create": "Create custom food",
+      "resultLabel": "{{name}}, {{kcal}} kilocalories per 100 grams",
+      "per100": "{{kcal}} kcal · P {{protein}} · C {{carbs}} · F {{fat}} per 100 g",
+      "custom": "Custom",
+      "favoriteAdd": "Add {{name}} to favorites",
+      "favoriteRemove": "Remove {{name}} from favorites",
+      "review": "Review meal ({{count}})",
+      "error": "The food search failed. Try again.",
+      "loading": "Searching",
+      "emptyTitle": "Find a food"
+    },
+    "portion": {
+      "amount": "Amount in grams",
+      "measures": "Household measures",
+      "measureLabel": "{{label}}, {{grams}} grams",
+      "live": "{{kcal}} kcal · {{protein}} g protein · {{carbs}} g carbs · {{fat}} g fat",
+      "add": "Add to meal",
+      "close": "Close",
+      "errors": {
+        "required": "Enter an amount in grams.",
+        "number": "Enter a number, like 150.",
+        "range": "Enter between {{min}} and {{max}} grams."
+      }
+    },
+    "review": {
+      "title": "Review your meal",
+      "subtitle": "Change a portion with − and +, or tap the number to type it. Nothing is saved until you tap Save meal.",
+      "gramsOf": "Grams of {{name}}",
+      "decrease": "Decrease {{name}}",
+      "increase": "Increase {{name}}",
+      "remove": "Remove {{name}}",
+      "removed": "{{name}} removed",
+      "addMore": "Add another food",
+      "slot": "Meal",
+      "save": "Save meal",
+      "saving": "Saving",
+      "saved": "{{slot}} saved · {{kcal}} kcal added",
+      "empty": "No items left. Add a food to save this meal.",
+      "needItem": "Add at least one item to save.",
+      "saveError": "The meal could not be saved. Your items are still here. Try again.",
+      "total": "Meal total",
+      "totalLabel": "{{kcal}} kilocalories, {{protein}} grams protein, {{carbs}} grams carbs, {{fat}} grams fat",
+      "macros": "{{protein}} g protein · {{carbs}} g carbs · {{fat}} g fat",
+      "discardTitle": "Discard this meal?",
+      "discardBody": "The foods you added are lost. Nothing has been saved yet.",
+      "keep": "Keep editing",
+      "discard": "Discard meal",
+      "back": "Back",
+      "gramsError": "Enter grams from {{min}} to {{max}}.",
+      "catalog": "Catalog",
+      "emptyTitle": "No items yet"
+    },
+    "custom": {
+      "title": "Create custom food",
+      "intro": "Enter the values for 100 g of the food, as on its label.",
+      "name": "Name",
+      "kcal": "Calories per 100 g (kcal)",
+      "protein": "Protein per 100 g (g)",
+      "carbs": "Carbs per 100 g (g)",
+      "fat": "Fat per 100 g (g)",
+      "portion": "Usual portion (g), optional",
+      "save": "Save food",
+      "nameRequired": "Enter a name.",
+      "number": "Enter a number, like 12.5.",
+      "range": "Enter a number from {{min}} to {{max}}.",
+      "fixErrors": "Fix the highlighted fields to save.",
+      "saveError": "The food could not be saved. Your values are still here. Try again."
+    }
+  },
+  "meal": {
+    "title": "Meal",
+    "slot": "Meal type",
+    "items": "Items",
+    "nutrients": "Nutrients",
+    "nutrientsNote": "Totals for this meal.",
+    "notReported": "Not reported",
+    "partial": "Some items do not report this",
+    "gramsOf": "Grams of {{name}}",
+    "decrease": "Decrease {{name}}",
+    "increase": "Increase {{name}}",
+    "deleteItem": "Delete {{name}}",
+    "deleteItemTitle": "Delete this item?",
+    "deleteItemBody": "{{name}} is removed from this meal and from the day's totals.",
+    "deleteItemLast": "This is the only item, so the meal is deleted too.",
+    "deleteItemConfirm": "Delete item",
+    "itemDeleted": "{{name}} deleted",
+    "deleteMeal": "Delete meal",
+    "deleteMealTitle": "Delete this meal?",
+    "deleteMealBody": "The meal and its items are removed from the day. You can undo right after.",
+    "deleteMealConfirm": "Delete meal",
+    "keep": "Keep it",
+    "deleted": "Meal deleted",
+    "restored": "Meal restored",
+    "copy": "Copy to today",
+    "copied": "Copied to Today · {{kcal}} kcal added",
+    "notFound": "This meal no longer exists.",
+    "loadError": "The meal could not be loaded. Your data is still on this phone. Try again.",
+    "actionError": "That change could not be saved. Try again."
+  },
+  "nutrient": {
+    "kcal": "Energy",
+    "protein": "Protein",
+    "carbs": "Carbs",
+    "fat": "Fat",
+    "fiber": "Fiber",
+    "sugars": "Sugars",
+    "sat_fat": "Saturated fat",
+    "sodium": "Sodium",
+    "potassium": "Potassium",
+    "calcium": "Calcium",
+    "iron": "Iron",
+    "magnesium": "Magnesium",
+    "zinc": "Zinc",
+    "vit_a": "Vitamin A",
+    "vit_c": "Vitamin C",
+    "vit_d": "Vitamin D",
+    "vit_b12": "Vitamin B12",
+    "folate": "Folate",
+    "unit": {
+      "kcal": "kcal",
+      "g": "g",
+      "mg": "mg",
+      "ug": "µg"
+    }
+  },
+  "about": {
+    "title": "About",
+    "disclaimer": "Health notice",
+    "accepted": "Accepted on {{date}} (text version {{version}})",
+    "notAccepted": "Not accepted yet",
+    "version": "Version {{version}}",
+    "privacy": "Everything stays on this phone. There is no account and no analytics.",
+    "how": "How targets are calculated"
   }
 }

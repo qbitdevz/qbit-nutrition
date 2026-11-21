@@ -17,6 +17,8 @@ export interface SnackbarMessage {
   onAction?: () => void;
   /** How long it stays; default 3.2 s, 5 s when it has an action. */
   durationMs?: number;
+  /** Distance from the bottom for this message only; screens without the dock use it to clear their own pinned footer. */
+  bottomOffset?: number;
 }
 
 interface SnackbarApi {
@@ -70,7 +72,7 @@ export function SnackbarProvider({ children, bottomOffset = layout.dockHeight + 
   return (
     <SnackbarContext.Provider value={api}>
       {children}
-      {current ? <SnackbarView key={current.id} {...current} bottomOffset={bottomOffset} onDone={dismiss} /> : null}
+      {current ? <SnackbarView key={current.id} {...current} bottomOffset={current.bottomOffset ?? bottomOffset} onDone={dismiss} /> : null}
     </SnackbarContext.Provider>
   );
 }

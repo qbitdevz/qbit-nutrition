@@ -4,8 +4,9 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 
+import { MealDraftProvider } from '@/features/logging/draft';
+import { AppSession, useSession } from '@/features/session/AppSession';
 import { AppProvider } from '@/features/startup/AppProvider';
 import { openAppServices } from '@/features/startup/openServices';
 import { MotionProvider, SnackbarProvider, useAppFonts, useReducedMotion, useTheme } from '@/ui';
@@ -26,9 +27,13 @@ export default function RootLayout() {
   return (
     <MotionProvider>
       <AppProvider open={openAppServices}>
-        <SnackbarProvider>
-          <AppStack />
-        </SnackbarProvider>
+        <AppSession>
+          <SnackbarProvider>
+            <MealDraftProvider>
+              <AppStack />
+            </MealDraftProvider>
+          </SnackbarProvider>
+        </AppSession>
       </AppProvider>
     </MotionProvider>
   );
@@ -36,27 +41,32 @@ export default function RootLayout() {
 
 function AppStack() {
   const { colors, scheme } = useTheme();
-  const { t } = useTranslation();
   const reduced = useReducedMotion();
+  const { onboarded } = useSession();
   return (
     <>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: colors.bg },
-          headerTintColor: colors.text,
-          headerTitleStyle: { fontFamily: 'Outfit_600SemiBold' },
-          headerShadowVisible: false,
+          // Every screen draws its own top bar (TopBar), so the native header is off.
+          headerShown: false,
           contentStyle: { backgroundColor: colors.bg },
           // Reduced motion: screens cross-fade instead of travelling (design/system.md, "Reduced motion").
           animation: reduced ? 'fade' : 'slide_from_right',
         }}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="scan"
-          options={{ title: t('scan.title'), presentation: 'modal', animation: reduced ? 'fade' : 'slide_from_bottom' }}
-        />
-        <Stack.Screen name="settings" options={{ title: t('settings.title') }} />
+        {/* Until onboarding is completed only the onboarding route exists; afterwards it is gone. */}
+        <Stack.Protected guard={!onboarded}>
+          <Stack.Screen name="onboarding" />
+        </Stack.Protected>
+        <Stack.Protected guard={onboarded}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="scan" options={{ presentation: 'modal', animation: reduced ? 'fade' : 'slide_from_bottom' }} />
+          <Stack.Screen name="log/search" />
+          <Stack.Screen name="log/review" />
+          <Stack.Screen name="log/custom-food" />
+          <Stack.Screen name="meal/[id]" />
+          <Stack.Screen name="settings/index" />
+        </Stack.Protected>
       </Stack>
     </>
   );

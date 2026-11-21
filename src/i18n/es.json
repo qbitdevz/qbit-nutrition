@@ -5,7 +5,17 @@
   },
   "common": {
     "retry": "Reintentar",
-    "loading": "Cargando"
+    "loading": "Cargando",
+    "continue": "Continuar",
+    "back": "Atrás",
+    "skip": "Omitir",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "undo": "Deshacer",
+    "close": "Cerrar",
+    "optional": "Opcional",
+    "gramUnit": "g"
   },
   "tabs": {
     "today": "Hoy",
@@ -62,7 +72,8 @@
       "message": "Tus datos siguen en este teléfono. Reintenta y, si sigue fallando, reinicia la aplicación."
     },
     "devSeed": "Cargar datos de ejemplo (solo desarrollo)",
-    "devSeedDone": "Día de ejemplo agregado"
+    "devSeedDone": "Día de ejemplo agregado",
+    "setupTargets": "Definir objetivos"
   },
   "insight": {
     "protein_low_late": "Te faltan {{remainingG}} g de proteína para llegar a tu objetivo.",
@@ -89,10 +100,419 @@
   },
   "scan": {
     "title": "Escanear",
-    "unavailable": "El análisis de fotos todavía no está disponible."
+    "unavailable": "El análisis de fotos todavía no está disponible.",
+    "manual": "Agregar manualmente",
+    "manualHint": "Busca un alimento e indica la cantidad"
   },
   "settings": {
     "title": "Ajustes",
-    "language": "Idioma"
+    "language": "Idioma",
+    "profile": "Perfil y unidades",
+    "goal": "Meta y objetivos",
+    "minimum": "Mínimo diario de energía",
+    "about": "Acerca de y aviso de salud",
+    "languageSaved": "Idioma guardado",
+    "languageNotSaved": "El idioma cambió, pero no se pudo guardar la elección para el próximo inicio."
+  },
+  "legal": {
+    "disclaimer": {
+      "title": "Esta aplicación no es un consejo médico",
+      "intro": "Qbit Nutrition es una herramienta para llevar un registro personal de comidas. No es un producto sanitario y no diagnostica, trata ni previene ninguna enfermedad.",
+      "estimates": {
+        "lead": "Los valores son estimaciones.",
+        "body": "Las calorías y los nutrientes calculados a partir de una foto son aproximaciones obtenidas con la ayuda de un modelo de IA que tú elegiste. Pueden ser incorrectos, a veces por mucho. No los uses para tomar decisiones médicas, como calcular dosis de insulina o controlar una alergia."
+      },
+      "targets": {
+        "lead": "Los objetivos son orientativos.",
+        "body": "Los objetivos sugeridos de calorías y nutrientes provienen de fórmulas estándar para adultos sanos. No tienen en cuenta tu historial médico."
+      },
+      "professional": {
+        "lead": "Consulta a un profesional.",
+        "body": "Habla con un médico o un nutricionista titulado antes de cambiar tu alimentación, en especial si estás embarazada o en período de lactancia, si eres menor de 18 años, si tienes una enfermedad o si tienes o has tenido un trastorno de la conducta alimentaria."
+      },
+      "allergens": {
+        "lead": "La aplicación no detecta alérgenos.",
+        "body": "Nunca la uses para decidir si un alimento es seguro para ti."
+      },
+      "closing": "Si registrar tus comidas te genera malestar, deja de usar la aplicación y busca apoyo de un profesional de la salud."
+    }
+  },
+  "onboarding": {
+    "stepOf": "Paso {{current}} de {{total}}",
+    "language": {
+      "title": "Elige tu idioma",
+      "body": "Puedes cambiarlo después en Ajustes.",
+      "group": "Idioma"
+    },
+    "disclaimer": {
+      "accept": "Entiendo y acepto",
+      "decline": "No acepto",
+      "declinedTitle": "Necesitas aceptar para continuar",
+      "declinedBody": "Qbit Nutrition solo se puede usar después de aceptar el aviso de salud. No se guardó nada.",
+      "readAgain": "Leerlo de nuevo",
+      "close": "Cerrar la aplicación"
+    },
+    "profile": {
+      "title": "Sobre ti",
+      "intro": "Opcional. Se usa solo para sugerir objetivos diarios y se queda en este teléfono. Puedes omitirlo e ingresar tus objetivos tú mismo."
+    },
+    "goal": {
+      "title": "¿Cuál es tu meta?",
+      "intro": "Elige una meta y, si corresponde, un ritmo."
+    }
+  },
+  "profile": {
+    "units": {
+      "label": "Unidades",
+      "metric": "Métricas (kg, cm)",
+      "imperial": "Imperiales (lb, ft, in)"
+    },
+    "sex": {
+      "label": "Sexo",
+      "female": "Mujer",
+      "male": "Hombre",
+      "hint": "La fórmula de energía es distinta según el sexo."
+    },
+    "birth": {
+      "label": "Fecha de nacimiento",
+      "day": "Día",
+      "month": "Mes",
+      "year": "Año",
+      "hint": "Sirve para calcular tu edad."
+    },
+    "height": {
+      "cm": "Altura (cm)",
+      "ft": "Altura (ft)",
+      "in": "Altura (in)",
+      "group": "Altura"
+    },
+    "weight": {
+      "kg": "Peso (kg)",
+      "lb": "Peso (lb)"
+    },
+    "activity": {
+      "label": "Nivel de actividad",
+      "sedentary": "Sedentario",
+      "sedentaryHint": "Poco ejercicio, casi siempre sentado",
+      "light": "Poco activo",
+      "lightHint": "Ejercicio suave o caminatas casi todos los días",
+      "moderate": "Moderadamente activo",
+      "moderateHint": "Ejercicio de 3 a 5 días a la semana",
+      "active": "Activo",
+      "activeHint": "Ejercicio intenso casi todos los días",
+      "very_active": "Muy activo",
+      "very_activeHint": "Ejercicio intenso a diario o un trabajo físico"
+    },
+    "condition": {
+      "label": "Embarazo o lactancia",
+      "none": "Ninguno",
+      "pregnant": "Embarazada",
+      "breastfeeding": "En lactancia",
+      "hint": "No se sugieren objetivos durante el embarazo ni la lactancia."
+    },
+    "errors": {
+      "number": "Ingresa un número, como 70,5.",
+      "height": "La altura debe estar entre {{min}} y {{max}} {{unit}}.",
+      "weight": "El peso debe estar entre {{min}} y {{max}} {{unit}}.",
+      "feet": "Ingresa pies de {{min}} a {{max}}.",
+      "inches": "Ingresa pulgadas de 0 a 11.",
+      "heightIncomplete": "Ingresa los pies y, si los sabes, las pulgadas.",
+      "heightImperial": "La altura debe estar entre 1 ft 8 in y 8 ft 6 in.",
+      "birthIncomplete": "Ingresa día, mes y año, o deja los tres vacíos.",
+      "birthInvalid": "Esa fecha no existe.",
+      "birthFuture": "La fecha de nacimiento no puede ser futura.",
+      "birthOld": "Ingresa un año de nacimiento posterior a {{year}}."
+    },
+    "fixErrors": "Corrige los campos marcados para continuar.",
+    "save": "Guardar perfil",
+    "saved": "Perfil guardado",
+    "loadError": "No se pudo leer tu perfil. Inténtalo de nuevo.",
+    "saveError": "No se pudo guardar tu perfil. Lo que escribiste sigue aquí. Inténtalo de nuevo."
+  },
+  "goal": {
+    "type": {
+      "label": "Meta",
+      "lose_fat": "Perder grasa",
+      "maintain": "Mantener el peso",
+      "gain_muscle": "Ganar músculo"
+    },
+    "pace": {
+      "label": "Ritmo",
+      "gentle": "Suave",
+      "moderate": "Moderado",
+      "gentleHint": "Un cambio menor respecto a tus calorías de mantenimiento",
+      "moderateHint": "Un cambio mayor respecto a tus calorías de mantenimiento"
+    },
+    "periodNote": "Cambiar tu meta inicia un nuevo período desde hoy. Los días anteriores conservan los objetivos que tenían.",
+    "current": "Meta actual",
+    "since": "Desde el {{date}}",
+    "none": "No hay objetivos definidos. Tus comidas se siguen contando.",
+    "noneTitle": "Aún no hay objetivos",
+    "custom": "Tus propios números",
+    "suggested": "Números sugeridos",
+    "change": "Cambiar meta u objetivos",
+    "setup": "Definir objetivos",
+    "loadError": "No se pudo leer tu meta. Inténtalo de nuevo.",
+    "saved": "Objetivos guardados",
+    "saveError": "No se pudieron guardar los objetivos. Lo que escribiste sigue aquí. Inténtalo de nuevo."
+  },
+  "targets": {
+    "title": "Tus objetivos diarios",
+    "proposalIntro": "Sugeridos a partir de tu perfil para esta meta. Cambia el número que quieras; los números editados se guardan como tuyos.",
+    "manualIntro": "Ingresa los objetivos que quieres seguir. Deja un campo vacío para seguir sin ese objetivo.",
+    "skippedIntro": "Omitiste tu perfil, así que no se pueden sugerir objetivos. Ingresa los tuyos o sigue sin ellos.",
+    "kcal": "Calorías (kcal)",
+    "protein": "Proteína (g)",
+    "carbs": "Carbohidratos (g)",
+    "fat": "Grasa (g)",
+    "edited": "Editado por ti",
+    "how": "Cómo se calcula",
+    "save": "Guardar objetivos",
+    "saveContinue": "Guardar y continuar",
+    "none": "Continuar sin objetivos",
+    "enterOwn": "Ingresar mis propios objetivos",
+    "editProfile": "Agregar o cambiar mis datos",
+    "changeGoal": "Elegir otra meta u otro ritmo",
+    "adjustMinimum": "Cambiar el mínimo",
+    "errors": {
+      "whole": "Ingresa un número entero, como 2000.",
+      "range": "Ingresa un número de {{min}} a {{max}}.",
+      "fixErrors": "Corrige los campos marcados para guardar."
+    },
+    "refusal": {
+      "under_18": {
+        "title": "No se sugieren objetivos a menores de 18 años",
+        "body": "Las necesidades cambian mucho durante el crecimiento y una fórmula general puede confundir. Un médico o un nutricionista titulado puede darte objetivos adecuados. Aquí puedes seguir registrando tus comidas."
+      },
+      "pregnant": {
+        "title": "No se sugieren objetivos durante el embarazo",
+        "body": "Las necesidades cambian durante el embarazo y una fórmula general no las cubre. Habla con tu médico o con un nutricionista titulado. Puedes seguir registrando tus comidas e ingresar los objetivos que ellos te den."
+      },
+      "breastfeeding": {
+        "title": "No se sugieren objetivos durante la lactancia",
+        "body": "Las necesidades cambian durante la lactancia y una fórmula general no las cubre. Habla con tu médico o con un nutricionista titulado. Puedes seguir registrando tus comidas e ingresar los objetivos que ellos te den."
+      },
+      "missing_data": {
+        "title": "Faltan algunos datos",
+        "body": "Para sugerir objetivos también necesitamos: {{fields}}."
+      },
+      "below_minimum": {
+        "title": "Esta meta queda por debajo del mínimo",
+        "body": "Con tus datos, esta meta y este ritmo darían menos calorías que el mínimo diario de energía de {{minimum}} kcal, así que no se sugieren objetivos. Elige otra meta u otro ritmo, cambia el mínimo o ingresa tus propios objetivos."
+      }
+    },
+    "missing": {
+      "sex": "sexo",
+      "birthDate": "fecha de nacimiento",
+      "heightCm": "altura",
+      "weightKg": "peso",
+      "activityLevel": "nivel de actividad",
+      "pace": "un ritmo"
+    }
+  },
+  "calc": {
+    "title": "Cómo se calcula",
+    "intro": "Los objetivos salen de fórmulas y guías publicadas. Cada valor indica de dónde viene. Son una orientación general para adultos sanos, no un consejo médico.",
+    "english": "Los títulos, citas y notas de las fuentes se muestran en inglés, tal como fueron publicados.",
+    "yourNumbers": "Tus números",
+    "resting": "Energía en reposo: {{kcal}} kcal",
+    "maintenance": "Energía de mantenimiento: {{kcal}} kcal",
+    "adjustment": "Ajuste por la meta: {{percent}}",
+    "age": "Edad usada: {{years}}",
+    "value": "Valor",
+    "source": "Fuente",
+    "where": "Dónde",
+    "quote": "Cita",
+    "note": "Nota",
+    "openSource": "Abrir la fuente",
+    "status": {
+      "sourced": "Valor publicado",
+      "sourced_range": "Un punto elegido dentro de un rango publicado",
+      "unsourced": "No se encontró una fuente publicada: es una elección conservadora nuestra"
+    },
+    "constants": {
+      "restingEnergy_mifflinStJeor": "Fórmula de energía en reposo (Mifflin-St Jeor)",
+      "activityFactor_sedentary": "Factor de actividad: sedentario",
+      "activityFactor_light": "Factor de actividad: poco activo",
+      "activityFactor_moderate": "Factor de actividad: moderadamente activo",
+      "activityFactor_active": "Factor de actividad: activo",
+      "activityFactor_very_active": "Factor de actividad: muy activo",
+      "goalAdjustment_lose_fat_gentle": "Pérdida de grasa, ritmo suave",
+      "goalAdjustment_lose_fat_moderate": "Pérdida de grasa, ritmo moderado",
+      "goalAdjustment_gain_muscle_gentle": "Ganancia de músculo, ritmo suave",
+      "goalAdjustment_gain_muscle_moderate": "Ganancia de músculo, ritmo moderado",
+      "proteinPerKg_maintain": "Proteína por kg, mantener",
+      "proteinPerKg_gain_muscle": "Proteína por kg, ganar músculo",
+      "proteinPerKg_lose_fat": "Proteína por kg, perder grasa",
+      "fatMinShare": "Parte mínima de la energía que viene de la grasa",
+      "proteinMaxShare": "Parte máxima de la energía que viene de la proteína",
+      "kcalPerGram": "Energía por gramo de proteína, carbohidratos y grasa",
+      "minimumKcal_female": "Mínimo diario de energía por defecto, mujeres",
+      "minimumKcal_male": "Mínimo diario de energía por defecto, hombres",
+      "insight_fiberMinGramsPer1000Kcal": "Umbral de la sugerencia de fibra",
+      "insight_sodiumLimitMg": "Umbral de la sugerencia de sodio"
+    }
+  },
+  "minimum": {
+    "title": "Mínimo diario de energía",
+    "intro": "La aplicación no sugiere objetivos por debajo de esta cantidad de calorías al día.",
+    "default": "Por defecto: {{female}} kcal para mujeres, {{male}} kcal para hombres.",
+    "unconfirmed": "El valor por defecto es una propuesta que todavía no está confirmada.",
+    "sourceLabel": "Fuente",
+    "current": "En uso: {{kcal}} kcal",
+    "field": "Mínimo diario de energía (kcal)",
+    "warning": "Un mínimo más bajo permite que la aplicación sugiera objetivos más bajos. Habla con un médico o un nutricionista titulado antes de comer muy poco.",
+    "save": "Guardar mínimo",
+    "reset": "Usar el valor por defecto",
+    "saved": "Mínimo guardado",
+    "resetDone": "Se restauró el mínimo por defecto",
+    "error": "Ingresa un número entero de {{min}} a {{max}}.",
+    "saveError": "No se pudo guardar el mínimo. Inténtalo de nuevo.",
+    "loadError": "No se pudo leer el mínimo. Inténtalo de nuevo."
+  },
+  "log": {
+    "search": {
+      "title": "Agregar alimento",
+      "label": "Buscar alimentos",
+      "hint": "La búsqueda funciona sin internet.",
+      "empty": "Escribe el nombre de un alimento para buscar. Los que registras seguido aparecen primero.",
+      "emptyTitle": "Encuentra un alimento",
+      "favorites": "Favoritos",
+      "recents": "Recientes",
+      "results": "Resultados",
+      "noResults": "Sin resultados para “{{query}}”",
+      "noResultsBody": "Revisa la ortografía, prueba otra palabra o crea el alimento tú mismo.",
+      "create": "Crear alimento personalizado",
+      "resultLabel": "{{name}}, {{kcal}} kilocalorías por 100 gramos",
+      "per100": "{{kcal}} kcal · P {{protein}} · C {{carbs}} · G {{fat}} por 100 g",
+      "custom": "Personalizado",
+      "favoriteAdd": "Agregar {{name}} a favoritos",
+      "favoriteRemove": "Quitar {{name}} de favoritos",
+      "review": "Revisar comida ({{count}})",
+      "error": "La búsqueda de alimentos falló. Inténtalo de nuevo.",
+      "loading": "Buscando"
+    },
+    "portion": {
+      "amount": "Cantidad en gramos",
+      "measures": "Medidas caseras",
+      "measureLabel": "{{label}}, {{grams}} gramos",
+      "live": "{{kcal}} kcal · {{protein}} g de proteína · {{carbs}} g de carbohidratos · {{fat}} g de grasa",
+      "add": "Agregar a la comida",
+      "close": "Cerrar",
+      "errors": {
+        "required": "Ingresa una cantidad en gramos.",
+        "number": "Ingresa un número, como 150.",
+        "range": "Ingresa entre {{min}} y {{max}} gramos."
+      }
+    },
+    "review": {
+      "title": "Revisa tu comida",
+      "subtitle": "Cambia una porción con − y +, o toca el número para escribirlo. No se guarda nada hasta que toques Guardar comida.",
+      "gramsOf": "Gramos de {{name}}",
+      "decrease": "Disminuir {{name}}",
+      "increase": "Aumentar {{name}}",
+      "remove": "Quitar {{name}}",
+      "removed": "{{name}} quitado",
+      "addMore": "Agregar otro alimento",
+      "slot": "Comida",
+      "save": "Guardar comida",
+      "saving": "Guardando",
+      "saved": "{{slot}} guardado · {{kcal}} kcal agregadas",
+      "empty": "No quedan alimentos. Agrega uno para guardar esta comida.",
+      "emptyTitle": "Aún no hay alimentos",
+      "needItem": "Agrega al menos un alimento para guardar.",
+      "saveError": "No se pudo guardar la comida. Tus alimentos siguen aquí. Inténtalo de nuevo.",
+      "total": "Total de la comida",
+      "totalLabel": "{{kcal}} kilocalorías, {{protein}} gramos de proteína, {{carbs}} gramos de carbohidratos, {{fat}} gramos de grasa",
+      "macros": "{{protein}} g de proteína · {{carbs}} g de carbohidratos · {{fat}} g de grasa",
+      "discardTitle": "¿Descartar esta comida?",
+      "discardBody": "Los alimentos que agregaste se perderán. Todavía no se guardó nada.",
+      "keep": "Seguir editando",
+      "discard": "Descartar comida",
+      "back": "Atrás",
+      "gramsError": "Ingresa gramos de {{min}} a {{max}}.",
+      "catalog": "Catálogo"
+    },
+    "custom": {
+      "title": "Crear alimento personalizado",
+      "intro": "Ingresa los valores para 100 g del alimento, como figuran en su etiqueta.",
+      "name": "Nombre",
+      "kcal": "Calorías por 100 g (kcal)",
+      "protein": "Proteína por 100 g (g)",
+      "carbs": "Carbohidratos por 100 g (g)",
+      "fat": "Grasa por 100 g (g)",
+      "portion": "Porción habitual (g), opcional",
+      "save": "Guardar alimento",
+      "nameRequired": "Ingresa un nombre.",
+      "number": "Ingresa un número, como 12,5.",
+      "range": "Ingresa un número de {{min}} a {{max}}.",
+      "fixErrors": "Corrige los campos marcados para guardar.",
+      "saveError": "No se pudo guardar el alimento. Tus valores siguen aquí. Inténtalo de nuevo."
+    }
+  },
+  "meal": {
+    "title": "Comida",
+    "slot": "Tipo de comida",
+    "items": "Alimentos",
+    "nutrients": "Nutrientes",
+    "nutrientsNote": "Totales de esta comida.",
+    "notReported": "Sin dato",
+    "partial": "Algunos alimentos no informan este dato",
+    "gramsOf": "Gramos de {{name}}",
+    "decrease": "Disminuir {{name}}",
+    "increase": "Aumentar {{name}}",
+    "deleteItem": "Eliminar {{name}}",
+    "deleteItemTitle": "¿Eliminar este alimento?",
+    "deleteItemBody": "{{name}} se quita de esta comida y de los totales del día.",
+    "deleteItemLast": "Es el único alimento, así que la comida también se elimina.",
+    "deleteItemConfirm": "Eliminar alimento",
+    "itemDeleted": "{{name}} eliminado",
+    "deleteMeal": "Eliminar comida",
+    "deleteMealTitle": "¿Eliminar esta comida?",
+    "deleteMealBody": "La comida y sus alimentos se quitan del día. Puedes deshacerlo justo después.",
+    "deleteMealConfirm": "Eliminar comida",
+    "keep": "Conservarla",
+    "deleted": "Comida eliminada",
+    "restored": "Comida restaurada",
+    "copy": "Copiar a hoy",
+    "copied": "Copiada a Hoy · {{kcal}} kcal agregadas",
+    "notFound": "Esta comida ya no existe.",
+    "loadError": "No se pudo cargar la comida. Tus datos siguen en este teléfono. Inténtalo de nuevo.",
+    "actionError": "No se pudo guardar ese cambio. Inténtalo de nuevo."
+  },
+  "nutrient": {
+    "kcal": "Energía",
+    "protein": "Proteína",
+    "carbs": "Carbohidratos",
+    "fat": "Grasa",
+    "fiber": "Fibra",
+    "sugars": "Azúcares",
+    "sat_fat": "Grasa saturada",
+    "sodium": "Sodio",
+    "potassium": "Potasio",
+    "calcium": "Calcio",
+    "iron": "Hierro",
+    "magnesium": "Magnesio",
+    "zinc": "Zinc",
+    "vit_a": "Vitamina A",
+    "vit_c": "Vitamina C",
+    "vit_d": "Vitamina D",
+    "vit_b12": "Vitamina B12",
+    "folate": "Folato",
+    "unit": {
+      "kcal": "kcal",
+      "g": "g",
+      "mg": "mg",
+      "ug": "µg"
+    }
+  },
+  "about": {
+    "title": "Acerca de",
+    "disclaimer": "Aviso de salud",
+    "accepted": "Aceptado el {{date}} (versión del texto {{version}})",
+    "notAccepted": "Todavía no aceptado",
+    "version": "Versión {{version}}",
+    "privacy": "Todo se queda en este teléfono. No hay cuenta ni analítica.",
+    "how": "Cómo se calculan los objetivos"
   }
 }
