@@ -23,8 +23,8 @@ Traceability: `bcdd/contrato.md` v4 (aprobado) — REQ-07, REQ-12, REQ-13, REQ-1
 - [x] T2 — S3, S4, S10 — Data: export, import, delete all — worker, then independent verification (Risk: item 1) — commit: 8da4353 + 25355b3
 - [x] T3 — S5, S9, S10 — Barcode scanning with Open Food Facts — worker — commit: cccf0d1
 - [x] T4 — S6, S9, S10 — AI food suggestions — worker — commit: cccf0d1
-- [x] T5 — S7, S9, S10 — Health Connect: write meals, read weight — worker — commit: ce7c1b5
-- [x] T6 — S8, S10, S11 — About and legal screens, privacy policy file, notice re-prompt on version change, setup guides, release workflow, docs brought in line with what was built — commit: ce7c1b5
+- [x] T5 — S7, S9, S10 — Health Connect: write meals, read weight — worker — commit: 32e5de1 + 7875ebe
+- [x] T6 — S8, S10, S11 — About and legal screens, privacy policy file, notice re-prompt on version change, setup guides, release workflow, docs brought in line with what was built — commit: 32e5de1 + 7875ebe
 
 ## Log
 
