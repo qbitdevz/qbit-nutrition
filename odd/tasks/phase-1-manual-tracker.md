@@ -22,11 +22,13 @@ Assumptions (not requested by the owner): the default minimum daily energy (RN-1
 
 - [x] T1 — S1, S2, S3, S4, S5, S10 — `src/core/nutrition`: `proposeTargets` and `pickInsight` with cited constants — worker — commit: ee563f6
 - [x] T2 — S6, S7, S10 — `src/data`: schema, migrations, repositories; catalog database port for the app — worker — commit: f07533a
-- [ ] T3 — S2, S3, S8, S9 — `src/features` use cases and screens: onboarding, food search and portion entry, Today — after T1 and T2 — commit:
+- [ ] T3a — S9, S10 — UI foundation from `design/system.md` and `design/qbit-nutrition-app/01-orbit.html`: tokens, fonts, motion, components, app startup (database, catalog), Today screen — worker — commit:
+- [ ] T3b — S2, S3, S7, S8 — onboarding with target proposal, manual logging (search, portion, save), day history and meal editing, minimum-energy setting — after T3a — commit:
 
 ## Log
 
 - **L1** — 2026-11-21 — Owner request, verbatim: «dale entonces con todo, si necesitas parcharlo localmente hacelo pero neceisto que avancemos. tambien como estoy usando la suscripcion de fable necesito que te enfoques en las tareas mas complejas e importantes o fundamentales de la app ya que al ser modelo mas potente que opus vamos a tener mejores resultados»
 - **L3** — 2026-11-21 — Owner correction, verbatim: «algo que no te dije es que necesito que el diseño sea morderno con animaciones, efectos, transiciones, botones redondeados y buena visual. buena UX/UI utilizando el branding de mi marca personal qbitdev». Recorded as RN-15 in the contract (v4). T3 waits for the owner to choose a design direction.
 - **L4** — 2026-11-21 — Evidence: T1 and T2 built by workers; whole suite 22 suites / 475 tests, `tsc` and `expo lint` clean. Open for the owner: default minimum energy 1,200/1,500 kcal (DGA 2015–2020, superseded edition); gentle fat-loss pace of −10% has no published source; deficit, surplus, and protein values come from studies of athletes; insight thresholds are the team's choice. Not verified on a device: the Expo database wiring, FTS5 in the Android build, and time-zone formatting on Hermes. `drizzle-orm` is pinned to a release candidate (1.0.0-rc.6) because only that line has the Node driver the tests use.
+- **L5** — 2026-11-21 — Design: `design/qbit-nutrition-app/` holds three directions: `01-orbit.html`, `02-ledger.html`, `03-bento.html`, with the proposed starter system in `design/system.md`. Owner, verbatim: «me voy al gym continua hasta finalizar todas las tareas.. yo te doy la autorizacion y aprobacion de lo que sea necesario..». The owner did not choose a direction; the team hands off `01-orbit.html` as a provisional choice (assumption, contract P-06) and the other two remain alternatives.
 - **L2** — 2026-11-21 — Decision: phase 0 task T6 (weighed meals, real benchmark run) stays blocked on the owner's photos and keys; phase 1 does not depend on it.

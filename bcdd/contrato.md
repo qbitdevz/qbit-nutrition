@@ -3,11 +3,11 @@ bcdd: 1
 proyecto: Qbit Nutrition
 cliente: Proyecto personal (el dueño del producto)
 version: 4
-estado: borrador
+estado: aprobado
 actualizado: 2026-11-21
 ultima_fuente: chat con el dueño del 2026-11-21 (pedido de diseño)
-aprobado_equipo:
-aprobado_cliente:
+aprobado_equipo: el dueño del producto · 2026-11-21
+aprobado_cliente: el dueño del producto · 2026-11-21 · chat
 ---
 
 # Contrato de negocio — Qbit Nutrition
@@ -36,7 +36,7 @@ aprobado_cliente:
 
 **Preguntas abiertas:**
 - **P-02:** ¿Aprobás 1.200 calorías diarias para mujeres y 1.500 para hombres como mínimo inicial? Sale de una guía oficial de Estados Unidos, edición 2015–2020, ya reemplazada por una más nueva que no repite la cifra. — responde: el dueño — frena: RN-14
-- **P-06:** ¿Qué propuesta de diseño elegís entre las que prepara el equipo? — responde: el dueño — frena: RN-15
+- **P-06:** ¿Confirmás la propuesta de diseño "Orbit" o preferís "Ledger" o "Bento"? El equipo avanza con Orbit de forma provisoria. — responde: el dueño — no frena requisitos; cambiarla después implica rehacer pantallas.
 - **P-04:** ¿A nombre de quién va la licencia MIT? — responde: el dueño — no frena requisitos; frena la publicación.
 
 ## 2. Cómo funciona
@@ -106,7 +106,7 @@ flowchart TD
 - **Regla nueva:** RN-15, diseño moderno con la identidad de qbitdev. Reemplaza la línea visual que había propuesto el equipo.
 - **Regla modificada:** RN-14, antes "a definir", ahora el equipo propone 1.200 y 1.500 calorías con su fuente; sigue pendiente de aprobación (P-02).
 - **Pregunta nueva:** P-06, elección de la propuesta de diseño.
-- El contrato vuelve a borrador hasta que el dueño lo apruebe.
+- **Aprobado:** el dueño aprobó en el chat lo necesario para continuar («yo te doy la autorizacion y aprobacion de lo que sea necesario»). RN-14 sigue "A confirmar": un valor de salud no se da por aprobado sin que el dueño lo vea.
 
 ### v3 — 2026-11-21 — aprobación del dueño
 - **Aprobado:** el dueño aprobó el contrato en el chat.
