@@ -21,13 +21,18 @@ Assumptions (not requested by the owner): LICENSE copyright line reads "Qbit Nut
 
 ## Tasks
 
-- [ ] T1 — S1, S2 — Repository bootstrap: git, license, README, contributing guide, public GitHub repository — inline — commit:
-- [ ] T2 — S3, S9 — Expo project, navigation shell, design tokens, EN/ES scaffolding, test runner, CI — inline — commit:
-- [ ] T3 — S4, S5, S6, S9, S10 — `src/core/ai`: schema, prompt v1, error taxonomy, three adapters, analyze pipeline with repair — worker — commit:
-- [ ] T4 — S6, S7, S9 — Catalog build script, `src/core/catalog` search and matching, `src/core/nutrition` nutrient math — worker — commit:
+- [x] T1 — S1, S2 — Repository bootstrap: git, license, README, contributing guide, public GitHub repository — inline — commit: fc8544c
+- [x] T2 — S3, S9 — Expo project, navigation shell, design tokens, EN/ES scaffolding, test runner, CI — inline — commit: 8413cd0
+- [x] T3 — S4, S5, S6, S9, S10 — `src/core/ai`: schema, prompt v1, error taxonomy, three adapters, analyze pipeline with repair — worker — commit: 7ab8012
+- [x] T4 — S6, S7, S9 — Catalog build script, `src/core/catalog` search and matching, `src/core/nutrition` nutrient math — worker — commit: b3b5c15
 - [ ] T5 — S8, S10 — Benchmark harness CLI and report — after T3 and T4 — commit:
 - [ ] T6 — S8 — First set of about 30 weighed meals and a real benchmark run — blocked: needs the owner's photos, weights, and provider keys
 
 ## Log
 
 - **L1** — 2026-11-21 — Owner request, verbatim: «si arranca pero subir al repositorio de "qbitdevz" como publico» (answer to "¿arranco la fase 0? Es crear el repositorio git local, el proyecto base y la prueba que mide la precisión de la IA con fotos.").
+- **L2** — 2026-11-21 — Evidence: T2 verified with `tsc`, `expo lint`, Jest, and an Android bundle export (`expo export --platform android`). T3 and T4 built by workers; full suite 9 suites / 215 tests at commit b3b5c15.
+- **L3** — 2026-11-21 — Independent verification of T3 (Risk: item 2, security) found that redirects carried the API key, a backslash and leading-zero bypass of the HTTPS rule, and redaction gaps. Fixed test-first in 7e90065 (47 failing tests first, then 245 passing in `src/core/ai`).
+- **L4** — 2026-11-21 — Open risk for phase 2: React Native's fetch may ignore `redirect: 'error'`. The platform layer must supply a fetch that does not follow redirects before real keys are used on a device. Plain HTTP hosts are judged by name, not by DNS resolution.
+- **L5** — 2026-11-21 — Deviations from the docs, now reflected in docs/08 and docs/09: `food.is_branded` column and two catalog indexes; Anthropic native structured output; Gemini `responseJsonSchema` and its 400 `API_KEY_INVALID` error. Matching needs tuning against the benchmark ("white rice, cooked" picks a glutinous variant; "french fries" picks a frozen unprepared entry).
+- **L6** — 2026-11-21 — Slice boundary: T2 (8413cd0), T3 (7ab8012 + 7e90065), and T4 (b3b5c15) are separate review slices.
