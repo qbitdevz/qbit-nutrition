@@ -23,7 +23,7 @@ export function parseObject(bodyText: string, apiKey: string | null): Json {
 export function malformed(detail: string, raw: string, apiKey: string | null): ProviderError {
   return new ProviderError('unknown', {
     detail: `Malformed provider response: ${detail}`,
-    rawResponse: raw.slice(0, 2000),
+    rawResponse: raw, // ProviderError redacts first, then truncates
     secrets: [apiKey],
   });
 }

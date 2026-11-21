@@ -16,6 +16,7 @@ export type ProviderErrorCode =
 const MAX_TEXT = 1000;
 
 /**
+ * Redacts first and truncates last, so a secret cut by the limit cannot leak a prefix.
  * Removes anything that could identify the user or reveal a credential from
  * text that may be shown or stored: the API key itself, bearer tokens,
  * well-known key shapes, and long base64 runs (image data).
@@ -23,7 +24,12 @@ const MAX_TEXT = 1000;
 export function redact(text: string, secrets: readonly (string | null | undefined)[] = []): string {
   let out = text;
   for (const secret of secrets) {
-    if (secret && secret.length >= 6) out = out.split(secret).join('[redacted]');
+    if (!secret || secret.length < 6) continue;
+    // The key as typed, and as it would appear URL-encoded (including the + form of a space).
+    const encoded = encodeURIComponent(secret);
+    for (const form of new Set([secret, encoded, encoded.replace(/%20/g, '+')])) {
+      out = out.split(form).join('[redacted]');
+    }
   }
   out = out
     .replace(/Bearer\s+[^\s"',;]+/gi, 'Bearer [redacted]')

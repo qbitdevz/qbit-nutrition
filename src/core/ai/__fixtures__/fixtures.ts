@@ -59,13 +59,19 @@ export const profiles = {
   },
 } satisfies Record<string, ProviderProfile>;
 
-export function res(status: number, body: unknown, headers: Record<string, string> = {}): HttpResponse {
+export function res(
+  status: number,
+  body: unknown,
+  headers: Record<string, string> = {},
+  extra: { redirected?: boolean; url?: string } = {},
+): HttpResponse {
   const text = typeof body === 'string' ? body : JSON.stringify(body);
   const lower = Object.fromEntries(Object.entries(headers).map(([k, v]) => [k.toLowerCase(), v]));
   return {
     status,
     headers: { get: (name) => lower[name.toLowerCase()] ?? null },
     text: async () => text,
+    ...extra,
   };
 }
 
@@ -73,6 +79,7 @@ export interface RecordedCall {
   url: string;
   method: string;
   headers: Record<string, string>;
+  redirect: string | undefined;
   body: Record<string, any> | undefined;
   rawBody: string | undefined;
 }
@@ -90,6 +97,7 @@ export function fakeFetch(...responders: Responder[]): { fetch: FetchLike; calls
       url,
       method: init.method,
       headers: init.headers,
+      redirect: init.redirect,
       rawBody: init.body,
       body: init.body ? JSON.parse(init.body) : undefined,
     };

@@ -27,11 +27,22 @@ export interface HttpResponse {
   status: number;
   headers: { get(name: string): string | null };
   text(): Promise<string>;
+  /** Set by the platform when the response came after a redirect. */
+  redirected?: boolean;
+  /** Final URL of the response, when the platform reports it. */
+  url?: string;
 }
 
 export type FetchLike = (
   url: string,
-  init: { method: string; headers: Record<string, string>; body?: string; signal?: AbortSignal },
+  init: {
+    method: string;
+    headers: Record<string, string>;
+    body?: string;
+    /** Always `'error'`: the key and photo must never follow a redirect. */
+    redirect: 'error';
+    signal?: AbortSignal;
+  },
 ) => Promise<HttpResponse>;
 
 /** Everything `core/ai` needs from the platform, injected. */

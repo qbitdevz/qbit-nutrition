@@ -2,7 +2,7 @@
 // HTTPS rule, timeout, cancellation, one retry on 5xx or network error and
 // none on 4xx, and the mapping of HTTP failures to the error taxonomy.
 import { CancelledError, ProviderError, redact } from './errors';
-import { assertSecureBaseUrl } from './url';
+import { assertSecureBaseUrl, originOf } from './url';
 import type { AiDeps, HttpClient, HttpResponse } from './types';
 
 const DEFAULT_RETRY_DELAY_MS = 1000;
@@ -78,7 +78,8 @@ export function mapHttpFailure(
   const text = `${kind} ${message}`.toLowerCase();
   const options = {
     status,
-    detail: `HTTP ${status}: ${message.slice(0, 500)}`,
+    // Redact first, then cut: a key straddling the cut must not leak a prefix.
+    detail: `HTTP ${status}: ${redact(message, [context.apiKey]).slice(0, 500)}`,
     secrets: [context.apiKey],
   };
 
@@ -107,6 +108,42 @@ export function mapHttpFailure(
   }
   if (/content_policy|safety|refus|blocked/.test(text)) return new ProviderError('content_refused', options);
   return new ProviderError('unknown', options);
+}
+
+const redirected = () =>
+  new ProviderError('insecure_url', {
+    detail:
+      'The provider redirected the request. Redirects are refused so the key and photo stay with the configured host.',
+  });
+
+/** `fetch` with `redirect: 'error'` rejects; engines word it differently and often put it in `cause`. */
+function isRedirectRejection(error: unknown): boolean {
+  let current: unknown = error;
+  for (let depth = 0; current && depth < 3; depth++) {
+    const message = current instanceof Error ? current.message : String(current);
+    if (/redirect/i.test(message)) return true;
+    current = (current as { cause?: unknown }).cause;
+  }
+  return false;
+}
+
+/**
+ * Defense for platforms whose fetch ignores `redirect: 'error'`: if the response
+ * says it came from another origin, refuse it and never return its body.
+ *
+ * This second check CANNOT stop the key from having been sent: by the time a
+ * response exists, the request (key and photo included) has already reached the
+ * redirect target. The platform layer must supply a fetch that does not follow
+ * redirects; this only keeps such a response from being used.
+ */
+function assertNotRedirected(response: HttpResponse, requestedUrl: string): void {
+  const finalUrl = response.url;
+  if (finalUrl) {
+    const requested = originOf(requestedUrl);
+    if (requested === null || originOf(finalUrl) !== requested) throw redirected();
+  } else if (response.redirected === true) {
+    throw redirected();
+  }
 }
 
 function defaultSleep(ms: number): Promise<void> {
@@ -143,14 +180,18 @@ export function createHttpClient(deps: AiDeps): HttpClient {
           method: options.method,
           headers: options.headers,
           body: options.body === undefined ? undefined : JSON.stringify(options.body),
+          redirect: 'error',
           signal: timer.signal,
         }),
         timer.signal,
       );
+      assertNotRedirected(response, options.url); // before the body is read
       const bodyText = await raceAbort(response.text(), timer.signal);
       return { kind: 'response' as const, status: response.status, headers: response.headers, bodyText };
     } catch (error) {
+      if (error instanceof ProviderError) throw error; // e.g. a redirect: never retried
       if (options.signal.aborted) throw new CancelledError();
+      if (isRedirectRejection(error)) throw redirected();
       if (timedOut) throw new ProviderError('timeout', { detail: `No answer within ${options.profile.timeoutS} s.` });
       return {
         kind: 'network' as const,
