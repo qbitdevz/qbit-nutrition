@@ -35,3 +35,20 @@ export function formatLongDate(locale: Locale, localDate: string): string {
 export function formatInstantDate(locale: Locale, instant: Date): string {
   return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', year: 'numeric' }).format(instant);
 }
+
+/** "21 Nov" for a `YYYY-MM-DD` calendar date: the label on a chart axis and in a range. */
+export function formatShortDate(locale: Locale, localDate: string): string {
+  const [y, m, d] = localDate.split('-').map(Number) as [number, number, number];
+  return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(Date.UTC(y, m - 1, d, 12)));
+}
+
+/** "November 2026" for any `YYYY-MM-DD` date inside the month. */
+export function formatMonthYear(locale: Locale, localDate: string): string {
+  const [y, m, d] = localDate.split('-').map(Number) as [number, number, number];
+  return new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(y, m - 1, d, 12)));
+}
+
+/** A decimal with an explicit sign for anything but zero ("+1.5", "−0.4"). */
+export function formatSigned(locale: Locale, value: number, maxFractionDigits = 1): string {
+  return new Intl.NumberFormat(locale, { maximumFractionDigits: maxFractionDigits, signDisplay: 'exceptZero' }).format(value);
+}

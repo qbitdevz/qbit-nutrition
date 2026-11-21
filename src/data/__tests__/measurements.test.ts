@@ -68,3 +68,46 @@ describe('MeasurementRepository', () => {
     expect(rows()).toBe(0);
   });
 });
+
+describe('MeasurementRepository.update', () => {
+  it('changes the value and keeps the id, date, kind and source', async () => {
+    const r = h.repos.measurements;
+    const m = await r.record({ measuredOn: '2026-06-01', kind: 'waist', value: 90 });
+    const updated = await r.update(m.id, { value: 89.5 });
+    expect(updated).toEqual({ ...m, value: 89.5 });
+    expect(rows()).toBe(1);
+  });
+
+  it('moves the entry to another day', async () => {
+    const r = h.repos.measurements;
+    const m = await r.record({ measuredOn: '2026-06-01', kind: 'weight', value: 82 });
+    const updated = await r.update(m.id, { measuredOn: '2026-05-30', value: 82.2 });
+    expect(updated).toMatchObject({ id: m.id, measuredOn: '2026-05-30', value: 82.2 });
+    expect((await r.list('weight')).map((x) => x.measuredOn)).toEqual(['2026-05-30']);
+  });
+
+  it('refuses a move onto a day that already has that measurement and leaves both entries alone', async () => {
+    const r = h.repos.measurements;
+    const a = await r.record({ measuredOn: '2026-06-01', kind: 'weight', value: 82 });
+    const b = await r.record({ measuredOn: '2026-06-02', kind: 'weight', value: 81 });
+    await expectDataError(r.update(b.id, { measuredOn: '2026-06-01' }), 'measurement_conflict');
+    expect(await r.list('weight')).toEqual([a, b]);
+  });
+
+  it('allows the same day for a different kind', async () => {
+    const r = h.repos.measurements;
+    await r.record({ measuredOn: '2026-06-01', kind: 'weight', value: 82 });
+    const waist = await r.record({ measuredOn: '2026-06-02', kind: 'waist', value: 90 });
+    await expect(r.update(waist.id, { measuredOn: '2026-06-01' })).resolves.toMatchObject({ measuredOn: '2026-06-01' });
+  });
+
+  it('rejects an unknown id, a bad value and a bad date', async () => {
+    const r = h.repos.measurements;
+    const m = await r.record({ measuredOn: '2026-06-01', kind: 'weight', value: 82 });
+    await expectDataError(r.update('missing', { value: 80 }), 'not_found');
+    await expectDataError(r.update(m.id, { value: 0 }), 'invalid_input');
+    await expectDataError(r.update(m.id, { value: Number.NaN }), 'invalid_input');
+    await expectDataError(r.update(m.id, { measuredOn: '2026-13-01' }), 'invalid_input');
+    expect((await r.list('weight'))[0]).toEqual(m);
+  });
+});

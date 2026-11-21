@@ -61,6 +61,12 @@ export interface ProviderService {
   /** Changing the base URL clears the stored key first (docs/06 section 6), unless a new key is given with it. */
   update(id: string, patch: Partial<AiProviderInput> & ProviderWrite): Promise<SaveResult>;
   removeKey(id: string): Promise<ProviderView>;
+  /**
+   * Removes the stored keys of these profile ids, whether or not a profile row still exists (an import or a
+   * delete-all clears keys that no longer have a row). Tries every id, then fails with a `SecretStoreError`
+   * if any removal failed.
+   */
+  removeKeys(ids: readonly string[]): Promise<void>;
   /** Exactly one profile is active afterwards. */
   setActive(id: string): Promise<ProviderView>;
   /** Deletes the key first, then the profile and its notice mark. */
@@ -192,6 +198,18 @@ export function createProviderService({ aiProviders, settings, secrets: store, c
       const found = await mustGet(id);
       await secrets.remove(id);
       return view(found);
+    },
+
+    async removeKeys(ids) {
+      let failure: unknown = null;
+      for (const id of new Set(ids)) {
+        try {
+          await secrets.remove(id);
+        } catch (error) {
+          failure ??= error;
+        }
+      }
+      if (failure) throw failure;
     },
 
     async setActive(id) {

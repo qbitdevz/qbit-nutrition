@@ -1,0 +1,23 @@
+/// <reference types="node" />
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+
+import { ONBOARDED_KEY } from '../../session/AppSession';
+import { noticeKey } from '../../settings/providerService';
+import { CATALOG_MARKER_SETTING, NOTICE_ACK_PREFIX, isPortableSetting, keptSettings, portableSettings } from '../settingsPolicy';
+
+describe('which settings travel', () => {
+  it('keeps the names equal to the ones the app writes', () => {
+    expect(isPortableSetting(ONBOARDED_KEY)).toBe(false);
+    expect(noticeKey('some-id').startsWith(NOTICE_ACK_PREFIX)).toBe(true);
+    // The catalog installer needs native modules, so its constant is read from the source instead of imported.
+    const source = readFileSync(path.resolve(__dirname, '../../../data/expo/catalogDatabase.ts'), 'utf8');
+    expect(source).toContain(`CATALOG_MARKER_KEY = '${CATALOG_MARKER_SETTING}'`);
+  });
+
+  it('exports preferences and leaves out installation state and acknowledgements', () => {
+    const all = { locale: 'es', keep_photos: 'false', minimum_daily_kcal: '1400', [ONBOARDED_KEY]: 'x', [CATALOG_MARKER_SETTING]: 'h', [noticeKey('p1')]: 'x' };
+    expect(portableSettings(all)).toEqual({ locale: 'es', keep_photos: 'false', minimum_daily_kcal: '1400' });
+    expect(keptSettings(all)).toEqual({ [ONBOARDED_KEY]: 'x', [CATALOG_MARKER_SETTING]: 'h' });
+  });
+});

@@ -117,7 +117,8 @@ const headline = (a: NutrientAmounts) => ({
   fatG: a.fat ?? 0,
 });
 
-function loadMeals(db: Pick<AppDatabase, 'select'>, where: SQL): MealWithItems[] {
+/** Meals matching `where`, oldest first, with their items and nutrient snapshots. Shared with the backup repository. */
+export function loadMeals(db: Pick<AppDatabase, 'select'>, where: SQL): MealWithItems[] {
   const meals = db
     .select()
     .from(meal)

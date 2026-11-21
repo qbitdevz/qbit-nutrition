@@ -12,7 +12,7 @@ import { useSession } from '../session/AppSession';
 import { useServices } from '../startup/AppProvider';
 import { saveLocale } from './language';
 
-export type SettingsSection = 'profile' | 'goal' | 'minimum' | 'providers' | 'about';
+export type SettingsSection = 'profile' | 'goal' | 'minimum' | 'providers' | 'data' | 'about';
 
 const LANGUAGE_NAMES: Record<Locale, string> = { en: 'English', es: 'Español' };
 
@@ -95,6 +95,7 @@ export function SettingsScreen({ onOpen, onBack }: { onOpen: (section: SettingsS
           <SettingsRow icon="progress" title={t('settings.goal')} detail={details.goal} onPress={() => onOpen('goal')} />
           <SettingsRow icon="settings" title={t('settings.minimum')} detail={details.minimum} onPress={() => onOpen('minimum')} />
           <SettingsRow icon="sparkle" title={t('settings.providers')} detail={details.providers} onPress={() => onOpen('providers')} />
+          <SettingsRow icon="copy" title={t('settings.data')} detail={t('settings.dataDetail')} onPress={() => onOpen('data')} />
           <SettingsRow icon="info" title={t('settings.about')} onPress={() => onOpen('about')} />
         </View>
 

@@ -96,7 +96,135 @@
   },
   "progress": {
     "title": "Progreso",
-    "empty": "Registra algunos días para ver tendencias"
+    "empty": "Registra algunos días para ver tendencias",
+    "loading": "Cargando tu progreso",
+    "error": {
+      "title": "No se pudo cargar tu progreso",
+      "message": "Tus datos siguen en este teléfono. Inténtalo de nuevo y reinicia la aplicación si sigue fallando."
+    },
+    "views": {
+      "label": "Secciones de progreso",
+      "nutrition": "Nutrición",
+      "weight": "Peso",
+      "measures": "Medidas"
+    },
+    "kind": {
+      "weight": "Peso",
+      "waist": "Cintura",
+      "hips": "Cadera",
+      "chest": "Pecho",
+      "body_fat_pct": "Grasa corporal"
+    },
+    "kindLower": {
+      "weight": "peso",
+      "waist": "cintura",
+      "hips": "cadera",
+      "chest": "pecho",
+      "body_fat_pct": "grasa corporal"
+    },
+    "kindChip": {
+      "weight": "Peso",
+      "waist": "Cintura",
+      "hips": "Cadera",
+      "chest": "Pecho",
+      "body_fat_pct": "% grasa"
+    },
+    "unitSpoken": {
+      "kg": "kilogramos",
+      "lb": "libras",
+      "cm": "centímetros",
+      "in": "pulgadas",
+      "%": "por ciento"
+    },
+    "range": {
+      "label": "Rango de tiempo",
+      "30d": "30 días",
+      "90d": "90 días",
+      "1y": "1 año",
+      "all": "Todo"
+    },
+    "rangeSpoken": {
+      "30d": "últimos 30 días",
+      "90d": "últimos 90 días",
+      "1y": "último año",
+      "all": "todos los registros"
+    },
+    "nutrition": {
+      "periodLabel": "Periodo",
+      "week": "Semana",
+      "month": "Mes",
+      "previousWeek": "Semana anterior",
+      "previousMonth": "Mes anterior",
+      "nextWeek": "Semana siguiente",
+      "nextMonth": "Mes siguiente",
+      "nextUnavailable": "Periodo siguiente, no disponible",
+      "thisWeek": "Esta semana",
+      "thisMonth": "Este mes",
+      "empty": {
+        "title": "Registra algunos días para ver tendencias",
+        "body": "Los promedios aparecen aquí cuando tienes comidas registradas en suficientes días."
+      },
+      "daysLogged": "{{logged}} de {{total}} días registrados",
+      "partial_one": "Solo {{count}} día tiene comidas. Un promedio necesita al menos {{min}} días, así que aquí ves lo que registraste.",
+      "partial_other": "Solo {{count}} días tienen comidas. Un promedio necesita al menos {{min}} días, así que aquí ves lo que registraste.",
+      "averageTitle": "Promedio por día registrado",
+      "kcalUnit": "kcal al día",
+      "target": "Objetivo {{target}} kcal",
+      "underTarget": "{{amount}} kcal por debajo del objetivo",
+      "overTarget": "{{amount}} kcal por encima del objetivo",
+      "atTarget": "En el objetivo",
+      "noTarget": "Sin objetivo de calorías en estos días",
+      "targetsChanged": "Tus objetivos cambiaron durante este periodo. Cada día se compara con los objetivos de su propio periodo de meta; los objetivos que ves son su promedio.",
+      "macros": "Promedio de macronutrientes",
+      "summary": "{{period}}. Promedio de {{logged}} días registrados: {{kcal}} kilocalorías, {{protein}} gramos de proteína, {{carbs}} gramos de carbohidratos, {{fat}} gramos de grasa.",
+      "summaryTarget": "Objetivo promedio: {{kcal}} kilocalorías.",
+      "daysHeading": "Días registrados",
+      "dayRow": "{{date}}, {{kcal}} kilocalorías, {{protein}} gramos de proteína, {{carbs}} gramos de carbohidratos, {{fat}} gramos de grasa",
+      "dayMacros": "{{protein}} g proteína · {{carbs}} g carbohidratos · {{fat}} g grasa"
+    },
+    "series": {
+      "empty": {
+        "title": "Aún no hay registros de {{kind}}",
+        "body": "Registra un valor para un día y el gráfico muestra cómo cambia con el tiempo."
+      },
+      "emptyRange": "No hay registros en este rango. Elige un rango más largo para ver los anteriores.",
+      "onePoint": "Solo hay un registro. Registra otro día para ver una tendencia.",
+      "log": "Registrar {{kind}}",
+      "latest": "Último",
+      "change": "Cambio",
+      "changeNone": "Aún sin cambio",
+      "listTitle": "Registros",
+      "showAll": "Ver los {{count}} registros",
+      "showFewer": "Ver menos",
+      "rowLabel": "{{date}}, {{value}} {{unit}}. Editar este registro.",
+      "summaryOne": "{{kind}}, {{range}}: un registro, {{value}} {{unit}} el {{date}}.",
+      "summary": "{{kind}}, {{range}}: {{count}} registros desde el {{firstDate}} ({{firstValue}} {{unit}}) hasta el {{lastDate}} ({{lastValue}} {{unit}}). Cambio {{change}} {{unit}}. Mínimo {{min}}, máximo {{max}} {{unit}}."
+    },
+    "entry": {
+      "logTitle": "Registrar {{kind}}",
+      "editTitle": "Editar {{kind}}",
+      "date": "Fecha",
+      "today": "Hoy",
+      "previousDay": "Día anterior",
+      "nextDay": "Día siguiente",
+      "nextDayUnavailable": "Día siguiente, no disponible",
+      "required": "Escribe un valor.",
+      "notNumber": "Usa solo números, por ejemplo 82,5.",
+      "range": "{{kind}} debe estar entre {{min}} y {{max}} {{unit}}.",
+      "last": "Último registro: {{value}} {{unit}} el {{date}}.",
+      "replaces": "Este día ya tiene un registro ({{value}} {{unit}}). Al guardar se reemplaza.",
+      "save": "Guardar",
+      "saved": "{{kind}} guardado · {{value}} {{unit}}",
+      "saveError": "No se pudo guardar. Tu valor sigue aquí; inténtalo de nuevo.",
+      "conflict": "Ese día ya tiene un registro. Elige otro día o edita ese registro.",
+      "delete": "Eliminar registro",
+      "deleteTitle": "¿Eliminar este registro?",
+      "deleteBody": "El registro del {{date}} ({{value}} {{unit}}) se quita de tu historial.",
+      "keep": "Conservar registro",
+      "deleted": "Registro eliminado",
+      "deleteError": "No se pudo eliminar. Inténtalo de nuevo.",
+      "undoFailed": "No se pudo restaurar el registro."
+    }
   },
   "scan": {
     "title": "Escanear",
@@ -232,7 +360,9 @@
     "keepPhotos": "Conservar fotos de comidas",
     "keepPhotosHint": "Una copia comprimida de cada comida escaneada se queda en este teléfono. Al eliminar una comida se elimina su foto.",
     "keepPhotosOn": "Conservar",
-    "keepPhotosOff": "No conservar"
+    "keepPhotosOff": "No conservar",
+    "data": "Datos",
+    "dataDetail": "Exportar, importar, borrar"
   },
   "legal": {
     "disclaimer": {
@@ -772,6 +902,96 @@
       "body": "El proveedor y su clave guardada se quitan de este teléfono. Las comidas que ya guardaste no se ven afectadas.",
       "confirm": "Eliminarlo",
       "keep": "Conservarlo"
+    }
+  },
+  "data": {
+    "title": "Datos",
+    "intro": "Tus datos se quedan en este teléfono. Aquí puedes sacar una copia, recuperar una copia o borrarlo todo.",
+    "export": {
+      "title": "Exportar tus datos",
+      "body": "Un archivo con todo lo que registraste: perfil, metas, comidas, pesos, medidas, alimentos propios y ajustes. Las claves de los proveedores de IA nunca se incluyen.",
+      "photosLabel": "Fotos de comidas",
+      "photosOff": "Sin fotos",
+      "photosOn_one": "Con {{count}} foto",
+      "photosOn_other": "Con {{count}} fotos",
+      "photosHint": "Con fotos el archivo es un ZIP y mucho más grande.",
+      "button": "Exportar datos",
+      "preparing": "Preparando tu archivo",
+      "reminderTitle": "Antes de compartirlo",
+      "reminderBody": "Este archivo contiene tus datos de salud y no está cifrado. Cualquiera que lo reciba puede leerlo. Compártelo solo con personas y lugares de confianza.",
+      "share": "Compartir archivo",
+      "cancel": "Cancelar",
+      "shareTitle": "Exportar datos de Qbit Nutrition",
+      "done": "Exportación compartida: {{name}}",
+      "error": "No se pudo crear o compartir la exportación. No se cambió nada. Inténtalo de nuevo."
+    },
+    "import": {
+      "title": "Importar datos",
+      "body": "Recupera un archivo que exportaste antes. Reemplaza todo lo que hay en este teléfono.",
+      "button": "Elegir un archivo",
+      "reading": "Revisando el archivo",
+      "previewTitle": "¿Reemplazar tus datos?",
+      "contains": "Exportado el {{date}} con la versión {{version}} de la aplicación.",
+      "range": "Abarca del {{from}} al {{to}}.",
+      "noRange": "No tiene comidas ni medidas.",
+      "noProfile": "No tiene perfil.",
+      "meals_one": "{{count}} comida",
+      "meals_other": "{{count}} comidas",
+      "weights_one": "{{count}} registro de peso",
+      "weights_other": "{{count}} registros de peso",
+      "measurements_one": "{{count}} medida corporal",
+      "measurements_other": "{{count}} medidas corporales",
+      "goals_one": "{{count}} periodo de meta",
+      "goals_other": "{{count}} periodos de meta",
+      "customFoods_one": "{{count}} alimento propio",
+      "customFoods_other": "{{count}} alimentos propios",
+      "providers_one": "{{count}} proveedor de IA",
+      "providers_other": "{{count}} proveedores de IA",
+      "photos_one": "{{count}} foto de comida",
+      "photos_other": "{{count}} fotos de comidas",
+      "contents": "En el archivo",
+      "replaceWarning": "Al importar se reemplaza todo lo que hay en este teléfono: tu perfil, metas, comidas, pesos, alimentos propios y ajustes. No se puede deshacer.",
+      "providersNote": "Los proveedores de IA llegan sin sus claves: tendrás que añadir cada clave de nuevo.",
+      "noticeNote": "El aviso de salud que aceptaste en este teléfono se queda como está.",
+      "replace": "Reemplazar mis datos",
+      "keep": "Conservar mis datos",
+      "importing": "Importando",
+      "doneTitle": "Datos importados",
+      "done_one": "Se importó {{count}} comida.",
+      "done_other": "Se importaron {{count}} comidas.",
+      "needKey_one": "{{count}} proveedor de IA necesita su clave de nuevo.",
+      "needKey_other": "{{count}} proveedores de IA necesitan su clave de nuevo.",
+      "openProviders": "Abrir proveedores de IA",
+      "leftovers": "Tus datos se importaron, pero no se pudieron quitar algunos archivos o claves antiguos. La aplicación no los usa.",
+      "error": {
+        "title": "No se puede importar este archivo",
+        "notChanged": "Tus datos actuales no cambiaron.",
+        "tooLarge": "El archivo es demasiado grande para importarlo.",
+        "unreadable": "No se pudo abrir el archivo. Elígelo de nuevo.",
+        "damaged": "El archivo está incompleto o dañado. Expórtalo de nuevo desde el teléfono original.",
+        "notExport": "Este no es un archivo de exportación de Qbit Nutrition.",
+        "newerVersion": "Este archivo lo creó una versión más nueva de Qbit Nutrition (formato {{fileVersion}}; esta aplicación lee el formato {{supportedVersion}} y anteriores). Actualiza la aplicación e inténtalo de nuevo.",
+        "invalid": "El archivo tiene algo que esta aplicación no puede leer, en {{where}}.",
+        "photosMissing": "El archivo menciona una foto que no contiene: {{where}}.",
+        "photoInvalid": "Una foto del archivo no es una imagen JPEG válida: {{where}}.",
+        "writeFailed": "No se pudo completar la importación y se deshizo. Tus datos actuales están como estaban.",
+        "retry": "Elegir otro archivo"
+      }
+    },
+    "delete": {
+      "title": "Borrar todos los datos",
+      "body": "Quita de este teléfono todo: tu perfil, metas, comidas, pesos, alimentos propios, ajustes, fotos de comidas y claves de los proveedores de IA. La aplicación vuelve a su primer inicio. No se puede deshacer. Exporta antes si quieres una copia.",
+      "button": "Borrar todos los datos",
+      "sheetTitle": "¿Borrarlo todo?",
+      "sheetBody": "Todos tus datos se quitan de este teléfono y no se pueden recuperar.",
+      "word": "BORRAR",
+      "fieldLabel": "Palabra de confirmación",
+      "type": "Escribe {{word}} para confirmar.",
+      "disabledWhy": "El botón se activa cuando escribes {{word}}.",
+      "confirm": "Borrar todo",
+      "keep": "Conservar mis datos",
+      "deleting": "Borrando",
+      "error": "No se pudo borrar todo. Tus datos siguen aquí; inténtalo de nuevo."
     }
   }
 }

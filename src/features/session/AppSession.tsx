@@ -14,13 +14,15 @@ interface Session {
   /** True once flow A was completed (the setting is written last, so an interrupted onboarding starts again). */
   onboarded: boolean;
   markOnboarded: () => void;
+  /** Returns the app to first launch after "Delete all data": the guarded routes go away and onboarding starts again. */
+  resetOnboarding: () => void;
   /** Goes up whenever meals or goals change outside the screen that shows them (undo from a snackbar); Today reads again. */
   revision: number;
   notifyChange: () => void;
 }
 
 const noop = () => undefined;
-const SessionContext = createContext<Session>({ onboarded: false, markOnboarded: noop, revision: 0, notifyChange: noop });
+const SessionContext = createContext<Session>({ onboarded: false, markOnboarded: noop, resetOnboarding: noop, revision: 0, notifyChange: noop });
 
 export const useSession = (): Session => useContext(SessionContext);
 
@@ -57,10 +59,14 @@ export function AppSession({ children }: { children: ReactNode }) {
   }, [repos, i18n]);
 
   const markOnboarded = useCallback(() => setLoaded({ onboarded: true }), []);
+  const resetOnboarding = useCallback(() => {
+    setLoaded({ onboarded: false });
+    setRevision((n) => n + 1);
+  }, []);
   const notifyChange = useCallback(() => setRevision((n) => n + 1), []);
   const value = useMemo<Session>(
-    () => ({ onboarded: loaded?.onboarded ?? false, markOnboarded, revision, notifyChange }),
-    [loaded, markOnboarded, revision, notifyChange],
+    () => ({ onboarded: loaded?.onboarded ?? false, markOnboarded, resetOnboarding, revision, notifyChange }),
+    [loaded, markOnboarded, resetOnboarding, revision, notifyChange],
   );
 
   if (!loaded) return <SessionLoading />;

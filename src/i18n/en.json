@@ -96,7 +96,135 @@
   },
   "progress": {
     "title": "Progress",
-    "empty": "Log a few days to see trends"
+    "empty": "Log a few days to see trends",
+    "loading": "Loading your progress",
+    "error": {
+      "title": "Your progress could not be loaded",
+      "message": "Your data is still on this phone. Try again, and restart the app if it keeps failing."
+    },
+    "views": {
+      "label": "Progress sections",
+      "nutrition": "Nutrition",
+      "weight": "Weight",
+      "measures": "Measures"
+    },
+    "kind": {
+      "weight": "Weight",
+      "waist": "Waist",
+      "hips": "Hips",
+      "chest": "Chest",
+      "body_fat_pct": "Body fat"
+    },
+    "kindLower": {
+      "weight": "weight",
+      "waist": "waist",
+      "hips": "hips",
+      "chest": "chest",
+      "body_fat_pct": "body fat"
+    },
+    "kindChip": {
+      "weight": "Weight",
+      "waist": "Waist",
+      "hips": "Hips",
+      "chest": "Chest",
+      "body_fat_pct": "Body fat"
+    },
+    "unitSpoken": {
+      "kg": "kilograms",
+      "lb": "pounds",
+      "cm": "centimeters",
+      "in": "inches",
+      "%": "percent"
+    },
+    "range": {
+      "label": "Time range",
+      "30d": "30 days",
+      "90d": "90 days",
+      "1y": "1 year",
+      "all": "All"
+    },
+    "rangeSpoken": {
+      "30d": "last 30 days",
+      "90d": "last 90 days",
+      "1y": "last year",
+      "all": "all entries"
+    },
+    "nutrition": {
+      "periodLabel": "Period",
+      "week": "Week",
+      "month": "Month",
+      "previousWeek": "Previous week",
+      "previousMonth": "Previous month",
+      "nextWeek": "Next week",
+      "nextMonth": "Next month",
+      "nextUnavailable": "Next period, not available",
+      "thisWeek": "This week",
+      "thisMonth": "This month",
+      "empty": {
+        "title": "Log a few days to see trends",
+        "body": "Averages appear here once you have meals logged on enough days."
+      },
+      "daysLogged": "{{logged}} of {{total}} days logged",
+      "partial_one": "Only {{count}} day has meals. An average needs at least {{min}} days, so here is what you logged.",
+      "partial_other": "Only {{count}} days have meals. An average needs at least {{min}} days, so here is what you logged.",
+      "averageTitle": "Average per logged day",
+      "kcalUnit": "kcal a day",
+      "target": "Target {{target}} kcal",
+      "underTarget": "{{amount}} kcal under target",
+      "overTarget": "{{amount}} kcal over target",
+      "atTarget": "At target",
+      "noTarget": "No calorie target for these days",
+      "targetsChanged": "Your targets changed during this period. Each day counts against the targets of its own goal period; the targets shown are their average.",
+      "macros": "Average macronutrients",
+      "summary": "{{period}}. Average of {{logged}} logged days: {{kcal}} kilocalories, {{protein}} grams of protein, {{carbs}} grams of carbohydrates, {{fat}} grams of fat.",
+      "summaryTarget": "Average target: {{kcal}} kilocalories.",
+      "daysHeading": "Days logged",
+      "dayRow": "{{date}}, {{kcal}} kilocalories, {{protein}} grams of protein, {{carbs}} grams of carbohydrates, {{fat}} grams of fat",
+      "dayMacros": "{{protein}} g protein · {{carbs}} g carbs · {{fat}} g fat"
+    },
+    "series": {
+      "empty": {
+        "title": "No {{kind}} logged yet",
+        "body": "Log a value for a day and the chart shows how it changes over time."
+      },
+      "emptyRange": "No entries in this range. Choose a longer range to see earlier ones.",
+      "onePoint": "One entry so far. Log another day to see a trend.",
+      "log": "Log {{kind}}",
+      "latest": "Latest",
+      "change": "Change",
+      "changeNone": "No change yet",
+      "listTitle": "Entries",
+      "showAll": "Show all {{count}} entries",
+      "showFewer": "Show fewer",
+      "rowLabel": "{{date}}, {{value}} {{unit}}. Edit this entry.",
+      "summaryOne": "{{kind}}, {{range}}: one entry, {{value}} {{unit}} on {{date}}.",
+      "summary": "{{kind}}, {{range}}: {{count}} entries from {{firstDate}} ({{firstValue}} {{unit}}) to {{lastDate}} ({{lastValue}} {{unit}}). Change {{change}} {{unit}}. Lowest {{min}}, highest {{max}} {{unit}}."
+    },
+    "entry": {
+      "logTitle": "Log {{kind}}",
+      "editTitle": "Edit {{kind}}",
+      "date": "Date",
+      "today": "Today",
+      "previousDay": "Previous day",
+      "nextDay": "Next day",
+      "nextDayUnavailable": "Next day, not available",
+      "required": "Enter a value.",
+      "notNumber": "Use numbers only, for example 82.5.",
+      "range": "{{kind}} must be between {{min}} and {{max}} {{unit}}.",
+      "last": "Last entry: {{value}} {{unit}} on {{date}}.",
+      "replaces": "This day already has an entry ({{value}} {{unit}}). Saving replaces it.",
+      "save": "Save",
+      "saved": "{{kind}} saved · {{value}} {{unit}}",
+      "saveError": "It could not be saved. Your value is still here; try again.",
+      "conflict": "That day already has an entry. Pick another day, or edit that entry.",
+      "delete": "Delete entry",
+      "deleteTitle": "Delete this entry?",
+      "deleteBody": "The entry of {{date}} ({{value}} {{unit}}) is removed from your history.",
+      "keep": "Keep entry",
+      "deleted": "Entry deleted",
+      "deleteError": "It could not be deleted. Try again.",
+      "undoFailed": "The entry could not be restored."
+    }
   },
   "scan": {
     "title": "Scan",
@@ -232,7 +360,9 @@
     "keepPhotos": "Keep meal photos",
     "keepPhotosHint": "A compressed copy of each scanned meal stays on this phone. Deleting a meal deletes its photo.",
     "keepPhotosOn": "Keep",
-    "keepPhotosOff": "Don't keep"
+    "keepPhotosOff": "Don't keep",
+    "data": "Data",
+    "dataDetail": "Export, import, delete"
   },
   "legal": {
     "disclaimer": {
@@ -772,6 +902,96 @@
       "body": "The provider and its saved key are removed from this phone. Meals you already saved are not affected.",
       "confirm": "Delete it",
       "keep": "Keep it"
+    }
+  },
+  "data": {
+    "title": "Data",
+    "intro": "Your data stays on this phone. Here you can take a copy of it, bring a copy back, or erase it.",
+    "export": {
+      "title": "Export your data",
+      "body": "One file with everything you logged: profile, goals, meals, weights, measurements, custom foods and settings. AI provider keys are never included.",
+      "photosLabel": "Meal photos",
+      "photosOff": "Without photos",
+      "photosOn_one": "With {{count}} photo",
+      "photosOn_other": "With {{count}} photos",
+      "photosHint": "Photos make the file a ZIP and much larger.",
+      "button": "Export data",
+      "preparing": "Preparing your file",
+      "reminderTitle": "Before you share it",
+      "reminderBody": "This file contains your health data and is not encrypted. Anyone who gets it can read it. Share it only with people and places you trust.",
+      "share": "Share file",
+      "cancel": "Cancel",
+      "shareTitle": "Export Qbit Nutrition data",
+      "done": "Export shared: {{name}}",
+      "error": "The export could not be created or shared. Nothing was changed. Try again."
+    },
+    "import": {
+      "title": "Import data",
+      "body": "Bring back a file you exported before. It replaces everything on this phone.",
+      "button": "Choose a file",
+      "reading": "Checking the file",
+      "previewTitle": "Replace your data?",
+      "contains": "Exported on {{date}} with app version {{version}}.",
+      "range": "Covers {{from}} to {{to}}.",
+      "noRange": "It has no meals or measurements.",
+      "noProfile": "It has no profile.",
+      "meals_one": "{{count}} meal",
+      "meals_other": "{{count}} meals",
+      "weights_one": "{{count}} weight entry",
+      "weights_other": "{{count}} weight entries",
+      "measurements_one": "{{count}} body measurement",
+      "measurements_other": "{{count}} body measurements",
+      "goals_one": "{{count}} goal period",
+      "goals_other": "{{count}} goal periods",
+      "customFoods_one": "{{count}} custom food",
+      "customFoods_other": "{{count}} custom foods",
+      "providers_one": "{{count}} AI provider",
+      "providers_other": "{{count}} AI providers",
+      "photos_one": "{{count}} meal photo",
+      "photos_other": "{{count}} meal photos",
+      "contents": "In the file",
+      "replaceWarning": "Importing replaces everything on this phone: your profile, goals, meals, weights, custom foods and settings. This cannot be undone.",
+      "providersNote": "AI provider profiles come without their keys: you add each key again.",
+      "noticeNote": "The health notice you accepted on this phone stays as it is.",
+      "replace": "Replace my data",
+      "keep": "Keep my data",
+      "importing": "Importing",
+      "doneTitle": "Data imported",
+      "done_one": "{{count}} meal was imported.",
+      "done_other": "{{count}} meals were imported.",
+      "needKey_one": "{{count}} AI provider needs its key again.",
+      "needKey_other": "{{count}} AI providers need their key again.",
+      "openProviders": "Open AI providers",
+      "leftovers": "Your data was imported, but some old files or keys could not be removed. The app does not use them.",
+      "error": {
+        "title": "This file cannot be imported",
+        "notChanged": "Your current data was not changed.",
+        "tooLarge": "The file is too large to import.",
+        "unreadable": "The file could not be opened. Choose it again.",
+        "damaged": "The file is incomplete or damaged. Export it again from the original phone.",
+        "notExport": "This is not a Qbit Nutrition export file.",
+        "newerVersion": "This file was made by a newer version of Qbit Nutrition (file format {{fileVersion}}; this app reads format {{supportedVersion}} and older). Update the app and try again.",
+        "invalid": "The file has something this app cannot read, at {{where}}.",
+        "photosMissing": "The file refers to a photo it does not contain: {{where}}.",
+        "photoInvalid": "A photo in the file is not a valid JPEG image: {{where}}.",
+        "writeFailed": "The import could not be completed and was undone. Your current data is as it was.",
+        "retry": "Choose another file"
+      }
+    },
+    "delete": {
+      "title": "Delete all data",
+      "body": "Removes everything from this phone: your profile, goals, meals, weights, custom foods, settings, meal photos and AI provider keys. The app goes back to its first launch. This cannot be undone. Export first if you want a copy.",
+      "button": "Delete all data",
+      "sheetTitle": "Delete everything?",
+      "sheetBody": "All your data is removed from this phone and cannot be recovered.",
+      "word": "DELETE",
+      "fieldLabel": "Confirmation word",
+      "type": "Type {{word}} to confirm.",
+      "disabledWhy": "The button turns on when you type {{word}}.",
+      "confirm": "Delete everything",
+      "keep": "Keep my data",
+      "deleting": "Deleting",
+      "error": "Not everything could be deleted. Your data is still here; try again."
     }
   }
 }

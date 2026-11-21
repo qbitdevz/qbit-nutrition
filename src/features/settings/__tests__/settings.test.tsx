@@ -115,8 +115,9 @@ describe('settings menu', () => {
     await press('Profile and units');
     await press('Goal and targets');
     await press('Minimum daily energy');
+    await press('Data');
     await press('About and health notice');
-    expect(onOpen.mock.calls.map((c) => c[0])).toEqual(['profile', 'goal', 'minimum', 'about']);
+    expect(onOpen.mock.calls.map((c) => c[0])).toEqual(['profile', 'goal', 'minimum', 'data', 'about']);
   });
 });
 

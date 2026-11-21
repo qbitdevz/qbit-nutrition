@@ -1,6 +1,7 @@
 import type { Catalog } from '../../core/catalog';
 import type { AppDatabase } from '../database';
 import { newId as defaultNewId } from '../ids';
+import { createBackupRepository, type BackupRepository } from './backup';
 import { createAiProviderRepository, type AiProviderRepository } from './aiProviders';
 import { createCustomFoodRepository, type CustomFoodRepository } from './customFoods';
 import { createFoodResolver } from './foodResolver';
@@ -24,6 +25,8 @@ export interface Repositories {
   settings: SettingsRepository;
   aiProviders: AiProviderRepository;
   scans: ScanRepository;
+  /** Export, replace-all (import) and delete-all, each in one transaction. */
+  backup: BackupRepository;
 }
 
 export interface RepositoryOptions {
@@ -51,9 +54,11 @@ export function createRepositories(options: RepositoryOptions): Repositories {
     settings: createSettingsRepository(context),
     aiProviders: createAiProviderRepository(context),
     scans: createScanRepository(context),
+    backup: createBackupRepository(context),
   };
 }
 
+export type { BackupRepository, BackupSnapshot } from './backup';
 export type { Profile, ProfileInput, ProfileRepository } from './profile';
 export type { Goal, GoalInput, GoalRepository } from './goals';
 export type {

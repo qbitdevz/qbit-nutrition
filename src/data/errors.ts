@@ -6,7 +6,9 @@ export type DataErrorCode =
   | 'not_found'
   | 'invalid_input'
   /** A goal change that would rewrite or overlap an earlier period. */
-  | 'goal_date_conflict';
+  | 'goal_date_conflict'
+  /** Moving a measurement onto a day that already has one of the same kind and source. */
+  | 'measurement_conflict';
 
 /** Typed error of the data layer (docs/08 section 8: surfaced to a recovery screen). */
 export class DataError extends Error {
