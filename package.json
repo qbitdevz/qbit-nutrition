@@ -11,15 +11,19 @@
     "lint": "expo lint",
     "test": "jest",
     "catalog:build": "tsx scripts/catalog/build.ts",
-    "bench": "tsx bench/run.ts"
+    "bench": "tsx bench/run.ts",
+    "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
+    "drizzle-orm": "1.0.0-rc.6",
     "expo": "~58.0.26",
+    "expo-asset": "~58.0.21",
     "expo-constants": "~58.0.16",
     "expo-linking": "~58.0.17",
     "expo-localization": "~58.0.5",
     "expo-router": "~58.0.32",
     "expo-splash-screen": "~58.0.14",
+    "expo-sqlite": "~58.0.18",
     "expo-status-bar": "~58.0.5",
     "expo-system-ui": "~58.0.7",
     "i18next": "^27.2.2",
@@ -38,6 +42,8 @@
     "@types/jest": "30.0.0",
     "@types/node": "^26.0.0",
     "@types/react": "~19.3.0",
+    "babel-plugin-inline-import": "^3.0.0",
+    "drizzle-kit": "1.0.0-rc.6",
     "eslint": "^9.39.5",
     "eslint-config-expo": "~58.0.4",
     "jest": "~30.5.2",
@@ -51,6 +57,11 @@
       "/node_modules/",
       "/android/",
       "/ios/"
+    ],
+    "transformIgnorePatterns": [
+      "/node_modules/(?!(.pnpm|react-native|@react-native|@react-native-community|expo|@expo|@expo-google-fonts|react-navigation|@react-navigation|@sentry/react-native|native-base|standard-navigation|drizzle-orm))",
+      "/node_modules/react-native-reanimated/plugin/",
+      "/node_modules/@react-native/babel-preset/"
     ]
   }
 }
