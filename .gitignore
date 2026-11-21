@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Expo and React Native
+.expo/
+dist/
+web-build/
+android/
+ios/
+*.jks
+*.keystore
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Generated data
+catalog-build/
+bench/.cache/
+bench/data/private/
+*.db
+*.db-journal
+
+# Tooling
+.atl/
+.codegraph/
+coverage/
+*.log
+.DS_Store
+Thumbs.db
