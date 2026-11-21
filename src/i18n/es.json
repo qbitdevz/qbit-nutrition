@@ -1,0 +1,24 @@
+{
+  "tabs": {
+    "today": "Hoy",
+    "progress": "Progreso"
+  },
+  "today": {
+    "title": "Hoy",
+    "empty": "Escanea tu primera comida",
+    "scan": "Escanear una comida",
+    "settings": "Ajustes"
+  },
+  "progress": {
+    "title": "Progreso",
+    "empty": "Registra algunos días para ver tendencias"
+  },
+  "scan": {
+    "title": "Escanear",
+    "unavailable": "El análisis de fotos todavía no está disponible."
+  },
+  "settings": {
+    "title": "Ajustes",
+    "language": "Idioma"
+  }
+}

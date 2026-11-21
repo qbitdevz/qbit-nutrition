@@ -1,0 +1,24 @@
+{
+  "tabs": {
+    "today": "Today",
+    "progress": "Progress"
+  },
+  "today": {
+    "title": "Today",
+    "empty": "Scan your first meal",
+    "scan": "Scan a meal",
+    "settings": "Settings"
+  },
+  "progress": {
+    "title": "Progress",
+    "empty": "Log a few days to see trends"
+  },
+  "scan": {
+    "title": "Scan",
+    "unavailable": "Photo analysis is not available yet."
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language"
+  }
+}
