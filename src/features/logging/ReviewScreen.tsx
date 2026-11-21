@@ -349,6 +349,7 @@ export function ReviewScreen({ now = systemNow, onAddItem, onSwap, onRetake, onS
                       decreaseLabel={t('log.review.decrease', { name: item.displayName })}
                       increaseLabel={t('log.review.increase', { name: item.displayName })}
                       unit="g"
+                      announceValue={(value) => t('log.review.gramsAnnounce', { value })}
                       decreaseDisabled={item.grams <= GRAMS_RANGE.min}
                       invalid={problem !== null}
                     />

@@ -19,6 +19,7 @@ import { ScanPlatformProvider } from '../scan/ScanPlatformContext';
 import { ScanSessionProvider } from '../scan/ScanSession';
 import { createBarcodeClient } from '../barcode/barcodeClient';
 import { createBarcodeService } from '../barcode/barcodeService';
+import { createInactiveHealthSync } from '../health/healthSync';
 import { createAiServices } from '../startup/aiServices';
 import { offlineFetch } from './offline';
 import { AppProvider } from '../startup/AppProvider';
@@ -59,5 +60,5 @@ export async function renderApp(ui: ReactElement, { services, locale = 'en', red
 /** Services over a harness, optionally with some repository methods replaced (to simulate a failure). */
 export function servicesFrom(h: { repos: Repositories; catalog: AppServices['catalog'] }, repos: Repositories = h.repos): AppServices {
   const barcode = createBarcodeService({ repos, client: createBarcodeClient({ fetch: offlineFetch, userAgent: 'QbitNutrition/test (https://example.test)', timeoutMs: 1000 }) });
-  return { repos, catalog: h.catalog, ...createAiServices({ repos, secrets: createMemorySecretStore(), fetch: offlineFetch, retryDelayMs: 0 }), barcode };
+  return { repos, catalog: h.catalog, ...createAiServices({ repos, secrets: createMemorySecretStore(), fetch: offlineFetch, retryDelayMs: 0 }), barcode, health: createInactiveHealthSync() };
 }

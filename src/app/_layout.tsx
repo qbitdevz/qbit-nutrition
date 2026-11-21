@@ -8,6 +8,8 @@ import { Platform } from 'react-native';
 
 import { DataPlatformProvider } from '@/features/data/DataPlatformContext';
 import { StartupSweep } from '@/features/data/StartupSweep';
+import { HealthSyncRunner } from '@/features/health/HealthSyncRunner';
+import { NoticeGate } from '@/features/legal/NoticeGate';
 import { MealDraftProvider } from '@/features/logging/draft';
 import { ScanPlatformProvider } from '@/features/scan/ScanPlatformContext';
 import { ScanSessionProvider } from '@/features/scan/ScanSession';
@@ -53,9 +55,12 @@ export default function RootLayout() {
             <ScanPlatformProvider platform={scanPlatform}>
               <DataPlatformProvider platform={dataPlatform}>
                 <StartupSweep />
+                <HealthSyncRunner />
                 <ScanSessionProvider>
                   <MealDraftProvider>
-                    <AppStack />
+                    <NoticeGate>
+                      <AppStack />
+                    </NoticeGate>
                   </MealDraftProvider>
                 </ScanSessionProvider>
               </DataPlatformProvider>

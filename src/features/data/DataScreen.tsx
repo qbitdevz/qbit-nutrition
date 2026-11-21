@@ -56,7 +56,7 @@ export function DataScreen({ onBack, onOpenProviders, now }: DataScreenProps) {
   const { colors } = useTheme();
   const snackbar = useSnackbar();
   const platform = useDataPlatform();
-  const { repos, providers } = useServices();
+  const { repos, providers, health } = useServices();
   const session = useSession();
   const service = useMemo(
     () => createDataService({ repos, providers, platform, appVersion: Constants.expoConfig?.version ?? '0.0.0', now }),
@@ -76,6 +76,21 @@ export function DataScreen({ onBack, onOpenProviders, now }: DataScreenProps) {
   const [deleting, setDeleting] = useState<'closed' | 'confirm' | 'working' | 'failed'>('closed');
   const [word, setWord] = useState('');
   const confirmWord = t('data.delete.word');
+  // Health Connect: when the integration is on, deleting everything also offers to remove the records this app wrote there.
+  const [healthOn, setHealthOn] = useState(false);
+  const [removeHealth, setRemoveHealth] = useState(true);
+  const [healthFailed, setHealthFailed] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    health.isEnabled().then(
+      (on) => active && setHealthOn(on),
+      () => undefined,
+    );
+    return () => {
+      active = false;
+    };
+  }, [health]);
 
   useEffect(() => {
     let active = true;
@@ -142,6 +157,17 @@ export function DataScreen({ onBack, onOpenProviders, now }: DataScreenProps) {
 
   const deleteEverything = async () => {
     setDeleting('working');
+    setHealthFailed(false);
+    if (healthOn && removeHealth) {
+      try {
+        // First, while the integration is still on: if Health Connect refuses, nothing has been deleted yet.
+        await health.removeWrittenRecords();
+      } catch {
+        setHealthFailed(true);
+        setDeleting('confirm');
+        return;
+      }
+    }
     try {
       await service.deleteAll({ confirmation: word });
       setDeleting('closed');
@@ -261,6 +287,24 @@ export function DataScreen({ onBack, onOpenProviders, now }: DataScreenProps) {
           <AppText variant="bodySm" tone="muted">
             {t('data.delete.disabledWhy', { word: confirmWord })}
           </AppText>
+        ) : null}
+        {healthOn ? (
+          <View style={styles.group} testID="delete-health">
+            <AppText variant="heading" accessibilityRole="header">
+              {t('data.delete.healthTitle')}
+            </AppText>
+            <AppText tone="muted">{t('data.delete.healthBody')}</AppText>
+            <ChoiceChips<'remove' | 'keep'>
+              label={t('data.delete.healthTitle')}
+              options={[
+                { value: 'remove', label: t('data.delete.healthRemove') },
+                { value: 'keep', label: t('data.delete.healthKeep') },
+              ]}
+              value={removeHealth ? 'remove' : 'keep'}
+              onChange={(value) => value && setRemoveHealth(value === 'remove')}
+            />
+            {healthFailed ? <FieldMessage message={t('data.delete.healthFailed')} /> : null}
+          </View>
         ) : null}
         {deleting === 'working' ? <Busy label={t('data.delete.deleting')} /> : null}
         {deleting === 'failed' ? <FieldMessage message={t('data.delete.error')} /> : null}

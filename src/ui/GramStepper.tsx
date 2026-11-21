@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { AccessibilityInfo, StyleSheet, TextInput, View } from 'react-native';
 
 import { AppText } from './AppText';
 import { Icon } from './Icon';
@@ -20,6 +20,11 @@ interface GramStepperProps {
   decreaseLabel: string;
   increaseLabel: string;
   unit: string;
+  /**
+   * What a screen reader says after plus or minus is pressed, from the new value as typed ("150 grams"). Without it nothing is spoken,
+   * and the person hears no result from the press.
+   */
+  announceValue?: (value: string) => string;
   decreaseDisabled?: boolean;
   invalid?: boolean;
   testID?: string;
@@ -29,16 +34,30 @@ interface GramStepperProps {
  * Gram stepper (design/system.md): minus, the grams, plus. Both buttons are 48 dp round and outlined
  * with the control-boundary colour; the number is an input, so the portion can also be typed.
  */
-export function GramStepper({ value, onChangeText, onCommit, onStep, inputLabel, decreaseLabel, increaseLabel, unit, decreaseDisabled = false, invalid = false, testID }: GramStepperProps) {
+export function GramStepper({ value, onChangeText, onCommit, onStep, inputLabel, decreaseLabel, increaseLabel, unit, announceValue, decreaseDisabled = false, invalid = false, testID }: GramStepperProps) {
   const { colors } = useTheme();
   const [focused, setFocused] = useState(false);
+  // Set by a press of plus or minus and spent when the new value has been drawn: typing is not announced (the field reads itself).
+  const announce = useRef(false);
+  useEffect(() => {
+    if (!announce.current) return;
+    announce.current = false;
+    if (announceValue) AccessibilityInfo.announceForAccessibility(announceValue(value));
+  }, [value, announceValue]);
+  const step = (direction: 1 | -1) => {
+    announce.current = true;
+    onStep(direction);
+  };
   return (
     <View style={styles.row}>
-      <StepButton icon="minus" label={decreaseLabel} disabled={decreaseDisabled} onPress={() => onStep(-1)} />
+      <StepButton icon="minus" label={decreaseLabel} disabled={decreaseDisabled} onPress={() => step(-1)} />
       <View style={[styles.field, { borderColor: invalid ? colors.warning : focused ? colors.primary : 'transparent', backgroundColor: colors.surfaceRaised }]}>
         <TextInput
           value={value}
-          onChangeText={onChangeText}
+          onChangeText={(text) => {
+            announce.current = false;
+            onChangeText(text);
+          }}
           onFocus={() => setFocused(true)}
           onBlur={() => {
             setFocused(false);
@@ -58,7 +77,7 @@ export function GramStepper({ value, onChangeText, onCommit, onStep, inputLabel,
           {unit}
         </AppText>
       </View>
-      <StepButton icon="plus" label={increaseLabel} onPress={() => onStep(1)} />
+      <StepButton icon="plus" label={increaseLabel} onPress={() => step(1)} />
     </View>
   );
 }

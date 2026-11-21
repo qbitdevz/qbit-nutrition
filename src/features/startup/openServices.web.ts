@@ -12,7 +12,9 @@ function devAi() {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const dev = require('../scan/dev/devServices') as typeof import('../scan/dev/devServices');
   const options = dev.devAiOptions();
-  return { ...options, afterOpen: (services: AppServices) => dev.seedDevProvider(services.repos, options.secrets) };
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const health = (require('../health/dev/devHealthPlatform') as typeof import('../health/dev/devHealthPlatform')).createDevHealthPlatform();
+  return { ...options, health, afterOpen: (services: AppServices) => dev.seedDevProvider(services.repos, options.secrets) };
 }
 
 const WORKER_LOADING = /worker has not finished loading/i;

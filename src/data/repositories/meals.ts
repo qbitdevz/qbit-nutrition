@@ -81,6 +81,8 @@ export interface MealRepository {
    */
   save(input: SaveMealInput): Promise<MealWithItems>;
   getMeal(id: string): Promise<MealWithItems | null>;
+  /** The id of every saved meal, oldest first. */
+  listIds(): Promise<string[]>;
   /** The meals of a local date (oldest first) with their items, and the day totals. */
   getDay(localDate: string): Promise<DayLog>;
   /** The distinct photo paths that meals refer to, to tell which kept photos are in use. */
@@ -99,7 +101,8 @@ export interface MealRepository {
    * food no longer exists. An item detected by the AI becomes `ai_edited`.
    */
   updateItemGrams(itemId: string, grams: number): Promise<MealItem>;
-  deleteItem(itemId: string): Promise<void>;
+  /** Removes the item and returns the id of the meal it belonged to. */
+  deleteItem(itemId: string): Promise<string>;
   /** Deletes the meal; its items and snapshots go with it (foreign key cascade). */
   deleteMeal(mealId: string): Promise<void>;
 }
@@ -289,6 +292,15 @@ export function createMealRepository(
       return loadMeal(id);
     },
 
+    async listIds() {
+      return db
+        .select({ id: meal.id })
+        .from(meal)
+        .orderBy(asc(meal.eatenAt), asc(meal.createdAt), asc(meal.id))
+        .all()
+        .map((r) => r.id);
+    },
+
     async getDay(localDate) {
       requireLocalDate(localDate, 'localDate');
       return {
@@ -370,7 +382,7 @@ export function createMealRepository(
     },
 
     async deleteItem(itemId) {
-      db.transaction((tx) => {
+      return db.transaction((tx) => {
         const removed = tx
           .delete(mealItem)
           .where(eq(mealItem.id, itemId))
@@ -378,6 +390,7 @@ export function createMealRepository(
           .all();
         if (removed.length === 0) throw new DataError('not_found', `meal item not found: ${itemId}`);
         tx.update(meal).set({ updatedAt: now().toISOString() }).where(eq(meal.id, removed[0]!.mealId)).run();
+        return removed[0]!.mealId;
       });
     },
 

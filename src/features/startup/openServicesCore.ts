@@ -6,11 +6,15 @@ import { createRepositories } from '@/data';
 import { openAppDatabase } from '@/data/expo/appDatabase';
 import { openCatalogDatabase } from '@/data/expo/catalogDatabase';
 import { deviceFetch } from '@/platform/deviceFetch';
+import { createExpoHealthPlatform } from '@/platform/expoHealthPlatform';
 import { createExpoSecretStore } from '@/platform/expoSecretStore';
+import type { HealthPlatform } from '@/platform/healthPlatform';
 import type { SecretStore } from '@/platform/secretStore';
 import { createBarcodeClient } from '../barcode/barcodeClient';
 import { createBarcodeService } from '../barcode/barcodeService';
 import { barcodeUserAgent } from '../barcode/userAgent';
+import { createHealthSync } from '../health/healthSync';
+import { withHealthSync } from '../health/syncedRepos';
 import { createAiServices } from './aiServices';
 import type { AppServices } from './types';
 
@@ -26,7 +30,7 @@ import type { AppServices } from './types';
 export async function openServicesOnce(
   wrapCatalogDb: (db: CatalogDb) => CatalogDb = (db) => db,
   /** Development preview only: replaces secure storage and the network. Never given on a device. */
-  aiOverride?: { secrets: SecretStore; fetch: FetchLike; barcodeFetch?: FetchLike; afterOpen?: (services: AppServices) => Promise<void> },
+  aiOverride?: { secrets: SecretStore; fetch: FetchLike; barcodeFetch?: FetchLike; health?: HealthPlatform; afterOpen?: (services: AppServices) => Promise<void> },
 ): Promise<AppServices> {
   const db = await openAppDatabase();
 
@@ -37,7 +41,10 @@ export async function openServicesOnce(
       return catalog.getFood(ref);
     },
   };
-  const repos = createRepositories({ db, catalog: forwarding });
+  const baseRepos = createRepositories({ db, catalog: forwarding });
+  // Health Connect is told about every meal change by the repositories themselves, so no save path can forget it (S7).
+  const health = createHealthSync({ repos: baseRepos, platform: aiOverride?.health ?? createExpoHealthPlatform() });
+  const repos = withHealthSync(baseRepos, health);
 
   const catalogDb = await openCatalogDatabase(repos.settings);
   catalog = createCatalog({ db: wrapCatalogDb(catalogDb), memory: repos.matchMemory });
@@ -47,7 +54,7 @@ export async function openServicesOnce(
     repos,
     client: createBarcodeClient({ fetch: aiOverride?.barcodeFetch ?? deviceFetch, userAgent: barcodeUserAgent(Constants.expoConfig?.version) }),
   });
-  const services: AppServices = { repos, catalog, ...ai, barcode };
+  const services: AppServices = { repos, catalog, ...ai, barcode, health };
   await aiOverride?.afterOpen?.(services);
   return services;
 }

@@ -1,4 +1,5 @@
 import { addDays, deriveMealTime, type Repositories } from '@/data';
+import { DISCLAIMER_VERSION } from '../../legal/version';
 
 /**
  * DEVELOPMENT ONLY (QN_DEV_ONLY_HISTORY). Writes about five weeks of meals, a goal change ten days ago, weights every few days and a
@@ -25,7 +26,7 @@ export async function seedSampleHistory(repos: Repositories, now: Date = new Dat
       unitSystem: 'metric',
       locale: 'en',
       disclaimerAcceptedAt: now.toISOString(),
-      disclaimerVersion: 'dev-seed',
+      disclaimerVersion: DISCLAIMER_VERSION,
     });
   }
   const current = await repos.goals.current();

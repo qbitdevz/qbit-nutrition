@@ -19,6 +19,7 @@ import type { SecretStore } from '@/platform/secretStore';
 import { offlineFetch } from './offline';
 import { createBarcodeClient } from '../barcode/barcodeClient';
 import { createBarcodeService } from '../barcode/barcodeService';
+import { createInactiveHealthSync } from '../health/healthSync';
 import { createAiServices } from '../startup/aiServices';
 import type { AppServices } from '../startup/types';
 
@@ -58,5 +59,5 @@ export function createTestServices(
     repos: h.repos,
     client: createBarcodeClient({ fetch: options.barcodeFetch ?? offlineFetch, userAgent: 'QbitNutrition/test (https://example.test)', timeoutMs: 1000 }),
   });
-  return { repos: h.repos, catalog, ...ai, barcode, secrets, close: () => client.close() };
+  return { repos: h.repos, catalog, ...ai, barcode, health: createInactiveHealthSync(), secrets, close: () => client.close() };
 }

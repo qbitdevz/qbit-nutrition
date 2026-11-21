@@ -362,7 +362,10 @@
     "keepPhotosOn": "Conservar",
     "keepPhotosOff": "No conservar",
     "data": "Datos",
-    "dataDetail": "Exportar, importar, borrar"
+    "dataDetail": "Exportar, importar, borrar",
+    "integrations": "Integraciones",
+    "integrationsOn": "Health Connect · Activado",
+    "integrationsOff": "Health Connect · Desactivado"
   },
   "legal": {
     "disclaimer": {
@@ -385,6 +388,94 @@
         "body": "Nunca la uses para decidir si un alimento es seguro para ti."
       },
       "closing": "Si registrar tus comidas te genera malestar, deja de usar la aplicación y busca apoyo de un profesional de la salud."
+    },
+    "update": {
+      "title": "El aviso de salud cambió",
+      "intro": "Se actualizó el texto del aviso de salud. Vuelve a leerlo antes de continuar. Tus datos no se han tocado.",
+      "accept": "Lo he leído",
+      "decline": "No acepto",
+      "declinedTitle": "La aplicación necesita que aceptes este aviso",
+      "declinedBody": "Tus datos siguen en este teléfono y no se han cambiado. Puedes volver a leer el aviso o cerrar la aplicación.",
+      "readAgain": "Volver a leer el aviso",
+      "close": "Cerrar la aplicación",
+      "failed": "No se pudo guardar la aceptación. Inténtalo de nuevo."
+    },
+    "version": {
+      "draft": "Borrador, pendiente de revisión legal.",
+      "updated": "Última actualización: {{date}}."
+    },
+    "privacy": {
+      "title": "Política de privacidad — Qbit Nutrition",
+      "summary": {
+        "lead": "Resumen.",
+        "body": "Tus datos se quedan en tu dispositivo. Nosotros, los mantenedores, no recopilamos, recibimos ni almacenamos ninguno de ellos."
+      },
+      "stores": {
+        "lead": "Qué guarda la aplicación en tu dispositivo.",
+        "body": "Tu perfil (si lo completas), tus objetivos, tus comidas, los valores nutricionales, tus medidas corporales, las fotos de tus comidas (si decides conservarlas) y la configuración de tu proveedor de IA. Las claves de API se guardan en el almacenamiento seguro de tu dispositivo."
+      },
+      "leaves": {
+        "lead": "Qué sale de tu dispositivo, y solo cuando tú lo pides.",
+        "dataLabel": "Datos enviados",
+        "recipientLabel": "Destinatario",
+        "photo": {
+          "action": "Analizar la foto de una comida",
+          "data": "La foto (reducida de tamaño y sin metadatos de ubicación), tu indicación opcional y tu idioma",
+          "recipient": "El proveedor de IA que configuraste"
+        },
+        "suggest": {
+          "action": "Pedir sugerencias de alimentos",
+          "data": "Las calorías y los nutrientes que te quedan en el día, tu objetivo y tu idioma",
+          "recipient": "El proveedor de IA que configuraste"
+        },
+        "barcode": {
+          "action": "Buscar un código de barras",
+          "data": "El número del código de barras y, en la cabecera de la petición, el nombre de la aplicación, su versión y la dirección del proyecto",
+          "recipient": "Open Food Facts"
+        },
+        "export": {
+          "action": "Exportar",
+          "data": "Un archivo con tus datos",
+          "recipient": "Donde tú lo envíes"
+        },
+        "note": "Tu proveedor de IA procesa lo que le envías según sus propios términos y su política de privacidad, que aceptaste al crear tu cuenta con él. Algunos proveedores usan el contenido enviado en los planes gratuitos para mejorar sus productos. Revisa los términos de tu proveedor. Si usas un modelo que se ejecuta en tu propio ordenador, no se envía nada a terceros. Como cualquier servicio web, el proveedor de IA y Open Food Facts también ven tu dirección de red cuando reciben una petición."
+      },
+      "never": {
+        "lead": "Lo que la aplicación nunca hace.",
+        "body": "Sin cuentas, sin analítica, sin publicidad, sin informes de fallos, sin rastreo y sin venta ni cesión de datos."
+      },
+      "health": {
+        "lead": "Plataformas de salud.",
+        "body": "Si activas Health Connect, la aplicación escribe en él cada comida guardada como un registro de nutrición (hora, tipo de comida, calorías, nutrientes y el nombre de la comida) y lee de él tu peso, en tu dispositivo y con los permisos que concedas. Los dos permisos son independientes y puedes rechazar cualquiera de ellos. Las otras aplicaciones que permitas en Health Connect pueden leer lo que esta aplicación escribió. Puedes desactivarlo en la aplicación y revocar los permisos en los ajustes del sistema en cualquier momento. Al borrar todos los datos en la aplicación se te ofrece eliminar los registros que escribió."
+      },
+      "control": {
+        "lead": "Tu control.",
+        "body": "Puedes exportar todos tus datos, borrarlos todos desde Ajustes → Datos o desinstalar la aplicación, lo que elimina todo lo que guardó. Los registros ya escritos en Health Connect pertenecen a Health Connect: elimínalos con la opción de Borrar todos los datos o en el propio Health Connect."
+      },
+      "children": {
+        "lead": "Menores.",
+        "body": "La aplicación está pensada para personas adultas."
+      },
+      "changes": {
+        "lead": "Cambios.",
+        "body": "Los cambios en esta política se publican en el repositorio del proyecto junto con la versión que los introduce."
+      },
+      "contact": {
+        "lead": "Contacto.",
+        "body": "Abre una incidencia en https://github.com/qbitdevz/qbit-nutrition/issues."
+      }
+    },
+    "licenses": {
+      "intro": "Qbit Nutrition está hecha con el software de código abierto que aparece a continuación. La lista se genera a partir de las dependencias instaladas al construir la aplicación e incluye las herramientas usadas para construirla.",
+      "own": "La propia Qbit Nutrition se publica bajo la licencia MIT.",
+      "count_one": "{{count}} paquete",
+      "count_other": "{{count}} paquetes",
+      "show": "Mostrar el texto de la licencia",
+      "hide": "Ocultar el texto de la licencia",
+      "noText": "Este paquete no incluye un archivo de licencia; su licencia se indica arriba.",
+      "unavailable": "La lista de licencias no está disponible en esta compilación.",
+      "item": "{{name}} {{version}}, {{license}}",
+      "fonts": "Tipografías: Figtree y Outfit, bajo la licencia SIL Open Font License 1.1."
     }
   },
   "onboarding": {
@@ -428,7 +519,10 @@
       "day": "Día",
       "month": "Mes",
       "year": "Año",
-      "hint": "Sirve para calcular tu edad."
+      "hint": "Sirve para calcular tu edad.",
+      "dayHint": "DD",
+      "monthHint": "MM",
+      "yearHint": "AAAA"
     },
     "height": {
       "cm": "Altura (cm)",
@@ -707,7 +801,8 @@
       "swap": "Cambiar el alimento de {{name}}",
       "noNumbers": "Aún sin valores",
       "photoKept": "No se pudo conservar la foto. La comida se guardó sin ella.",
-      "barcode": "Código de barras"
+      "barcode": "Código de barras",
+      "gramsAnnounce": "{{value}} gramos"
     },
     "custom": {
       "title": "Crear alimento personalizado",
@@ -756,7 +851,8 @@
     "loadError": "No se pudo cargar la comida. Tus datos siguen en este teléfono. Inténtalo de nuevo.",
     "actionError": "No se pudo guardar ese cambio. Inténtalo de nuevo.",
     "photoLabel": "Foto de esta comida",
-    "aiEstimate": "Estimación de la IA"
+    "aiEstimate": "Estimación de la IA",
+    "gramsAnnounce": "{{value}} gramos"
   },
   "nutrient": {
     "kcal": "Energía",
@@ -795,7 +891,24 @@
     "sources": {
       "title": "Fuentes de datos",
       "usda": "Datos de composición de alimentos: U.S. Department of Agriculture, Agricultural Research Service. FoodData Central.",
-      "off": "Datos de productos: Open Food Facts, disponibles bajo la Open Database License (ODbL), con contenidos individuales bajo la Database Contents License. Los productos se buscan de a un código y se guardan en este teléfono; la base de datos no viene incluida en la app."
+      "off": "Datos de productos: Open Food Facts, disponibles bajo la Open Database License (ODbL), con contenidos individuales bajo la Database Contents License. Los productos se buscan de a un código y se guardan en este teléfono; la base de datos no viene incluida en la app.",
+      "offLink": "Licencia y términos de Open Food Facts",
+      "usdaNote": "Los valores nutricionales de la lista de alimentos incluida provienen de esta fuente.",
+      "offNote": "No se usan las imágenes de productos de Open Food Facts."
+    },
+    "appName": "Qbit Nutrition",
+    "by": "Por qbitdev",
+    "license": "Código abierto con licencia MIT.",
+    "source": "Código fuente en GitHub",
+    "sourceLabel": "Abrir el código fuente en GitHub (se abre en tu navegador)",
+    "healthNotice": "Aviso de salud",
+    "privacyRow": "Política de privacidad",
+    "privacyRowDetail": "Qué se queda en tu teléfono y qué eliges enviar",
+    "licensesRow": "Licencias de código abierto",
+    "licensesRowDetail": "El software con el que está hecha esta aplicación",
+    "names": {
+      "title": "Nombres y marcas",
+      "body": "Los nombres de proveedores y servicios de IA, como OpenAI, Anthropic, Google Gemini, OpenRouter y Ollama, se usan solo para identificar servicios con los que esta aplicación puede funcionar. Qbit Nutrition no está afiliada, respaldada ni patrocinada por ninguno de ellos, y no usa sus logotipos."
     }
   },
   "providers": {
@@ -1007,7 +1120,12 @@
       "confirm": "Borrar todo",
       "keep": "Conservar mis datos",
       "deleting": "Borrando",
-      "error": "No se pudo borrar todo. Tus datos siguen aquí; inténtalo de nuevo."
+      "error": "No se pudo borrar todo. Tus datos siguen aquí; inténtalo de nuevo.",
+      "healthTitle": "Health Connect",
+      "healthBody": "Qbit Nutrition ha guardado comidas en Health Connect. ¿Quieres eliminar también esos registros?",
+      "healthRemove": "Eliminar también los registros que esta aplicación escribió en Health Connect",
+      "healthKeep": "Conservarlos en Health Connect",
+      "healthFailed": "No se pudieron eliminar los registros de Health Connect, así que no se borró nada. Inténtalo de nuevo o elige conservarlos."
     }
   },
   "barcode": {
@@ -1187,6 +1305,78 @@
         "title": "Algo salió mal",
         "message": "No se pudieron pedir las sugerencias. Inténtalo de nuevo. El detalle de abajo ayuda si sigue pasando."
       }
+    }
+  },
+  "health": {
+    "title": "Integraciones",
+    "intro": "Health Connect es el lugar de Android donde las aplicaciones de salud comparten datos en tu teléfono. Permanece desactivado a menos que lo actives aquí.",
+    "connect": "Health Connect",
+    "turnOn": "Activar Health Connect",
+    "turnOff": "Desactivar",
+    "manage": "Gestionar el acceso en Health Connect",
+    "install": "Obtener Health Connect",
+    "update": "Actualizar Health Connect",
+    "allow": "Permitir",
+    "allowNamed": "Permitir: {{name}}",
+    "working": "Trabajando con Health Connect…",
+    "status": {
+      "off": "Desactivado. No se comparte nada con Health Connect.",
+      "on": "Activado."
+    },
+    "grant": {
+      "writeNutrition": "Guardar mis comidas en Health Connect",
+      "readWeight": "Leer mi peso desde Health Connect"
+    },
+    "grantState": {
+      "granted": "Permitido",
+      "not_granted": "No permitido",
+      "revoked": "El acceso se quitó en Health Connect"
+    },
+    "notice": {
+      "declined": "No se concedió ningún acceso, así que Health Connect sigue desactivado. Puedes intentarlo de nuevo cuando quieras.",
+      "not_installed": "Health Connect no está instalado en este teléfono. Instálalo, vuelve y actívalo.",
+      "needs_update": "Health Connect necesita una actualización para poder usarse. Actualízalo y vuelve.",
+      "unavailable": "Health Connect no se puede usar en este teléfono.",
+      "available": "Health Connect está listo.",
+      "sent_one": "Se puso en cola {{count}} comida para guardarla en Health Connect.",
+      "sent_other": "Se pusieron en cola {{count}} comidas para guardarlas en Health Connect."
+    },
+    "sync": {
+      "title": "Comidas guardadas",
+      "none": "Todas las comidas guardadas están al día en Health Connect.",
+      "pending_one": "{{count}} comida está esperando para escribirse en Health Connect.",
+      "pending_other": "{{count}} comidas están esperando para escribirse en Health Connect.",
+      "failing": "El último intento no funcionó. Tus comidas están a salvo en esta aplicación y se enviarán cuando Health Connect responda.",
+      "retry": "Intentar de nuevo ahora",
+      "weightAt": "Peso leído por última vez el {{date}}.",
+      "weightNever": "Todavía no se ha leído el peso."
+    },
+    "existing": {
+      "title": "Comidas que ya registraste",
+      "body": "Al activar Health Connect se guardan las comidas nuevas y las que edites. Las comidas que registraste antes, o que importaste, no se envían a menos que lo pidas.",
+      "button": "Enviar mis comidas existentes",
+      "needsGrant": "Permite guardar comidas para usar esto."
+    },
+    "rationale": {
+      "title": "Para qué usa Qbit Nutrition Health Connect",
+      "intro": "Estos son los dos tipos de datos y para qué se usa cada uno. No se lee ni se escribe nada más.",
+      "writes": "Escribe",
+      "reads": "Lee",
+      "nutrition": {
+        "title": "Nutrición",
+        "body": "Cada comida que guardas se convierte en un registro de nutrición: cuándo comiste, el tipo de comida, calorías, proteínas, carbohidratos, grasas, y la fibra, los azúcares, el sodio y las vitaminas y minerales que sigue esta aplicación. Así tus otras aplicaciones de salud pueden mostrar lo que comiste. Si editas o borras una comida aquí, su registro se actualiza o se elimina."
+      },
+      "weight": {
+        "title": "Peso",
+        "body": "Los registros de peso de los últimos 30 días se copian a esta aplicación para que aparezcan en tu gráfico de peso. Se marcan como procedentes de Health Connect. No se escribe nada de peso de vuelta."
+      },
+      "yourControl": "Tú tienes el control",
+      "separate": "Puedes permitir uno de los dos y rechazar el otro. El otro sigue funcionando.",
+      "local": "Health Connect guarda sus datos en este teléfono. Nunca se comparten con él las fotos, los datos de proveedores de IA ni las claves.",
+      "revoke": "Puedes desactivarlo aquí, o quitar el acceso en Health Connect, cuando quieras.",
+      "privacy": "Leer la política de privacidad",
+      "continue": "Continuar a los permisos",
+      "notNow": "Ahora no"
     }
   }
 }

@@ -1,3 +1,4 @@
+import { HEALTH_SETTING_KEYS } from '../health/healthSync';
 import { MINIMUM_KCAL_KEY, MINIMUM_KCAL_RANGE } from '../goals/minimum';
 import { KEEP_PHOTOS_KEY, TIP_COUNT_KEY } from '../scan/constants';
 import { LOCALE_KEY, ONBOARDED_KEY } from '../session/AppSession';
@@ -9,7 +10,8 @@ import { SUPPORTED_LOCALES } from '@/i18n/locale';
  * - The person's preferences (language, whether photos are kept, the minimum energy, the scan tip counter) are
  *   part of their data: they are exported and imported.
  * - Installation state is not theirs to move: when onboarding was finished here, and which bundled catalog is
- *   installed here (the catalog installer reads it at every start). These are neither exported nor replaced: an
+ *   installed here (the catalog installer reads it at every start), and the Health Connect integration (whether it is on, what is
+ *   waiting to be written, which grants were seen): the grants belong to this installation, so an import does not switch it off. These are neither exported nor replaced: an
  *   import keeps this installation's own values.
  * - Acknowledgements (`ai_notice_ack.<provider id>`: "this photo will be sent to [provider]"; `notice_ack.*`: the barcode and
  *   food-suggestion notices) are consent given
@@ -25,7 +27,7 @@ export const NOTICE_ACK_PREFIX = 'ai_notice_ack.';
 /** Prefix of the other acknowledgements: `notice_ack.barcode` (numbers sent to Open Food Facts) and `notice_ack.suggest.<provider id>` (food suggestions). */
 export const OTHER_ACK_PREFIX = 'notice_ack.';
 
-const INSTALLATION_STATE: readonly string[] = [ONBOARDED_KEY, CATALOG_MARKER_SETTING];
+const INSTALLATION_STATE: readonly string[] = [ONBOARDED_KEY, CATALOG_MARKER_SETTING, ...HEALTH_SETTING_KEYS];
 
 export const isInstallationState = (key: string): boolean => INSTALLATION_STATE.includes(key);
 export const isAcknowledgement = (key: string): boolean => key.startsWith(NOTICE_ACK_PREFIX) || key.startsWith(OTHER_ACK_PREFIX);

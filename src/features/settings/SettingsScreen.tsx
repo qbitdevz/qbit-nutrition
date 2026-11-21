@@ -12,7 +12,7 @@ import { useSession } from '../session/AppSession';
 import { useServices } from '../startup/AppProvider';
 import { saveLocale } from './language';
 
-export type SettingsSection = 'profile' | 'goal' | 'minimum' | 'providers' | 'data' | 'about';
+export type SettingsSection = 'profile' | 'goal' | 'minimum' | 'providers' | 'integrations' | 'data' | 'about';
 
 const LANGUAGE_NAMES: Record<Locale, string> = { en: 'English', es: 'Español' };
 
@@ -21,13 +21,14 @@ interface Details {
   goal?: string;
   minimum?: string;
   providers?: string;
+  integrations?: string;
 }
 
 /** Settings (docs/04 navigation map): profile and units, goal and targets, minimum energy, language, About. */
 export function SettingsScreen({ onOpen, onBack }: { onOpen: (section: SettingsSection) => void; onBack?: () => void }) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language as Locale;
-  const { repos } = useServices();
+  const { repos, health } = useServices();
   const snackbar = useSnackbar();
   const { revision } = useSession();
   const [details, setDetails] = useState<Details>({});
@@ -38,12 +39,13 @@ export function SettingsScreen({ onOpen, onBack }: { onOpen: (section: SettingsS
   // What each row shows is read once; a failed read leaves the row without a detail line, not broken.
   useEffect(() => {
     let active = true;
-    Promise.all([repos.profile.get(), repos.goals.current(), readMinimumKcal(repos.settings), repos.aiProviders.getActive()]).then(
-      ([profile, goal, minimum, provider]) => {
+    Promise.all([repos.profile.get(), repos.goals.current(), readMinimumKcal(repos.settings), repos.aiProviders.getActive(), health.isEnabled()]).then(
+      ([profile, goal, minimum, provider, healthOn]) => {
         if (!active) return;
         setDetails({
           profile: profile ? t(`profile.units.${profile.unitSystem}`) : undefined,
           goal: goal?.kcalTarget != null ? `${formatNumber(locale, goal.kcalTarget)} kcal · ${t(`goal.type.${goal.type}`)}` : t('goal.none'),
+          integrations: t(healthOn ? 'settings.integrationsOn' : 'settings.integrationsOff'),
           providers: provider ? `${provider.label} · ${provider.model}` : t('settings.providersNone'),
           minimum: minimum !== null ? t('minimum.current', { kcal: formatNumber(locale, minimum) }) : `${formatNumber(locale, DEFAULT_MINIMUM_DAILY_KCAL.female)} / ${formatNumber(locale, DEFAULT_MINIMUM_DAILY_KCAL.male)} kcal`,
         });
@@ -53,7 +55,7 @@ export function SettingsScreen({ onOpen, onBack }: { onOpen: (section: SettingsS
     return () => {
       active = false;
     };
-  }, [repos, t, locale, revision]);
+  }, [repos, health, t, locale, revision]);
 
   useEffect(() => {
     let active = true;
@@ -95,6 +97,7 @@ export function SettingsScreen({ onOpen, onBack }: { onOpen: (section: SettingsS
           <SettingsRow icon="progress" title={t('settings.goal')} detail={details.goal} onPress={() => onOpen('goal')} />
           <SettingsRow icon="settings" title={t('settings.minimum')} detail={details.minimum} onPress={() => onOpen('minimum')} />
           <SettingsRow icon="sparkle" title={t('settings.providers')} detail={details.providers} onPress={() => onOpen('providers')} />
+          <SettingsRow icon="swap" title={t('settings.integrations')} detail={details.integrations} onPress={() => onOpen('integrations')} testID="settings-integrations" />
           <SettingsRow icon="copy" title={t('settings.data')} detail={t('settings.dataDetail')} onPress={() => onOpen('data')} />
           <SettingsRow icon="info" title={t('settings.about')} onPress={() => onOpen('about')} />
         </View>

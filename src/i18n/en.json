@@ -362,7 +362,10 @@
     "keepPhotosOn": "Keep",
     "keepPhotosOff": "Don't keep",
     "data": "Data",
-    "dataDetail": "Export, import, delete"
+    "dataDetail": "Export, import, delete",
+    "integrations": "Integrations",
+    "integrationsOn": "Health Connect · On",
+    "integrationsOff": "Health Connect · Off"
   },
   "legal": {
     "disclaimer": {
@@ -385,6 +388,94 @@
         "body": "Never use it to decide whether a food is safe for you."
       },
       "closing": "If tracking food causes you distress, stop using the app and seek support from a health professional."
+    },
+    "update": {
+      "title": "The health notice changed",
+      "intro": "The text of the health notice was updated. Please read it again before you continue. Your data has not been touched.",
+      "accept": "I have read it",
+      "decline": "I do not accept",
+      "declinedTitle": "The app needs this notice to be accepted",
+      "declinedBody": "Your data is still on this phone and has not been changed. You can read the notice again, or close the app.",
+      "readAgain": "Read the notice again",
+      "close": "Close the app",
+      "failed": "The acceptance could not be saved. Try again."
+    },
+    "version": {
+      "draft": "Draft, pending legal review.",
+      "updated": "Last updated: {{date}}."
+    },
+    "privacy": {
+      "title": "Privacy policy — Qbit Nutrition",
+      "summary": {
+        "lead": "Summary.",
+        "body": "Your data stays on your device. We, the maintainers, do not collect, receive, or store any of it."
+      },
+      "stores": {
+        "lead": "What the app stores on your device.",
+        "body": "Your profile (if you fill it in), goals, meals, nutrient values, body measurements, meal photos (if you keep them), and your AI provider settings. API keys are stored in your device's secure storage."
+      },
+      "leaves": {
+        "lead": "What leaves your device, and only when you trigger it.",
+        "dataLabel": "Data sent",
+        "recipientLabel": "Recipient",
+        "photo": {
+          "action": "Analyze a meal photo",
+          "data": "The photo (reduced in size, without location metadata), your optional hint, your language",
+          "recipient": "The AI provider you configured"
+        },
+        "suggest": {
+          "action": "Ask for food suggestions",
+          "data": "Remaining calories and nutrients for the day, your goal, your language",
+          "recipient": "The AI provider you configured"
+        },
+        "barcode": {
+          "action": "Look up a barcode",
+          "data": "The barcode number, and the app name, version and project address in the request header",
+          "recipient": "Open Food Facts"
+        },
+        "export": {
+          "action": "Export",
+          "data": "A file with your data",
+          "recipient": "Wherever you send it"
+        },
+        "note": "Your AI provider processes what you send under its own terms and privacy policy, which you accepted when you created your account with it. Some providers use content sent on free plans to improve their products. Check your provider's terms. If you use a model running on your own computer, nothing is sent to a third party. Like any web service, the AI provider and Open Food Facts also see your network address when they receive a request."
+      },
+      "never": {
+        "lead": "What the app never does.",
+        "body": "No accounts, no analytics, no advertising, no crash reports, no tracking, no selling or sharing of data."
+      },
+      "health": {
+        "lead": "Health platforms.",
+        "body": "If you turn on Health Connect, the app writes each saved meal to it as a nutrition record (time, meal type, calories, nutrients and the meal's name) and reads your weight from it, on your device, with the permissions you grant. The two permissions are separate and you can decline either. Other apps that you allow in Health Connect can read what this app wrote. You can turn it off in the app and revoke the permissions in system settings at any time. Deleting all data in the app offers to remove the records it wrote."
+      },
+      "control": {
+        "lead": "Your control.",
+        "body": "You can export all your data, delete it all from Settings → Data, or uninstall the app, which removes everything it stored. Records already written to Health Connect belong to Health Connect: remove them with the option in Delete all data, or in Health Connect itself."
+      },
+      "children": {
+        "lead": "Children.",
+        "body": "The app is intended for adults."
+      },
+      "changes": {
+        "lead": "Changes.",
+        "body": "Changes to this policy are published in the project repository with the release that introduces them."
+      },
+      "contact": {
+        "lead": "Contact.",
+        "body": "Open an issue at https://github.com/qbitdevz/qbit-nutrition/issues."
+      }
+    },
+    "licenses": {
+      "intro": "Qbit Nutrition is built with the open-source software below. The list is generated from the dependencies installed when the app was built, and includes the tools used to build it.",
+      "own": "Qbit Nutrition itself is released under the MIT license.",
+      "count_one": "{{count}} package",
+      "count_other": "{{count}} packages",
+      "show": "Show license text",
+      "hide": "Hide license text",
+      "noText": "This package does not ship a license file; its license is named above.",
+      "unavailable": "The license list is not available in this build.",
+      "item": "{{name}} {{version}}, {{license}}",
+      "fonts": "Fonts: Figtree and Outfit, under the SIL Open Font License 1.1."
     }
   },
   "onboarding": {
@@ -428,7 +519,10 @@
       "day": "Day",
       "month": "Month",
       "year": "Year",
-      "hint": "Used to work out your age."
+      "hint": "Used to work out your age.",
+      "dayHint": "DD",
+      "monthHint": "MM",
+      "yearHint": "YYYY"
     },
     "height": {
       "cm": "Height (cm)",
@@ -707,7 +801,8 @@
       "swap": "Change food for {{name}}",
       "noNumbers": "No numbers yet",
       "photoKept": "The photo could not be kept. The meal was saved without it.",
-      "barcode": "Barcode"
+      "barcode": "Barcode",
+      "gramsAnnounce": "{{value}} grams"
     },
     "custom": {
       "title": "Create custom food",
@@ -756,7 +851,8 @@
     "loadError": "The meal could not be loaded. Your data is still on this phone. Try again.",
     "actionError": "That change could not be saved. Try again.",
     "photoLabel": "Photo of this meal",
-    "aiEstimate": "AI estimate"
+    "aiEstimate": "AI estimate",
+    "gramsAnnounce": "{{value}} grams"
   },
   "nutrient": {
     "kcal": "Energy",
@@ -795,7 +891,24 @@
     "sources": {
       "title": "Data sources",
       "usda": "Food composition data: U.S. Department of Agriculture, Agricultural Research Service. FoodData Central.",
-      "off": "Product data: Open Food Facts, made available under the Open Database License (ODbL), with individual contents under the Database Contents License. Products are looked up one barcode at a time and saved on this phone; the database is not included in the app."
+      "off": "Product data: Open Food Facts, made available under the Open Database License (ODbL), with individual contents under the Database Contents License. Products are looked up one barcode at a time and saved on this phone; the database is not included in the app.",
+      "offLink": "Open Food Facts license and terms",
+      "usdaNote": "The nutrient values in the bundled food list come from this source.",
+      "offNote": "Product images from Open Food Facts are not used."
+    },
+    "appName": "Qbit Nutrition",
+    "by": "By qbitdev",
+    "license": "Open source under the MIT license.",
+    "source": "Source code on GitHub",
+    "sourceLabel": "Open the source code on GitHub (opens your browser)",
+    "healthNotice": "Health notice",
+    "privacyRow": "Privacy policy",
+    "privacyRowDetail": "What stays on your phone and what you choose to send",
+    "licensesRow": "Open-source licenses",
+    "licensesRowDetail": "The software this app is built with",
+    "names": {
+      "title": "Names and trademarks",
+      "body": "Names of AI providers and services, such as OpenAI, Anthropic, Google Gemini, OpenRouter and Ollama, are used only to identify services this app can work with. Qbit Nutrition is not affiliated with, endorsed by, or sponsored by any of them, and does not use their logos."
     }
   },
   "providers": {
@@ -1007,7 +1120,12 @@
       "confirm": "Delete everything",
       "keep": "Keep my data",
       "deleting": "Deleting",
-      "error": "Not everything could be deleted. Your data is still here; try again."
+      "error": "Not everything could be deleted. Your data is still here; try again.",
+      "healthTitle": "Health Connect",
+      "healthBody": "Qbit Nutrition has saved meals to Health Connect. Remove those records too?",
+      "healthRemove": "Also remove the records this app wrote to Health Connect",
+      "healthKeep": "Keep them in Health Connect",
+      "healthFailed": "The records in Health Connect could not be removed, so nothing was deleted. Try again, or choose to keep them."
     }
   },
   "barcode": {
@@ -1187,6 +1305,78 @@
         "title": "Something went wrong",
         "message": "The suggestions could not be requested. Try again. The detail below can help if it keeps happening."
       }
+    }
+  },
+  "health": {
+    "title": "Integrations",
+    "intro": "Health Connect is the Android place where health apps share data on your phone. It stays off unless you turn it on here.",
+    "connect": "Health Connect",
+    "turnOn": "Turn on Health Connect",
+    "turnOff": "Turn off",
+    "manage": "Manage access in Health Connect",
+    "install": "Get Health Connect",
+    "update": "Update Health Connect",
+    "allow": "Allow",
+    "allowNamed": "Allow: {{name}}",
+    "working": "Working with Health Connect…",
+    "status": {
+      "off": "Off. Nothing is shared with Health Connect.",
+      "on": "On."
+    },
+    "grant": {
+      "writeNutrition": "Save my meals to Health Connect",
+      "readWeight": "Read my weight from Health Connect"
+    },
+    "grantState": {
+      "granted": "Allowed",
+      "not_granted": "Not allowed",
+      "revoked": "Access was taken away in Health Connect"
+    },
+    "notice": {
+      "declined": "No access was granted, so Health Connect stays off. You can try again whenever you like.",
+      "not_installed": "Health Connect is not installed on this phone. Install it, then come back and turn it on.",
+      "needs_update": "Health Connect needs an update before it can be used. Update it, then come back.",
+      "unavailable": "Health Connect cannot be used on this phone.",
+      "available": "Health Connect is ready.",
+      "sent_one": "{{count}} meal was queued to be saved to Health Connect.",
+      "sent_other": "{{count}} meals were queued to be saved to Health Connect."
+    },
+    "sync": {
+      "title": "Saved meals",
+      "none": "Every saved meal is up to date in Health Connect.",
+      "pending_one": "{{count}} meal is waiting to be written to Health Connect.",
+      "pending_other": "{{count}} meals are waiting to be written to Health Connect.",
+      "failing": "The last attempt did not work. Your meals are safe in this app and will be sent when Health Connect answers.",
+      "retry": "Try again now",
+      "weightAt": "Weight last read on {{date}}.",
+      "weightNever": "Weight has not been read yet."
+    },
+    "existing": {
+      "title": "Meals you already logged",
+      "body": "Turning on Health Connect saves new and edited meals. Meals you logged before, or imported, are not sent unless you ask.",
+      "button": "Send my existing meals",
+      "needsGrant": "Allow saving meals to use this."
+    },
+    "rationale": {
+      "title": "What Qbit Nutrition uses Health Connect for",
+      "intro": "These are the two kinds of data, and why each one is used. Nothing else is read or written.",
+      "writes": "Writes",
+      "reads": "Reads",
+      "nutrition": {
+        "title": "Nutrition",
+        "body": "Each meal you save becomes a nutrition record: when you ate, the meal type, calories, protein, carbohydrates, fat, and the fiber, sugars, sodium and vitamins and minerals this app tracks. This lets your other health apps show what you ate. Editing or deleting a meal here updates or removes its record."
+      },
+      "weight": {
+        "title": "Weight",
+        "body": "Weight entries from the last 30 days are copied into this app so they appear in your weight chart. They are marked as coming from Health Connect. Nothing about weight is written back."
+      },
+      "yourControl": "You stay in control",
+      "separate": "You can allow one of the two and decline the other. The other still works.",
+      "local": "Health Connect keeps its data on this phone. Photos, AI provider details and keys are never shared with it.",
+      "revoke": "You can turn this off here, or take access away in Health Connect, at any time.",
+      "privacy": "Read the privacy policy",
+      "continue": "Continue to permissions",
+      "notNow": "Not now"
     }
   }
 }
