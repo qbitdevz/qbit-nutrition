@@ -923,7 +923,12 @@
       "cancel": "Cancelar",
       "shareTitle": "Exportar datos de Qbit Nutrition",
       "done": "Exportación compartida: {{name}}",
-      "error": "No se pudo crear o compartir la exportación. No se cambió nada. Inténtalo de nuevo."
+      "error": "No se pudo crear o compartir la exportación. No se cambió nada. Inténtalo de nuevo.",
+      "errorSecret": "Se detuvo la exportación: {{where}} contiene una clave de API. Quita la clave y vuelve a exportar. No se escribió nada.",
+      "errorKeys": "Se detuvo la exportación porque no se pudieron revisar las claves de API guardadas. No se escribió nada. Inténtalo de nuevo.",
+      "errorValue": "Se detuvo la exportación: {{where}} tiene un valor que el archivo no admite. Acórtalo o corrígelo y vuelve a exportar.",
+      "photosSkipped_one": "{{count}} foto de comida no se pudo leer y no está en el archivo. Su comida se exporta sin ella.",
+      "photosSkipped_other": "{{count}} fotos de comidas no se pudieron leer y no están en el archivo. Sus comidas se exportan sin ellas."
     },
     "import": {
       "title": "Importar datos",
@@ -934,7 +939,7 @@
       "contains": "Exportado el {{date}} con la versión {{version}} de la aplicación.",
       "range": "Abarca del {{from}} al {{to}}.",
       "noRange": "No tiene comidas ni medidas.",
-      "noProfile": "No tiene perfil.",
+      "noProfile": "No tiene perfil: se queda el de este teléfono.",
       "meals_one": "{{count}} comida",
       "meals_other": "{{count}} comidas",
       "weights_one": "{{count}} registro de peso",
@@ -962,7 +967,7 @@
       "needKey_one": "{{count}} proveedor de IA necesita su clave de nuevo.",
       "needKey_other": "{{count}} proveedores de IA necesitan su clave de nuevo.",
       "openProviders": "Abrir proveedores de IA",
-      "leftovers": "Tus datos se importaron, pero no se pudieron quitar algunos archivos o claves antiguos. La aplicación no los usa.",
+      "leftovers": "Tus datos se importaron, pero no se pudieron quitar algunos archivos o claves antiguos. Nunca se usan, y la aplicación los quita la próxima vez que se inicie.",
       "error": {
         "title": "No se puede importar este archivo",
         "notChanged": "Tus datos actuales no cambiaron.",
@@ -975,7 +980,9 @@
         "photosMissing": "El archivo menciona una foto que no contiene: {{where}}.",
         "photoInvalid": "Una foto del archivo no es una imagen JPEG válida: {{where}}.",
         "writeFailed": "No se pudo completar la importación y se deshizo. Tus datos actuales están como estaban.",
-        "retry": "Elegir otro archivo"
+        "retry": "Elegir otro archivo",
+        "archiveTooLarge": "El archivo ocuparía más de lo que esta aplicación acepta al descomprimirse. Elige una exportación más pequeña.",
+        "storageUnreadable": "No se pudieron leer los datos o la carpeta de fotos de este teléfono, así que no se pudo reemplazar nada de forma segura."
       }
     },
     "delete": {

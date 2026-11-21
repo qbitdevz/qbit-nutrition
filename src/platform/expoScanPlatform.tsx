@@ -73,7 +73,8 @@ const files: PhotoFiles = {
     const directory = new Directory(Paths.document, PHOTO_DIR);
     directory.create({ idempotent: true, intermediates: true });
     const name = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}.jpg`;
-    new File(uri).copy(new File(directory, name));
+    // `copy` is asynchronous: the path is returned (and a meal saved with it) only once the file is complete.
+    await new File(uri).copy(new File(directory, name));
     return `${PHOTO_DIR}/${name}`;
   },
   async remove(path) {

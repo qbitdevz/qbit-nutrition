@@ -6,9 +6,10 @@
 import { unzipSync, strFromU8 } from 'fflate';
 
 import type { Harness } from '@/data/testing/harness';
+import { dumpAll } from './backupDump';
 import { createFakeDataPlatform, type FakeDataPlatform } from '@/platform/fakeDataPlatform';
 import { createTestServices } from './testServices';
-import { createDataService, type DataService, type PreparedImport } from '../data/dataService';
+import { createDataService, type DataService, type DataServiceDeps, type PreparedImport } from '../data/dataService';
 
 export const NOW = new Date('2026-11-21T12:00:00.000Z');
 
@@ -17,24 +18,20 @@ export interface Device {
   services: ReturnType<typeof createTestServices>;
   platform: FakeDataPlatform;
   service: DataService;
-  /** Cleanups the service asked to run later (the delayed removal of the export file). */
-  scheduled: { run: () => void; ms: number }[];
 }
 
-export function createDevice(h: Harness, options: { nowMs?: () => number } = {}): Device {
+export function createDevice(h: Harness, options: { limits?: DataServiceDeps['limits'] } = {}): Device {
   const services = createTestServices(h);
   const platform = createFakeDataPlatform();
-  const scheduled: Device['scheduled'] = [];
   const service = createDataService({
     repos: h.repos,
     providers: services.providers,
     platform,
     appVersion: '1.0.0',
     now: () => new Date(NOW),
-    nowMs: options.nowMs,
-    schedule: (run, ms) => scheduled.push({ run, ms }),
+    limits: options.limits,
   });
-  return { h, services, platform, service, scheduled };
+  return { h, services, platform, service };
 }
 
 /** Bytes that start like a JPEG (the importer checks the signature); `n` makes each one different. */
@@ -65,4 +62,18 @@ export function everyByteOf(bytes: Uint8Array): Buffer[] {
   const out = [Buffer.from(bytes)];
   if (bytes[0] === 0x50 && bytes[1] === 0x4b) for (const entry of Object.values(unzipSync(bytes))) out.push(Buffer.from(entry));
   return out;
+}
+
+/**
+ * Everything a "nothing changed" claim has to cover: every row of every table, every kept photo (path and bytes),
+ * and every stored key (id and value). Compare the whole object before and after.
+ */
+export async function fullState(device: Pick<Device, 'h' | 'platform' | 'services'>) {
+  const keys: Record<string, string | null> = {};
+  for (const id of await device.services.secrets.list()) keys[id] = await device.services.secrets.get(id);
+  return {
+    db: dumpAll(device.h),
+    photos: [...device.platform.state.photos.entries()].map(([path, bytes]) => [path, [...bytes]] as const),
+    keys,
+  };
 }

@@ -67,6 +67,19 @@ export interface ProviderService {
    * if any removal failed.
    */
   removeKeys(ids: readonly string[]): Promise<void>;
+  /** Removes every stored key: those of the profiles, and those tracked by the secure store whose profile is gone. Tries all, then fails with a `SecretStoreError` if any removal failed. */
+  removeAllKeys(): Promise<void>;
+  /**
+   * Removes the keys whose profile no longer exists (left by an import, a crash, or a failed removal). First adopts the
+   * keys of existing profiles that the secure store did not track yet (stored by an older version). Returns how many were removed.
+   */
+  removeOrphanKeys(): Promise<number>;
+  /**
+   * A test for "does this text contain a stored key?" (the key as typed, URL-encoded, or percent-encoded as a URL), built from the keys
+   * of every profile. The keys stay inside the function: nothing can read one back through it. Rejects if a key cannot be read, so a
+   * caller never proceeds on the assumption that nothing leaks.
+   */
+  keyMatcher(): Promise<(text: string) => boolean>;
   /** Exactly one profile is active afterwards. */
   setActive(id: string): Promise<ProviderView>;
   /** Deletes the key first, then the profile and its notice mark. */
@@ -84,6 +97,7 @@ export interface ProviderServiceDeps {
 }
 
 const MAX_SUGGESTIONS = 100;
+const MIN_KEY_LENGTH = 6;
 
 function rethrowSafely(error: unknown): never {
   throw error instanceof SecretStoreError ? error : new SecretStoreError('failed', 'Secure storage did not complete the request.');
@@ -210,6 +224,46 @@ export function createProviderService({ aiProviders, settings, secrets: store, c
         }
       }
       if (failure) throw failure;
+    },
+
+    async removeAllKeys() {
+      const ids = new Set([...(await aiProviders.list()).map((p) => p.id), ...(await store.list())]);
+      let failure: unknown = null;
+      for (const id of ids) {
+        try {
+          await secrets.remove(id);
+        } catch (error) {
+          failure ??= error;
+        }
+      }
+      if (failure) throw failure;
+    },
+
+    async removeOrphanKeys() {
+      const rowIds = new Set((await aiProviders.list()).map((p) => p.id));
+      await store.track([...rowIds]);
+      const orphans = (await store.list()).filter((id) => !rowIds.has(id));
+      let failure: unknown = null;
+      for (const id of orphans) {
+        try {
+          await secrets.remove(id);
+        } catch (error) {
+          failure ??= error;
+        }
+      }
+      if (failure) throw failure;
+      return orphans.length;
+    },
+
+    async keyMatcher() {
+      const ids = new Set([...(await aiProviders.list()).map((p) => p.id), ...(await store.list())]);
+      const forms: string[] = [];
+      for (const id of ids) {
+        const key = await secrets.get(id);
+        // Same floor as `redact` in core/ai: a shorter "key" is not a key, and would match ordinary words.
+        if (key && key.length >= MIN_KEY_LENGTH) forms.push(key, encodeURIComponent(key), encodeURI(key));
+      }
+      return (text) => forms.some((form) => text.includes(form));
     },
 
     async setActive(id) {

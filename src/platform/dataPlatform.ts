@@ -26,16 +26,26 @@ export interface DataPlatform {
     /** Deletes a cache file. A file that is already gone is not an error. */
     remove(uri: string): Promise<void>;
     read(uri: string): Promise<Uint8Array>;
+    /** Size in bytes without reading the file, or null if it is not there. */
+    size(uri: string): Promise<number | null>;
     /** The cache files whose name starts with `prefix`. */
     list(prefix: string): Promise<CachedFile[]>;
   };
   share: {
+    /**
+     * True when `shareFile` resolves only once the target is done with the file (the iOS share sheet), so the file can be removed
+     * the moment it returns. False when it resolves while a target may still be reading (the Android chooser returns when an app is
+     * picked): the file is then left for the startup sweep.
+     */
+    readonly completesWhenDone: boolean;
     /** Opens the system share sheet for a cache file. Resolves when the sheet is closed (on Android, when a target was chosen). */
     shareFile(uri: string, options: { mimeType: string; title: string }): Promise<void>;
   };
   picker: {
     /** Opens the system file picker; null when the person closes it without choosing. */
     pick(): Promise<PickedFile | null>;
+    /** Removes the copies the picker made in the cache (a crash can leave one). */
+    clearCopies(): Promise<number>;
   };
   photos: {
     /** Relative paths (`photos/<name>.jpg`) of every kept photo on disk, referenced or not. */

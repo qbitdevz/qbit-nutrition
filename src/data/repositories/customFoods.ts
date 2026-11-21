@@ -2,7 +2,7 @@ import { asc, eq, sql } from 'drizzle-orm';
 import type { NutrientAmounts } from '../../core/nutrition';
 import { DataError } from '../errors';
 import { customFood } from '../schema';
-import { invalid, isHeadline, nutrientEntries, requireFinite, type RepositoryContext } from './shared';
+import { TEXT_LIMITS, invalid, isHeadline, nutrientEntries, requireFinite, requireMaxLength, type RepositoryContext } from './shared';
 
 type CustomFoodRow = typeof customFood.$inferSelect;
 
@@ -56,6 +56,7 @@ export function toCustomFood(row: CustomFoodRow): CustomFood {
 
 function validate(input: Partial<CustomFoodInput>): void {
   if (input.name !== undefined && input.name.trim() === '') throw invalid('name must not be blank');
+  requireMaxLength(input.name, TEXT_LIMITS.name, 'name');
   for (const key of ['kcal100g', 'protein100g', 'carbs100g', 'fat100g'] as const) {
     const value = input[key];
     if (value !== undefined) requireFinite(value, key, { min: 0 });

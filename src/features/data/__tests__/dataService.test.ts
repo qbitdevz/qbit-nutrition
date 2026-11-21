@@ -78,14 +78,10 @@ describe('export (S3, S4)', () => {
     expect(doc.meals.every((m: { scan_id?: unknown }) => !('scan_id' in m))).toBe(true);
   });
 
-  it('removes the temporary file afterwards: scheduled once the share sheet is done, and swept if the app was closed first', async () => {
+  it('removes the temporary file as soon as the share sheet returns (the share-timing cases are in startupSweep.test.ts)', async () => {
     await seedSource({ photos: false });
     await from.service.exportData({ withPhotos: false, shareTitle: 'Export' });
-    const exports = () => [...from.platform.state.cache.keys()].filter((uri) => uri.includes('qbit-nutrition-export'));
-    expect(exports()).toHaveLength(1);
-    expect(from.scheduled).toHaveLength(1);
-    from.scheduled[0]!.run();
-    expect(exports()).toHaveLength(0);
+    expect([...from.platform.state.cache.keys()].filter((uri) => uri.includes('qbit-nutrition-export'))).toHaveLength(0);
   });
 
   it('removes the temporary file at once when the share sheet cannot open, and says it failed', async () => {
@@ -93,22 +89,6 @@ describe('export (S3, S4)', () => {
     from.platform.state.failShare = true;
     await expect(from.service.exportData({ withPhotos: false, shareTitle: 'Export' })).rejects.toThrow();
     expect(from.platform.state.cache.size).toBe(0);
-    expect(from.scheduled).toHaveLength(0);
-  });
-
-  it('sweeps export files left by an earlier run, but not a fresh one the share target may still be reading', async () => {
-    let nowMs = 10_000_000;
-    const device = createDevice(a, { nowMs: () => nowMs });
-    device.platform.state.now = 1_000_000;
-    await device.platform.cache.write('qbit-nutrition-export-old.json', '{}');
-    device.platform.state.now = nowMs - 1_000;
-    await device.platform.cache.write('qbit-nutrition-export-fresh.json', '{}');
-    await device.service.sweep();
-    expect([...device.platform.state.cache.keys()]).toEqual(['file:///cache/qbit-nutrition-export-fresh.json']);
-    nowMs += 60 * 60_000;
-    await device.service.sweep();
-    expect(device.platform.state.cache.size).toBe(0);
-    device.services.close();
   });
 
   it('reports a file that could not be written without sharing anything', async () => {
@@ -162,15 +142,12 @@ describe('export (S3, S4)', () => {
     }
   });
 
-  it('S4: a key pasted into the base URL does not travel either (credentials, query and fragment are cut)', async () => {
+  it('S4: credentials in a stored base URL are cut; the query string is kept (a key pasted into it is refused, see exportLeaks.test.ts)', async () => {
     const seeded = await seedSource({ photos: false });
-    await a.repos.aiProviders.update(seeded.providerIds[1]!, { baseUrl: `https://api.example.com/v1?key=${encodeURIComponent(DISTINCTIVE_KEY)}&x=1#frag` });
+    a.client.exec(`UPDATE ai_provider SET base_url = 'https://user:pw@api.example.com/v1?x=1' WHERE id = '${seeded.providerIds[1]}'`);
     await from.service.exportData({ withPhotos: false, shareTitle: 'Export' });
-    const text = strFromU8(lastShared(from).bytes);
-    expect(text).not.toContain(encodeURIComponent(DISTINCTIVE_KEY));
-    expect(text).not.toContain(DISTINCTIVE_KEY);
-    const doc = JSON.parse(text);
-    expect(doc.ai_providers.find((p: { id: string }) => p.id === seeded.providerIds[1]).base_url).toBe('https://api.example.com/v1');
+    const doc = JSON.parse(strFromU8(lastShared(from).bytes));
+    expect(doc.ai_providers.find((p: { label: string }) => p.label === 'Local').base_url).toBe('https://api.example.com/v1?x=1');
   });
 });
 
@@ -191,7 +168,10 @@ describe('import round trip (S3)', () => {
     expect(copy.customFoods).toEqual(source.customFoods);
     expect(copy.foodUsage).toEqual(source.foodUsage);
     expect(copy.matchMemory).toEqual(source.matchMemory);
-    expect(copy.aiProviders).toEqual(source.aiProviders);
+    // Imported profiles get fresh ids (a key is stored under the id): everything else is the same.
+    const withoutId = (providers: typeof copy.aiProviders) => providers.map(({ id: _id, ...rest }) => rest);
+    expect(withoutId(copy.aiProviders)).toEqual(withoutId(source.aiProviders));
+    expect(copy.aiProviders.map((p) => p.id).filter((id) => source.aiProviders.some((q) => q.id === id))).toEqual([]);
     // The scan row is not exported, so the meal that came from it has no link; the photo was not exported either.
     expect(copy.meals).toEqual(source.meals.map((m) => ({ ...m, scanId: null, photoPath: null })));
     expect(copy.settings).toEqual({
@@ -243,8 +223,12 @@ describe('import round trip (S3)', () => {
     const result = await to.service.applyImport(prepared);
 
     const providers = await to.services.providers.list();
-    expect(providers.map((p) => [p.id, p.hasKey]).sort()).toEqual(seeded.providerIds.map((id) => [id, false]).sort());
+    expect(providers.map((p) => p.hasKey)).toEqual([false, false]);
+    expect(providers.map((p) => p.id)).not.toContain(seeded.providerIds[0]); // fresh ids: no stale key can match
     expect(await to.services.secrets.has(local.id)).toBe(false);
+    // A key under an id no profile has is an orphan; the next start removes it.
+    expect(await to.services.secrets.has(seeded.providerIds[0]!)).toBe(true);
+    await to.service.sweepStartup();
     expect(await to.services.secrets.has(seeded.providerIds[0]!)).toBe(false);
     expect(result.providersNeedingKey).toBe(2);
     expect(result.leftovers).toEqual({ photos: false, keys: false });
@@ -505,7 +489,7 @@ describe('delete all data (S3)', () => {
     from.platform.addPhoto('photos/orphan.jpg', jpeg(5)); // on disk but referenced by no meal
     await from.services.secrets.set(seeded.providerIds[1]!, `${DISTINCTIVE_KEY}-2`);
 
-    await from.service.deleteAll();
+    await from.service.deleteAll({ confirmation: 'DELETE' });
 
     for (const table of userTables(a)) {
       expect({ table, rows: a.db.all<{ n: number }>(sql.raw(`SELECT count(*) AS n FROM "${table}"`))[0]!.n }).toEqual({ table, rows: 0 });
@@ -521,7 +505,7 @@ describe('delete all data (S3)', () => {
     const before = dumpAll(a);
     const photos = [...from.platform.state.photos.keys()];
     jest.spyOn(from.services.secrets, 'remove').mockRejectedValue(new Error('keystore'));
-    await expect(from.service.deleteAll()).rejects.toThrow();
+    await expect(from.service.deleteAll({ confirmation: 'DELETE' })).rejects.toThrow();
     expect(dumpAll(a)).toEqual(before);
     expect([...from.platform.state.photos.keys()]).toEqual(photos);
   });
@@ -529,10 +513,10 @@ describe('delete all data (S3)', () => {
   it('can be run again after a failure and then finishes the job', async () => {
     const seeded = await seedSource();
     from.platform.state.failPhotoRemove.add('photos/src-1.jpg');
-    await expect(from.service.deleteAll()).rejects.toThrow();
+    await expect(from.service.deleteAll({ confirmation: 'DELETE' })).rejects.toThrow();
     expect((await a.repos.meals.totalsByDay('2026-06-01', '2026-06-30')).length).toBe(3); // the data is still there
     from.platform.state.failPhotoRemove.clear();
-    await from.service.deleteAll();
+    await from.service.deleteAll({ confirmation: 'DELETE' });
     expect(from.platform.state.photos.size).toBe(0);
     expect(await a.repos.profile.get()).toBeNull();
     expect(await from.services.secrets.has(seeded.providerIds[0]!)).toBe(false);
@@ -541,7 +525,7 @@ describe('delete all data (S3)', () => {
   it('also removes a file that an export left in the cache', async () => {
     await seedSource({ photos: false });
     await from.service.exportData({ withPhotos: false, shareTitle: 'Export' });
-    await from.service.deleteAll();
+    await from.service.deleteAll({ confirmation: 'DELETE' });
     expect([...from.platform.state.cache.keys()].filter((uri) => uri.includes('qbit-nutrition-export'))).toEqual([]);
   });
 });

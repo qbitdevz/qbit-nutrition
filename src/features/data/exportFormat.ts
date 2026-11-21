@@ -19,29 +19,75 @@
  */
 import { z } from 'zod';
 
-import { assertSecureBaseUrl } from '@/core/ai';
+import { assertSecureBaseUrl, type ProviderErrorCode } from '@/core/ai';
 import { NUTRIENT_CODES } from '@/core/nutrition';
-import { isLocalDate, schema } from '@/data';
+import { MAX_TIMEOUT_S, MIN_TIMEOUT_S, PHOTO_PATH_PATTERN as STORED_PHOTO_PATH, TEXT_LIMITS, addDays, isLocalDate, schema } from '@/data';
+import { TARGET_RANGES } from '../goals/targetsForm';
+import { CUSTOM_FOOD_RANGES, GRAMS_RANGE } from '../logging/limits';
+import { HEIGHT_CM, MIN_BIRTH_AGE_YEARS, WEIGHT_KG } from '../profile/units';
+import { METRIC_LIMITS } from '../progress/series';
+import { SETTING_RULES, isValidSetting } from './settingsPolicy';
 
 export const EXPORT_FORMAT = 'qbit-nutrition-export';
 export const EXPORT_FORMAT_VERSION = 1;
 
 /** Meal photos live at `photos/<plain name>.jpg`, in the ZIP as well as on the device. Anything else is refused (no path can leave the folder). */
-export const PHOTO_PATH_PATTERN = /^photos\/[A-Za-z0-9._-]{1,120}\.jpg$/;
+export const PHOTO_PATH_PATTERN = STORED_PHOTO_PATH;
+
+/**
+ * Bounds. Every number a form lets the person type is bounded by the constants of that form (grams, heights, weights,
+ * targets, custom food values, measurement ranges): this file imports them and invents no second set. What no form
+ * bounds comes from them (an item's calories at most the largest portion of the densest custom food) or is a sanity
+ * limit named here.
+ */
+const ITEM_MAX = {
+  kcal: (GRAMS_RANGE.max * CUSTOM_FOOD_RANGES.kcal.max) / 100,
+  protein: (GRAMS_RANGE.max * CUSTOM_FOOD_RANGES.protein.max) / 100,
+  carbs: (GRAMS_RANGE.max * CUSTOM_FOOD_RANGES.carbs.max) / 100,
+  fat: (GRAMS_RANGE.max * CUSTOM_FOOD_RANGES.fat.max) / 100,
+} as const;
+/** Micronutrients come from the catalog, not from a form: this only stops a value that cannot be real. */
+const NUTRIENT_MAX = 1_000_000;
+/** Counters (uses, confirmations) have no form; a million is far beyond any use of an app. */
+const COUNT_MAX = 1_000_000;
+/** Earliest day any record may have (the app did not exist before). A birth date is bounded by `MIN_BIRTH_AGE_YEARS` instead. */
+export const EARLIEST_DAY = '2000-01-01';
+/** A file may name days up to this many days after it was exported (time zones, a clock a little ahead). */
+const FUTURE_SLACK_DAYS = 2;
+
+/** What the last "Test connection" may store: `ok` or a provider error code. Anything else (free text from a provider) is not exported. */
+const TEST_RESULTS: Record<ProviderErrorCode | 'ok' | 'key_storage', true> = {
+  ok: true,
+  key_storage: true,
+  no_network: true,
+  timeout: true,
+  auth_invalid: true,
+  model_not_found: true,
+  no_vision: true,
+  quota_exceeded: true,
+  provider_unavailable: true,
+  content_refused: true,
+  invalid_output: true,
+  insecure_url: true,
+  unknown: true,
+};
+export const KNOWN_TEST_RESULTS = Object.keys(TEST_RESULTS) as [string, ...string[]];
+export const isKnownTestResult = (value: string | null): value is string => value !== null && Object.hasOwn(TEST_RESULTS, value);
 
 const HEADLINE = new Set(['kcal', 'protein', 'carbs', 'fat']);
 const EXTRA_NUTRIENTS = new Set<string>(NUTRIENT_CODES.filter((code) => !HEADLINE.has(code)));
 
-const id = z.string().min(1).max(200);
+const id = z.string().min(1).max(TEXT_LIMITS.id);
 const text = z.string().max(2000);
-const longText = z.string().max(20_000);
-const amount = z.number().finite().min(0);
+const longText = z.string().max(TEXT_LIMITS.note);
+const upTo = (max: number) => z.number().finite().min(0).max(max);
+const within = (range: { min: number; max: number }) => z.number().finite().min(range.min).max(range.max);
 const localDate = z.string().refine(isLocalDate, 'must be a calendar date, YYYY-MM-DD');
 const instant = z.iso.datetime();
 const nullable = <T extends z.ZodType>(type: T) => type.nullable();
 
 /** Nutrient codes other than kcal, protein, carbs and fat (those are columns of the item), with non-negative amounts. */
-const nutrients = z.record(z.string(), amount).superRefine((value, ctx) => {
+const nutrients = z.record(z.string(), upTo(NUTRIENT_MAX)).superRefine((value, ctx) => {
   for (const code of Object.keys(value)) {
     if (!EXTRA_NUTRIENTS.has(code)) ctx.addIssue({ code: 'custom', message: `"${code}" is not a nutrient code this app tracks` });
   }
@@ -51,7 +97,7 @@ const profile = z.object({
   id,
   sex: nullable(z.enum(schema.SEXES)),
   birth_date: nullable(localDate),
-  height_cm: nullable(z.number().finite().positive()),
+  height_cm: nullable(within(HEIGHT_CM)),
   activity_level: nullable(z.enum(schema.ACTIVITY_LEVELS)),
   special_condition: nullable(z.enum(schema.SPECIAL_CONDITIONS)),
   unit_system: z.enum(schema.UNIT_SYSTEMS),
@@ -69,12 +115,12 @@ const goal = z
     pace: nullable(z.enum(schema.GOAL_PACES)),
     start_date: localDate,
     end_date: nullable(localDate),
-    kcal_target: nullable(amount),
-    protein_g_target: nullable(amount),
-    carbs_g_target: nullable(amount),
-    fat_g_target: nullable(amount),
+    kcal_target: nullable(within(TARGET_RANGES.kcal)),
+    protein_g_target: nullable(within(TARGET_RANGES.protein)),
+    carbs_g_target: nullable(within(TARGET_RANGES.carbs)),
+    fat_g_target: nullable(within(TARGET_RANGES.fat)),
     is_custom: z.boolean(),
-    basis_weight_kg: nullable(amount),
+    basis_weight_kg: nullable(within(WEIGHT_KG)),
     formula_version: nullable(text),
   })
   .superRefine((value, ctx) => {
@@ -83,28 +129,35 @@ const goal = z
     }
   });
 
-const bodyMeasurement = z.object({
-  id,
-  measured_on: localDate,
-  kind: z.enum(schema.MEASUREMENT_KINDS),
-  value: z.number().finite().positive(),
-  source: z.enum(schema.MEASUREMENT_SOURCES),
-});
+const bodyMeasurement = z
+  .object({
+    id,
+    measured_on: localDate,
+    kind: z.enum(schema.MEASUREMENT_KINDS),
+    value: z.number().finite().positive(),
+    source: z.enum(schema.MEASUREMENT_SOURCES),
+  })
+  .superRefine((value, ctx) => {
+    const range = METRIC_LIMITS[value.kind];
+    if (value.value < range.min || value.value > range.max) {
+      ctx.addIssue({ code: 'custom', path: ['value'], message: `a ${value.kind} must be between ${range.min} and ${range.max}` });
+    }
+  });
 
 const mealItem = z.object({
   id,
   position: z.number().int().min(0),
-  display_name: z.string().min(1).max(500),
-  grams: amount,
+  display_name: z.string().min(1).max(TEXT_LIMITS.name),
+  grams: upTo(GRAMS_RANGE.max),
   food_source: z.enum(schema.FOOD_SOURCES),
   food_ref: nullable(id),
   origin: z.enum(schema.ITEM_ORIGINS),
   confidence_food: nullable(text),
   confidence_portion: nullable(text),
-  kcal: amount,
-  protein_g: amount,
-  carbs_g: amount,
-  fat_g: amount,
+  kcal: upTo(ITEM_MAX.kcal),
+  protein_g: upTo(ITEM_MAX.protein),
+  carbs_g: upTo(ITEM_MAX.carbs),
+  fat_g: upTo(ITEM_MAX.fat),
   nutrients,
 });
 
@@ -113,7 +166,7 @@ const meal = z.object({
   local_date: localDate,
   eaten_at: instant,
   slot: z.enum(schema.MEAL_SLOTS),
-  name: nullable(text),
+  name: nullable(z.string().max(TEXT_LIMITS.mealName)),
   source: z.enum(schema.MEAL_SOURCES),
   photo_path: nullable(z.string().regex(PHOTO_PATH_PATTERN, 'must be photos/<name>.jpg')),
   note: nullable(longText),
@@ -124,43 +177,43 @@ const meal = z.object({
 
 const customFood = z.object({
   id,
-  name: z.string().min(1).max(500),
-  kcal_100g: amount,
-  protein_100g: amount,
-  carbs_100g: amount,
-  fat_100g: amount,
+  name: z.string().min(1).max(TEXT_LIMITS.name),
+  kcal_100g: within(CUSTOM_FOOD_RANGES.kcal),
+  protein_100g: within(CUSTOM_FOOD_RANGES.protein),
+  carbs_100g: within(CUSTOM_FOOD_RANGES.carbs),
+  fat_100g: within(CUSTOM_FOOD_RANGES.fat),
   other_nutrients: nullable(nutrients),
-  default_portion_g: nullable(amount),
+  default_portion_g: nullable(within({ min: 0, max: GRAMS_RANGE.max })),
 });
 
 const foodUsage = z.object({
   food_source: z.enum(schema.REF_FOOD_SOURCES),
   food_ref: id,
   last_used_at: instant,
-  use_count: z.number().int().min(0),
+  use_count: z.number().int().min(0).max(COUNT_MAX),
   is_favorite: z.boolean(),
-  last_grams: nullable(amount),
+  last_grams: nullable(upTo(GRAMS_RANGE.max)),
 });
 
 const matchMemory = z.object({
-  detected_name_normalized: z.string().min(1).max(500),
+  detected_name_normalized: z.string().min(1).max(TEXT_LIMITS.name),
   food_source: z.enum(schema.REF_FOOD_SOURCES),
   food_ref: id,
-  times_confirmed: z.number().int().min(1),
+  times_confirmed: z.number().int().min(1).max(COUNT_MAX),
   updated_at: instant,
 });
 
 /** A provider profile as exported: no key, ever. */
 const aiProvider = z.object({
   id,
-  label: z.string().min(1).max(200),
-  preset: nullable(text),
+  label: z.string().min(1).max(TEXT_LIMITS.label),
+  preset: nullable(z.string().max(TEXT_LIMITS.name)),
   adapter: z.enum(schema.AI_ADAPTERS),
   // The same rule as creating a profile (HTTPS, no credentials in the URL): a file cannot smuggle in what the form refuses.
   base_url: z
     .string()
     .min(1)
-    .max(2000)
+    .max(TEXT_LIMITS.url)
     .refine((url) => {
       try {
         assertSecureBaseUrl(url);
@@ -169,12 +222,12 @@ const aiProvider = z.object({
         return false;
       }
     }, 'must be an https URL (http only for a local network), without credentials'),
-  model: z.string().min(1).max(500),
+  model: z.string().min(1).max(TEXT_LIMITS.model),
   output_mode: nullable(z.enum(schema.OUTPUT_MODES)),
-  timeout_s: z.number().int().min(1).max(3600),
+  timeout_s: z.number().int().min(MIN_TIMEOUT_S).max(MAX_TIMEOUT_S),
   is_active: z.boolean(),
   last_test_at: nullable(text),
-  last_test_result: nullable(text),
+  last_test_result: nullable(z.enum(KNOWN_TEST_RESULTS)),
 });
 
 export const ExportDocumentSchema = z
@@ -191,7 +244,12 @@ export const ExportDocumentSchema = z
     food_usage: z.array(foodUsage),
     match_memory: z.array(matchMemory),
     ai_providers: z.array(aiProvider),
-    settings: z.record(z.string().min(1).max(200), z.string().max(100_000)),
+    settings: z.record(z.string().min(1).max(200), z.string().max(1000)).superRefine((value, ctx) => {
+      for (const [key, setting] of Object.entries(value)) {
+        if (!Object.hasOwn(SETTING_RULES, key)) ctx.addIssue({ code: 'custom', path: [key], message: `"${key}" is not a setting that travels` });
+        else if (!isValidSetting(key, setting)) ctx.addIssue({ code: 'custom', path: [key], message: `"${key}" has a value the app cannot read` });
+      }
+    }),
   })
   .superRefine((doc, ctx) => {
     const issue = (path: (string | number)[], message: string) => ctx.addIssue({ code: 'custom', path, message });
@@ -229,6 +287,51 @@ export const ExportDocumentSchema = z
       if (open) issue(['goals', index, 'end_date'], 'only one goal period can be open');
       open = true;
     });
+
+    // Goal periods must not overlap, and the open one must be the latest: each day has one set of targets.
+    const byStart = doc.goals.map((g, index) => ({ g, index })).sort((x, y) => x.g.start_date.localeCompare(y.g.start_date) || x.index - y.index);
+    for (let i = 1; i < byStart.length; i++) {
+      const previous = byStart[i - 1]!;
+      const next = byStart[i]!;
+      if (previous.g.end_date === null) issue(['goals', previous.index, 'end_date'], 'an open goal period must be the latest');
+      else if (previous.g.end_date >= next.g.start_date) issue(['goals', next.index, 'start_date'], 'goal periods must not overlap');
+    }
+
+    // Dates: plausible, and consistent with each other.
+    const exportDay = doc.exported_at.slice(0, 10);
+    const latest = addDays(exportDay, FUTURE_SLACK_DAYS);
+    const plausible = (path: (string | number)[], day: string) => {
+      if (day < EARLIEST_DAY || day > latest) issue(path, `must be between ${EARLIEST_DAY} and ${latest}`);
+    };
+    if (doc.profile?.birth_date) {
+      const oldest = `${Number(exportDay.slice(0, 4)) - MIN_BIRTH_AGE_YEARS}-01-01`;
+      if (doc.profile.birth_date < oldest || doc.profile.birth_date > exportDay) issue(['profile', 'birth_date'], `must be between ${oldest} and the export date`);
+    }
+    if (doc.profile) {
+      plausible(['profile', 'created_at'], doc.profile.created_at.slice(0, 10));
+      plausible(['profile', 'updated_at'], doc.profile.updated_at.slice(0, 10));
+    }
+    doc.goals.forEach((g, i) => {
+      plausible(['goals', i, 'start_date'], g.start_date);
+      if (g.end_date !== null) plausible(['goals', i, 'end_date'], g.end_date);
+    });
+    doc.body_measurements.forEach((m, i) => plausible(['body_measurements', i, 'measured_on'], m.measured_on));
+    const dayNumber = (day: string) => Date.UTC(Number(day.slice(0, 4)), Number(day.slice(5, 7)) - 1, Number(day.slice(8, 10))) / 86_400_000;
+    doc.meals.forEach((m, mi) => {
+      plausible(['meals', mi, 'local_date'], m.local_date);
+      plausible(['meals', mi, 'eaten_at'], m.eaten_at.slice(0, 10));
+      plausible(['meals', mi, 'created_at'], m.created_at.slice(0, 10));
+      plausible(['meals', mi, 'updated_at'], m.updated_at.slice(0, 10));
+      // Time zones run from UTC-12 to UTC+14: the local day is at most one day from the UTC day of the instant.
+      if (Math.abs(dayNumber(m.local_date) - dayNumber(m.eaten_at.slice(0, 10))) > 1) issue(['meals', mi, 'local_date'], 'does not match eaten_at in any time zone');
+      const positions = new Set<number>();
+      m.items.forEach((item, ii) => {
+        if (positions.has(item.position)) issue(['meals', mi, 'items', ii, 'position'], 'two items of a meal share a position');
+        positions.add(item.position);
+      });
+    });
+    doc.food_usage.forEach((u, i) => plausible(['food_usage', i, 'last_used_at'], u.last_used_at.slice(0, 10)));
+    doc.match_memory.forEach((m, i) => plausible(['match_memory', i, 'updated_at'], m.updated_at.slice(0, 10)));
 
     let active = false;
     doc.ai_providers.forEach((p, index) => {

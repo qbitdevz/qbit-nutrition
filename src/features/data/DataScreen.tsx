@@ -1,15 +1,17 @@
 import Constants from 'expo-constants';
+import type { TFunction } from 'i18next';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
+import { deviceLocale } from '@/i18n';
 import { formatInstantDate, formatLongDate } from '@/i18n/format';
 import type { Locale } from '@/i18n/locale';
 import { AppText, BottomSheet, Button, ChoiceChips, ErrorState, FieldMessage, Icon, ScreenFrame, TextField, TopBar, layout, radius, spacing, useSnackbar, useTheme } from '@/ui';
 import { useSession } from '../session/AppSession';
 import { useServices } from '../startup/AppProvider';
 import { useDataPlatform } from './DataPlatformContext';
-import { ImportError, createDataService, type ImportResult, type ImportPreview, type PreparedImport } from './dataService';
+import { ExportError, ImportError, createDataService, type ImportResult, type ImportPreview, type PreparedImport } from './dataService';
 
 interface DataScreenProps {
   onBack?: () => void;
@@ -29,6 +31,8 @@ type ImportState =
 
 const ERROR_KEY: Record<ImportError['code'], string> = {
   too_large: 'tooLarge',
+  archive_too_large: 'archiveTooLarge',
+  storage_unreadable: 'storageUnreadable',
   unreadable: 'unreadable',
   damaged: 'damaged',
   not_export: 'notExport',
@@ -64,7 +68,8 @@ export function DataScreen({ onBack, onOpenProviders, now }: DataScreenProps) {
   const [withPhotos, setWithPhotos] = useState(false);
   const [reminder, setReminder] = useState(false);
   const [exporting, setExporting] = useState(false);
-  const [exportFailed, setExportFailed] = useState(false);
+  const [exportProblem, setExportProblem] = useState<ExportError | 'failed' | null>(null);
+  const [skippedPhotos, setSkippedPhotos] = useState(0);
   // Import.
   const [imported, setImported] = useState<ImportState>({ kind: 'idle' });
   // Delete.
@@ -74,8 +79,7 @@ export function DataScreen({ onBack, onOpenProviders, now }: DataScreenProps) {
 
   useEffect(() => {
     let active = true;
-    // Housekeeping and the photo count are not worth an error: without them the screen is still complete.
-    void service.sweep().catch(() => undefined);
+    // The count is not worth an error: without it the screen is still complete.
     service.photoCount().then(
       (count) => active && setPhotoCount(count),
       () => undefined,
@@ -87,13 +91,15 @@ export function DataScreen({ onBack, onOpenProviders, now }: DataScreenProps) {
 
   const share = async () => {
     setReminder(false);
-    setExportFailed(false);
+    setExportProblem(null);
+    setSkippedPhotos(0);
     setExporting(true);
     try {
       const result = await service.exportData({ withPhotos: withPhotos && photoCount > 0, shareTitle: t('data.export.shareTitle') });
+      setSkippedPhotos(result.skippedPhotos.length);
       snackbar.show({ message: t('data.export.done', { name: result.fileName }), bottomOffset: spacing.s6 });
-    } catch {
-      setExportFailed(true);
+    } catch (error) {
+      setExportProblem(error instanceof ExportError ? error : 'failed');
     } finally {
       setExporting(false);
     }
@@ -115,21 +121,33 @@ export function DataScreen({ onBack, onOpenProviders, now }: DataScreenProps) {
 
   const replace = async (prepared: PreparedImport) => {
     setImported({ kind: 'applying', prepared });
+    let result: ImportResult;
     try {
-      const result = await service.applyImport(prepared);
+      result = await service.applyImport(prepared);
+    } catch (error) {
+      // Nothing was replaced: the service rolled everything back.
+      setImported({ kind: 'error', error: error instanceof ImportError ? error : new ImportError('write_failed') });
+      return;
+    }
+    // From here the data IS replaced. A failure of what follows (switching language, telling other screens) must never be shown as
+    // "your data was not changed".
+    try {
       if (result.locale && result.locale !== i18n.language) await i18n.changeLanguage(result.locale);
       session.notifyChange();
-      setImported({ kind: 'done', result });
-    } catch (error) {
-      setImported({ kind: 'error', error: error instanceof ImportError ? error : new ImportError('write_failed') });
+    } catch {
+      // The data is in; the other screens read it again the next time they are opened.
     }
+    setImported({ kind: 'done', result });
   };
 
   const deleteEverything = async () => {
     setDeleting('working');
     try {
-      await service.deleteAll();
+      await service.deleteAll({ confirmation: word });
       setDeleting('closed');
+      setWord('');
+      // First launch again: the language is the device's, not the one chosen on the data that is gone.
+      await i18n.changeLanguage(deviceLocale()).catch(() => undefined);
       session.resetOnboarding();
     } catch {
       setDeleting('failed');
@@ -171,7 +189,8 @@ export function DataScreen({ onBack, onOpenProviders, now }: DataScreenProps) {
             </View>
           ) : null}
           {exporting ? <Busy label={t('data.export.preparing')} /> : null}
-          {exportFailed ? <FieldMessage message={t('data.export.error')} /> : null}
+          {exportProblem ? <FieldMessage message={exportMessage(t, exportProblem)} /> : null}
+          {skippedPhotos > 0 ? <FieldMessage message={t('data.export.photosSkipped', { count: skippedPhotos })} /> : null}
           <Button label={t('data.export.button')} icon="copy" disabled={exporting} onPress={() => setReminder(true)} testID="export-button" />
         </View>
 
@@ -252,6 +271,14 @@ export function DataScreen({ onBack, onOpenProviders, now }: DataScreenProps) {
       </BottomSheet>
     </ScreenFrame>
   );
+}
+
+function exportMessage(t: TFunction, problem: ExportError | 'failed'): string {
+  if (problem === 'failed') return t('data.export.error');
+  if (problem.code === 'secret_in_field') return t('data.export.errorSecret', { where: problem.where });
+  if (problem.code === 'keys_unreadable') return t('data.export.errorKeys');
+  if (problem.code === 'invalid_value') return t('data.export.errorValue', { where: problem.where });
+  return t('data.export.error');
 }
 
 /** A line that says work is under way; announced to screen readers as a progress element. */

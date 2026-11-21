@@ -110,7 +110,7 @@ export function fromMetric(kind: MeasureKind, value: number, units: UnitSystem):
 }
 
 /** Plausible entry ranges in the unit typed. Anything outside is rejected with a message, never clamped. */
-const LIMITS: Record<MeasureKind, Record<UnitSystem, { min: number; max: number }>> = {
+export const LIMITS: Record<MeasureKind, Record<UnitSystem, { min: number; max: number }>> = {
   weight: { metric: WEIGHT_KG, imperial: WEIGHT_LB },
   waist: { metric: { min: 20, max: 300 }, imperial: { min: 8, max: 120 } },
   hips: { metric: { min: 20, max: 300 }, imperial: { min: 8, max: 120 } },
@@ -133,3 +133,12 @@ export function parseEntry(kind: MeasureKind, text: string, units: UnitSystem): 
   if (units === 'imperial' && kind !== 'body_fat_pct') return { ok: true, value: roundTo(parsed.value * CM_PER_INCH, 3) };
   return { ok: true, value: roundTo(parsed.value, 3) };
 }
+
+/** The metric range of each kind: what an entry may be once stored (kg, cm, percent). The export format validates with the same numbers. */
+export const METRIC_LIMITS: Record<MeasureKind, { min: number; max: number }> = {
+  weight: LIMITS.weight.metric,
+  waist: LIMITS.waist.metric,
+  hips: LIMITS.hips.metric,
+  chest: LIMITS.chest.metric,
+  body_fat_pct: LIMITS.body_fat_pct.metric,
+};

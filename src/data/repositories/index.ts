@@ -81,3 +81,4 @@ export { MAX_TIMEOUT_S, MIN_TIMEOUT_S } from './aiProviders';
 export type { AiAdapterId, AiOutputMode, AiProvider, AiProviderInput, AiProviderRepository } from './aiProviders';
 export type { FoodResolver } from './foodResolver';
 export { createMatchMemoryRepository } from './matchMemory';
+export { PHOTO_PATH_PATTERN, TEXT_LIMITS } from './shared';

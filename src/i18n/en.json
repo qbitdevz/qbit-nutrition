@@ -923,7 +923,12 @@
       "cancel": "Cancel",
       "shareTitle": "Export Qbit Nutrition data",
       "done": "Export shared: {{name}}",
-      "error": "The export could not be created or shared. Nothing was changed. Try again."
+      "error": "The export could not be created or shared. Nothing was changed. Try again.",
+      "errorSecret": "The export was stopped: {{where}} contains an API key. Remove the key from it, then export again. Nothing was written.",
+      "errorKeys": "The export was stopped because the stored API keys could not be checked. Nothing was written. Try again.",
+      "errorValue": "The export was stopped: {{where}} holds a value the export file cannot take. Shorten or correct it, then export again.",
+      "photosSkipped_one": "{{count}} meal photo could not be read and is not in the file. Its meal is exported without it.",
+      "photosSkipped_other": "{{count}} meal photos could not be read and are not in the file. Their meals are exported without them."
     },
     "import": {
       "title": "Import data",
@@ -934,7 +939,7 @@
       "contains": "Exported on {{date}} with app version {{version}}.",
       "range": "Covers {{from}} to {{to}}.",
       "noRange": "It has no meals or measurements.",
-      "noProfile": "It has no profile.",
+      "noProfile": "It has no profile: the one on this phone stays.",
       "meals_one": "{{count}} meal",
       "meals_other": "{{count}} meals",
       "weights_one": "{{count}} weight entry",
@@ -962,7 +967,7 @@
       "needKey_one": "{{count}} AI provider needs its key again.",
       "needKey_other": "{{count}} AI providers need their key again.",
       "openProviders": "Open AI providers",
-      "leftovers": "Your data was imported, but some old files or keys could not be removed. The app does not use them.",
+      "leftovers": "Your data was imported, but some old files or keys could not be removed. They are never used, and the app removes them the next time it starts.",
       "error": {
         "title": "This file cannot be imported",
         "notChanged": "Your current data was not changed.",
@@ -975,7 +980,9 @@
         "photosMissing": "The file refers to a photo it does not contain: {{where}}.",
         "photoInvalid": "A photo in the file is not a valid JPEG image: {{where}}.",
         "writeFailed": "The import could not be completed and was undone. Your current data is as it was.",
-        "retry": "Choose another file"
+        "retry": "Choose another file",
+        "archiveTooLarge": "The file would unpack to more than this app accepts. Choose a smaller export.",
+        "storageUnreadable": "This phone's data or photo folder could not be read, so nothing could be replaced safely."
       }
     },
     "delete": {

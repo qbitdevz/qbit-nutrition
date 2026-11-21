@@ -1,7 +1,7 @@
 import { asc, desc, eq } from 'drizzle-orm';
 import { DataError } from '../errors';
 import { aiProvider, AI_ADAPTERS, OUTPUT_MODES } from '../schema';
-import { invalid, type RepositoryContext } from './shared';
+import { TEXT_LIMITS, invalid, requireMaxLength, type RepositoryContext } from './shared';
 
 type Row = typeof aiProvider.$inferSelect;
 
@@ -61,6 +61,10 @@ export interface AiProviderRepository {
 const toProvider = (row: Row): AiProvider => ({ ...row, isActive: row.isActive === 1 });
 
 function validate(values: Partial<AiProviderInput>): void {
+  requireMaxLength(values.label, TEXT_LIMITS.label, 'label');
+  requireMaxLength(values.model, TEXT_LIMITS.model, 'model');
+  requireMaxLength(values.baseUrl, TEXT_LIMITS.url, 'baseUrl');
+  requireMaxLength(values.preset, TEXT_LIMITS.name, 'preset');
   if (values.label !== undefined && values.label.trim() === '') throw invalid('A provider needs a name.');
   if (values.baseUrl !== undefined && values.baseUrl.trim() === '') throw invalid('A provider needs a base URL.');
   if (values.model !== undefined && values.model.trim() === '') throw invalid('A provider needs a model.');

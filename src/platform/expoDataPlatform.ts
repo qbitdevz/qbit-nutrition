@@ -1,6 +1,7 @@
 import * as DocumentPicker from 'expo-document-picker';
 import { Directory, File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import { Platform } from 'react-native';
 
 import type { CachedFile, DataPlatform, PickedFile } from './dataPlatform';
 
@@ -29,6 +30,10 @@ export function createExpoDataPlatform(): DataPlatform {
         }
       },
       read: (uri) => new File(uri).bytes(),
+      async size(uri) {
+        const file = new File(uri);
+        return file.exists ? file.size : null;
+      },
       async list(prefix) {
         const out: CachedFile[] = [];
         for (const entry of new Directory(Paths.cache).list()) {
@@ -38,12 +43,27 @@ export function createExpoDataPlatform(): DataPlatform {
       },
     },
     share: {
+      // iOS: the share sheet's completion fires when the target is done with the file. Android: `shareAsync` resolves when the chooser
+      // closes (an app was picked), while that app may still be reading the file, so the file stays until the next app start.
+      completesWhenDone: Platform.OS === 'ios',
       async shareFile(uri, { mimeType, title }) {
         if (!(await Sharing.isAvailableAsync())) throw new Error('Sharing is not available on this device.');
         await Sharing.shareAsync(uri, { mimeType, dialogTitle: title });
       },
     },
     picker: {
+      async clearCopies() {
+        // expo-document-picker copies the chosen file into `<cache>/DocumentPicker/<id>/<name>`.
+        try {
+          const folder = new Directory(Paths.cache, 'DocumentPicker');
+          if (!folder.exists) return 0;
+          const copies = folder.list().length;
+          folder.delete();
+          return copies;
+        } catch {
+          return 0; // Not there, or not ours to delete.
+        }
+      },
       async pick(): Promise<PickedFile | null> {
         // Any type: exports are .json or .zip and the system picker's MIME filters for them differ by provider.
         const result = await DocumentPicker.getDocumentAsync({ type: '*/*', copyToCacheDirectory: true, multiple: false });

@@ -17,8 +17,15 @@ export interface FakeDataState {
   failPhotoRead: Set<string>;
   failPhotoRemove: Set<string>;
   failCacheWrite: boolean;
+  failPhotoList: boolean;
   /** The clock `cache.list` reports files with. */
   now: number;
+  /** False: the picker does not report a size, as some providers do not. */
+  reportSize: boolean;
+  /** How many times a cache file was read (to prove a refused file was never read). */
+  readCount: number;
+  /** What `share.completesWhenDone` reports: true on a platform whose share call returns when the target is done with the file. */
+  shareCompletesWhenDone: boolean;
 }
 
 export interface FakeDataPlatform extends DataPlatform {
@@ -39,7 +46,11 @@ export function createFakeDataPlatform(initial: Partial<FakeDataState> = {}): Fa
     failPhotoRead: new Set(),
     failPhotoRemove: new Set(),
     failCacheWrite: false,
+    failPhotoList: false,
     now: 1_000_000,
+    reportSize: true,
+    readCount: 0,
+    shareCompletesWhenDone: true,
     ...initial,
   };
   let counter = 0;
@@ -62,7 +73,11 @@ export function createFakeDataPlatform(initial: Partial<FakeDataState> = {}): Fa
       async read(uri) {
         const file = state.cache.get(uri);
         if (!file) throw new Error(`No file at ${uri}`);
+        state.readCount += 1;
         return file.bytes;
+      },
+      async size(uri) {
+        return state.cache.get(uri)?.bytes.byteLength ?? null;
       },
       async list(prefix) {
         const out: CachedFile[] = [];
@@ -71,6 +86,9 @@ export function createFakeDataPlatform(initial: Partial<FakeDataState> = {}): Fa
       },
     },
     share: {
+      get completesWhenDone() {
+        return state.shareCompletesWhenDone;
+      },
       async shareFile(uri, { mimeType }) {
         if (state.failShare) throw new Error('The share sheet could not open.');
         const file = state.cache.get(uri);
@@ -79,17 +97,27 @@ export function createFakeDataPlatform(initial: Partial<FakeDataState> = {}): Fa
       },
     },
     picker: {
+      async clearCopies() {
+        let removed = 0;
+        for (const uri of [...state.cache.keys()]) {
+          if (!uri.startsWith('file:///cache/picked-')) continue;
+          state.cache.delete(uri);
+          removed += 1;
+        }
+        return removed;
+      },
       async pick(): Promise<PickedFile | null> {
         if (!state.nextPick) return null;
         const { name, bytes } = state.nextPick;
         counter += 1;
         const uri = `file:///cache/picked-${counter}-${name}`;
         state.cache.set(uri, { bytes, modifiedAt: state.now });
-        return { uri, name, size: bytes.byteLength };
+        return { uri, name, size: state.reportSize ? bytes.byteLength : null };
       },
     },
     photos: {
       async list() {
+        if (state.failPhotoList) throw new Error('The photo folder could not be read.');
         return [...state.photos.keys()];
       },
       async read(path) {

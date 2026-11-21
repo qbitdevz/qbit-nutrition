@@ -7,11 +7,14 @@ import { meal, mealItem, mealItemNutrient, REF_FOOD_SOURCES } from '../schema';
 import type { FoodResolver } from './foodResolver';
 import { upsertUsage } from './foodUsage';
 import {
+  PHOTO_PATH_PATTERN,
+  TEXT_LIMITS,
   invalid,
   isHeadline,
   nutrientEntries,
   requireFinite,
   requireLocalDate,
+  requireMaxLength,
   type RepositoryContext,
 } from './shared';
 
@@ -80,6 +83,8 @@ export interface MealRepository {
   getMeal(id: string): Promise<MealWithItems | null>;
   /** The meals of a local date (oldest first) with their items, and the day totals. */
   getDay(localDate: string): Promise<DayLog>;
+  /** The distinct photo paths that meals refer to, to tell which kept photos are in use. */
+  photoPaths(): Promise<string[]>;
   /** Totals of one local date (zeros for headline nutrients when empty). */
   dayTotals(localDate: string): Promise<NutrientAmounts>;
   /** Totals per local date between `from` and `to` inclusive; days without meals are omitted. */
@@ -217,9 +222,13 @@ export function createMealRepository(
     async save(input) {
       if (input.items.length === 0) throw invalid('a meal needs at least one item');
       const { eatenAt, localDate } = deriveMealTime(input.eatenAt, input.timeZone);
+      requireMaxLength(input.name, TEXT_LIMITS.mealName, 'name');
+      requireMaxLength(input.note, TEXT_LIMITS.note, 'note');
+      if (input.photoPath != null && !PHOTO_PATH_PATTERN.test(input.photoPath)) throw invalid(`photoPath must be photos/<name>.jpg, got "${input.photoPath}"`);
       input.items.forEach((item, i) => {
         requireFinite(item.grams, `items[${i}].grams`, { min: 0 });
         if (item.displayName.trim() === '') throw invalid(`items[${i}].displayName must not be blank`);
+        requireMaxLength(item.displayName, TEXT_LIMITS.name, `items[${i}].displayName`);
         nutrientEntries(item.nutrients, `items[${i}].nutrients`);
       });
 
@@ -265,6 +274,15 @@ export function createMealRepository(
         });
       });
       return loadMeal(mealId)!;
+    },
+
+    async photoPaths() {
+      return db
+        .selectDistinct({ path: meal.photoPath })
+        .from(meal)
+        .where(sql`${meal.photoPath} IS NOT NULL`)
+        .all()
+        .map((r) => r.path!);
     },
 
     async getMeal(id) {

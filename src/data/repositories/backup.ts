@@ -93,7 +93,7 @@ export function createBackupRepository({ db }: RepositoryContext): BackupReposit
           .map((g) => ({ ...g, isCustom: g.isCustom === 1 })),
         measurements: tx.select().from(bodyMeasurement).orderBy(asc(bodyMeasurement.measuredOn), asc(bodyMeasurement.kind), asc(bodyMeasurement.source)).all(),
         meals: loadMeals(tx, sql`1 = 1`),
-        customFoods: tx.select().from(customFood).orderBy(asc(customFood.id)).all().map(toCustomFood),
+        customFoods: tx.select().from(customFood).orderBy(asc(sql`lower(${customFood.name})`), asc(customFood.id)).all().map(toCustomFood),
         foodUsage: tx
           .select()
           .from(foodUsage)
@@ -109,7 +109,7 @@ export function createBackupRepository({ db }: RepositoryContext): BackupReposit
         aiProviders: tx
           .select()
           .from(aiProvider)
-          .orderBy(asc(aiProvider.id))
+          .orderBy(asc(aiProvider.label), asc(aiProvider.id))
           .all()
           .map((p) => ({ ...p, isActive: p.isActive === 1 })),
         settings: Object.fromEntries(tx.select().from(setting).orderBy(asc(setting.key)).all().map((r) => [r.key, r.value])),

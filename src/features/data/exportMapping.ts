@@ -1,16 +1,17 @@
 import type { NutrientAmounts } from '@/core/nutrition';
 import type { BackupSnapshot, MealWithItems, Profile } from '@/data';
-import { EXPORT_FORMAT, EXPORT_FORMAT_VERSION, type ExportDocument } from './exportFormat';
+import { EXPORT_FORMAT, EXPORT_FORMAT_VERSION, isKnownTestResult, type ExportDocument } from './exportFormat';
 import { portableSettings } from './settingsPolicy';
 
 /**
- * The base URL as it may travel: without credentials, query and fragment. `assertSecureBaseUrl` already refuses
- * credentials when a profile is created, and the form asks for the key in its own field; this is the last guard
- * for a key that was pasted into the URL anyway, so it never reaches a file (S4).
+ * The base URL as it travels: without credentials. `assertSecureBaseUrl` refuses credentials when a profile is created, so
+ * a stored URL should never have any; if one does, they are cut. The query string and the fragment are kept: a provider
+ * can legitimately need one (`?api-version=...`) and dropping it would break the profile on the new phone without a word.
+ * A key pasted into any part of the URL is not handled here: the exporter refuses the whole file when any exported text
+ * contains a stored key (`dataService.ts`), and says which field.
  */
 export function cleanBaseUrl(url: string): string {
-  const withoutCredentials = url.trim().replace(/^([a-z][a-z0-9+.-]*:\/\/)[^/?#@]*@/i, '$1');
-  return withoutCredentials.split('#')[0]!.split('?')[0]!;
+  return url.trim().replace(/^([a-z][a-z0-9+.-]*:\/\/)[^/?#@]*@/i, '$1');
 }
 
 export interface ToDocumentOptions {
@@ -122,7 +123,8 @@ export function documentFromSnapshot(snapshot: BackupSnapshot, { appVersion, exp
       timeout_s: p.timeoutS,
       is_active: p.isActive,
       last_test_at: p.lastTestAt,
-      last_test_result: p.lastTestResult,
+      // Only a known code leaves the phone: the field holds whatever a provider said, and free text could hold anything.
+      last_test_result: isKnownTestResult(p.lastTestResult) ? p.lastTestResult : null,
     })),
     settings: portableSettings(snapshot.settings),
   };
@@ -135,6 +137,11 @@ export interface ToSnapshotOptions {
   localProfile: Profile | null;
   /** This installation's own state (`keptSettings`), written next to the imported settings. */
   keptSettings: Readonly<Record<string, string>>;
+  /**
+   * Makes the id of every imported provider profile. Imported profiles never keep the id the file gives them: a key is stored under
+   * the profile id, so a reused id could pair a key that existed before the import with a profile (and a host) it was never entered for.
+   */
+  newId: () => string;
 }
 
 /** The notice acceptance of an installation that has none: never equal to the current notice version, so it is asked. */
@@ -165,7 +172,7 @@ export function profileFromDocument(imported: NonNullable<ExportDocument['profil
 }
 
 /** The snapshot to write for a validated document. Photos named by the document must all be in `storedPhotos`. */
-export function snapshotFromDocument(doc: ExportDocument, { storedPhotos, localProfile, keptSettings }: ToSnapshotOptions): BackupSnapshot {
+export function snapshotFromDocument(doc: ExportDocument, { storedPhotos, localProfile, keptSettings, newId }: ToSnapshotOptions): BackupSnapshot {
   const meals: MealWithItems[] = doc.meals.map((m) => ({
     id: m.id,
     localDate: m.local_date,
@@ -198,7 +205,9 @@ export function snapshotFromDocument(doc: ExportDocument, { storedPhotos, localP
   }));
 
   return {
-    profile: doc.profile ? profileFromDocument(doc.profile, localProfile) : null,
+    // A file without a profile leaves this installation's own profile in place: it holds the accepted health notice and the units,
+    // and an onboarded app without one would be incoherent. (With no profile here the app is not onboarded, so onboarding asks.)
+    profile: doc.profile ? profileFromDocument(doc.profile, localProfile) : localProfile,
     goals: doc.goals.map((g) => ({
       id: g.id,
       type: g.type,
@@ -244,7 +253,7 @@ export function snapshotFromDocument(doc: ExportDocument, { storedPhotos, localP
       updatedAt: m.updated_at,
     })),
     aiProviders: doc.ai_providers.map((p) => ({
-      id: p.id,
+      id: newId(),
       label: p.label,
       preset: p.preset,
       adapter: p.adapter,
