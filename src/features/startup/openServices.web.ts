@@ -2,6 +2,19 @@ import { openServicesOnce } from './openServicesCore';
 import { withWebSearchFallback } from './webFtsFallback';
 import type { AppServices } from './types';
 
+/**
+ * DEVELOPMENT ONLY: in the browser preview the AI client talks to a fake provider and keeps its key in
+ * memory, so the scan screens can be walked through without a key. This file is not part of any
+ * Android or iOS bundle, and the modules it loads sit behind `__DEV__`.
+ */
+function devAi() {
+  if (!__DEV__) return undefined;
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const dev = require('../scan/dev/devServices') as typeof import('../scan/dev/devServices');
+  const options = dev.devAiOptions();
+  return { ...options, afterOpen: (services: AppServices) => dev.seedDevProvider(services.repos, options.secrets) };
+}
+
 const WORKER_LOADING = /worker has not finished loading/i;
 const RETRY_EVERY_MS = 250;
 const GIVE_UP_AFTER_MS = 15_000;
@@ -16,7 +29,7 @@ export async function openAppServices(): Promise<AppServices> {
   const startedAt = Date.now();
   for (;;) {
     try {
-      return await openServicesOnce(withWebSearchFallback);
+      return await openServicesOnce(withWebSearchFallback, devAi());
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       const waiting = WORKER_LOADING.test(message) || WORKER_LOADING.test(String((error as { cause?: unknown })?.cause ?? ''));

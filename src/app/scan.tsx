@@ -1,25 +1,17 @@
 import { useRouter } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
 
-import { AppText, Button, ScreenFrame, TopBar, layout, spacing } from '@/ui';
+import { ScanFlowScreen } from '@/features/scan/ScanFlowScreen';
 
-export default function ScanScreen() {
-  const { t } = useTranslation();
+export default function ScanRoute() {
   const router = useRouter();
   return (
-    <ScreenFrame header={<TopBar title={t('scan.title')} onBack={() => router.back()} backLabel={t('common.back')} />}>
-      <View style={styles.body}>
-        <AppText tone="muted">{t('scan.unavailable')}</AppText>
-        <Button label={t('scan.manual')} icon="pencil" onPress={() => router.push('/log/search')} testID="add-manually" />
-        <AppText variant="bodySm" tone="muted">
-          {t('scan.manualHint')}
-        </AppText>
-      </View>
-    </ScreenFrame>
+    <ScanFlowScreen
+      onClose={() => router.back()}
+      // Manual entry replaces the scan, so going back from the search returns to Today, not to a camera.
+      onManual={() => router.replace('/log/search')}
+      // The provider settings open on top: the scan, and its photo, wait underneath.
+      onProviderSettings={() => router.push('/settings/providers')}
+      onReview={() => router.replace('/log/review')}
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  body: { paddingHorizontal: layout.screenMargin + spacing.s2, paddingTop: spacing.s4, gap: spacing.s3 },
-});

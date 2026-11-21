@@ -7,6 +7,7 @@ import { formatNumber } from '@/i18n/format';
 import { SUPPORTED_LOCALES, type Locale } from '@/i18n/locale';
 import { AppText, ChoiceChips, ScreenFrame, SettingsRow, TopBar, layout, spacing, useSnackbar } from '@/ui';
 import { readMinimumKcal } from '../goals/minimum';
+import { readKeepPhotos, writeKeepPhotos } from '../scan/photoSettings';
 import { useSession } from '../session/AppSession';
 import { useServices } from '../startup/AppProvider';
 import { saveLocale } from './language';
@@ -31,6 +32,8 @@ export function SettingsScreen({ onOpen, onBack }: { onOpen: (section: SettingsS
   const { revision } = useSession();
   const [details, setDetails] = useState<Details>({});
   const [languageFailed, setLanguageFailed] = useState(false);
+  const [keepPhotos, setKeepPhotos] = useState(true);
+  const [keepFailed, setKeepFailed] = useState(false);
 
   // What each row shows is read once; a failed read leaves the row without a detail line, not broken.
   useEffect(() => {
@@ -51,6 +54,26 @@ export function SettingsScreen({ onOpen, onBack }: { onOpen: (section: SettingsS
       active = false;
     };
   }, [repos, t, locale, revision]);
+
+  useEffect(() => {
+    let active = true;
+    readKeepPhotos(repos.settings).then((keep) => active && setKeepPhotos(keep), () => undefined);
+    return () => {
+      active = false;
+    };
+  }, [repos]);
+
+  const chooseKeepPhotos = async (keep: boolean) => {
+    if (keep === keepPhotos) return;
+    setKeepFailed(false);
+    setKeepPhotos(keep);
+    try {
+      await writeKeepPhotos(repos.settings, keep);
+    } catch {
+      setKeepPhotos(!keep);
+      setKeepFailed(true);
+    }
+  };
 
   const chooseLanguage = async (next: Locale) => {
     if (next === locale) return;
@@ -73,6 +96,29 @@ export function SettingsScreen({ onOpen, onBack }: { onOpen: (section: SettingsS
           <SettingsRow icon="settings" title={t('settings.minimum')} detail={details.minimum} onPress={() => onOpen('minimum')} />
           <SettingsRow icon="sparkle" title={t('settings.providers')} detail={details.providers} onPress={() => onOpen('providers')} />
           <SettingsRow icon="info" title={t('settings.about')} onPress={() => onOpen('about')} />
+        </View>
+
+        <View style={styles.language}>
+          <AppText variant="heading" accessibilityRole="header">
+            {t('settings.keepPhotos')}
+          </AppText>
+          <AppText variant="bodySm" tone="muted">
+            {t('settings.keepPhotosHint')}
+          </AppText>
+          <ChoiceChips<'keep' | 'drop'>
+            label={t('settings.keepPhotos')}
+            options={[
+              { value: 'keep', label: t('settings.keepPhotosOn') },
+              { value: 'drop', label: t('settings.keepPhotosOff') },
+            ]}
+            value={keepPhotos ? 'keep' : 'drop'}
+            onChange={(value) => value && void chooseKeepPhotos(value === 'keep')}
+          />
+          {keepFailed ? (
+            <AppText variant="bodySm" tone="warning">
+              {t('log.review.saveError')}
+            </AppText>
+          ) : null}
         </View>
 
         <View style={styles.language}>

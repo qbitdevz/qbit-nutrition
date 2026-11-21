@@ -7,12 +7,16 @@ import { render } from '@testing-library/react-native';
 import type { ReactElement } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { createFakeScanPlatform } from '@/platform/fakeScanPlatform';
 import { createMemorySecretStore } from '@/platform/memorySecretStore';
+import type { ScanPlatform } from '@/platform/scanPlatform';
 import type { Repositories } from '@/data';
 import i18n from '@/i18n';
 import type { Locale } from '@/i18n/locale';
 import { MotionProvider, SnackbarProvider, ThemeProvider } from '@/ui';
 import { MealDraftProvider } from '../logging/draft';
+import { ScanPlatformProvider } from '../scan/ScanPlatformContext';
+import { ScanSessionProvider } from '../scan/ScanSession';
 import { createAiServices } from '../startup/aiServices';
 import { offlineFetch } from './offline';
 import { AppProvider } from '../startup/AppProvider';
@@ -24,9 +28,12 @@ export interface RenderAppOptions {
   /** The system "reduce motion" setting; on by default so assertions see final values at once. */
   reducedMotion?: boolean;
   scheme?: 'dark' | 'light';
+  /** The camera, gallery, image and file modules; a fake with nothing in it unless the test gives one. */
+  scanPlatform?: ScanPlatform;
 }
 
-export async function renderApp(ui: ReactElement, { services, locale = 'en', reducedMotion = true, scheme = 'dark' }: RenderAppOptions) {
+export async function renderApp(ui: ReactElement, { services, locale = 'en', reducedMotion = true, scheme = 'dark', scanPlatform }: RenderAppOptions) {
+  const platform = scanPlatform ?? createFakeScanPlatform();
   await i18n.changeLanguage(locale);
   return render(
     <SafeAreaProvider initialMetrics={{ frame: { x: 0, y: 0, width: 390, height: 844 }, insets: { top: 0, left: 0, right: 0, bottom: 0 } }}>
@@ -34,7 +41,11 @@ export async function renderApp(ui: ReactElement, { services, locale = 'en', red
         <MotionProvider reduced={reducedMotion}>
           <AppProvider open={async () => services}>
             <SnackbarProvider>
-              <MealDraftProvider>{ui}</MealDraftProvider>
+              <ScanPlatformProvider platform={platform}>
+                <ScanSessionProvider>
+                  <MealDraftProvider>{ui}</MealDraftProvider>
+                </ScanSessionProvider>
+              </ScanPlatformProvider>
             </SnackbarProvider>
           </AppProvider>
         </MotionProvider>

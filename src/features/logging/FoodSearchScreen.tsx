@@ -18,6 +18,11 @@ interface FoodSearchScreenProps {
   /** "Create custom food", with what was typed. */
   onCreateCustom: (name: string) => void;
   onBack?: () => void;
+  /**
+   * Replace the food of a scanned item instead of adding one: the search starts with the name the model
+   * detected, and picking a result swaps it in at once, keeping the item's grams (docs/04, correction table).
+   */
+  swap?: { key: string; query: string };
 }
 
 const NO_USAGE: UsageLists = { favorites: [], recents: [], lastGrams: new Map() };
@@ -29,12 +34,12 @@ type Results = { status: 'idle' } | { status: 'error' } | { status: 'ready'; que
  * English as fallback, no network. With nothing typed it shows the person's favorites and recents;
  * with a query, favorites and recents come before other matches. A food opens the portion sheet.
  */
-export function FoodSearchScreen({ onAdded, onOpenReview, onCreateCustom, onBack }: FoodSearchScreenProps) {
+export function FoodSearchScreen({ onAdded, onOpenReview, onCreateCustom, onBack, swap }: FoodSearchScreenProps) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language as Locale;
   const services = useServices();
   const draft = useMealDraft();
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(swap?.query ?? '');
   const [results, setResults] = useState<Results>({ status: 'idle' });
   const [usage, setUsage] = useState<UsageLists>(NO_USAGE);
   const [selected, setSelected] = useState<FoodRow | null>(null);
@@ -91,6 +96,18 @@ export function FoodSearchScreen({ onAdded, onOpenReview, onCreateCustom, onBack
     }
   };
 
+  // In swap mode a tap replaces the item's food (keeping its grams); otherwise it opens the portion sheet.
+  const [swapFailed, setSwapFailed] = useState(false);
+  const open = (row: FoodRow) => {
+    if (!swap) return setSelected(row);
+    setSwapFailed(false);
+    void loadFoodView(services, row.ref, locale).then((view) => {
+      if (!view) return setSwapFailed(true);
+      draft.swapItem(swap.key, { displayName: view.name, ref: view.ref, per100g: view.per100g });
+      onAdded();
+    }, () => setSwapFailed(true));
+  };
+
   const showUsage = trimmed === '';
   const hasUsage = usage.favorites.length > 0 || usage.recents.length > 0;
 
@@ -116,12 +133,17 @@ export function FoodSearchScreen({ onAdded, onOpenReview, onCreateCustom, onBack
           autoFocus
         />
 
+        {swapFailed ? (
+          <AppText variant="bodySm" tone="warning" accessibilityRole="alert">
+            {t('log.search.error')}
+          </AppText>
+        ) : null}
         {showUsage && !hasUsage ? <EmptyState icon="search" title={t('log.search.emptyTitle')} body={t('log.search.empty')} /> : null}
         {showUsage && usage.favorites.length > 0 ? (
-          <FoodSection title={t('log.search.favorites')} rows={usage.favorites} favoriteKeys={favoriteKeys} onOpen={setSelected} onFavorite={toggleFavorite} locale={locale} />
+          <FoodSection title={t('log.search.favorites')} rows={usage.favorites} favoriteKeys={favoriteKeys} onOpen={open} onFavorite={toggleFavorite} locale={locale} />
         ) : null}
         {showUsage && usage.recents.length > 0 ? (
-          <FoodSection title={t('log.search.recents')} rows={usage.recents} favoriteKeys={favoriteKeys} onOpen={setSelected} onFavorite={toggleFavorite} locale={locale} />
+          <FoodSection title={t('log.search.recents')} rows={usage.recents} favoriteKeys={favoriteKeys} onOpen={open} onFavorite={toggleFavorite} locale={locale} />
         ) : null}
 
         {!showUsage && results.status === 'error' ? (
@@ -136,7 +158,7 @@ export function FoodSearchScreen({ onAdded, onOpenReview, onCreateCustom, onBack
         ) : null}
         {!showUsage && rows && rows.length > 0 ? (
           <>
-            <FoodSection title={t('log.search.results')} rows={rows} favoriteKeys={favoriteKeys} onOpen={setSelected} onFavorite={toggleFavorite} locale={locale} />
+            <FoodSection title={t('log.search.results')} rows={rows} favoriteKeys={favoriteKeys} onOpen={open} onFavorite={toggleFavorite} locale={locale} />
             <Button label={t('log.search.create')} variant="ghost" icon="plus" block={false} onPress={() => onCreateCustom(trimmed)} />
           </>
         ) : null}

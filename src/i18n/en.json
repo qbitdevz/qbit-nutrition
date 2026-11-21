@@ -100,9 +100,123 @@
   },
   "scan": {
     "title": "Scan",
-    "unavailable": "Photo analysis is not available yet.",
     "manual": "Add manually",
-    "manualHint": "Search a food and enter the amount"
+    "manualHint": "Search a food and enter the amount",
+    "photoLabel": "Your meal photo",
+    "capture": {
+      "tip": "Whole plate in frame, from above",
+      "shutter": "Take photo",
+      "gallery": "Choose from gallery",
+      "flash": "Flash",
+      "flashOn": "Flash on",
+      "flashOff": "Flash off",
+      "error": "The photo could not be taken. Try again.",
+      "galleryError": "The gallery could not be opened. Try again."
+    },
+    "permission": {
+      "title": "Allow camera access",
+      "body": "Qbit Nutrition uses the camera only to photograph your meal. The photo stays on your phone until you choose to analyze it.",
+      "allow": "Allow camera",
+      "deniedTitle": "The camera is off for this app",
+      "deniedBody": "You can turn it on in your phone's settings, choose a photo from your gallery, or add the meal manually.",
+      "openSettings": "Open settings"
+    },
+    "preview": {
+      "title": "Your photo",
+      "hintLabel": "Hint (optional)",
+      "hintPlaceholder": "For example: the rice is about 200 g",
+      "hintHelp": "Tell the AI what it cannot see. It is sent with the photo.",
+      "retake": "Retake",
+      "analyze": "Analyze"
+    },
+    "notice": {
+      "title": "This photo will be sent to {{provider}}",
+      "body": "Only the photo, your hint and the language of the app leave your phone. Your profile and your history stay here. {{provider}} handles the photo under its own terms.",
+      "continue": "Send photo",
+      "decline": "Not now"
+    },
+    "analyzing": {
+      "title": "Analyzing your meal",
+      "provider": "AI provider: {{provider}}",
+      "privacy": "Only this photo goes to the provider you chose.",
+      "progress": "Analyzing",
+      "slow": "This is taking longer than usual. The provider may be busy. You can keep waiting or cancel."
+    },
+    "failure": {
+      "header": "Scan problem",
+      "kept": "Your photo is still here",
+      "keptBody": "Nothing was added to your log.",
+      "copied": "Detail copied",
+      "action": {
+        "providerSettings": "Open provider settings",
+        "setupProvider": "Set up provider",
+        "switchProvider": "Switch provider",
+        "copyDetail": "Copy detail",
+        "retryLater": "Retry later"
+      },
+      "wait": {
+        "hm": "about {{hours}} h {{minutes}} min",
+        "h": "about {{hours}} h",
+        "m": "about {{minutes}} min"
+      },
+      "no_provider": {
+        "title": "Photo analysis needs an AI provider",
+        "message": "Connect a provider with your own account to analyze photos. You can still add this meal by hand."
+      },
+      "no_network": {
+        "title": "No connection",
+        "message": "The app cannot reach your AI provider. Check your connection and try again."
+      },
+      "auth_invalid": {
+        "title": "Your key was rejected",
+        "message": "The provider did not accept the key. Check it in the provider settings, then try again."
+      },
+      "quota": {
+        "title": "Provider limit reached",
+        "message": "Your AI provider has no requests left for now.",
+        "messageWait": "Your AI provider has no requests left for now. The limit resets in {{time}}."
+      },
+      "no_vision": {
+        "title": "This model can't read photos",
+        "message": "The model you chose does not accept images. Pick a model that can see photos in the provider settings."
+      },
+      "model_not_found": {
+        "title": "Model not found",
+        "message": "The provider does not know the model name you set. Check it in the provider settings."
+      },
+      "invalid_output": {
+        "title": "The answer could not be read",
+        "message": "The model's answer was not in the expected format, even after trying again. Try again, or add the meal manually."
+      },
+      "no_food": {
+        "title": "No food found",
+        "message": "The AI did not see any food in this photo. Retake it with the whole plate in frame, from above."
+      },
+      "provider_changed": {
+        "title": "The provider changed",
+        "message": "Your AI provider was edited while the photo was being sent, so nothing was sent. Try again."
+      },
+      "insecure_url": {
+        "title": "The connection is not secure",
+        "message": "The provider address does not use HTTPS, so the photo and your key were not sent. Fix the address in the provider settings."
+      },
+      "timeout": {
+        "title": "The provider took too long",
+        "message": "The provider did not answer in time. Try again, or raise the time limit in the provider settings."
+      },
+      "provider_unavailable": {
+        "title": "The provider is having trouble",
+        "message": "The provider reported a problem on its side. Try again in a moment."
+      },
+      "photo_unreadable": {
+        "title": "The photo could not be read",
+        "message": "The photo could not be prepared for sending. Take another one."
+      },
+      "unknown": {
+        "title": "Something went wrong",
+        "message": "The scan failed for a reason the app does not recognize. The detail below has no key or photo in it; you can copy it to report the problem."
+      }
+    }
   },
   "settings": {
     "title": "Settings",
@@ -114,7 +228,11 @@
     "languageSaved": "Language saved",
     "languageNotSaved": "The language changed, but the choice could not be saved for the next start.",
     "providers": "AI providers",
-    "providersNone": "Not set up yet"
+    "providersNone": "Not set up yet",
+    "keepPhotos": "Keep meal photos",
+    "keepPhotosHint": "A compressed copy of each scanned meal stays on this phone. Deleting a meal deletes its photo.",
+    "keepPhotosOn": "Keep",
+    "keepPhotosOff": "Don't keep"
   },
   "legal": {
     "disclaimer": {
@@ -433,7 +551,29 @@
       "back": "Back",
       "gramsError": "Enter grams from {{min}} to {{max}}.",
       "catalog": "Catalog",
-      "emptyTitle": "No items yet"
+      "emptyTitle": "No items yet",
+      "aiFound_one": "AI found {{count}} item",
+      "aiFound_other": "AI found {{count}} items",
+      "retake": "Retake",
+      "photoLabel": "Your meal photo",
+      "state": {
+        "matched": "Catalog",
+        "estimate": "AI estimate",
+        "confirmed": "Confirmed",
+        "needsMatch": "Needs a match"
+      },
+      "checkPortion": "Check portion",
+      "checkFood": "Check food",
+      "weightHigh": "Very large amount. Check the weight.",
+      "weightLow": "Very small amount. Check the weight.",
+      "mealWeightHigh": "The total weight is very high. Check the portions.",
+      "matchedAs": "Matched to {{name}}",
+      "estimateNote": "Estimated by the AI, not from the food database",
+      "needsMatchNote": "No match and no usable estimate. Pick a food, or remove it.",
+      "needMatch": "Pick a food for each item that needs a match, or remove it.",
+      "swap": "Change food for {{name}}",
+      "noNumbers": "No numbers yet",
+      "photoKept": "The photo could not be kept. The meal was saved without it."
     },
     "custom": {
       "title": "Create custom food",
@@ -480,7 +620,9 @@
     "copied": "Copied to Today · {{kcal}} kcal added",
     "notFound": "This meal no longer exists.",
     "loadError": "The meal could not be loaded. Your data is still on this phone. Try again.",
-    "actionError": "That change could not be saved. Try again."
+    "actionError": "That change could not be saved. Try again.",
+    "photoLabel": "Photo of this meal",
+    "aiEstimate": "AI estimate"
   },
   "nutrient": {
     "kcal": "Energy",

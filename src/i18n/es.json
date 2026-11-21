@@ -100,9 +100,123 @@
   },
   "scan": {
     "title": "Escanear",
-    "unavailable": "El análisis de fotos todavía no está disponible.",
     "manual": "Agregar manualmente",
-    "manualHint": "Busca un alimento e indica la cantidad"
+    "manualHint": "Busca un alimento e indica la cantidad",
+    "photoLabel": "La foto de tu comida",
+    "capture": {
+      "tip": "El plato completo en el encuadre, desde arriba",
+      "shutter": "Tomar foto",
+      "gallery": "Elegir de la galería",
+      "flash": "Flash",
+      "flashOn": "Flash activado",
+      "flashOff": "Flash apagado",
+      "error": "No se pudo tomar la foto. Inténtalo de nuevo.",
+      "galleryError": "No se pudo abrir la galería. Inténtalo de nuevo."
+    },
+    "permission": {
+      "title": "Permite el acceso a la cámara",
+      "body": "Qbit Nutrition usa la cámara solo para fotografiar tu comida. La foto se queda en tu teléfono hasta que decidas analizarla.",
+      "allow": "Permitir cámara",
+      "deniedTitle": "La cámara está desactivada para esta app",
+      "deniedBody": "Puedes activarla en los ajustes del teléfono, elegir una foto de tu galería o agregar la comida manualmente.",
+      "openSettings": "Abrir ajustes"
+    },
+    "preview": {
+      "title": "Tu foto",
+      "hintLabel": "Pista (opcional)",
+      "hintPlaceholder": "Por ejemplo: el arroz pesa unos 200 g",
+      "hintHelp": "Cuéntale a la IA lo que no puede ver. Se envía junto con la foto.",
+      "retake": "Repetir foto",
+      "analyze": "Analizar"
+    },
+    "notice": {
+      "title": "Esta foto se enviará a {{provider}}",
+      "body": "Solo salen de tu teléfono la foto, tu pista y el idioma de la app. Tu perfil y tu historial se quedan aquí. {{provider}} trata la foto según sus propios términos.",
+      "continue": "Enviar foto",
+      "decline": "Ahora no"
+    },
+    "analyzing": {
+      "title": "Analizando tu comida",
+      "provider": "Proveedor de IA: {{provider}}",
+      "privacy": "Solo esta foto va al proveedor que elegiste.",
+      "progress": "Analizando",
+      "slow": "Está tardando más de lo normal. Puede que el proveedor esté ocupado. Puedes seguir esperando o cancelar."
+    },
+    "failure": {
+      "header": "Problema con el escaneo",
+      "kept": "Tu foto sigue aquí",
+      "keptBody": "No se agregó nada a tu registro.",
+      "copied": "Detalle copiado",
+      "action": {
+        "providerSettings": "Abrir ajustes del proveedor",
+        "setupProvider": "Configurar proveedor",
+        "switchProvider": "Cambiar de proveedor",
+        "copyDetail": "Copiar detalle",
+        "retryLater": "Reintentar más tarde"
+      },
+      "wait": {
+        "hm": "unas {{hours}} h {{minutes}} min",
+        "h": "unas {{hours}} h",
+        "m": "unos {{minutes}} min"
+      },
+      "no_provider": {
+        "title": "El análisis de fotos necesita un proveedor de IA",
+        "message": "Conecta un proveedor con tu propia cuenta para analizar fotos. Aun así puedes agregar esta comida a mano."
+      },
+      "no_network": {
+        "title": "Sin conexión",
+        "message": "La app no puede comunicarse con tu proveedor de IA. Revisa tu conexión e inténtalo de nuevo."
+      },
+      "auth_invalid": {
+        "title": "Tu clave fue rechazada",
+        "message": "El proveedor no aceptó la clave. Revísala en los ajustes del proveedor e inténtalo de nuevo."
+      },
+      "quota": {
+        "title": "Se alcanzó el límite del proveedor",
+        "message": "Tu proveedor de IA no tiene solicitudes disponibles por ahora.",
+        "messageWait": "Tu proveedor de IA no tiene solicitudes disponibles por ahora. El límite se restablece en {{time}}."
+      },
+      "no_vision": {
+        "title": "Este modelo no puede leer fotos",
+        "message": "El modelo que elegiste no acepta imágenes. Elige un modelo que pueda ver fotos en los ajustes del proveedor."
+      },
+      "model_not_found": {
+        "title": "Modelo no encontrado",
+        "message": "El proveedor no conoce el nombre de modelo que indicaste. Revísalo en los ajustes del proveedor."
+      },
+      "invalid_output": {
+        "title": "No se pudo leer la respuesta",
+        "message": "La respuesta del modelo no tenía el formato esperado, ni siquiera al reintentar. Inténtalo de nuevo o agrega la comida manualmente."
+      },
+      "no_food": {
+        "title": "No se encontró comida",
+        "message": "La IA no vio comida en esta foto. Tómala de nuevo con el plato completo en el encuadre, desde arriba."
+      },
+      "provider_changed": {
+        "title": "El proveedor cambió",
+        "message": "Tu proveedor de IA se modificó mientras se enviaba la foto, así que no se envió nada. Inténtalo de nuevo."
+      },
+      "insecure_url": {
+        "title": "La conexión no es segura",
+        "message": "La dirección del proveedor no usa HTTPS, así que no se enviaron la foto ni tu clave. Corrige la dirección en los ajustes del proveedor."
+      },
+      "timeout": {
+        "title": "El proveedor tardó demasiado",
+        "message": "El proveedor no respondió a tiempo. Inténtalo de nuevo o sube el límite de tiempo en los ajustes del proveedor."
+      },
+      "provider_unavailable": {
+        "title": "El proveedor tiene problemas",
+        "message": "El proveedor informó de un problema de su lado. Inténtalo de nuevo en un momento."
+      },
+      "photo_unreadable": {
+        "title": "No se pudo leer la foto",
+        "message": "No se pudo preparar la foto para enviarla. Toma otra."
+      },
+      "unknown": {
+        "title": "Algo salió mal",
+        "message": "El escaneo falló por un motivo que la app no reconoce. El detalle de abajo no contiene tu clave ni la foto; puedes copiarlo para reportar el problema."
+      }
+    }
   },
   "settings": {
     "title": "Ajustes",
@@ -114,7 +228,11 @@
     "languageSaved": "Idioma guardado",
     "languageNotSaved": "El idioma cambió, pero no se pudo guardar la elección para el próximo inicio.",
     "providers": "Proveedores de IA",
-    "providersNone": "Sin configurar"
+    "providersNone": "Sin configurar",
+    "keepPhotos": "Conservar fotos de comidas",
+    "keepPhotosHint": "Una copia comprimida de cada comida escaneada se queda en este teléfono. Al eliminar una comida se elimina su foto.",
+    "keepPhotosOn": "Conservar",
+    "keepPhotosOff": "No conservar"
   },
   "legal": {
     "disclaimer": {
@@ -433,7 +551,29 @@
       "discard": "Descartar comida",
       "back": "Atrás",
       "gramsError": "Ingresa gramos de {{min}} a {{max}}.",
-      "catalog": "Catálogo"
+      "catalog": "Catálogo",
+      "aiFound_one": "La IA encontró {{count}} alimento",
+      "aiFound_other": "La IA encontró {{count}} alimentos",
+      "retake": "Repetir foto",
+      "photoLabel": "La foto de tu comida",
+      "state": {
+        "matched": "Catálogo",
+        "estimate": "Estimación de la IA",
+        "confirmed": "Confirmado",
+        "needsMatch": "Falta elegir alimento"
+      },
+      "checkPortion": "Revisa la porción",
+      "checkFood": "Revisa el alimento",
+      "weightHigh": "Cantidad muy grande. Revisa el peso.",
+      "weightLow": "Cantidad muy pequeña. Revisa el peso.",
+      "mealWeightHigh": "El peso total es muy alto. Revisa las porciones.",
+      "matchedAs": "Coincide con {{name}}",
+      "estimateNote": "Estimado por la IA, no de la base de alimentos",
+      "needsMatchNote": "Sin coincidencia y sin estimación utilizable. Elige un alimento o quítalo.",
+      "needMatch": "Elige un alimento para cada ítem que lo necesite, o quítalo.",
+      "swap": "Cambiar el alimento de {{name}}",
+      "noNumbers": "Aún sin valores",
+      "photoKept": "No se pudo conservar la foto. La comida se guardó sin ella."
     },
     "custom": {
       "title": "Crear alimento personalizado",
@@ -480,7 +620,9 @@
     "copied": "Copiada a Hoy · {{kcal}} kcal agregadas",
     "notFound": "Esta comida ya no existe.",
     "loadError": "No se pudo cargar la comida. Tus datos siguen en este teléfono. Inténtalo de nuevo.",
-    "actionError": "No se pudo guardar ese cambio. Inténtalo de nuevo."
+    "actionError": "No se pudo guardar ese cambio. Inténtalo de nuevo.",
+    "photoLabel": "Foto de esta comida",
+    "aiEstimate": "Estimación de la IA"
   },
   "nutrient": {
     "kcal": "Energía",
