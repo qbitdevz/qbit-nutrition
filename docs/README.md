@@ -63,12 +63,27 @@ From secondary sources only (not confirmed on a primary page):
 - OpenRouter free models allow 50 requests per day, or 1,000 per day after a
   one-time purchase of 10 credits.
 
+## Status of these documents
+
+Documents 01 to 12 were written before any code. Where the code went a
+different way, the feature documents under `odd/tasks/` record what was built
+and why, and they take precedence:
+
+- Document 05: its visual direction was replaced by the Orbit direction in
+  `design/` (contract rule RN-15); only its sections 8 and 9 still apply.
+- Document 10: body measurements, barcode scanning, AI suggestions, and Health
+  Connect were moved into the first version by the owner.
+- Documents 06 to 09: details such as the Anthropic and Gemini structured
+  output modes, the catalog as a separate read-only connection, fresh ids for
+  imported provider profiles, and `expo/fetch` behind a redirect-refusing
+  wrapper are described in the feature documents.
+
 ## Open questions
 
 | # | Question | Blocks |
 | --- | --- | --- |
 | Q1 | What does Android developer verification require, and cost, for an app distributed only through GitHub Releases or F-Droid? | Public distribution (document 10, phase 5) |
 | Q2 | Does the BEDCA Spanish food database have a license that allows bundling in an MIT project? | Spanish-specific food data (document 07) |
-| Q3 | Does `expo-camera` barcode scanning on Android pull in proprietary Google libraries that F-Droid rejects? | Barcode scanning in an F-Droid build (document 06) |
+| Q3 | **Answered 2026-11-21:** yes. `expo-camera` on Android depends on Google ML Kit and Play services libraries, so an F-Droid build is not possible as is. Typed barcode entry needs none of them; an F-Droid flavor would have to build the camera module from source with the scanners off and use another decoder. | F-Droid distribution (document 10, phase 5) |
 | Q4 | Which public food-photo data set, if any, has a license that allows use in the accuracy benchmark? | Benchmark breadth (document 11) |
 | Q5 | Copyright holder for the MIT `LICENSE` file. The product name is settled: Qbit Nutrition. | First public release |

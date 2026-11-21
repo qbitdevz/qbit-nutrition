@@ -195,6 +195,10 @@ probing in "test connection" (document 07, section 3).
 | Edits and deletes | Each written record carries the meal id as its client record id, so editing or deleting a meal updates or removes its record |
 | Policy | Health Connect requires a privacy policy and a rationale screen explaining the use of each data type |
 
+As built: the binding is `react-native-health-connect`; a failed write never
+blocks saving a meal and is retried later; weight is read for the last 30
+days; the integration is off by default and its settings are never exported.
+
 **Google Fit is not integrated.** Its APIs are supported only until the end
 of 2026, and Health Connect is the replacement for mobile apps.
 

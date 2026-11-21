@@ -145,6 +145,8 @@ ships with it.
 | Choosing a provider preset | A cost note and a data-use note for that provider, with a link to its terms and the date the note was last verified |
 | Before the first scan with a provider | A one-time notice: "This photo will be sent to [provider]", with "Do not show again" |
 | Turning on Health Connect | A rationale screen listing each data type and why it is used |
+| The first barcode lookup | A one-time notice that the barcode number is sent to Open Food Facts |
+| The first request for AI suggestions with a provider | A one-time notice showing the numbers that are sent |
 | Export | A reminder that the file contains health data and is not encrypted |
 | About screen | Disclaimer, privacy policy, licenses, and data sources |
 
