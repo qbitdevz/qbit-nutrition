@@ -2,12 +2,12 @@
 bcdd: 1
 proyecto: Qbit Nutrition
 cliente: Proyecto personal (el dueño del producto)
-version: 3
-estado: aprobado
+version: 4
+estado: borrador
 actualizado: 2026-11-21
-ultima_fuente: chat con el dueño del 2026-11-21 (aprobación de la versión 2)
-aprobado_equipo: el dueño del producto · 2026-11-21
-aprobado_cliente: el dueño del producto · 2026-11-21 · chat
+ultima_fuente: chat con el dueño del 2026-11-21 (pedido de diseño)
+aprobado_equipo:
+aprobado_cliente:
 ---
 
 # Contrato de negocio — Qbit Nutrition
@@ -24,6 +24,7 @@ aprobado_cliente: el dueño del producto · 2026-11-21 · chat
 - **Objetivos a su medida:** la aplicación recomienda calorías y nutrientes según su peso, altura y demás datos personales.
 - **Saber cómo viene el día:** ve cuánto comió, cuánto le queda y qué le conviene comer.
 - **Elegir la IA:** conecta el servicio de inteligencia artificial que prefiera, desde la misma aplicación.
+- **Diseño cuidado:** una aplicación moderna, con animaciones y transiciones, y con la identidad de la marca qbitdev.
 - **Datos propios, gratis y abierta:** todo queda en su teléfono, el código es público y nadie cobra por usarla.
 
 **Fuera de alcance de la primera versión:**
@@ -34,7 +35,8 @@ aprobado_cliente: el dueño del producto · 2026-11-21 · chat
 - Publicar en tiendas de aplicaciones — tienen costo.
 
 **Preguntas abiertas:**
-- **P-02:** ¿Aprobás el valor inicial del mínimo diario de calorías cuando el equipo lo proponga con una guía publicada que lo respalde? — responde: el dueño — frena: RN-14
+- **P-02:** ¿Aprobás 1.200 calorías diarias para mujeres y 1.500 para hombres como mínimo inicial? Sale de una guía oficial de Estados Unidos, edición 2015–2020, ya reemplazada por una más nueva que no repite la cifra. — responde: el dueño — frena: RN-14
+- **P-06:** ¿Qué propuesta de diseño elegís entre las que prepara el equipo? — responde: el dueño — frena: RN-15
 - **P-04:** ¿A nombre de quién va la licencia MIT? — responde: el dueño — no frena requisitos; frena la publicación.
 
 ## 2. Cómo funciona
@@ -72,7 +74,8 @@ flowchart TD
 | RN-11 | La primera versión es solo para Android. | Acordada | chat con el dueño · 2026-11-21 · «Android primero, iOS documentado» |
 | RN-12 | La clave del servicio de IA nunca se incluye en lo que la persona exporta ni se muestra después de guardarla. | Acordada | chat con el dueño · 2026-11-21 · «12 ok» |
 | RN-13 | Las calorías, proteínas, carbohidratos y demás nutrientes diarios se recomiendan a partir del peso, la altura y los demás datos de la persona que influyen: edad, sexo, nivel de actividad y objetivo. | Acordada | chat con el dueño · 2026-11-21 · «en base al peso, altura y todo lo que influya» |
-| RN-14 | Valor inicial del mínimo diario de calorías, antes de que la persona lo ajuste: a definir. | A confirmar | equipo |
+| RN-14 | Valor inicial del mínimo diario de calorías, antes de que la persona lo ajuste: 1.200 para mujeres y 1.500 para hombres, según las Guías Alimentarias para Estadounidenses 2015–2020. | A confirmar | equipo |
+| RN-15 | El diseño es moderno, con animaciones, efectos, transiciones y botones redondeados, cuida la experiencia de uso y lleva la identidad de la marca personal qbitdev. | Acordada | chat con el dueño · 2026-11-21 · «moderno con animaciones, efectos, transiciones, botones redondeados» |
 
 ## 4. Requisitos
 
@@ -95,9 +98,15 @@ flowchart TD
 | REQ-15 | Registrar medidas corporales | Acordado | Sin cambios | Se cargan medidas como cintura y cadera en una fecha y se ve cómo cambiaron en el tiempo | — | chat con el dueño · 2026-11-21 · «me gustaria que ya se lo incluya» |
 | REQ-16 | Conectar con la aplicación de salud del teléfono Android | Acordado | Sin cambios | Con el permiso de la persona, las comidas guardadas aparecen en la aplicación de salud del teléfono y el peso registrado allí aparece en Qbit Nutrition | RN-04, RN-11 | chat con el dueño · 2026-11-21 · «me gustaria que ya se lo incluya» |
 | REQ-17 | Pedir sugerencias de comidas hechas con IA | Acordado | Sin cambios | La persona pide sugerencias y recibe alimentos que encajan con lo que le queda del día; para eso se envían solo los números del día, nunca fotos ni historial | RN-02, RN-04 | chat con el dueño · 2026-11-21 · «me gustaria que ya se lo incluya» |
-| REQ-18 | Registrar un producto envasado con su código de barras | Acordado | Nuevo | Al leer el código de barras de un producto conocido aparecen su nombre y sus valores nutricionales, y se puede guardar indicando la cantidad | RN-04, RN-05 | chat con el dueño · 2026-11-21 · «Sí, incluirlo» |
+| REQ-18 | Registrar un producto envasado con su código de barras | Acordado | Sin cambios | Al leer el código de barras de un producto conocido aparecen su nombre y sus valores nutricionales, y se puede guardar indicando la cantidad | RN-04, RN-05 | chat con el dueño · 2026-11-21 · «Sí, incluirlo» |
 
 ## 5. Cambios
+
+### v4 — 2026-11-21 — pedido de diseño del dueño
+- **Regla nueva:** RN-15, diseño moderno con la identidad de qbitdev. Reemplaza la línea visual que había propuesto el equipo.
+- **Regla modificada:** RN-14, antes "a definir", ahora el equipo propone 1.200 y 1.500 calorías con su fuente; sigue pendiente de aprobación (P-02).
+- **Pregunta nueva:** P-06, elección de la propuesta de diseño.
+- El contrato vuelve a borrador hasta que el dueño lo apruebe.
 
 ### v3 — 2026-11-21 — aprobación del dueño
 - **Aprobado:** el dueño aprobó el contrato en el chat.
