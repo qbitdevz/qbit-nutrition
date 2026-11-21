@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "expo lint",
     "test": "jest",
-    "catalog:build": "tsx scripts/catalog/build.ts"
+    "catalog:build": "tsx scripts/catalog/build.ts",
+    "bench": "tsx bench/run.ts"
   },
   "dependencies": {
     "expo": "~58.0.26",
