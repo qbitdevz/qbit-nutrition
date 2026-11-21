@@ -25,7 +25,7 @@ Assumptions (not requested by the owner): LICENSE copyright line reads "Qbit Nut
 - [x] T2 — S3, S9 — Expo project, navigation shell, design tokens, EN/ES scaffolding, test runner, CI — inline — commit: 8413cd0
 - [x] T3 — S4, S5, S6, S9, S10 — `src/core/ai`: schema, prompt v1, error taxonomy, three adapters, analyze pipeline with repair — worker — commit: 7ab8012
 - [x] T4 — S6, S7, S9 — Catalog build script, `src/core/catalog` search and matching, `src/core/nutrition` nutrient math — worker — commit: b3b5c15
-- [ ] T5 — S8, S10 — Benchmark harness CLI and report — after T3 and T4 — commit:
+- [x] T5 — S8, S10 — Benchmark harness CLI and report — after T3 and T4 — commit: dbf5df1
 - [ ] T6 — S8 — First set of about 30 weighed meals and a real benchmark run — blocked: needs the owner's photos, weights, and provider keys
 
 ## Log
@@ -36,3 +36,4 @@ Assumptions (not requested by the owner): LICENSE copyright line reads "Qbit Nut
 - **L4** — 2026-11-21 — Open risk for phase 2: React Native's fetch may ignore `redirect: 'error'`. The platform layer must supply a fetch that does not follow redirects before real keys are used on a device. Plain HTTP hosts are judged by name, not by DNS resolution.
 - **L5** — 2026-11-21 — Deviations from the docs, now reflected in docs/08 and docs/09: `food.is_branded` column and two catalog indexes; Anthropic native structured output; Gemini `responseJsonSchema` and its 400 `API_KEY_INVALID` error. Matching needs tuning against the benchmark ("white rice, cooked" picks a glutinous variant; "french fries" picks a frozen unprepared entry).
 - **L6** — 2026-11-21 — Slice boundary: T2 (8413cd0), T3 (7ab8012 + 7e90065), and T4 (b3b5c15) are separate review slices.
+- **L7** — 2026-11-21 — T5 evidence: full suite 12 suites / 340 tests, `tsc` and `expo lint` clean at dbf5df1. The harness has only run against a fake provider and a fixture catalog; on the empty data set it stops with "No meals found". No image resizing: photos must be saved with the long edge at most 1,024 px. Phase 0 exit condition (a real run against a free-tier and a local model) is not met; it waits on T6.
