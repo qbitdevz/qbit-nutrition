@@ -19,9 +19,11 @@ Traceability: `bcdd/contrato.md` v4 (aprobado) — REQ-01, REQ-02, REQ-03, REQ-0
 
 ## Tasks
 
-- [ ] T1 — S1, S2, S3, S4, S10 — Provider profiles: presets data, secure key storage, settings screens, test connection, redirect-safe fetch — worker — commit:
+- [x] T1 — S1, S2, S3, S4, S10 — Provider profiles: presets data, secure key storage, settings screens, test connection, redirect-safe fetch — worker — commit: 393ac4c + 6f30e25
 - [ ] T2 — S4, S5, S6, S7, S8, S9, S11 — Scan flow: camera and gallery, preprocessing, analysis orchestration, matching, review, failure branches, photo retention — after T1 — commit:
 
 ## Log
 
 - **L1** — 2026-11-21 — Owner request, verbatim: «me voy al gym continua hasta finalizar todas las tareas.. yo te doy la autorizacion y aprobacion de lo que sea necesario..»
+- **L2** — 2026-11-21 — T1 evidence: worker reported 46 suites / 848 tests, `tsc`, `expo lint`, and the Android export passing. Independent verification (Risk: item 2, security) found that `update` stored a new key before the profile row changed, so a failed or racing update could pair a key with the wrong host; plus stale "key saved" state, create-failure loose ends, stale test results, and a storage failure shown as "invalid key". All fixed test-first in the second commit, with a source guard against unwrapped `fetch`.
+- **L3** — 2026-11-21 — Redirects: React Native's global `fetch` ignores the `redirect` option and follows redirects on Android; `expo/fetch` honours it. The app uses `expo/fetch` behind a wrapper that also refuses 3xx responses and changed origins. Not verified on a device: Keystore reads and writes, a live redirect refusal, backup behaviour with `allowBackup=false`. Screens were not looked at in a browser. Preset facts were verified on the providers' pages on 2026-11-21; Google labels `generateContent` as legacy but still supported.
