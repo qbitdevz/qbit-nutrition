@@ -39,10 +39,10 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Qbit Nutrition uses the camera only to photograph your meals. A photo leaves your phone only when you choose to analyze it.",
+          "cameraPermission": "Qbit Nutrition uses the camera to photograph your meals and to read product barcodes. A photo leaves your phone only when you choose to analyze it. Reading a barcode takes no photo.",
           "microphonePermission": false,
           "recordAudioAndroid": false,
-          "barcodeScannerEnabled": false
+          "barcodeScannerEnabled": true
         }
       ],
       [

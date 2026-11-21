@@ -98,7 +98,7 @@ describe('BackupRepository.replaceAll', () => {
 
   it('an empty snapshot replaces everything with nothing', async () => {
     await seedEverything(h);
-    await h.repos.backup.replaceAll({ profile: null, goals: [], measurements: [], meals: [], customFoods: [], foodUsage: [], matchMemory: [], aiProviders: [], settings: {} });
+    await h.repos.backup.replaceAll({ profile: null, goals: [], measurements: [], meals: [], customFoods: [], barcodeProducts: [], foodUsage: [], matchMemory: [], aiProviders: [], settings: {} });
     expect((await h.repos.backup.read()).meals).toEqual([]);
     expect(count(h, 'meal_item_nutrient')).toBe(0);
   });

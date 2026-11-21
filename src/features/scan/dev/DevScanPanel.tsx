@@ -5,12 +5,12 @@ import { AppText, PressableScale, radius, spacing, useTheme } from '@/ui';
 import { DEV_SCENARIOS, getDevScenario, setDevScenario, type DevScenario } from './devProvider';
 
 /** DEVELOPMENT ONLY (QN_DEV_ONLY_PANEL): picks what the fake provider answers next. Collapsed to a small "DEV" pill. */
-export function DevScanPanel() {
+export function DevScanPanel({ top = 2, right = 2 }: { top?: number; right?: number } = {}) {
   const { colors } = useTheme();
   const [open, setOpen] = useState(false);
   const [current, setCurrent] = useState<DevScenario>(getDevScenario());
   return (
-    <View style={styles.root} pointerEvents="box-none" testID="QN_DEV_ONLY_PANEL">
+    <View style={[styles.root, { top, right }]} pointerEvents="box-none" testID="QN_DEV_ONLY_PANEL">
       <PressableScale accessibilityRole="button" accessibilityLabel="Dev scenarios" onPress={() => setOpen((v) => !v)} style={[styles.pill, { backgroundColor: colors.surfaceHigh }]}>
         <AppText variant="caption">DEV · {current}</AppText>
       </PressableScale>

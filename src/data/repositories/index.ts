@@ -3,6 +3,7 @@ import type { AppDatabase } from '../database';
 import { newId as defaultNewId } from '../ids';
 import { createBackupRepository, type BackupRepository } from './backup';
 import { createAiProviderRepository, type AiProviderRepository } from './aiProviders';
+import { createBarcodeProductRepository, type BarcodeProductRepository } from './barcodeProducts';
 import { createCustomFoodRepository, type CustomFoodRepository } from './customFoods';
 import { createFoodResolver } from './foodResolver';
 import { createFoodUsageRepository, type FoodUsageRepository } from './foodUsage';
@@ -20,6 +21,8 @@ export interface Repositories {
   meals: MealRepository;
   measurements: MeasurementRepository;
   customFoods: CustomFoodRepository;
+  /** The cache of Open Food Facts lookups (docs/08 `barcode_product`). */
+  barcodeProducts: BarcodeProductRepository;
   foodUsage: FoodUsageRepository;
   matchMemory: MatchMemoryRepository;
   settings: SettingsRepository;
@@ -49,6 +52,7 @@ export function createRepositories(options: RepositoryOptions): Repositories {
     meals: createMealRepository(context, createFoodResolver(context, options.catalog)),
     measurements: createMeasurementRepository(context),
     customFoods: createCustomFoodRepository(context),
+    barcodeProducts: createBarcodeProductRepository(context),
     foodUsage: createFoodUsageRepository(context),
     matchMemory: createMatchMemoryRepository(context),
     settings: createSettingsRepository(context),
@@ -73,6 +77,7 @@ export type {
 } from './meals';
 export type { Measurement, MeasurementInput, MeasurementRepository } from './measurements';
 export type { CustomFood, CustomFoodInput, CustomFoodRepository } from './customFoods';
+export type { BarcodeProductRecord, BarcodeProductRepository } from './barcodeProducts';
 export type { FoodUsageEntry, FoodUsageRepository } from './foodUsage';
 export type { MatchMemoryEntry, MatchMemoryRepository } from './matchMemory';
 export type { SettingsRepository } from './settings';

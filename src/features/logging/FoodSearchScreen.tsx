@@ -17,12 +17,19 @@ interface FoodSearchScreenProps {
   onOpenReview: () => void;
   /** "Create custom food", with what was typed. */
   onCreateCustom: (name: string) => void;
+  /** "Scan a barcode": the packaged-food path (S5). Not offered when replacing the food of a scanned item. */
+  onBarcode?: () => void;
   onBack?: () => void;
   /**
    * Replace the food of a scanned item instead of adding one: the search starts with the name the model
    * detected, and picking a result swaps it in at once, keeping the item's grams (docs/04, correction table).
    */
   swap?: { key: string; query: string };
+  /**
+   * Opened from a food suggestion: the search starts with the suggested name and the portion sheet with the suggested grams.
+   * Only the name and the grams come across; the values saved are the catalog's, computed once a food is picked.
+   */
+  prefill?: { query: string; grams?: number };
 }
 
 const NO_USAGE: UsageLists = { favorites: [], recents: [], lastGrams: new Map() };
@@ -34,12 +41,12 @@ type Results = { status: 'idle' } | { status: 'error' } | { status: 'ready'; que
  * English as fallback, no network. With nothing typed it shows the person's favorites and recents;
  * with a query, favorites and recents come before other matches. A food opens the portion sheet.
  */
-export function FoodSearchScreen({ onAdded, onOpenReview, onCreateCustom, onBack, swap }: FoodSearchScreenProps) {
+export function FoodSearchScreen({ onAdded, onOpenReview, onCreateCustom, onBarcode, onBack, swap, prefill }: FoodSearchScreenProps) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language as Locale;
   const services = useServices();
   const draft = useMealDraft();
-  const [query, setQuery] = useState(swap?.query ?? '');
+  const [query, setQuery] = useState(swap?.query ?? prefill?.query ?? '');
   const [results, setResults] = useState<Results>({ status: 'idle' });
   const [usage, setUsage] = useState<UsageLists>(NO_USAGE);
   const [selected, setSelected] = useState<FoodRow | null>(null);
@@ -133,6 +140,8 @@ export function FoodSearchScreen({ onAdded, onOpenReview, onCreateCustom, onBack
           autoFocus
         />
 
+        {onBarcode && !swap ? <Button label={t('log.search.barcode')} variant="secondary" icon="barcode" hint={t('log.search.barcodeHint')} onPress={onBarcode} testID="scan-barcode" /> : null}
+
         {swapFailed ? (
           <AppText variant="bodySm" tone="warning" accessibilityRole="alert">
             {t('log.search.error')}
@@ -167,6 +176,7 @@ export function FoodSearchScreen({ onAdded, onOpenReview, onCreateCustom, onBack
       <PortionSheet
         food={selected}
         lastGrams={selected ? usage.lastGrams.get(refKey(selected.ref)) : undefined}
+        suggestedGrams={prefill?.grams}
         onClose={() => setSelected(null)}
         onAdd={(item) => {
           draft.addItem(item);
@@ -233,9 +243,9 @@ function FoodResultRow({ row, favorite, locale, onOpen, onFavorite }: FoodResult
               fat: formatDecimal(locale, row.fat100g, 1),
             })}
           </AppText>
-          {row.custom ? (
+          {row.custom || row.barcode ? (
             <View style={[styles.tag, { backgroundColor: colors.surfaceRaised }]}>
-              <AppText variant="caption">{t('log.search.custom')}</AppText>
+              <AppText variant="caption">{row.custom ? t('log.search.custom') : t('log.search.barcodeTag')}</AppText>
             </View>
           ) : null}
         </View>

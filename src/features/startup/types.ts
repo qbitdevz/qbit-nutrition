@@ -1,5 +1,6 @@
 import type { Catalog } from '@/core/catalog';
 import type { Repositories } from '@/data';
+import type { BarcodeService } from '../barcode/barcodeService';
 import type { ScanGateway } from '../scan/scanGateway';
 import type { ProviderService } from '../settings/providerService';
 
@@ -11,6 +12,8 @@ export interface AppServices {
   providers: ProviderService;
   /** What the scan flow calls: analysis with the active profile, and the one-time notice. */
   scan: ScanGateway;
+  /** Barcode lookups through Open Food Facts, with the on-phone cache and the one-time notice (S5, S9). */
+  barcode: BarcodeService;
 }
 
 export type OpenServices = () => Promise<AppServices>;

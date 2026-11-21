@@ -60,6 +60,24 @@ function scanResult(spanish: boolean) {
   };
 }
 
+/** What the fake provider answers a food-suggestion request with (the request names its schema `food_suggestions`). */
+function suggestionsResult(spanish: boolean) {
+  const s = (name: string, grams: number, kcal: number, protein: number, carbs: number, fat: number, reason: string) => ({ name, grams, kcal, protein_g: protein, carbs_g: carbs, fat_g: fat, reason });
+  return {
+    suggestions: spanish
+      ? [
+          s('Yogur griego con frutos rojos', 200, 150, 18, 14, 2.5, 'Aporta proteína que todavía te queda por hoy.'),
+          s('Pechuga de pollo a la plancha', 120, 198, 37, 0, 4.3, 'Mucha proteína con pocas calorías.'),
+          s('Manzana con crema de cacahuate', 190, 230, 5, 33, 9, 'Suma carbohidratos y algo de grasa para llegar a tu objetivo.'),
+        ]
+      : [
+          s('Greek yogurt with berries', 200, 150, 18, 14, 2.5, 'Adds protein you still have left today.'),
+          s('Grilled chicken breast', 120, 198, 37, 0, 4.3, 'A lot of protein for few calories.'),
+          s('Apple with peanut butter', 190, 230, 5, 33, 9, 'Adds carbs and some fat toward your target.'),
+        ],
+  };
+}
+
 /** The fetch the preview hands to the AI client: it answers according to the scenario picked in the dev panel. */
 export const devFetch: FetchLike = async (_url, init) => {
   switch (scenario) {
@@ -81,7 +99,10 @@ export const devFetch: FetchLike = async (_url, init) => {
       return reply(200, completion(JSON.stringify({ is_food: false, dish_name: '', items: [], hidden_ingredients_note: '' })));
     case 'unknown':
       return reply(418, { error: { message: 'teapot' } });
-    default:
-      return reply(200, completion(JSON.stringify(scanResult(String(init.body ?? '').includes('Spanish (es)')))));
+    default: {
+      const body = String(init.body ?? '');
+      if (body.includes('food_suggestions')) return reply(200, completion(JSON.stringify(suggestionsResult(body.includes('locale\\":\\"es') || body.includes('Spanish (es)')))));
+      return reply(200, completion(JSON.stringify(scanResult(body.includes('Spanish (es)')))));
+    }
   }
 };

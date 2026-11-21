@@ -17,6 +17,8 @@ interface PortionSheetProps {
   food: FoodRow | null;
   /** Grams the person used last time for this food, if any. */
   lastGrams?: number;
+  /** An amount suggested for this meal (a food suggestion): the sheet starts from it instead of the last amount. */
+  suggestedGrams?: number;
   onClose: () => void;
   onAdd: (item: Omit<DraftItem, 'key'>) => void;
 }
@@ -28,7 +30,7 @@ type Loaded = { status: 'loading' } | { status: 'error' } | { status: 'ready'; v
  * calories and macros of that amount updating as the person types. "Add to meal" validates the
  * amount; a mistake is explained under the field and the sheet stays open with the text as typed.
  */
-export function PortionSheet({ food, lastGrams, onClose, onAdd }: PortionSheetProps) {
+export function PortionSheet({ food, lastGrams, suggestedGrams, onClose, onAdd }: PortionSheetProps) {
   const { t } = useTranslation();
   // Keep the last food while the sheet slides out, so its content does not vanish mid-animation.
   const [shown, setShown] = useState<FoodRow | null>(food);
@@ -37,12 +39,12 @@ export function PortionSheet({ food, lastGrams, onClose, onAdd }: PortionSheetPr
 
   return (
     <BottomSheet visible={food !== null} onClose={onClose} title={current?.name ?? ''} closeLabel={t('log.portion.close')}>
-      {current ? <PortionBody key={refKey(current.ref)} food={current} lastGrams={lastGrams} onAdd={onAdd} onClose={onClose} /> : null}
+      {current ? <PortionBody key={refKey(current.ref)} food={current} lastGrams={lastGrams} suggestedGrams={suggestedGrams} onAdd={onAdd} onClose={onClose} /> : null}
     </BottomSheet>
   );
 }
 
-function PortionBody({ food, lastGrams, onAdd, onClose }: { food: FoodRow; lastGrams?: number; onAdd: PortionSheetProps['onAdd']; onClose: () => void }) {
+function PortionBody({ food, lastGrams, suggestedGrams, onAdd, onClose }: { food: FoodRow; lastGrams?: number; suggestedGrams?: number; onAdd: PortionSheetProps['onAdd']; onClose: () => void }) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language as Locale;
   const { colors } = useTheme();
@@ -59,8 +61,8 @@ function PortionBody({ food, lastGrams, onAdd, onClose }: { food: FoodRow; lastG
         if (!active) return;
         if (!view) return setState({ status: 'error' });
         setState({ status: 'ready', view });
-        // The last amount used, a custom food's usual portion, the first household measure, or 100 g.
-        const start = lastGrams ?? view.defaultGrams ?? view.portions[0]?.grams ?? 100;
+        // A suggested amount, the last amount used, a custom food's usual portion, the first household measure, or 100 g.
+        const start = suggestedGrams ?? lastGrams ?? view.defaultGrams ?? view.portions[0]?.grams ?? 100;
         setText(String(Math.round(start * 10) / 10));
       },
       () => active && setState({ status: 'error' }),
@@ -68,7 +70,7 @@ function PortionBody({ food, lastGrams, onAdd, onClose }: { food: FoodRow; lastG
     return () => {
       active = false;
     };
-  }, [services, food.ref, locale, lastGrams, attempt]);
+  }, [services, food.ref, locale, lastGrams, suggestedGrams, attempt]);
 
   if (state.status === 'loading') return <Skeleton height={120} radius={20} />;
   if (state.status === 'error') {

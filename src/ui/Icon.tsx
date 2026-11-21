@@ -25,6 +25,7 @@ const ICONS = {
   trash: ['M5 7h14M10 7V4.5h4V7M7 7l1 12.5h8L17 7M10 11v5M14 11v5'],
   copy: ['M9 9h10v11H9z', 'M5 15V4h10'],
   bolt: ['M13 3L5.5 13.5H11L10 21l7.5-10.5H12z'],
+  barcode: ['M4 6v12M7.5 6v12M11 6v12M15 6v12M20 6v12'],
   image: ['M4 5h16v14H4z', 'M4 16l5-5 4 4 3-3 4 4', { circle: [15.5, 9, 1.4] }],
 } as const;
 

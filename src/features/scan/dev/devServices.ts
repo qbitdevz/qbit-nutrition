@@ -1,6 +1,7 @@
 import type { Repositories } from '@/data';
 import { createMemorySecretStore } from '@/platform/memorySecretStore';
 import type { SecretStore } from '@/platform/secretStore';
+import { devBarcodeFetch } from '../../barcode/dev/devOff';
 import { DEV_PLACEHOLDER_KEY, DEV_PROVIDER_URL, devFetch } from './devProvider';
 
 /**
@@ -8,7 +9,7 @@ import { DEV_PLACEHOLDER_KEY, DEV_PROVIDER_URL, devFetch } from './devProvider';
  * the network: an in-memory secret store, the fake provider, and a provider profile created on demand.
  */
 export function devAiOptions() {
-  return { secrets: createMemorySecretStore(), fetch: devFetch };
+  return { secrets: createMemorySecretStore(), fetch: devFetch, barcodeFetch: devBarcodeFetch };
 }
 
 export async function seedDevProvider(repos: Pick<Repositories, 'aiProviders'>, secrets: SecretStore): Promise<void> {

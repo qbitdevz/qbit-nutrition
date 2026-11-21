@@ -90,6 +90,7 @@ function AppStack() {
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="scan" options={{ presentation: 'modal', animation: reduced ? 'fade' : 'slide_from_bottom' }} />
           <Stack.Screen name="log/search" />
+          <Stack.Screen name="log/barcode" />
           <Stack.Screen name="log/review" />
           <Stack.Screen name="log/custom-food" />
           <Stack.Screen name="meal/[id]" />

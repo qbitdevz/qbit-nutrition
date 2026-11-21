@@ -4,7 +4,7 @@ import { typography } from './tokens';
 import { useTheme } from './useTheme';
 
 export type TextVariant = keyof typeof typography;
-export type TextTone = 'default' | 'muted' | 'primary' | 'onPrimary' | 'warning' | 'green' | 'ai';
+export type TextTone = 'default' | 'muted' | 'primary' | 'onPrimary' | 'warning' | 'green' | 'ai' | 'onAi';
 
 interface AppTextProps extends TextProps {
   variant?: TextVariant;
@@ -22,6 +22,7 @@ export function AppText({ variant = 'body', tone = 'default', style, ...rest }: 
     warning: colors.warning,
     green: colors.green,
     ai: colors.ai,
+    onAi: colors.onAi,
   }[tone];
   return <Text {...rest} style={[typography[variant], { color }, style]} />;
 }

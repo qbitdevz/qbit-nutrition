@@ -11,7 +11,8 @@ import { SUPPORTED_LOCALES } from '@/i18n/locale';
  * - Installation state is not theirs to move: when onboarding was finished here, and which bundled catalog is
  *   installed here (the catalog installer reads it at every start). These are neither exported nor replaced: an
  *   import keeps this installation's own values.
- * - Acknowledgements (`ai_notice_ack.<provider id>`: "this photo will be sent to [provider]") are consent given
+ * - Acknowledgements (`ai_notice_ack.<provider id>`: "this photo will be sent to [provider]"; `notice_ack.*`: the barcode and
+ *   food-suggestion notices) are consent given
  *   to a destination on one installation. They are neither exported nor imported, and an import removes the
  *   ones that exist, so the notice is shown again before the first scan with each imported provider.
  */
@@ -21,11 +22,13 @@ export const CATALOG_MARKER_SETTING = 'catalog_asset_hash';
 
 /** Prefix of the per-provider notice acknowledgement (`noticeKey` in `providerService.ts`). */
 export const NOTICE_ACK_PREFIX = 'ai_notice_ack.';
+/** Prefix of the other acknowledgements: `notice_ack.barcode` (numbers sent to Open Food Facts) and `notice_ack.suggest.<provider id>` (food suggestions). */
+export const OTHER_ACK_PREFIX = 'notice_ack.';
 
 const INSTALLATION_STATE: readonly string[] = [ONBOARDED_KEY, CATALOG_MARKER_SETTING];
 
 export const isInstallationState = (key: string): boolean => INSTALLATION_STATE.includes(key);
-export const isAcknowledgement = (key: string): boolean => key.startsWith(NOTICE_ACK_PREFIX);
+export const isAcknowledgement = (key: string): boolean => key.startsWith(NOTICE_ACK_PREFIX) || key.startsWith(OTHER_ACK_PREFIX);
 
 /** True for a setting that is part of the person's data: it goes into an export and comes back with an import. */
 export const isPortableSetting = (key: string): boolean => !isInstallationState(key) && !isAcknowledgement(key);

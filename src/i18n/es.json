@@ -640,7 +640,10 @@
       "favoriteRemove": "Quitar {{name}} de favoritos",
       "review": "Revisar comida ({{count}})",
       "error": "La búsqueda de alimentos falló. Inténtalo de nuevo.",
-      "loading": "Buscando"
+      "loading": "Buscando",
+      "barcode": "Escanear código de barras",
+      "barcodeHint": "Encuentra un alimento envasado con su código de barras.",
+      "barcodeTag": "Código de barras"
     },
     "portion": {
       "amount": "Cantidad en gramos",
@@ -703,7 +706,8 @@
       "needMatch": "Elige un alimento para cada ítem que lo necesite, o quítalo.",
       "swap": "Cambiar el alimento de {{name}}",
       "noNumbers": "Aún sin valores",
-      "photoKept": "No se pudo conservar la foto. La comida se guardó sin ella."
+      "photoKept": "No se pudo conservar la foto. La comida se guardó sin ella.",
+      "barcode": "Código de barras"
     },
     "custom": {
       "title": "Crear alimento personalizado",
@@ -786,8 +790,13 @@
     "accepted": "Aceptado el {{date}} (versión del texto {{version}})",
     "notAccepted": "Todavía no aceptado",
     "version": "Versión {{version}}",
-    "privacy": "Todo se queda en este teléfono. No hay cuenta ni analítica.",
-    "how": "Cómo se calculan los objetivos"
+    "privacy": "Tus datos se quedan en este teléfono. Solo sale lo que tú decides enviar: una foto de tu comida, o los números detrás de una sugerencia de alimentos, al proveedor de IA que configuraste; un número de código de barras a Open Food Facts; y los archivos que exportas. No hay cuenta ni analítica.",
+    "how": "Cómo se calculan los objetivos",
+    "sources": {
+      "title": "Fuentes de datos",
+      "usda": "Datos de composición de alimentos: U.S. Department of Agriculture, Agricultural Research Service. FoodData Central.",
+      "off": "Datos de productos: Open Food Facts, disponibles bajo la Open Database License (ODbL), con contenidos individuales bajo la Database Contents License. Los productos se buscan de a un código y se guardan en este teléfono; la base de datos no viene incluida en la app."
+    }
   },
   "providers": {
     "title": "Proveedores de IA",
@@ -796,7 +805,7 @@
     "keySaved": "Clave guardada",
     "noKey": "Sin clave",
     "notAffiliated": "Los nombres de los proveedores aparecen solo para indicar con qué servicios funciona esta aplicación. Qbit Nutrition no está afiliada, respaldada ni patrocinada por ninguno de ellos.",
-    "privacy": "Las fotos de tus comidas van solo al proveedor que elijas, con tu propia cuenta. No se envía nada a ningún otro lugar.",
+    "privacy": "Las fotos de tus comidas, y los números de calorías y macros detrás de las sugerencias de alimentos, van solo al proveedor que elijas, con tu propia cuenta. Los números de códigos de barras van a Open Food Facts, y solo cuando buscas uno.",
     "list": {
       "empty": {
         "title": "Aún no hay proveedor de IA",
@@ -999,6 +1008,185 @@
       "keep": "Conservar mis datos",
       "deleting": "Borrando",
       "error": "No se pudo borrar todo. Tus datos siguen aquí; inténtalo de nuevo."
+    }
+  },
+  "barcode": {
+    "title": "Escanear código de barras",
+    "cameraLabel": "Vista de la cámara. Apúntala a un código de barras.",
+    "frameHint": "Apunta la cámara al código de barras. Se lee solo.",
+    "torch": "Luz",
+    "torchOn": "Luz encendida",
+    "cameraError": "La cámara no pudo iniciar. Puedes escribir el número.",
+    "manualTitle": "O escribe el número",
+    "manualLabel": "Número del código de barras",
+    "manualHint": "Los dígitos impresos debajo de las barras.",
+    "lookup": "Buscar producto",
+    "errors": {
+      "empty": "Escribe el número del código de barras.",
+      "digits": "Usa solo dígitos.",
+      "length": "El código de barras de un producto tiene 8, 12 o 13 dígitos.",
+      "check": "Ese número no es un código de barras válido. Revisa los dígitos e inténtalo de nuevo.",
+      "scanned": "La cámara leyó un código que no es un código de barras de producto válido. Inténtalo de nuevo o escribe el número."
+    },
+    "permission": {
+      "title": "Usa la cámara para leer códigos de barras",
+      "body": "La cámara solo lee el código de barras. No se toma ni se guarda ninguna foto. También puedes escribir el número.",
+      "allow": "Permitir cámara",
+      "deniedTitle": "La cámara está desactivada para esta app",
+      "deniedBody": "Puedes escribir el número del código de barras abajo, o activar la cámara en los ajustes del teléfono.",
+      "openSettings": "Abrir ajustes"
+    },
+    "notice": {
+      "title": "¿Enviar este número a Open Food Facts?",
+      "body": "Para encontrar el producto, el número del código de barras se envía a Open Food Facts, una base de datos de alimentos pública y gratuita. No se envía nada más: ni fotos, ni cuenta, nada sobre ti. Este aviso aparece solo una vez.",
+      "continue": "Buscar producto",
+      "decline": "Ahora no"
+    },
+    "loading": "Buscando {{code}}",
+    "loadingHint": "Consultando Open Food Facts.",
+    "result": {
+      "title": "Producto encontrado",
+      "brand": "Marca: {{brand}}",
+      "serving": "Porción: {{grams}} g",
+      "source": "Datos del producto de Open Food Facts, bajo la Open Database License (ODbL). Son datos colaborativos: compáralos con el envase.",
+      "stale": "Guardado en este teléfono el {{date}}. Ahora no se pudo actualizar.",
+      "saved": "Guardado en este teléfono",
+      "choose": "Elegir cantidad",
+      "another": "Escanear otro",
+      "servingLabel": "Porción"
+    },
+    "incomplete": {
+      "title": "Este producto está incompleto",
+      "body": "Open Food Facts no tiene todos los valores de este producto. Completa los que faltan con la etiqueta del envase. No se adivina nada.",
+      "inconsistent": "Las calorías no coinciden con las proteínas, los carbohidratos y la grasa. Revisa los valores con el envase.",
+      "missing": "Falta en Open Food Facts",
+      "save": "Usar estos valores",
+      "saveError": "No se pudieron guardar los valores. Lo que escribiste sigue aquí. Inténtalo de nuevo.",
+      "fixErrors": "Corrige los campos marcados para continuar."
+    },
+    "failure": {
+      "title": "No se pudo buscar el producto",
+      "not_found": {
+        "title": "Producto no encontrado",
+        "message": "Open Food Facts no tiene ningún producto con este código. Revisa el número o crea el alimento tú mismo."
+      },
+      "no_network": {
+        "title": "Sin conexión",
+        "message": "No se pudo buscar este producto sin internet. Los productos que buscaste antes se guardan en este teléfono y funcionan sin conexión."
+      },
+      "timeout": {
+        "title": "Sin respuesta a tiempo",
+        "message": "Open Food Facts tardó demasiado en responder. Inténtalo de nuevo en un momento."
+      },
+      "rate_limited": {
+        "title": "Demasiadas búsquedas",
+        "message": "Open Food Facts permite un número limitado de búsquedas por minuto. Espera un momento e inténtalo de nuevo.",
+        "messageWait": "Open Food Facts permite un número limitado de búsquedas por minuto. Inténtalo de nuevo en {{seconds}} segundos."
+      },
+      "service_error": {
+        "title": "El servicio tuvo un problema",
+        "message": "Open Food Facts no respondió bien. Inténtalo de nuevo en unos minutos, o crea el alimento tú mismo."
+      },
+      "invalid_code": {
+        "title": "Ese no es un código de barras válido",
+        "message": "Revisa los dígitos e inténtalo de nuevo."
+      },
+      "typeAnother": "Escribir otro número",
+      "create": "Crear alimento propio"
+    }
+  },
+  "suggest": {
+    "action": "Sugerir alimentos",
+    "actionHint": "Ideas de tu proveedor de IA para lo que te queda hoy. Solo se envían tus calorías y macros restantes.",
+    "aiTag": "IA",
+    "title": "Ideas de alimentos",
+    "close": "Cerrar",
+    "notice": {
+      "title": "¿Enviar a {{provider}} lo que te queda hoy?",
+      "body": "Para sugerir alimentos se envían estos números a {{provider}}: lo que te queda hoy de calorías, proteínas, carbohidratos y grasa, el tipo de objetivo y el idioma de la app. No se envían fotos, comidas, perfil ni historial. {{provider}} los trata bajo sus propios términos. Este aviso aparece una vez por proveedor.",
+      "sends": "Se envía: te quedan {{kcal}} kcal, {{protein}} g de proteínas, {{carbs}} g de carbohidratos y {{fat}} g de grasa. Objetivo: {{goal}}. Idioma: {{language}}.",
+      "continue": "Obtener sugerencias",
+      "decline": "Ahora no"
+    },
+    "loading": "Buscando alimentos que encajen",
+    "loadingHint": "Consultando a {{provider}}. No se guarda nada.",
+    "result": {
+      "intro": "Ideas para lo que te queda hoy. Las cantidades y los valores son estimaciones de la IA: los valores reales salen de la base de alimentos cuando eliges un alimento.",
+      "estimate": "Estimación de IA",
+      "line": "Unos {{grams}} g · ≈ {{kcal}} kcal · P {{protein}} · C {{carbs}} · G {{fat}}",
+      "add": "Agregar a la comida",
+      "addLabel": "Agregar {{name}} a la comida",
+      "again": "Sugerir de nuevo",
+      "emptyTitle": "Sin sugerencias esta vez",
+      "emptyBody": "Ninguna idea encajaba con lo que te queda hoy. Inténtalo de nuevo."
+    },
+    "blocked": {
+      "noProvider": {
+        "title": "No hay proveedor de IA configurado",
+        "message": "Las sugerencias usan el proveedor de IA que configures. No se envía nada hasta que lo hagas.",
+        "action": "Configurar un proveedor de IA"
+      },
+      "noTargets": {
+        "title": "Primero define tus objetivos",
+        "message": "Las sugerencias necesitan tu objetivo diario de calorías para saber qué te queda.",
+        "action": "Definir objetivos"
+      },
+      "nothingLeft": {
+        "title": "No queda nada que sugerir hoy",
+        "message": "Ya llegaste a las calorías de hoy, así que no hay nada que añadir. No se piden sugerencias."
+      }
+    },
+    "failure": {
+      "providerSettings": "Ajustes del proveedor de IA",
+      "no_network": {
+        "title": "Sin conexión",
+        "message": "No se pudieron pedir las sugerencias sin internet. Inténtalo de nuevo cuando tengas conexión."
+      },
+      "timeout": {
+        "title": "Sin respuesta a tiempo",
+        "message": "El proveedor de IA tardó demasiado en responder. Inténtalo de nuevo en un momento."
+      },
+      "auth_invalid": {
+        "title": "El proveedor de IA rechazó la clave",
+        "message": "Revisa la clave en los ajustes del proveedor e inténtalo de nuevo."
+      },
+      "model_not_found": {
+        "title": "Modelo no disponible",
+        "message": "El proveedor no conoce el modelo que elegiste. Elige otro en los ajustes del proveedor."
+      },
+      "no_vision": {
+        "title": "El modelo no pudo responder",
+        "message": "Revisa el modelo en los ajustes del proveedor e inténtalo de nuevo."
+      },
+      "quota": {
+        "title": "Límite del proveedor alcanzado",
+        "message": "Tu proveedor de IA no tiene solicitudes disponibles por ahora.",
+        "messageWait": "Tu proveedor de IA no tiene solicitudes disponibles por ahora. El límite se reinicia en {{time}}."
+      },
+      "provider_unavailable": {
+        "title": "El proveedor no está disponible",
+        "message": "El proveedor de IA tuvo un problema. Inténtalo de nuevo en unos minutos."
+      },
+      "invalid_output": {
+        "title": "No se pudo leer la respuesta",
+        "message": "El modelo no respondió en el formato esperado. Inténtalo de nuevo, o elige otro modelo en los ajustes del proveedor."
+      },
+      "no_food": {
+        "title": "El modelo declinó",
+        "message": "El proveedor de IA declinó responder esta solicitud. Inténtalo más tarde."
+      },
+      "provider_changed": {
+        "title": "El proveedor cambió",
+        "message": "El proveedor de IA cambió mientras empezaba la solicitud. Inténtalo de nuevo."
+      },
+      "insecure_url": {
+        "title": "La dirección del proveedor no está permitida",
+        "message": "La dirección del proveedor debe usar una conexión segura. Revísala en los ajustes del proveedor."
+      },
+      "unknown": {
+        "title": "Algo salió mal",
+        "message": "No se pudieron pedir las sugerencias. Inténtalo de nuevo. El detalle de abajo ayuda si sigue pasando."
+      }
     }
   }
 }

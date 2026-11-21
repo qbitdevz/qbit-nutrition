@@ -14,6 +14,8 @@ export function cleanBaseUrl(url: string): string {
   return url.trim().replace(/^([a-z][a-z0-9+.-]*:\/\/)[^/?#@]*@/i, '$1');
 }
 
+const HEADLINE: ReadonlySet<string> = new Set(['kcal', 'protein', 'carbs', 'fat']);
+
 export interface ToDocumentOptions {
   appVersion: string;
   exportedAt: Date;
@@ -96,6 +98,24 @@ export function documentFromSnapshot(snapshot: BackupSnapshot, { appVersion, exp
       other_nutrients: f.otherNutrients ? ({ ...f.otherNutrients } as Record<string, number>) : null,
       default_portion_g: f.defaultPortionG,
     })),
+    barcode_products: snapshot.barcodeProducts.map((p) => {
+      const other = Object.fromEntries(Object.entries(p.per100g).filter(([code]) => !HEADLINE.has(code)));
+      return {
+        barcode: p.barcode,
+        name: p.name,
+        brand: p.brand,
+        kcal_100g: p.per100g.kcal ?? 0,
+        protein_100g: p.per100g.protein ?? 0,
+        carbs_100g: p.per100g.carbs ?? 0,
+        fat_100g: p.per100g.fat ?? 0,
+        other_nutrients: Object.keys(other).length > 0 ? (other as Record<string, number>) : null,
+        serving_g: p.servingG,
+        missing: p.missing,
+        inconsistent: p.inconsistent,
+        edited: p.edited,
+        fetched_at: p.fetchedAt,
+      };
+    }),
     food_usage: snapshot.foodUsage.map((u) => ({
       food_source: u.foodSource,
       food_ref: u.foodRef,
@@ -237,6 +257,12 @@ export function snapshotFromDocument(doc: ExportDocument, { storedPhotos, localP
         otherNutrients: other,
         per100g: { kcal: f.kcal_100g, protein: f.protein_100g, carbs: f.carbs_100g, fat: f.fat_100g, ...other },
       };
+    }),
+    barcodeProducts: doc.barcode_products.map((p) => {
+      const per100g: NutrientAmounts = { ...(p.other_nutrients as NutrientAmounts | null) };
+      const values = { kcal: p.kcal_100g, protein: p.protein_100g, carbs: p.carbs_100g, fat: p.fat_100g };
+      for (const [code, value] of Object.entries(values) as [keyof typeof values, number][]) if (!p.missing.includes(code)) per100g[code] = value;
+      return { barcode: p.barcode, name: p.name, brand: p.brand, per100g, servingG: p.serving_g, missing: p.missing, inconsistent: p.inconsistent, edited: p.edited, fetchedAt: p.fetched_at };
     }),
     foodUsage: doc.food_usage.map((u) => ({
       foodSource: u.food_source,

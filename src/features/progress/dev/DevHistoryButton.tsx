@@ -4,7 +4,7 @@ import { Button } from '@/ui';
 import { useServices } from '../../startup/AppProvider';
 import { seedSampleHistory } from './devHistory';
 
-/** DEVELOPMENT ONLY (see `devHistory.ts`): loads five weeks of sample data, then refreshes Progress. */
+/** DEVELOPMENT ONLY (QN_DEV_ONLY_HISTORY, see `devHistory.ts`): loads five weeks of sample data, then refreshes Progress. */
 export function DevHistoryButton({ onSeeded }: { onSeeded: () => void }) {
   const { t } = useTranslation();
   const { repos } = useServices();

@@ -6,12 +6,18 @@
  *
  * What the file holds: everything the person created (profile, goals, weights and body measurements, meals with
  * their items and nutrient snapshots, custom foods, recents and favorites, learned matches, settings) and the
- * AI provider profiles WITHOUT keys. It never holds `scan` rows (diagnostic data), the barcode cache, an API
- * key (there is no field for one; a stray field is dropped when parsing), or the settings that belong to this
- * installation rather than to the person (see `settingsPolicy.ts`).
+ * AI provider profiles WITHOUT keys. It holds the barcode products that something refers to (a saved item, a favorite or
+ * recent, a learned match), so those references do not dangle on the new phone; the rest of the lookup cache stays behind.
+ * It never holds `scan` rows (diagnostic data), an API key (there is no field for one; a stray field is dropped when
+ * parsing), or the settings that belong to this installation rather than to the person (see `settingsPolicy.ts`).
  *
  * Versioning: `format_version` is a whole number. A reader refuses a version newer than the one it knows and
  * says so; a change that old readers could misread must bump it.
+ *
+ * `barcode_products` was added without a bump, on purpose: it is optional (a file without it still imports, as `[]`), and
+ * a reader from before it ignores the list (unknown keys are dropped when parsing) and reads everything else exactly as
+ * it always did; meal items and usage rows that point at a barcode product were already valid in version 1. What an
+ * older reader loses is the cached product itself, never the meaning of anything it does read.
  *
  * Health notice: the acceptance in `profile.disclaimer_*` is written to the file (it is part of the profile), but
  * an import does NOT carry it over: the person accepted the notice on the installation they use, and an
@@ -186,6 +192,25 @@ const customFood = z.object({
   default_portion_g: nullable(within({ min: 0, max: GRAMS_RANGE.max })),
 });
 
+const PRODUCT_FIELDS = ['name', 'kcal', 'protein', 'carbs', 'fat'] as const;
+
+/** A cached Open Food Facts product. A headline value the lookup did not have is 0 here and named in `missing` (the column cannot be empty). */
+const barcodeProduct = z.object({
+  barcode: z.string().regex(/^(\d{8}|\d{13})$/, 'must be 8 or 13 digits'),
+  name: z.string().max(TEXT_LIMITS.name),
+  brand: nullable(z.string().max(TEXT_LIMITS.name)),
+  kcal_100g: within(CUSTOM_FOOD_RANGES.kcal),
+  protein_100g: within(CUSTOM_FOOD_RANGES.protein),
+  carbs_100g: within(CUSTOM_FOOD_RANGES.carbs),
+  fat_100g: within(CUSTOM_FOOD_RANGES.fat),
+  other_nutrients: nullable(nutrients),
+  serving_g: nullable(z.number().finite().gt(0).max(GRAMS_RANGE.max)),
+  missing: z.array(z.enum(PRODUCT_FIELDS)).max(PRODUCT_FIELDS.length),
+  inconsistent: z.boolean(),
+  edited: z.boolean(),
+  fetched_at: instant,
+});
+
 const foodUsage = z.object({
   food_source: z.enum(schema.REF_FOOD_SOURCES),
   food_ref: id,
@@ -241,6 +266,8 @@ export const ExportDocumentSchema = z
     body_measurements: z.array(bodyMeasurement),
     meals: z.array(meal),
     custom_foods: z.array(customFood),
+    /** Optional: a file written before barcode products travelled has none. */
+    barcode_products: z.array(barcodeProduct).default([]),
     food_usage: z.array(foodUsage),
     match_memory: z.array(matchMemory),
     ai_providers: z.array(aiProvider),
@@ -269,6 +296,7 @@ export const ExportDocumentSchema = z
     unique(doc.body_measurements, 'body_measurements', (m) => `${m.measured_on}|${m.kind}|${m.source}`, 'measured_on');
     unique(doc.meals, 'meals', (m) => m.id, 'id');
     unique(doc.custom_foods, 'custom_foods', (f) => f.id, 'id');
+    unique(doc.barcode_products, 'barcode_products', (p) => p.barcode, 'barcode');
     unique(doc.food_usage, 'food_usage', (u) => `${u.food_source}|${u.food_ref}`, 'food_ref');
     unique(doc.match_memory, 'match_memory', (m) => m.detected_name_normalized, 'detected_name_normalized');
     unique(doc.ai_providers, 'ai_providers', (p) => p.id, 'id');
@@ -330,6 +358,7 @@ export const ExportDocumentSchema = z
         positions.add(item.position);
       });
     });
+    doc.barcode_products.forEach((p, i) => plausible(['barcode_products', i, 'fetched_at'], p.fetched_at.slice(0, 10)));
     doc.food_usage.forEach((u, i) => plausible(['food_usage', i, 'last_used_at'], u.last_used_at.slice(0, 10)));
     doc.match_memory.forEach((m, i) => plausible(['match_memory', i, 'updated_at'], m.updated_at.slice(0, 10)));
 

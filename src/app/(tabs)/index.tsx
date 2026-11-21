@@ -24,6 +24,9 @@ export default function TodayRoute() {
       onOpenSettings={() => router.push('/settings')}
       onOpenMeal={(id) => router.push({ pathname: '/meal/[id]', params: { id } })}
       onSetupTargets={() => router.push('/settings/goal')}
+      onProviderSettings={() => router.push('/settings/providers')}
+      // Only the name and the grams of a suggestion go to the search; the values saved come from the catalog.
+      onAddSuggestion={(s) => router.push({ pathname: '/log/search', params: { q: s.name, grams: String(s.grams) } })}
     />
   );
 }

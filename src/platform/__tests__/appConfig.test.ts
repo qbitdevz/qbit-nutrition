@@ -18,8 +18,13 @@ describe('app.json (docs/06 section 6)', () => {
   const plugin = (name: string) =>
     (config.expo.plugins ?? []).find((p) => (Array.isArray(p) ? p[0] === name : p === name)) as [string, Record<string, unknown>] | undefined;
 
-  it('configures the camera for photos only: no microphone, no audio recording, no barcode scanner', () => {
-    expect(plugin('expo-camera')?.[1]).toMatchObject({ microphonePermission: false, recordAudioAndroid: false, barcodeScannerEnabled: false });
+  it('configures the camera for meal photos and product barcodes: no microphone, no audio recording, barcode reading on', () => {
+    expect(plugin('expo-camera')?.[1]).toMatchObject({ microphonePermission: false, recordAudioAndroid: false, barcodeScannerEnabled: true });
+  });
+
+  it('asks for no permission beyond the camera for it, and none for the network lookup (INTERNET is not a runtime permission)', () => {
+    const android = config.expo.android as { permissions?: string[] };
+    expect(android.permissions).toBeUndefined(); // nothing added by hand: no location, contacts, storage, advertising id
   });
 
   it('keeps the gallery picker free of photo-library and microphone permissions', () => {
@@ -33,6 +38,9 @@ describe('app.json (docs/06 section 6)', () => {
   });
 
   it('explains the camera use in plain words', () => {
-    expect(String(plugin('expo-camera')?.[1]?.cameraPermission)).toMatch(/only to photograph your meals/);
+    const text = String(plugin('expo-camera')?.[1]?.cameraPermission);
+    expect(text).toMatch(/photograph your meals/);
+    expect(text).toMatch(/barcodes/);
+    expect(text).toMatch(/only when you choose/);
   });
 });

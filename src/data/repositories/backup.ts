@@ -16,6 +16,7 @@ import {
   setting,
 } from '../schema';
 import type { AiProvider } from './aiProviders';
+import { toBarcodeRecord, toBarcodeRow, type BarcodeProductRecord } from './barcodeProducts';
 import { toCustomFood, type CustomFood } from './customFoods';
 import type { FoodUsageEntry } from './foodUsage';
 import type { Goal } from './goals';
@@ -27,8 +28,9 @@ import type { RepositoryContext } from './shared';
 
 /**
  * Everything the user created, as the repositories return it (docs/08 section 9). It deliberately has no `scan`
- * rows (diagnostic data), no `barcode_product` rows (a cache of lookups) and no API keys (those are in secure
- * storage, and a provider profile has no key field).
+ * rows (diagnostic data) and no API keys (those are in secure storage, and a provider profile has no key field).
+ * The `barcode_product` cache is NOT copied whole, but the products that something refers to are: a saved item, a
+ * favorite or recent, or a learned match. Without them those references would dangle after moving phones.
  */
 export interface BackupSnapshot {
   profile: Profile | null;
@@ -37,6 +39,8 @@ export interface BackupSnapshot {
   /** With their items and nutrient snapshots. `scanId` is ignored when writing: scans are not part of a snapshot. */
   meals: MealWithItems[];
   customFoods: CustomFood[];
+  /** Only the cached products that a meal item, `food_usage` or `match_memory` refers to. */
+  barcodeProducts: BarcodeProductRecord[];
   foodUsage: FoodUsageEntry[];
   matchMemory: MatchMemoryEntry[];
   aiProviders: AiProvider[];
@@ -48,7 +52,7 @@ export interface BackupRepository {
   read(): Promise<BackupSnapshot>;
   /**
    * Makes the database hold exactly `snapshot`: everything that was there is removed (scans and the barcode cache
-   * too) and the snapshot is written, in ONE transaction. If anything fails the transaction rolls back and the
+   * too; the cache then holds only the products of the snapshot) and the snapshot is written, in ONE transaction. If anything fails the transaction rolls back and the
    * previous data is untouched.
    */
   replaceAll(snapshot: BackupSnapshot): Promise<void>;
@@ -94,6 +98,18 @@ export function createBackupRepository({ db }: RepositoryContext): BackupReposit
         measurements: tx.select().from(bodyMeasurement).orderBy(asc(bodyMeasurement.measuredOn), asc(bodyMeasurement.kind), asc(bodyMeasurement.source)).all(),
         meals: loadMeals(tx, sql`1 = 1`),
         customFoods: tx.select().from(customFood).orderBy(asc(sql`lower(${customFood.name})`), asc(customFood.id)).all().map(toCustomFood),
+        barcodeProducts: tx
+          .select()
+          .from(barcodeProduct)
+          .where(
+            sql`${barcodeProduct.barcode} IN (
+              SELECT ${mealItem.foodRef} FROM ${mealItem} WHERE ${mealItem.foodSource} = 'barcode' AND ${mealItem.foodRef} IS NOT NULL
+              UNION SELECT ${foodUsage.foodRef} FROM ${foodUsage} WHERE ${foodUsage.foodSource} = 'barcode'
+              UNION SELECT ${matchMemory.foodRef} FROM ${matchMemory} WHERE ${matchMemory.foodSource} = 'barcode')`,
+          )
+          .orderBy(asc(barcodeProduct.barcode))
+          .all()
+          .map(toBarcodeRecord),
         foodUsage: tx
           .select()
           .from(foodUsage)
@@ -141,6 +157,8 @@ export function createBackupRepository({ db }: RepositoryContext): BackupReposit
             )
             .run(),
         );
+
+        insertChunks(snapshot.barcodeProducts, (rows) => tx.insert(barcodeProduct).values(rows.map(toBarcodeRow)).run());
 
         insertChunks(snapshot.meals, (rows) =>
           tx

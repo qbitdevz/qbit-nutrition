@@ -5,7 +5,7 @@ import type { DataPlatform } from '@/platform/dataPlatform';
 import { EXPORT_FORMAT, EXPORT_FORMAT_VERSION } from '../exportFormat';
 
 /**
- * DEVELOPMENT ONLY. The browser preview has no app file folder, share sheet or document picker worth using, so
+ * DEVELOPMENT ONLY (QN_DEV_ONLY_DATA_PLATFORM). The browser preview has no app file folder, share sheet or document picker worth using, so
  * the data screens run on the in-memory fake: two "kept photos" are on disk, and the file picker always returns a
  * small, valid sample export so the import preview and the replace flow can be walked through. Dropped from release
  * bundles with `__DEV__` (see `app/_layout.tsx`).

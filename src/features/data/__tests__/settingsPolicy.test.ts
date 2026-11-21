@@ -20,4 +20,11 @@ describe('which settings travel', () => {
     expect(portableSettings(all)).toEqual({ locale: 'es', keep_photos: 'false', minimum_daily_kcal: '1400' });
     expect(keptSettings(all)).toEqual({ [ONBOARDED_KEY]: 'x', [CATALOG_MARKER_SETTING]: 'h' });
   });
+
+  it('treats the barcode and suggestion notices as acknowledgements: consent stays on the installation that gave it', () => {
+    const all = { locale: 'en', 'notice_ack.barcode': 'x', 'notice_ack.suggest.p1': 'x' };
+    expect(isPortableSetting('notice_ack.barcode')).toBe(false);
+    expect(portableSettings(all)).toEqual({ locale: 'en' });
+    expect(keptSettings(all)).toEqual({});
+  });
 });

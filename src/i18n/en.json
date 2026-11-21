@@ -640,7 +640,10 @@
       "review": "Review meal ({{count}})",
       "error": "The food search failed. Try again.",
       "loading": "Searching",
-      "emptyTitle": "Find a food"
+      "emptyTitle": "Find a food",
+      "barcode": "Scan a barcode",
+      "barcodeHint": "Find a packaged food with its barcode.",
+      "barcodeTag": "Barcode"
     },
     "portion": {
       "amount": "Amount in grams",
@@ -703,7 +706,8 @@
       "needMatch": "Pick a food for each item that needs a match, or remove it.",
       "swap": "Change food for {{name}}",
       "noNumbers": "No numbers yet",
-      "photoKept": "The photo could not be kept. The meal was saved without it."
+      "photoKept": "The photo could not be kept. The meal was saved without it.",
+      "barcode": "Barcode"
     },
     "custom": {
       "title": "Create custom food",
@@ -786,8 +790,13 @@
     "accepted": "Accepted on {{date}} (text version {{version}})",
     "notAccepted": "Not accepted yet",
     "version": "Version {{version}}",
-    "privacy": "Everything stays on this phone. There is no account and no analytics.",
-    "how": "How targets are calculated"
+    "privacy": "Your data stays on this phone. Only what you choose to send leaves it: a meal photo, or the numbers behind a food suggestion, to the AI provider you set up; a barcode number to Open Food Facts; and the files you export. There is no account and no analytics.",
+    "how": "How targets are calculated",
+    "sources": {
+      "title": "Data sources",
+      "usda": "Food composition data: U.S. Department of Agriculture, Agricultural Research Service. FoodData Central.",
+      "off": "Product data: Open Food Facts, made available under the Open Database License (ODbL), with individual contents under the Database Contents License. Products are looked up one barcode at a time and saved on this phone; the database is not included in the app."
+    }
   },
   "providers": {
     "title": "AI providers",
@@ -796,7 +805,7 @@
     "keySaved": "Key saved",
     "noKey": "No key",
     "notAffiliated": "Provider names appear only to say which services this app works with. Qbit Nutrition is not affiliated with, endorsed by, or sponsored by any of them.",
-    "privacy": "Your meal photos go only to the provider you choose, with your own account. Nothing is sent anywhere else.",
+    "privacy": "Your meal photos, and the calorie and macro numbers behind food suggestions, go only to the provider you choose, with your own account. Barcode numbers go to Open Food Facts, and only when you look one up.",
     "list": {
       "empty": {
         "title": "No AI provider yet",
@@ -999,6 +1008,185 @@
       "keep": "Keep my data",
       "deleting": "Deleting",
       "error": "Not everything could be deleted. Your data is still here; try again."
+    }
+  },
+  "barcode": {
+    "title": "Scan a barcode",
+    "cameraLabel": "Camera preview. Point it at a barcode.",
+    "frameHint": "Point the camera at the barcode. It is read on its own.",
+    "torch": "Light",
+    "torchOn": "Light on",
+    "cameraError": "The camera could not start. You can type the number instead.",
+    "manualTitle": "Or type the number",
+    "manualLabel": "Barcode number",
+    "manualHint": "The digits printed under the bars.",
+    "lookup": "Look up product",
+    "errors": {
+      "empty": "Type the barcode number.",
+      "digits": "Use digits only.",
+      "length": "A product barcode has 8, 12 or 13 digits.",
+      "check": "That number is not a valid barcode. Check the digits and try again.",
+      "scanned": "The camera read a code that is not a valid product barcode. Try again or type the number."
+    },
+    "permission": {
+      "title": "Use the camera to read barcodes",
+      "body": "The camera only reads the barcode. No photo is taken or saved. You can also type the number.",
+      "allow": "Allow camera",
+      "deniedTitle": "The camera is off for this app",
+      "deniedBody": "You can type the barcode number below, or turn the camera on in your phone settings.",
+      "openSettings": "Open settings"
+    },
+    "notice": {
+      "title": "Send this number to Open Food Facts?",
+      "body": "To find the product, the barcode number is sent to Open Food Facts, a free public food database. Nothing else is sent: no photo, no account, nothing about you. This notice appears only once.",
+      "continue": "Look up product",
+      "decline": "Not now"
+    },
+    "loading": "Looking up {{code}}",
+    "loadingHint": "Searching Open Food Facts.",
+    "result": {
+      "title": "Product found",
+      "brand": "Brand: {{brand}}",
+      "serving": "Serving: {{grams}} g",
+      "source": "Product data from Open Food Facts, under the Open Database License (ODbL). Crowd-sourced, so check it against the package.",
+      "stale": "Saved on this phone on {{date}}. It could not be refreshed now.",
+      "saved": "Saved on this phone",
+      "choose": "Choose amount",
+      "another": "Scan another",
+      "servingLabel": "Serving"
+    },
+    "incomplete": {
+      "title": "This product is incomplete",
+      "body": "Open Food Facts does not have all the values of this product. Fill in the missing ones from the package label. Nothing is guessed.",
+      "inconsistent": "The calories do not match the protein, carbs and fat. Check the values against the package.",
+      "missing": "Missing in Open Food Facts",
+      "save": "Use these values",
+      "saveError": "The values could not be saved. What you typed is still here. Try again.",
+      "fixErrors": "Fix the highlighted fields to continue."
+    },
+    "failure": {
+      "title": "The product could not be looked up",
+      "not_found": {
+        "title": "Product not found",
+        "message": "Open Food Facts has no product with this barcode. Check the number, or create the food yourself."
+      },
+      "no_network": {
+        "title": "No connection",
+        "message": "This product could not be looked up without internet. Products you looked up before are saved on this phone and work offline."
+      },
+      "timeout": {
+        "title": "No answer in time",
+        "message": "Open Food Facts took too long to answer. Try again in a moment."
+      },
+      "rate_limited": {
+        "title": "Too many lookups",
+        "message": "Open Food Facts allows a limited number of lookups per minute. Wait a moment and try again.",
+        "messageWait": "Open Food Facts allows a limited number of lookups per minute. Try again in {{seconds}} seconds."
+      },
+      "service_error": {
+        "title": "The service had a problem",
+        "message": "Open Food Facts did not answer correctly. Try again in a few minutes, or create the food yourself."
+      },
+      "invalid_code": {
+        "title": "That is not a valid barcode",
+        "message": "Check the digits and try again."
+      },
+      "typeAnother": "Type another number",
+      "create": "Create custom food"
+    }
+  },
+  "suggest": {
+    "action": "Suggest foods",
+    "actionHint": "Ideas from your AI provider for what is left today. Only your remaining calories and macros are sent.",
+    "aiTag": "AI",
+    "title": "Food ideas",
+    "close": "Close",
+    "notice": {
+      "title": "Send what is left today to {{provider}}?",
+      "body": "To suggest foods, these numbers are sent to {{provider}}: what is left today of calories, protein, carbs and fat, your goal type and the app language. No photos, no meals, no profile and no history are sent. {{provider}} handles them under its own terms. This notice appears once for each provider.",
+      "sends": "Sent: {{kcal}} kcal, {{protein}} g protein, {{carbs}} g carbs and {{fat}} g fat left. Goal: {{goal}}. Language: {{language}}.",
+      "continue": "Get suggestions",
+      "decline": "Not now"
+    },
+    "loading": "Looking for foods that fit",
+    "loadingHint": "Asking {{provider}}. Nothing is saved.",
+    "result": {
+      "intro": "Ideas for what is left today. Amounts and values are AI estimates: the real values come from the food database when you pick a food.",
+      "estimate": "AI estimate",
+      "line": "About {{grams}} g · ≈ {{kcal}} kcal · P {{protein}} · C {{carbs}} · F {{fat}}",
+      "add": "Add to a meal",
+      "addLabel": "Add {{name}} to a meal",
+      "again": "Suggest again",
+      "emptyTitle": "No suggestions this time",
+      "emptyBody": "None of the ideas fit what is left today. Try again."
+    },
+    "blocked": {
+      "noProvider": {
+        "title": "No AI provider set up",
+        "message": "Food suggestions use the AI provider you set up. Nothing is sent until you do.",
+        "action": "Set up an AI provider"
+      },
+      "noTargets": {
+        "title": "Set your targets first",
+        "message": "Suggestions need your daily calorie target to know what is left.",
+        "action": "Set up targets"
+      },
+      "nothingLeft": {
+        "title": "Nothing left to suggest today",
+        "message": "You have reached today’s calories, so there is nothing to add. Suggestions are not requested."
+      }
+    },
+    "failure": {
+      "providerSettings": "AI provider settings",
+      "no_network": {
+        "title": "No connection",
+        "message": "The suggestions could not be requested without internet. Try again when you are online."
+      },
+      "timeout": {
+        "title": "No answer in time",
+        "message": "The AI provider took too long to answer. Try again in a moment."
+      },
+      "auth_invalid": {
+        "title": "The AI provider refused the key",
+        "message": "Check the key in the provider settings, then try again."
+      },
+      "model_not_found": {
+        "title": "Model not available",
+        "message": "The provider does not know the model you chose. Pick another in the provider settings."
+      },
+      "no_vision": {
+        "title": "The model could not answer",
+        "message": "Check the model in the provider settings, then try again."
+      },
+      "quota": {
+        "title": "Provider limit reached",
+        "message": "Your AI provider has no requests left for now.",
+        "messageWait": "Your AI provider has no requests left for now. The limit resets in {{time}}."
+      },
+      "provider_unavailable": {
+        "title": "The provider is not available",
+        "message": "The AI provider had a problem. Try again in a few minutes."
+      },
+      "invalid_output": {
+        "title": "The answer could not be read",
+        "message": "The model did not answer in the expected format. Try again, or pick another model in the provider settings."
+      },
+      "no_food": {
+        "title": "The model declined",
+        "message": "The AI provider declined to answer this request. Try again later."
+      },
+      "provider_changed": {
+        "title": "The provider changed",
+        "message": "The AI provider changed while the request started. Try again."
+      },
+      "insecure_url": {
+        "title": "The provider address is not allowed",
+        "message": "The provider address must use a secure connection. Check it in the provider settings."
+      },
+      "unknown": {
+        "title": "Something went wrong",
+        "message": "The suggestions could not be requested. Try again. The detail below can help if it keeps happening."
+      }
     }
   }
 }

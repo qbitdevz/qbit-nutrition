@@ -49,6 +49,13 @@ export function AboutScreen({ onBack, onOpenCalculation }: AboutScreenProps) {
           </AppText>
         ) : null}
         {onOpenCalculation ? <Button label={t('about.how')} variant="secondary" icon="info" onPress={onOpenCalculation} /> : null}
+        <View style={[styles.card, styles.sources, { backgroundColor: colors.surface }]} testID="data-sources">
+          <AppText variant="heading" accessibilityRole="header">
+            {t('about.sources.title')}
+          </AppText>
+          <AppText variant="bodyMd">{t('about.sources.usda')}</AppText>
+          <AppText variant="bodyMd">{t('about.sources.off')}</AppText>
+        </View>
         <AppText variant="bodySm" tone="muted">
           {t('about.privacy')}
         </AppText>
@@ -65,4 +72,5 @@ export function AboutScreen({ onBack, onOpenCalculation }: AboutScreenProps) {
 const styles = StyleSheet.create({
   body: { paddingHorizontal: layout.screenMargin, paddingTop: spacing.s2, paddingBottom: spacing.s10, gap: spacing.s4 },
   card: { borderRadius: radius.lg, padding: spacing.s5 },
+  sources: { gap: spacing.s3 },
 });

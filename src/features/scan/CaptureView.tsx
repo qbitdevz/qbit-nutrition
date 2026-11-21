@@ -42,7 +42,7 @@ export function CaptureView({ onPhoto, onClose, onManual }: CaptureViewProps) {
   const gallery = useGallery(onPhoto);
 
   if (permission === null) return <View style={styles.black} accessibilityRole="progressbar" accessibilityLabel={t('common.loading')} />;
-  if (permission.status === 'granted') return <Viewfinder onPhoto={onPhoto} onClose={onClose} onGallery={gallery.pick} galleryFailed={gallery.failed} />;
+  if (permission.status === 'granted') return <Viewfinder onPhoto={onPhoto} onClose={onClose} onManual={onManual} onGallery={gallery.pick} galleryFailed={gallery.failed} />;
 
   const denied = permission.status === 'denied';
   return (
@@ -89,11 +89,12 @@ function useGallery(onPhoto: (photo: Photo) => void) {
 interface ViewfinderProps {
   onPhoto: (photo: Photo) => void;
   onClose: () => void;
+  onManual: () => void;
   onGallery: () => Promise<void>;
   galleryFailed: boolean;
 }
 
-function Viewfinder({ onPhoto, onClose, onGallery, galleryFailed }: ViewfinderProps) {
+function Viewfinder({ onPhoto, onClose, onManual, onGallery, galleryFailed }: ViewfinderProps) {
   const { t } = useTranslation();
   const platform = useScanPlatform();
   const { repos } = useServices();
@@ -190,7 +191,12 @@ function Viewfinder({ onPhoto, onClose, onGallery, galleryFailed }: ViewfinderPr
             style={[styles.shutter, !ready || busy ? styles.shutterWaiting : null]}>
             <View style={styles.shutterInner} />
           </PressableScale>
-          <View style={styles.side} />
+          <View style={[styles.side, styles.sideEnd]}>
+            {/* The way into manual logging (search, custom foods, barcodes) without the camera having to fail first: docs/04 flow D. */}
+            <View style={styles.round}>
+              <IconButton icon="pencil" label={t('scan.manual')} onPress={onManual} testID="add-manually-camera" />
+            </View>
+          </View>
         </View>
       </View>
     </View>
@@ -226,6 +232,7 @@ const styles = StyleSheet.create({
   error: { textAlign: 'center', paddingHorizontal: spacing.s4 },
   controls: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', alignSelf: 'stretch', paddingHorizontal: spacing.s6 },
   side: { width: layout.touchTarget + spacing.s2, alignItems: 'flex-start' },
+  sideEnd: { alignItems: 'flex-end' },
   shutter: { width: SHUTTER, height: SHUTTER, borderRadius: SHUTTER / 2, borderWidth: 4, borderColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' },
   shutterWaiting: { opacity: 0.5 },
   shutterInner: { width: SHUTTER - 18, height: SHUTTER - 18, borderRadius: (SHUTTER - 18) / 2, backgroundColor: '#FFFFFF' },

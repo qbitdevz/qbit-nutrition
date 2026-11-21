@@ -108,6 +108,13 @@ describe('capture (flow B step 1, S4)', () => {
     expect(screen.queryByText('Whole plate in frame, from above')).toBeNull();
   });
 
+  it('offers "Add manually" on the viewfinder itself, so the manual path (search, custom foods, barcodes) never needs the camera to fail first (docs/04 flow D)', async () => {
+    await open();
+    await screen.findByRole('button', { name: 'Take photo' });
+    await press('Add manually');
+    expect(await screen.findByLabelText('Search foods')).toBeOnTheScreen();
+  });
+
   it('explains the camera permission before asking for it, then shows the camera once it is granted', async () => {
     await open();
     kit.platform.state.permission = 'undetermined';

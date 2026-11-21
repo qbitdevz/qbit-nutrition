@@ -60,7 +60,7 @@ describe('export (S3, S4)', () => {
     const doc = JSON.parse(strFromU8(file.bytes));
     expect(doc).toMatchObject({ format: 'qbit-nutrition-export', format_version: 1, app_version: '1.0.0', exported_at: NOW.toISOString() });
     expect(Object.keys(doc).sort()).toEqual(
-      ['ai_providers', 'app_version', 'body_measurements', 'custom_foods', 'exported_at', 'food_usage', 'format', 'format_version', 'goals', 'match_memory', 'meals', 'profile', 'settings'].sort(),
+      ['ai_providers', 'app_version', 'barcode_products', 'body_measurements', 'custom_foods', 'exported_at', 'food_usage', 'format', 'format_version', 'goals', 'match_memory', 'meals', 'profile', 'settings'].sort(),
     );
     expect(doc.meals).toHaveLength(3);
     expect(doc.meals[1].items[0].nutrients).toEqual({ sodium: 700 });

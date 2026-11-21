@@ -5,12 +5,10 @@
 // `stop_reason: "refusal"`, `usage.input_tokens` / `usage.output_tokens`.
 import { ProviderError } from '../errors';
 import { jsonOnlyInstruction } from '../prompt';
-import { providerJsonSchema } from '../schema';
 import type { OutputMode, ProviderAdapter } from '../types';
 import { joinUrl } from '../url';
 import {
-  TOOL_DESCRIPTION,
-  TOOL_NAME,
+  SCAN_FORMAT,
   getOrNull,
   jsonHeaders,
   malformed,
@@ -40,13 +38,14 @@ export const anthropicAdapter: ProviderAdapter = {
   async generate(request) {
     const { profile, apiKey, mode } = request;
     if (!MODES.includes(mode)) throw unsupportedMode('anthropic', mode);
-    const schema = providerJsonSchema('anthropic');
+    const format = request.format ?? SCAN_FORMAT;
+    const schema = format.schema('anthropic');
 
     const messages: Json[] = [
       {
         role: 'user',
         content: [
-          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: request.imageJpegBase64 } },
+          ...(request.imageJpegBase64 === undefined ? [] : [{ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: request.imageJpegBase64 } }]),
           { type: 'text', text: request.userText },
         ],
       },
@@ -65,8 +64,8 @@ export const anthropicAdapter: ProviderAdapter = {
     if (mode === 'schema') {
       body.output_config = { format: { type: 'json_schema', schema } };
     } else if (mode === 'tool') {
-      body.tools = [{ name: TOOL_NAME, description: TOOL_DESCRIPTION, input_schema: schema }];
-      body.tool_choice = { type: 'tool', name: TOOL_NAME };
+      body.tools = [{ name: format.toolName, description: format.toolDescription, input_schema: schema }];
+      body.tool_choice = { type: 'tool', name: format.toolName };
     }
 
     const { status, bodyText } = await request.http.request({
@@ -86,7 +85,7 @@ export const anthropicAdapter: ProviderAdapter = {
     if (!Array.isArray(json.content)) throw malformed('no content array.', bodyText, apiKey);
 
     let text = '';
-    const toolUse = json.content.find((b: Json) => b?.type === 'tool_use' && b.name === TOOL_NAME);
+    const toolUse = json.content.find((b: Json) => b?.type === 'tool_use' && b.name === format.toolName);
     if (mode === 'tool' && toolUse && toolUse.input !== undefined) {
       text = JSON.stringify(toolUse.input);
     } else {

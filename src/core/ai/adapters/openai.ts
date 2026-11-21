@@ -6,12 +6,10 @@
 import { ProviderError } from '../errors';
 import { mapHttpFailure } from '../http';
 import { jsonOnlyInstruction } from '../prompt';
-import { providerJsonSchema } from '../schema';
 import type { OutputMode, ProviderAdapter } from '../types';
 import { joinUrl } from '../url';
 import {
-  TOOL_DESCRIPTION,
-  TOOL_NAME,
+  SCAN_FORMAT,
   getOrNull,
   jsonHeaders,
   malformed,
@@ -44,7 +42,8 @@ export const openaiCompatibleAdapter: ProviderAdapter = {
   async generate(request) {
     const { profile, apiKey, mode } = request;
     if (!MODES.includes(mode)) throw unsupportedMode('openai_compatible', mode);
-    const schema = providerJsonSchema('openai');
+    const format = request.format ?? SCAN_FORMAT;
+    const schema = format.schema('openai');
 
     const messages: Json[] = [
       { role: 'system', content: mode === 'prompt' ? request.system + jsonOnlyInstruction(schema) : request.system },
@@ -52,7 +51,7 @@ export const openaiCompatibleAdapter: ProviderAdapter = {
         role: 'user',
         content: [
           { type: 'text', text: request.userText },
-          { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${request.imageJpegBase64}` } },
+          ...(request.imageJpegBase64 === undefined ? [] : [{ type: 'image_url', image_url: { url: `data:image/jpeg;base64,${request.imageJpegBase64}` } }]),
         ],
       },
     ];
@@ -63,12 +62,12 @@ export const openaiCompatibleAdapter: ProviderAdapter = {
 
     const body: Json = { model: profile.model, messages };
     if (mode === 'schema') {
-      body.response_format = { type: 'json_schema', json_schema: { name: 'scan_result', strict: true, schema } };
+      body.response_format = { type: 'json_schema', json_schema: { name: format.schemaName, strict: true, schema } };
     } else if (mode === 'tool') {
       body.tools = [
-        { type: 'function', function: { name: TOOL_NAME, description: TOOL_DESCRIPTION, parameters: schema, strict: true } },
+        { type: 'function', function: { name: format.toolName, description: format.toolDescription, parameters: schema, strict: true } },
       ];
-      body.tool_choice = { type: 'function', function: { name: TOOL_NAME } };
+      body.tool_choice = { type: 'function', function: { name: format.toolName } };
     }
 
     const { status, headers, bodyText } = await request.http.request({

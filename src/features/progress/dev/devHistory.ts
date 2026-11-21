@@ -1,7 +1,7 @@
 import { addDays, deriveMealTime, type Repositories } from '@/data';
 
 /**
- * DEVELOPMENT ONLY. Writes about five weeks of meals, a goal change ten days ago, weights every few days and a
+ * DEVELOPMENT ONLY (QN_DEV_ONLY_HISTORY). Writes about five weeks of meals, a goal change ten days ago, weights every few days and a
  * few waist measurements, so Progress can be checked with data. Reached only from `DevHistoryButton`, which
  * `ProgressScreen` loads behind `__DEV__`, so Metro leaves this module out of release bundles.
  */

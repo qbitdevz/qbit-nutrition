@@ -8,6 +8,8 @@ import { SAMPLE_MEAL_JPEG_BASE64 } from './sampleMeal';
 
 /** `setting` key that records the one-time "this photo will be sent to [provider]" notice (docs/12 section 4), per profile. */
 export const noticeKey = (providerId: string): string => `ai_notice_ack.${providerId}`;
+/** `setting` key of the one-time "these numbers will be sent to [provider]" notice before food suggestions (S6, S9), per profile. */
+export const suggestNoticeKey = (providerId: string): string => `notice_ack.suggest.${providerId}`;
 
 /** A profile as screens see it: whether a key is stored, never the key. */
 export interface ProviderView extends AiProvider {
@@ -194,7 +196,11 @@ export function createProviderService({ aiProviders, settings, secrets: store, c
       // row changes next, and the new key is stored last. If a step fails, the later ones do not run.
       if (baseUrlChanged) await secrets.remove(id);
       await aiProviders.update(id, patch);
-      if (baseUrlChanged) await settings.remove(noticeKey(id)); // the destination is new: the notice applies again
+      if (baseUrlChanged) {
+        // the destination is new: both notices apply again
+        await settings.remove(noticeKey(id));
+        await settings.remove(suggestNoticeKey(id));
+      }
       if (apiKey) {
         const hadKey = !baseUrlChanged && (await hasKey(id));
         try {
@@ -274,6 +280,7 @@ export function createProviderService({ aiProviders, settings, secrets: store, c
       await secrets.remove(id);
       await aiProviders.remove(id);
       await settings.remove(noticeKey(id));
+      await settings.remove(suggestNoticeKey(id));
     },
 
     async testConnection(draft, signal) {
