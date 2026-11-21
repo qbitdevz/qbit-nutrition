@@ -19,8 +19,8 @@ Traceability: `bcdd/contrato.md` v4 (aprobado) — REQ-07, REQ-12, REQ-13, REQ-1
 
 ## Tasks
 
-- [ ] T1 — S1, S2, S10 — Progress: weekly and monthly averages, weight log and chart, body measurements — worker — commit:
-- [ ] T2 — S3, S4, S10 — Data: export, import, delete all — worker, then independent verification (Risk: item 1) — commit:
+- [x] T1 — S1, S2, S10 — Progress: weekly and monthly averages, weight log and chart, body measurements — worker — commit: 8da4353
+- [x] T2 — S3, S4, S10 — Data: export, import, delete all — worker, then independent verification (Risk: item 1) — commit: 8da4353 + 25355b3
 - [ ] T3 — S5, S9, S10 — Barcode scanning with Open Food Facts — worker — commit:
 - [ ] T4 — S6, S9, S10 — AI food suggestions — worker — commit:
 - [ ] T5 — S7, S9, S10 — Health Connect: write meals, read weight — worker — commit:
@@ -29,3 +29,5 @@ Traceability: `bcdd/contrato.md` v4 (aprobado) — REQ-07, REQ-12, REQ-13, REQ-1
 ## Log
 
 - **L1** — 2026-11-21 — Owner request, verbatim: «me voy al gym continua hasta finalizar todas las tareas.. yo te doy la autorizacion y aprobacion de lo que sea necesario..»
+- **L2** — 2026-11-21 — T1 and T2 evidence: 64 suites / 1138 tests at 8da4353 (parent run), `tsc` and `expo lint` clean. Seen in the browser preview in English and Spanish, light and dark. Decisions by the team (assumptions): averages need 4 logged days in a week and 7 in a month; an import does not carry the accepted health notice; photo ZIPs use `fflate` (MIT).
+- **L3** — 2026-11-21 — Independent verification of T2 (Risk: item 1, data) reproduced: an import could leave a stored key paired with another host; a crafted provider id could block "Delete all" forever; a key pasted into a label, model, or URL path reached the export; no cap on unpacked ZIP size; out-of-range values accepted. Fixed test-first in the second commit: imported profiles get fresh ids, exports stop and name the field when a stored key appears in any string, ZIP and value bounds, a startup sweep for orphan photos, files, and keys. Worker reported 72 suites / 1247 tests and the Android export passing. Remaining: on Android the unencrypted export file stays in the app's private cache until the next app start; keys of profiles deleted by an older build cannot be found.
