@@ -74,6 +74,10 @@ code to one message (document 04, flow C).
 | `insecure_url` | Plain HTTP to a non-private address |
 | `unknown` | Anything else; carries a redacted detail string |
 
+"No food detected" is a valid model answer, not a provider failure, so it is
+reported separately from this taxonomy. A canceled request is reported as an
+abort and is never retried.
+
 ### 1.3 Catalog (`core/catalog`)
 
 ```ts
@@ -146,7 +150,7 @@ probing in "test connection" (document 07, section 3).
 | List models | `GET {baseUrl}/v1/models` |
 | Auth | `x-api-key: {key}` plus the `anthropic-version` header |
 | Image | A content block of type `image` with a base64 source |
-| Structured output | A single tool whose input schema is the output schema, with tool choice forced |
+| Structured output | Native structured output with a JSON Schema in the output configuration (mode A), or a single forced tool whose input schema is the output schema (mode B). The native mode accepts a reduced JSON Schema: numeric and length bounds are stripped before sending and enforced on the device. |
 | Usage | `usage.input_tokens`, `usage.output_tokens` |
 
 ### 2.4 Gemini adapter
@@ -157,8 +161,9 @@ probing in "test connection" (document 07, section 3).
 | List models | `GET {baseUrl}/v1beta/models` |
 | Auth | `x-goog-api-key: {key}` |
 | Image | A part with `inline_data` (MIME type and base64 data) |
-| Structured output | A JSON response MIME type with a response schema in the generation configuration |
-| Usage | `usageMetadata` token counts |
+| Structured output | A JSON response MIME type with a JSON Schema in the generation configuration (`responseJsonSchema`). No tool mode is used. |
+| Usage | `usageMetadata` token counts; thinking tokens count as output |
+| Errors | An invalid key is reported as HTTP 400 with reason `API_KEY_INVALID`; the retry delay on 429 also arrives in the error body |
 
 ### 2.5 Rules common to all provider calls
 
