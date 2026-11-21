@@ -2,6 +2,9 @@ import { createCatalog, type Catalog, type CatalogDb, type FoodRef } from '@/cor
 import { createRepositories } from '@/data';
 import { openAppDatabase } from '@/data/expo/appDatabase';
 import { openCatalogDatabase } from '@/data/expo/catalogDatabase';
+import { deviceFetch } from '@/platform/deviceFetch';
+import { createExpoSecretStore } from '@/platform/expoSecretStore';
+import { createAiServices } from './aiServices';
 import type { AppServices } from './types';
 
 /**
@@ -27,5 +30,6 @@ export async function openServicesOnce(wrapCatalogDb: (db: CatalogDb) => Catalog
 
   const catalogDb = await openCatalogDatabase(repos.settings);
   catalog = createCatalog({ db: wrapCatalogDb(catalogDb), memory: repos.matchMemory });
-  return { repos, catalog };
+  const ai = createAiServices({ repos, secrets: createExpoSecretStore(), fetch: deviceFetch });
+  return { repos, catalog, ...ai };
 }

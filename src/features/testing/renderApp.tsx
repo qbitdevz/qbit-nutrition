@@ -7,11 +7,14 @@ import { render } from '@testing-library/react-native';
 import type { ReactElement } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { createMemorySecretStore } from '@/platform/memorySecretStore';
 import type { Repositories } from '@/data';
 import i18n from '@/i18n';
 import type { Locale } from '@/i18n/locale';
 import { MotionProvider, SnackbarProvider, ThemeProvider } from '@/ui';
 import { MealDraftProvider } from '../logging/draft';
+import { createAiServices } from '../startup/aiServices';
+import { offlineFetch } from './offline';
 import { AppProvider } from '../startup/AppProvider';
 import type { AppServices } from '../startup/types';
 
@@ -42,5 +45,5 @@ export async function renderApp(ui: ReactElement, { services, locale = 'en', red
 
 /** Services over a harness, optionally with some repository methods replaced (to simulate a failure). */
 export function servicesFrom(h: { repos: Repositories; catalog: AppServices['catalog'] }, repos: Repositories = h.repos): AppServices {
-  return { repos, catalog: h.catalog };
+  return { repos, catalog: h.catalog, ...createAiServices({ repos, secrets: createMemorySecretStore(), fetch: offlineFetch, retryDelayMs: 0 }) };
 }

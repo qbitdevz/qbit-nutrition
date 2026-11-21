@@ -8,6 +8,7 @@
     "scheme": "qbitnutrition",
     "userInterfaceStyle": "automatic",
     "android": {
+      "allowBackup": false,
       "package": "dev.qbitdev.nutrition",
       "adaptiveIcon": {
         "backgroundColor": "#04070D",
@@ -28,7 +29,8 @@
       "expo-localization",
       "expo-sqlite",
       "expo-asset",
-      "expo-font"
+      "expo-font",
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,

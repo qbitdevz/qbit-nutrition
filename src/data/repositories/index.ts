@@ -1,6 +1,7 @@
 import type { Catalog } from '../../core/catalog';
 import type { AppDatabase } from '../database';
 import { newId as defaultNewId } from '../ids';
+import { createAiProviderRepository, type AiProviderRepository } from './aiProviders';
 import { createCustomFoodRepository, type CustomFoodRepository } from './customFoods';
 import { createFoodResolver } from './foodResolver';
 import { createFoodUsageRepository, type FoodUsageRepository } from './foodUsage';
@@ -20,6 +21,7 @@ export interface Repositories {
   foodUsage: FoodUsageRepository;
   matchMemory: MatchMemoryRepository;
   settings: SettingsRepository;
+  aiProviders: AiProviderRepository;
 }
 
 export interface RepositoryOptions {
@@ -45,6 +47,7 @@ export function createRepositories(options: RepositoryOptions): Repositories {
     foodUsage: createFoodUsageRepository(context),
     matchMemory: createMatchMemoryRepository(context),
     settings: createSettingsRepository(context),
+    aiProviders: createAiProviderRepository(context),
   };
 }
 
@@ -65,5 +68,7 @@ export type { CustomFood, CustomFoodInput, CustomFoodRepository } from './custom
 export type { FoodUsageEntry, FoodUsageRepository } from './foodUsage';
 export type { MatchMemoryEntry, MatchMemoryRepository } from './matchMemory';
 export type { SettingsRepository } from './settings';
+export { MAX_TIMEOUT_S, MIN_TIMEOUT_S } from './aiProviders';
+export type { AiAdapterId, AiOutputMode, AiProvider, AiProviderInput, AiProviderRepository } from './aiProviders';
 export type { FoodResolver } from './foodResolver';
 export { createMatchMemoryRepository } from './matchMemory';

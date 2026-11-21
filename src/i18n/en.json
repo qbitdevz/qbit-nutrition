@@ -112,7 +112,9 @@
     "minimum": "Minimum daily energy",
     "about": "About and health notice",
     "languageSaved": "Language saved",
-    "languageNotSaved": "The language changed, but the choice could not be saved for the next start."
+    "languageNotSaved": "The language changed, but the choice could not be saved for the next start.",
+    "providers": "AI providers",
+    "providersNone": "Not set up yet"
   },
   "legal": {
     "disclaimer": {
@@ -514,5 +516,116 @@
     "version": "Version {{version}}",
     "privacy": "Everything stays on this phone. There is no account and no analytics.",
     "how": "How targets are calculated"
+  },
+  "providers": {
+    "title": "AI providers",
+    "add": "Add a provider",
+    "active": "Active",
+    "keySaved": "Key saved",
+    "noKey": "No key",
+    "notAffiliated": "Provider names appear only to say which services this app works with. Qbit Nutrition is not affiliated with, endorsed by, or sponsored by any of them.",
+    "privacy": "Your meal photos go only to the provider you choose, with your own account. Nothing is sent anywhere else.",
+    "list": {
+      "empty": {
+        "title": "No AI provider yet",
+        "body": "Connect a service you have an account with so the app can read photos of your meals. You choose the service and the model."
+      },
+      "error": "The providers could not be loaded."
+    },
+    "presets": {
+      "title": "Choose a service",
+      "intro": "Pick the service you have, or want to open, an account with. Nothing is selected for you.",
+      "free": "With a zero-cost option",
+      "freeNote": "You can use these without paying, within limits. Free plans often let the company use what you send, so read each data note.",
+      "paid": "Pay as you go",
+      "paidNote": "These bill you for the photos you analyze.",
+      "custom": "Another service"
+    },
+    "form": {
+      "titleNew": "New provider",
+      "titleEdit": "Edit provider",
+      "name": "Name",
+      "baseUrl": "Base URL",
+      "apiKey": "API key",
+      "model": "Model",
+      "timeout": "Timeout",
+      "timeoutSuffix": "s",
+      "timeoutHint": "Seconds to wait for an answer, from 5 to 300.",
+      "modelHint": "Type any model that can read images, or pick a suggestion.",
+      "costTitle": "Cost",
+      "dataTitle": "Your photo and your data",
+      "verified": "Last verified {{date}}",
+      "terms": "Read the provider's terms",
+      "getKey": "Create a key at the provider",
+      "test": "Test connection",
+      "testing": "Testing…",
+      "save": "Save provider",
+      "setActive": "Use this provider",
+      "isActive": "This is the active provider.",
+      "delete": "Delete provider",
+      "removeKey": "Remove saved key",
+      "findModels": "Find models",
+      "suggestions": "Models this provider offers",
+      "presetSuggestions": "Suggested models (from the preset, may be out of date)",
+      "noModelList": "This provider did not give a model list. Type the model name yourself.",
+      "saved": "Provider saved",
+      "saveFailed": "The provider could not be saved. Your entries are kept; try again.",
+      "fixErrors": "Fix the highlighted fields first.",
+      "loadError": "This provider could not be loaded.",
+      "activateFailed": "The provider could not be set as active. Try again.",
+      "deleteFailed": "The provider could not be deleted. Try again.",
+      "moreModels": "Showing the first {{count}} of {{total}}. You can type any other model name."
+    },
+    "url": {
+      "required": "Enter the provider's address.",
+      "insecure": "Plain http:// is only allowed for a computer on your own network. Use https:// for anything on the internet.",
+      "invalid": "Enter a full address that starts with https:// (or http:// for your own network), without spaces.",
+      "credentials": "Do not put a user name or password in the address. Use the API key field."
+    },
+    "name": {
+      "required": "Enter a name."
+    },
+    "model": {
+      "required": "Enter a model name."
+    },
+    "timeout": {
+      "invalid": "Enter whole seconds between 5 and 300."
+    },
+    "key": {
+      "saved": "A key is saved on this device. It cannot be shown again; type a new one to replace it.",
+      "none": "No key saved.",
+      "hint": "Paste your key. It stays in this device's secure storage and is never shown again. A local server may not need one.",
+      "willClear": "Changing the base URL removes the saved key, so it is never sent to a new address. Enter the key again to keep using this provider.",
+      "removeTitle": "Remove the saved key?",
+      "removeBody": "Scans will not work with this provider until you add a key again.",
+      "removeConfirm": "Remove key",
+      "keep": "Keep it",
+      "storeFailed": "The key could not be saved in this device's secure storage, so nothing was saved. Try again.",
+      "unavailable": "Secure storage is not available here, so keys cannot be saved.",
+      "removed": "Key removed",
+      "removeFailed": "The key could not be removed. Try again."
+    },
+    "test": {
+      "result": {
+        "ok": "Works. The model read the sample photo and answered in a way the app can use.",
+        "auth_invalid": "The provider rejected the key. Check that it is correct, active, and allowed to use this service.",
+        "model_not_found": "The provider does not know this model name. Check the spelling, or pick one from the list.",
+        "no_vision": "This model cannot read images. Choose a model that accepts photos.",
+        "invalid_output": "The model answered, but not in a form the app can use. Try another model.",
+        "no_network": "Could not reach the provider. Check your internet connection and the address.",
+        "insecure_url": "This address is not allowed: plain http:// works only on your own network, and redirects to another address are refused.",
+        "quota_exceeded": "The provider says a usage limit was reached. Wait a while or check your plan, then try again.",
+        "timeout": "The provider did not answer in time. Try again, or raise the timeout.",
+        "provider_unavailable": "The provider's service is having trouble right now. Try again in a few minutes.",
+        "content_refused": "The provider refused the sample photo. Try again or choose another model.",
+        "unknown": "The test failed for a reason the app does not recognize. Check the address, the key, and the model."
+      }
+    },
+    "delete": {
+      "title": "Delete this provider?",
+      "body": "The provider and its saved key are removed from this phone. Meals you already saved are not affected.",
+      "confirm": "Delete it",
+      "keep": "Keep it"
+    }
   }
 }
