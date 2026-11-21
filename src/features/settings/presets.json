@@ -13,8 +13,8 @@
       "zeroCostPath": true,
       "models": ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.8-flash"],
       "cost": {
-        "en": "Has a free tier: free of charge, with limited access to some models and rate limits that depend on the model (shown in Google AI Studio). The paid tier bills per token; for example gemini-3.5-flash-lite is $0.30 per million input tokens and $2.50 per million output tokens.",
-        "es": "Tiene un nivel gratuito: sin costo, con acceso limitado a algunos modelos y límites de uso que dependen del modelo (se ven en Google AI Studio). El nivel de pago cobra por token; por ejemplo, gemini-3.5-flash-lite cuesta US$0,30 por millón de tokens de entrada y US$2,50 por millón de salida."
+        "en": "As of the last-verified date (shown when you add it), Google offers a free tier of the Gemini API: limited access to some models, with rate limits that depend on the model (shown in Google AI Studio). Limits and terms are Google's and can change, so check Google's pricing page before relying on it. The paid tier bills per token; for example gemini-3.5-flash-lite is $0.30 per million input tokens and $2.50 per million output tokens.",
+        "es": "En la fecha de la última verificación (se muestra al agregarlo), Google ofrece un nivel gratuito de la API de Gemini: acceso limitado a algunos modelos, con límites de uso que dependen del modelo (se ven en Google AI Studio). Los límites y términos son de Google y pueden cambiar, así que revisa la página de precios de Google antes de depender de ello. El nivel de pago cobra por token; por ejemplo, gemini-3.5-flash-lite cuesta US$0,30 por millón de tokens de entrada y US$2,50 por millón de salida."
       },
       "dataUse": {
         "en": "On the free tier, Google says the content you send is used to improve its products. On the paid tier it is not. Your meal photo goes to Google either way.",
@@ -42,8 +42,8 @@
       "zeroCostPath": true,
       "models": ["google/gemma-4-31b-it:free", "google/gemma-4-26b-a4b-it:free", "openrouter/free"],
       "cost": {
-        "en": "Has free models (identifiers ending in :free). They cost nothing but are limited to 20 requests per minute and 50 per day, or 1,000 per day once you have bought at least 10 credits. Other models bill per token from your credits.",
-        "es": "Tiene modelos gratuitos (identificadores que terminan en :free). No cuestan, pero se limitan a 20 solicitudes por minuto y 50 por día, o 1.000 por día si compraste al menos 10 créditos. Los demás modelos cobran por token de tus créditos."
+        "en": "As of the last-verified date (shown when you add it), OpenRouter lists free models (identifiers ending in :free) with limits of 20 requests per minute and 50 per day, or 1,000 per day after buying at least 10 credits. Limits and terms are OpenRouter's and can change, so check its pages before relying on it. Other models bill per token from your credits.",
+        "es": "En la fecha de la última verificación (se muestra al agregarlo), OpenRouter lista modelos gratuitos (identificadores que terminan en :free) con límites de 20 solicitudes por minuto y 50 por día, o 1.000 por día tras comprar al menos 10 créditos. Los límites y términos son de OpenRouter y pueden cambiar, así que revisa sus páginas antes de depender de ello. Los demás modelos cobran por token de tus créditos."
       },
       "dataUse": {
         "en": "OpenRouter stores prompts only if you opt in. Some companies that run models behind OpenRouter may train on what you send, under their own policies; OpenRouter lets you allow or block that in your privacy settings, with separate options for free and paid models. Check them before sending photos.",
@@ -76,8 +76,8 @@
       "zeroCostPath": true,
       "models": ["gemma4:e2b", "gemma4:e4b", "gemma4:12b"],
       "cost": {
-        "en": "No fee from any company: the model runs on your own computer, so it costs only your hardware and electricity. You need a computer that can run a model that accepts images.",
-        "es": "Sin cobro de ninguna empresa: el modelo corre en tu propia computadora, así que solo cuesta tu equipo y la electricidad. Necesitas una computadora que pueda ejecutar un modelo que acepte imágenes."
+        "en": "As of the last-verified date (shown when you add it), Ollama's documentation describes running models on your own computer, so no company bills you per photo; you pay for your own hardware and electricity. Terms can change, so check Ollama's page. You need a computer that can run a model that accepts images.",
+        "es": "En la fecha de la última verificación (se muestra al agregarlo), la documentación de Ollama describe ejecutar modelos en tu propia computadora, así que ninguna empresa te cobra por foto; tú pagas tu equipo y la electricidad. Los términos pueden cambiar, así que revisa la página de Ollama. Necesitas una computadora que pueda ejecutar un modelo que acepte imágenes."
       },
       "dataUse": {
         "en": "The photo goes to your own computer and stays on your network. Ollama says it does not see your prompts or data when it runs locally. No key is needed.",

@@ -535,8 +535,8 @@
     "presets": {
       "title": "Elige un servicio",
       "intro": "Elige el servicio en el que tienes, o quieres abrir, una cuenta. No se selecciona nada por ti.",
-      "free": "Con una opción sin costo",
-      "freeNote": "Puedes usarlos sin pagar, dentro de ciertos límites. Los planes gratuitos suelen permitir que la empresa use lo que envías, así que lee cada nota de datos.",
+      "free": "Ofrece un nivel gratuito",
+      "freeNote": "En la fecha de la última verificación de cada proveedor, estos ofrecen un nivel gratuito o se ejecutan en tu propia computadora. Los límites y términos son del proveedor, pueden cambiar y no están garantizados: revisa la página del proveedor antes de depender de ello. Los niveles gratuitos suelen permitir que el proveedor use lo que envías, así que lee cada nota de datos.",
       "paid": "Pago por uso",
       "paidNote": "Estos te cobran por las fotos que analizas.",
       "custom": "Otro servicio"
@@ -574,7 +574,9 @@
       "loadError": "No se pudo cargar este proveedor.",
       "activateFailed": "No se pudo activar el proveedor. Inténtalo de nuevo.",
       "deleteFailed": "No se pudo eliminar el proveedor. Inténtalo de nuevo.",
-      "moreModels": "Se muestran los primeros {{count}} de {{total}}. Puedes escribir cualquier otro nombre de modelo."
+      "moreModels": "Se muestran los primeros {{count}} de {{total}}. Puedes escribir cualquier otro nombre de modelo.",
+      "firstActive": "Este es tu primer proveedor, así que quedará como el activo: las fotos que escanees se enviarán a él.",
+      "savedNoTest": "Proveedor guardado, pero no se pudo conservar el resultado de la prueba."
     },
     "url": {
       "required": "Escribe la dirección del proveedor.",
@@ -603,7 +605,8 @@
       "storeFailed": "No se pudo guardar la clave en el almacenamiento seguro de este dispositivo, así que no se guardó nada. Inténtalo de nuevo.",
       "unavailable": "El almacenamiento seguro no está disponible aquí, así que no se pueden guardar claves.",
       "removed": "Clave quitada",
-      "removeFailed": "No se pudo quitar la clave. Inténtalo de nuevo."
+      "removeFailed": "No se pudo quitar la clave. Inténtalo de nuevo.",
+      "storeFailedSaved": "Los demás cambios del proveedor se guardaron, pero no se pudo guardar la clave en el almacenamiento seguro de este dispositivo. Vuelve a escribir la clave y guarda para reintentar."
     },
     "test": {
       "result": {
@@ -618,7 +621,8 @@
         "timeout": "El proveedor no respondió a tiempo. Inténtalo de nuevo, o aumenta el tiempo de espera.",
         "provider_unavailable": "El servicio del proveedor tiene problemas en este momento. Inténtalo de nuevo en unos minutos.",
         "content_refused": "El proveedor rechazó la foto de ejemplo. Inténtalo de nuevo o elige otro modelo.",
-        "unknown": "La prueba falló por un motivo que la aplicación no reconoce. Revisa la dirección, la clave y el modelo."
+        "unknown": "La prueba falló por un motivo que la aplicación no reconoce. Revisa la dirección, la clave y el modelo.",
+        "key_storage": "No se pudo leer la clave del almacenamiento seguro de este dispositivo, así que no se hizo la prueba. Inténtalo de nuevo o vuelve a escribir la clave."
       }
     },
     "delete": {

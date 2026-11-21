@@ -38,14 +38,29 @@ export class RedirectRefusedError extends Error {
   }
 }
 
+/** Releases a refused response's body unread (`body.cancel()` on a fetch Response). Best effort: it must never hide the refusal. */
+function discard(response: object): void {
+  try {
+    const body = (response as { body?: { cancel?: () => unknown } | null }).body;
+    const cancelled = body?.cancel?.();
+    if (cancelled && typeof (cancelled as Promise<unknown>).catch === 'function') (cancelled as Promise<unknown>).catch(() => undefined);
+  } catch {
+    // nothing to do: the refusal below is what matters
+  }
+}
+
 export function createRedirectSafeFetch(base: FetchLike): FetchLike {
   return async (url, init) => {
     const response = await base(url, { ...init, redirect: 'error' });
 
-    if (response.redirected === true || REDIRECT_STATUSES.has(response.status)) throw new RedirectRefusedError();
-    if (response.url) {
+    let refused = response.redirected === true || REDIRECT_STATUSES.has(response.status);
+    if (!refused && response.url) {
       const requested = originOf(url);
-      if (requested === null || originOf(response.url) !== requested) throw new RedirectRefusedError();
+      refused = requested === null || originOf(response.url) !== requested;
+    }
+    if (refused) {
+      discard(response); // cancel the body; never read it
+      throw new RedirectRefusedError();
     }
     return response;
   };

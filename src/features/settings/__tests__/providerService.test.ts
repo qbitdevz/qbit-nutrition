@@ -2,6 +2,7 @@ import { SAMPLE_JPEG_BASE64, fakeFetch, openaiError, openaiText, res, validScanR
 import type { Responder } from '@/core/ai/__fixtures__/fixtures';
 import { createHarness, type Harness } from '@/data/testing/harness';
 import { createTestServices } from '../../testing/testServices';
+import { SAMPLE_MEAL_JPEG_BASE64 } from '../sampleMeal';
 import { ScanSetupError } from '../../scan/scanGateway';
 
 const KEY = 'sk-LEAKCHECK-abcdef0123456789';
@@ -172,7 +173,9 @@ describe('test connection', () => {
     const sent = fake.calls[0]!;
     expect(sent.redirect).toBe('error');
     expect(sent.rawBody).toContain('data:image/jpeg;base64,/9j/');
-    expect(sent.rawBody).not.toContain(SAMPLE_JPEG_BASE64 + 'x');
+    const dataUrl = /data:image\/jpeg;base64,([A-Za-z0-9+/=]+)/.exec(sent.rawBody ?? '');
+    expect(dataUrl?.[1]).toBe(SAMPLE_MEAL_JPEG_BASE64);
+    expect(dataUrl?.[1]).not.toBe(SAMPLE_JPEG_BASE64);
   });
 
   it('uses the stored key only while the base URL is unchanged', async () => {

@@ -28,7 +28,7 @@ import {
 import { useSession } from '../session/AppSession';
 import { useServices } from '../startup/AppProvider';
 import { getPreset, noteIn, type Preset } from './presets';
-import { normalizeBaseUrl, type ProviderView, type TestOutcome } from './providerService';
+import { ProviderSaveError, normalizeBaseUrl, type ProviderView, type TestOutcome } from './providerService';
 import { checkBaseUrl, parseTimeout, testResultKey, urlMessageKey } from './providerValidation';
 
 const DEFAULT_TIMEOUT_S = 60;
@@ -88,9 +88,9 @@ export function ProviderFormScreen({ providerId, presetId, onBack, onDone }: Pro
 
 type Field = 'name' | 'baseUrl' | 'model' | 'timeout';
 type TestState = { status: 'idle' } | { status: 'running' } | { status: 'done'; outcome: TestOutcome };
-type ModelList = { status: 'idle' } | { status: 'loading' } | { status: 'ready'; models: string[] } | { status: 'none' };
+type ModelList = { status: 'idle' } | { status: 'loading' } | { status: 'ready'; models: string[] } | { status: 'none' } | { status: 'storage' };
 
-function ProviderEditor({ existing, preset, onBack, onDone }: { existing: ProviderView | null; preset: Preset | undefined; onBack?: () => void; onDone: () => void }) {
+function ProviderEditor({ existing: initial, preset, onBack, onDone }: { existing: ProviderView | null; preset: Preset | undefined; onBack?: () => void; onDone: () => void }) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language as Locale;
   const { colors } = useTheme();
@@ -98,6 +98,8 @@ function ProviderEditor({ existing, preset, onBack, onDone }: { existing: Provid
   const { notifyChange } = useSession();
   const snackbar = useSnackbar();
 
+  // The profile as it really is in storage: refreshed after a save that only half worked, so the screen never claims more than is true.
+  const [existing, setExisting] = useState<ProviderView | null>(initial);
   // Prefilled from the saved profile, or from preset data. A model is never prefilled.
   const [name, setName] = useState(existing?.label ?? (preset && preset.id !== 'custom' ? preset.name : ''));
   const [baseUrl, setBaseUrl] = useState(existing?.baseUrl ?? preset?.baseUrl ?? '');
@@ -105,18 +107,40 @@ function ProviderEditor({ existing, preset, onBack, onDone }: { existing: Provid
   const [timeoutText, setTimeoutText] = useState(String(existing?.timeoutS ?? DEFAULT_TIMEOUT_S));
   // Write-only: typed here, sent on save, emptied afterwards, and never filled from storage.
   const [apiKey, setApiKey] = useState('');
-  const [hasKey, setHasKey] = useState(existing?.hasKey ?? false);
-  const [isActive, setIsActive] = useState(existing?.isActive ?? false);
+  const hasKey = existing?.hasKey ?? false;
+  const isActive = existing?.isActive ?? false;
+  const [firstProvider, setFirstProvider] = useState(false);
   const [touched, setTouched] = useState<Record<Field, boolean>>({ name: false, baseUrl: false, model: false, timeout: false });
   const [test, setTest] = useState<TestState>({ status: 'idle' });
   const [modelList, setModelList] = useState<ModelList>({ status: 'idle' });
   const [busy, setBusy] = useState(false);
-  const [problem, setProblem] = useState<null | 'fix' | 'save' | 'key' | 'keyUnavailable'>(null);
+  const [problem, setProblem] = useState<null | 'fix' | 'save' | 'key' | 'keyKept' | 'keyUnavailable'>(null);
   const [confirm, setConfirm] = useState<null | 'delete' | 'removeKey'>(null);
 
   const adapter: AiAdapterId = existing?.adapter ?? preset?.adapter ?? 'openai_compatible';
-  const controller = useRef<AbortController | null>(null);
-  useEffect(() => () => controller.current?.abort(), []);
+  // The request in flight for the test and for the model list; an edit or leaving the screen aborts it, and an answer
+  // that is no longer the current request is dropped, so nothing shown or saved belongs to values it was not run for.
+  const testRun = useRef<AbortController | null>(null);
+  const listRun = useRef<AbortController | null>(null);
+  useEffect(
+    () => () => {
+      testRun.current?.abort();
+      listRun.current?.abort();
+    },
+    [],
+  );
+  // Only a person with no provider yet is told that this one becomes the active one.
+  useEffect(() => {
+    if (initial) return;
+    let alive = true;
+    providers.list().then(
+      (list) => alive && setFirstProvider(list.length === 0),
+      () => undefined,
+    );
+    return () => {
+      alive = false;
+    };
+  }, [initial, providers]);
 
   const urlProblem = checkBaseUrl(baseUrl);
   const timeoutS = parseTimeout(timeoutText);
@@ -131,18 +155,30 @@ function ProviderEditor({ existing, preset, onBack, onDone }: { existing: Provid
   const keyWillClear = existing !== null && hasKey && normalizeBaseUrl(baseUrl) !== existing.baseUrl;
 
   // A shown result or list belongs to the values it was made with.
-  const forget = () => {
+  const forgetTest = () => {
+    testRun.current?.abort();
+    testRun.current = null;
     setTest({ status: 'idle' });
     setProblem(null);
   };
+  const forgetList = () => {
+    listRun.current?.abort();
+    listRun.current = null;
+    setModelList({ status: 'idle' });
+  };
   const changeBaseUrl = (value: string) => {
     setBaseUrl(value);
-    setModelList({ status: 'idle' });
-    forget();
+    forgetList();
+    forgetTest();
   };
   const changeModel = (value: string) => {
     setModel(value);
-    forget();
+    forgetTest();
+  };
+  const changeKey = (value: string) => {
+    setApiKey(value);
+    forgetList();
+    forgetTest();
   };
 
   const draft = () => ({ id: existing?.id, adapter, baseUrl, model, timeoutS: timeoutS ?? DEFAULT_TIMEOUT_S, apiKey: apiKey || null });
@@ -150,14 +186,16 @@ function ProviderEditor({ existing, preset, onBack, onDone }: { existing: Provid
   const runTest = async () => {
     touch('baseUrl', 'model', 'timeout');
     if (problems.baseUrl || problems.model || problems.timeout) return;
-    controller.current?.abort();
-    const mine = (controller.current = new AbortController());
+    testRun.current?.abort();
+    const mine = new AbortController();
+    testRun.current = mine;
     setTest({ status: 'running' });
+    const current = () => testRun.current === mine && !mine.signal.aborted;
     try {
       const outcome = await providers.testConnection(draft(), mine.signal);
-      if (!mine.signal.aborted) setTest({ status: 'done', outcome });
+      if (current()) setTest({ status: 'done', outcome });
     } catch (error) {
-      if (error instanceof CancelledError || mine.signal.aborted) return;
+      if (error instanceof CancelledError || !current()) return;
       setTest({ status: 'done', outcome: { ok: false, code: 'unknown' } });
     }
   };
@@ -165,9 +203,13 @@ function ProviderEditor({ existing, preset, onBack, onDone }: { existing: Provid
   const findModels = async () => {
     touch('baseUrl');
     if (problems.baseUrl) return;
+    listRun.current?.abort();
+    const mine = new AbortController();
+    listRun.current = mine;
     setModelList({ status: 'loading' });
-    const models = await providers.listModels(draft()).catch(() => null);
-    setModelList(models ? { status: 'ready', models } : { status: 'none' });
+    const models = await providers.listModels(draft(), mine.signal).catch((error: unknown) => (error instanceof SecretStoreError ? 'storage' : null));
+    if (listRun.current !== mine || mine.signal.aborted) return; // stale: the values changed while it ran
+    setModelList(models === 'storage' ? { status: 'storage' } : models ? { status: 'ready', models } : { status: 'none' });
   };
 
   const save = async () => {
@@ -189,14 +231,20 @@ function ProviderEditor({ existing, preset, onBack, onDone }: { existing: Provid
       test: test.status === 'done' ? test.outcome : null,
     };
     try {
-      if (existing) await providers.update(existing.id, fields);
-      else await providers.create(fields);
+      const result = existing ? await providers.update(existing.id, fields) : await providers.create(fields);
       setApiKey(''); // gone from the screen before anything else happens
       notifyChange();
-      snackbar.show({ message: t('providers.form.saved') });
+      snackbar.show({ message: test.status === 'done' && !result.testRecorded ? t('providers.form.savedNoTest') : t('providers.form.saved') });
       onDone();
     } catch (error) {
-      setProblem(error instanceof SecretStoreError ? (error.code === 'unavailable' ? 'keyUnavailable' : 'key') : 'save');
+      // Show what is really stored now: a save can fail after the profile was already written.
+      let stored: ProviderView | null = existing;
+      if (error instanceof ProviderSaveError) stored = error.provider;
+      else if (existing) stored = await providers.get(existing.id).catch(() => existing);
+      if (stored) setExisting(stored);
+      if (error instanceof SecretStoreError && error.code === 'unavailable') setProblem('keyUnavailable');
+      else if (error instanceof SecretStoreError || error instanceof ProviderSaveError) setProblem(stored ? 'keyKept' : 'key');
+      else setProblem('save');
     } finally {
       setBusy(false);
     }
@@ -206,7 +254,7 @@ function ProviderEditor({ existing, preset, onBack, onDone }: { existing: Provid
     if (!existing) return;
     try {
       await providers.setActive(existing.id);
-      setIsActive(true);
+      setExisting((current) => (current ? { ...current, isActive: true } : current));
       notifyChange();
     } catch {
       setProblem('save');
@@ -218,7 +266,7 @@ function ProviderEditor({ existing, preset, onBack, onDone }: { existing: Provid
     setConfirm(null);
     try {
       await providers.removeKey(existing.id);
-      setHasKey(false);
+      setExisting((current) => (current ? { ...current, hasKey: false } : current));
       notifyChange();
       snackbar.show({ message: t('providers.key.removed') });
     } catch {
@@ -245,7 +293,7 @@ function ProviderEditor({ existing, preset, onBack, onDone }: { existing: Provid
   const shownModels = suggestions?.models.slice(0, MAX_SHOWN_MODELS) ?? [];
 
   const problemText =
-    problem === 'fix' ? t('providers.form.fixErrors') : problem === 'key' ? t('providers.key.storeFailed') : problem === 'keyUnavailable' ? t('providers.key.unavailable') : problem === 'save' ? t('providers.form.saveFailed') : null;
+    problem === 'fix' ? t('providers.form.fixErrors') : problem === 'key' ? t('providers.key.storeFailed') : problem === 'keyKept' ? t('providers.key.storeFailedSaved') : problem === 'keyUnavailable' ? t('providers.key.unavailable') : problem === 'save' ? t('providers.form.saveFailed') : null;
 
   return (
     <ScreenFrame
@@ -293,7 +341,7 @@ function ProviderEditor({ existing, preset, onBack, onDone }: { existing: Provid
         />
 
         <View style={styles.keyBlock}>
-          <TextField label={t('providers.form.apiKey')} value={apiKey} onChangeText={(value) => { setApiKey(value); forget(); }} secret hint={hasKey ? t('providers.key.saved') : t('providers.key.hint')} />
+          <TextField label={t('providers.form.apiKey')} value={apiKey} onChangeText={changeKey} secret hint={hasKey ? t('providers.key.saved') : t('providers.key.hint')} />
           {keyWillClear ? (
             <AppText variant="bodySm" tone="warning" style={styles.indent}>
               {t('providers.key.willClear')}
@@ -341,13 +389,14 @@ function ProviderEditor({ existing, preset, onBack, onDone }: { existing: Provid
           disabled={modelList.status === 'loading'}
         />
         {modelList.status === 'none' ? <FieldMessage message={t('providers.form.noModelList')} /> : null}
+        {modelList.status === 'storage' ? <FieldMessage message={t('providers.test.result.key_storage')} /> : null}
 
         <TextField
           label={t('providers.form.timeout')}
           value={timeoutText}
           onChangeText={(value) => {
             setTimeoutText(value);
-            forget();
+            forgetTest();
           }}
           onBlur={() => touch('timeout')}
           error={shown('timeout')}
@@ -367,6 +416,12 @@ function ProviderEditor({ existing, preset, onBack, onDone }: { existing: Provid
           />
           <TestResult state={test} />
         </View>
+
+        {!existing && firstProvider ? (
+          <AppText variant="bodySm" tone="muted" style={styles.indent}>
+            {t('providers.form.firstActive')}
+          </AppText>
+        ) : null}
 
         {existing ? (
           <View style={styles.manage}>

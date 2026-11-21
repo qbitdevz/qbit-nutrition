@@ -2,6 +2,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
+import i18n from '@/i18n';
 import raw from '../presets.json';
 import { SAMPLE_MEAL_JPEG_BASE64 } from '../sampleMeal';
 import { PRESETS, getPreset, groupPresets, parsePresetFile } from '../presets';
@@ -23,6 +24,25 @@ describe('presets file', () => {
       }
       expect(preset.lastVerified).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(Number.isNaN(Date.parse(preset.lastVerified))).toBe(false);
+    }
+  });
+
+  it('words free use as the provider\'s offer on a date, with limits and terms the provider can change, never as a guarantee', () => {
+    const { zeroCost } = groupPresets();
+    for (const preset of zeroCost) {
+      expect(preset.cost.en).toMatch(/last-verified date/i);
+      expect(preset.cost.en).toMatch(/can change/i);
+      expect(preset.cost.en).toMatch(/check/i);
+      expect(preset.cost.es).toMatch(/fecha de la última verificación/i);
+      expect(preset.cost.es).toMatch(/pueden cambiar/i);
+      expect(preset.cost.es).toMatch(/revisa/i);
+    }
+    const all = JSON.stringify(raw);
+    expect(all).not.toMatch(/cost nothing|without paying|sin costo\b|sin pagar|no cuestan/i);
+    for (const lang of ['en', 'es'] as const) {
+      const note = i18n.t('providers.presets.freeNote', { lng: lang });
+      expect(note).toMatch(lang === 'en' ? /can change/i : /pueden cambiar/i);
+      expect(note).not.toMatch(/without paying|sin pagar/i);
     }
   });
 

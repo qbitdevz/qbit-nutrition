@@ -15,7 +15,24 @@ export interface ProviderView extends AiProvider {
 }
 
 /** What "Test connection" tells the screen. Only the code: the redacted detail stays inside `core/ai`. */
-export type TestOutcome = { ok: true; outputMode: AiOutputMode } | { ok: false; code: ProviderErrorCode };
+export type TestOutcome = { ok: true; outputMode: AiOutputMode } | { ok: false; code: ProviderErrorCode | 'key_storage' };
+
+/** What a save returns: the profile, and whether the test result that came with it could be kept (the save itself succeeded either way). */
+export type SaveResult = ProviderView & { testRecorded: boolean };
+
+/**
+ * A create that did not finish cleanly and could not be undone: the profile exists (`provider`) without
+ * its key. The form switches to editing that profile, so a retry cannot duplicate it.
+ */
+export class ProviderSaveError extends Error {
+  readonly code = 'key_failed' as const;
+  readonly provider: ProviderView | null;
+  constructor(provider: ProviderView | null) {
+    super('The provider was saved without its key.');
+    this.name = 'ProviderSaveError';
+    this.provider = provider;
+  }
+}
 
 /** The form's current values, which may differ from what is saved. */
 export interface ConnectionDraft {
@@ -40,9 +57,9 @@ export interface ProviderService {
   list(): Promise<ProviderView[]>;
   get(id: string): Promise<ProviderView | null>;
   /** Rejects with a `ProviderError` (`insecure_url`, `unknown`) for a base URL core refuses; nothing is stored then. */
-  create(input: AiProviderInput & ProviderWrite): Promise<ProviderView>;
+  create(input: AiProviderInput & ProviderWrite): Promise<SaveResult>;
   /** Changing the base URL clears the stored key first (docs/06 section 6), unless a new key is given with it. */
-  update(id: string, patch: Partial<AiProviderInput> & ProviderWrite): Promise<ProviderView>;
+  update(id: string, patch: Partial<AiProviderInput> & ProviderWrite): Promise<SaveResult>;
   removeKey(id: string): Promise<ProviderView>;
   /** Exactly one profile is active afterwards. */
   setActive(id: string): Promise<ProviderView>;
@@ -74,7 +91,7 @@ export function createProviderService({ aiProviders, settings, secrets: store, c
   const secrets = {
     ...store,
     has: (id: string) => store.has(id),
-    get: (id: string) => store.get(id),
+    get: (id: string) => store.get(id).catch(rethrowSafely),
     set: (id: string, key: string) => store.set(id, key).catch(rethrowSafely),
     remove: (id: string) => store.remove(id).catch(rethrowSafely),
   };
@@ -94,8 +111,17 @@ export function createProviderService({ aiProviders, settings, secrets: store, c
     if (!draft.id) return null;
     const saved = await aiProviders.get(draft.id);
     if (!saved || normalizeBaseUrl(saved.baseUrl) !== normalizeBaseUrl(draft.baseUrl)) return null;
-    return secrets.get(saved.id).catch(() => null);
+    // A storage failure is not "no key": it propagates as a SecretStoreError (the caller says so).
+    const key = await secrets.get(saved.id);
+    // The key and the URL are changed in an order that keeps them paired; confirm they still are.
+    const again = await aiProviders.get(saved.id);
+    if (!again || normalizeBaseUrl(again.baseUrl) !== normalizeBaseUrl(saved.baseUrl)) return null;
+    return key;
   }
+
+  /** Records a test result without letting that failure undo or misreport a save that worked. */
+  const recordSafely = (id: string, test: TestOutcome | null | undefined) =>
+    test ? record(id, test).then(() => true, () => false) : Promise.resolve(true);
 
   const profileOf = (draft: ConnectionDraft): ProviderProfile => ({
     id: draft.id ?? 'draft',
@@ -119,14 +145,20 @@ export function createProviderService({ aiProviders, settings, secrets: store, c
       const baseUrl = normalizeBaseUrl(input.baseUrl);
       assertSecureBaseUrl(baseUrl);
       const created = await aiProviders.create({ ...input, baseUrl });
-      try {
-        if (apiKey) await secrets.set(created.id, apiKey);
-      } catch (error) {
-        await aiProviders.remove(created.id); // no profile is left behind without the key the person typed
-        throw error;
+      if (apiKey) {
+        try {
+          await secrets.set(created.id, apiKey);
+        } catch (error) {
+          // A half-written key is removed, and so is the row: no profile is left without the key the person typed.
+          await store.remove(created.id).catch(() => undefined);
+          const undone = await aiProviders.remove(created.id).then(() => true, () => false);
+          if (undone) throw error;
+          // The row is still there: say so, so that the next save edits it instead of creating a second one.
+          throw new ProviderSaveError(await view((await aiProviders.get(created.id)) ?? created).catch(() => null));
+        }
       }
-      if (test) await record(created.id, test);
-      return view((await aiProviders.get(created.id))!);
+      const testRecorded = await recordSafely(created.id, test);
+      return { ...(await view((await aiProviders.get(created.id))!)), testRecorded };
     },
 
     async update(id, { apiKey, test, ...patch }) {
@@ -138,13 +170,22 @@ export function createProviderService({ aiProviders, settings, secrets: store, c
         patch = { ...patch, baseUrl };
         baseUrlChanged = baseUrl !== current.baseUrl;
       }
-      // Key first: if this fails nothing else has changed, and the old key never sees the new address.
+      // A key is never stored for a URL it was not entered for, at any moment: the old key goes first, the
+      // row changes next, and the new key is stored last. If a step fails, the later ones do not run.
       if (baseUrlChanged) await secrets.remove(id);
-      if (apiKey) await secrets.set(id, apiKey);
       await aiProviders.update(id, patch);
       if (baseUrlChanged) await settings.remove(noticeKey(id)); // the destination is new: the notice applies again
-      if (test) await record(id, test);
-      return view(await mustGet(id));
+      if (apiKey) {
+        const hadKey = !baseUrlChanged && (await hasKey(id));
+        try {
+          await secrets.set(id, apiKey);
+        } catch (error) {
+          if (!hadKey) await store.remove(id).catch(() => undefined); // never leave a half-written key
+          throw error;
+        }
+      }
+      const testRecorded = await recordSafely(id, test);
+      return { ...(await view(await mustGet(id))), testRecorded };
     },
 
     async removeKey(id) {
@@ -165,7 +206,13 @@ export function createProviderService({ aiProviders, settings, secrets: store, c
 
     async testConnection(draft, signal) {
       const profile = profileOf(draft);
-      const apiKey = await keyFor(draft);
+      let apiKey: string | null;
+      try {
+        apiKey = await keyFor(draft);
+      } catch (error) {
+        if (error instanceof SecretStoreError) return { ok: false, code: 'key_storage' };
+        throw error;
+      }
       const outcome = await client.testConnection(profile, apiKey, { sampleImageJpegBase64: SAMPLE_MEAL_JPEG_BASE64, signal });
       if (outcome.ok) return { ok: true, outputMode: outcome.outputMode };
       return { ok: false, code: outcome.error.code };
@@ -173,12 +220,13 @@ export function createProviderService({ aiProviders, settings, secrets: store, c
 
     async listModels(draft, signal) {
       try {
-        const models = await client.listModels(profileOf(draft), await keyFor(draft), signal);
+        const apiKey = await keyFor(draft); // a SecretStoreError propagates: no list is fetched without the key
+        const models = await client.listModels(profileOf(draft), apiKey, signal);
         if (!models) return null;
         const unique = [...new Set(models.map((m) => m.trim()).filter((m) => m !== ''))];
         return unique.length > 0 ? unique.slice(0, MAX_SUGGESTIONS) : null;
       } catch (error) {
-        if (error instanceof CancelledError) throw error;
+        if (error instanceof CancelledError || error instanceof SecretStoreError) throw error;
         return null; // a missing list is not an error: the model field stays free text
       }
     },

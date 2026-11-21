@@ -6,6 +6,24 @@ module.exports = defineConfig([
   expoConfig,
   { ignores: ['dist/*', 'android/*', 'ios/*', '.expo/*'] },
   {
+    // S10: every provider request goes through createAiClient, which wraps the fetch it is given in the
+    // redirect-safe wrapper. Only the startup wiring may import the device fetch; nothing may call the global one.
+    // (src/platform/__tests__/fetchGuard.test.ts enforces the same rule by scanning the sources.)
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: ['src/features/startup/openServicesCore.ts', 'src/platform/deviceFetch.ts', 'src/**/__tests__/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [{ name: 'expo/fetch', message: 'Use the AI services (createAiClient); only src/platform/deviceFetch.ts may import expo/fetch.' }],
+          patterns: [{ group: ['**/platform/deviceFetch', '@/platform/deviceFetch'], message: 'Only the startup wiring may use the device fetch; it is wrapped by createAiClient.' }],
+        },
+      ],
+      'no-restricted-globals': ['error', { name: 'fetch', message: 'The global fetch ignores redirect: "error" on Android. Use the AI services.' }, { name: 'XMLHttpRequest', message: 'Use the AI services.' }],
+      'no-restricted-properties': ['error', { object: 'globalThis', property: 'fetch', message: 'Use the AI services.' }, { object: 'window', property: 'fetch', message: 'Use the AI services.' }],
+    },
+  },
+  {
     // core must stay runnable in plain Node (docs/06-system-architecture.md, section 4).
     files: ['src/core/**/*.ts'],
     rules: {

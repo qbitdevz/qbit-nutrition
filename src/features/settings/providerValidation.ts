@@ -34,4 +34,4 @@ export function parseTimeout(text: string): number | null {
 }
 
 /** One distinct message per outcome of "Test connection". */
-export const testResultKey = (code: 'ok' | ProviderErrorCode): string => `providers.test.result.${code}`;
+export const testResultKey = (code: 'ok' | ProviderErrorCode | 'key_storage'): string => `providers.test.result.${code}`;

@@ -535,8 +535,8 @@
     "presets": {
       "title": "Choose a service",
       "intro": "Pick the service you have, or want to open, an account with. Nothing is selected for you.",
-      "free": "With a zero-cost option",
-      "freeNote": "You can use these without paying, within limits. Free plans often let the company use what you send, so read each data note.",
+      "free": "Offers a free tier",
+      "freeNote": "As of each provider's last-verified date, these offer a free tier or run on your own computer. Limits and terms are the provider's, can change, and are not guaranteed: check the provider's page before relying on it. Free tiers often let the provider use what you send, so read each data note.",
       "paid": "Pay as you go",
       "paidNote": "These bill you for the photos you analyze.",
       "custom": "Another service"
@@ -574,7 +574,9 @@
       "loadError": "This provider could not be loaded.",
       "activateFailed": "The provider could not be set as active. Try again.",
       "deleteFailed": "The provider could not be deleted. Try again.",
-      "moreModels": "Showing the first {{count}} of {{total}}. You can type any other model name."
+      "moreModels": "Showing the first {{count}} of {{total}}. You can type any other model name.",
+      "firstActive": "This is your first provider, so it will become the active one: photos you scan will be sent to it.",
+      "savedNoTest": "Provider saved, but the test result could not be kept."
     },
     "url": {
       "required": "Enter the provider's address.",
@@ -603,7 +605,8 @@
       "storeFailed": "The key could not be saved in this device's secure storage, so nothing was saved. Try again.",
       "unavailable": "Secure storage is not available here, so keys cannot be saved.",
       "removed": "Key removed",
-      "removeFailed": "The key could not be removed. Try again."
+      "removeFailed": "The key could not be removed. Try again.",
+      "storeFailedSaved": "The provider's other changes were saved, but the key could not be stored in this device's secure storage. Enter the key again and save to retry."
     },
     "test": {
       "result": {
@@ -618,7 +621,8 @@
         "timeout": "The provider did not answer in time. Try again, or raise the timeout.",
         "provider_unavailable": "The provider's service is having trouble right now. Try again in a few minutes.",
         "content_refused": "The provider refused the sample photo. Try again or choose another model.",
-        "unknown": "The test failed for a reason the app does not recognize. Check the address, the key, and the model."
+        "unknown": "The test failed for a reason the app does not recognize. Check the address, the key, and the model.",
+        "key_storage": "The key could not be read from this device's secure storage, so the test was not run. Try again, or enter the key again."
       }
     },
     "delete": {
