@@ -1,13 +1,87 @@
 {
+  "app": {
+    "name": "Qbit Nutrition",
+    "wordmarkLabel": "Qbit Nutrition by qbitdev"
+  },
+  "common": {
+    "retry": "Try again",
+    "loading": "Loading"
+  },
   "tabs": {
     "today": "Today",
-    "progress": "Progress"
+    "progress": "Progress",
+    "scan": "Scan",
+    "nav": "Main navigation"
   },
   "today": {
     "title": "Today",
-    "empty": "Scan your first meal",
+    "yesterday": "Yesterday",
     "scan": "Scan a meal",
-    "settings": "Settings"
+    "settings": "Settings",
+    "previousDay": "Previous day",
+    "nextDay": "Next day",
+    "nextDayUnavailable": "Next day, not available",
+    "kcalLeft": "kcal left",
+    "kcalOver": "kcal over target",
+    "kcalEaten": "kcal eaten",
+    "kcalUnit": "kcal",
+    "ringLeft": "{{left}} kilocalories left. {{eaten}} of {{target}} eaten.",
+    "ringOver": "{{over}} kilocalories over the target. {{eaten}} eaten of {{target}}.",
+    "ringNoTarget": "{{eaten}} kilocalories eaten. No calorie target is set.",
+    "eatenOf": "eaten of {{target}} kcal",
+    "eatenOnly": "eaten today",
+    "macros": "Macronutrients",
+    "protein": "Protein",
+    "carbs": "Carbs",
+    "fat": "Fat",
+    "gramUnit": "g",
+    "macroSummary": "{{name}}, {{grams}} of {{target}} grams",
+    "macroSummaryNoTarget": "{{name}}, {{grams}} grams",
+    "mealsHeading": "Meals",
+    "mealCount_one": "{{count}} meal",
+    "mealCount_other": "{{count}} meals",
+    "mealSummary": "{{name}}, {{slot}} at {{time}}, {{kcal}} kilocalories",
+    "slot": {
+      "breakfast": "Breakfast",
+      "lunch": "Lunch",
+      "dinner": "Dinner",
+      "snack": "Snack"
+    },
+    "empty": {
+      "title": "Scan your first meal",
+      "body": "Tap Scan below and point the camera at your plate. You check the result before anything is saved."
+    },
+    "emptyPast": {
+      "title": "Nothing logged on this day",
+      "body": "Meals you log for this day appear here."
+    },
+    "noTargets": "No daily targets are set yet. Your meals are still counted.",
+    "loadingDay": "Loading your day",
+    "error": {
+      "title": "Your day could not be loaded",
+      "message": "Your data is still on this phone. Try again, and restart the app if it keeps failing."
+    },
+    "devSeed": "Load sample data (development only)",
+    "devSeedDone": "Sample day added"
+  },
+  "insight": {
+    "protein_low_late": "{{remainingG}} g of protein left to reach your target.",
+    "kcal_left_empty_slot": {
+      "breakfast": "{{remainingKcal}} kcal left and no breakfast logged yet.",
+      "lunch": "{{remainingKcal}} kcal left and no lunch logged yet.",
+      "dinner": "{{remainingKcal}} kcal left and no dinner logged yet."
+    },
+    "fiber_low_recent": "Over the last {{days}} days you averaged {{gramsPer1000Kcal}} g of fiber per 1,000 kcal. Beans, oats and vegetables add more.",
+    "sodium_high_recent": "Over the last {{days}} days you averaged {{averageMg}} mg of sodium a day, above the {{limitMg}} mg limit.",
+    "target_reached": "You are at {{kcal}} of {{targetKcal}} kcal: today's target is reached."
+  },
+  "startup": {
+    "loading": "Opening your data",
+    "recovery": {
+      "title": "Your data could not be opened",
+      "message": "The update to the local database did not finish, and your existing data was left unchanged. Try again. If it keeps failing, restart the app.",
+      "retry": "Try again"
+    }
   },
   "progress": {
     "title": "Progress",

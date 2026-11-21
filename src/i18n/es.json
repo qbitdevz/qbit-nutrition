@@ -1,13 +1,87 @@
 {
+  "app": {
+    "name": "Qbit Nutrition",
+    "wordmarkLabel": "Qbit Nutrition de qbitdev"
+  },
+  "common": {
+    "retry": "Reintentar",
+    "loading": "Cargando"
+  },
   "tabs": {
     "today": "Hoy",
-    "progress": "Progreso"
+    "progress": "Progreso",
+    "scan": "Escanear",
+    "nav": "Navegación principal"
   },
   "today": {
     "title": "Hoy",
-    "empty": "Escanea tu primera comida",
+    "yesterday": "Ayer",
     "scan": "Escanear una comida",
-    "settings": "Ajustes"
+    "settings": "Ajustes",
+    "previousDay": "Día anterior",
+    "nextDay": "Día siguiente",
+    "nextDayUnavailable": "Día siguiente, no disponible",
+    "kcalLeft": "kcal restantes",
+    "kcalOver": "kcal sobre el objetivo",
+    "kcalEaten": "kcal consumidas",
+    "kcalUnit": "kcal",
+    "ringLeft": "Quedan {{left}} kilocalorías. Consumiste {{eaten}} de {{target}}.",
+    "ringOver": "{{over}} kilocalorías sobre el objetivo. Consumiste {{eaten}} de {{target}}.",
+    "ringNoTarget": "Consumiste {{eaten}} kilocalorías. No hay un objetivo de calorías definido.",
+    "eatenOf": "consumidas de {{target}} kcal",
+    "eatenOnly": "consumidas hoy",
+    "macros": "Macronutrientes",
+    "protein": "Proteína",
+    "carbs": "Carbohidratos",
+    "fat": "Grasa",
+    "gramUnit": "g",
+    "macroSummary": "{{name}}, {{grams}} de {{target}} gramos",
+    "macroSummaryNoTarget": "{{name}}, {{grams}} gramos",
+    "mealsHeading": "Comidas",
+    "mealCount_one": "{{count}} comida",
+    "mealCount_other": "{{count}} comidas",
+    "mealSummary": "{{name}}, {{slot}} a las {{time}}, {{kcal}} kilocalorías",
+    "slot": {
+      "breakfast": "Desayuno",
+      "lunch": "Almuerzo",
+      "dinner": "Cena",
+      "snack": "Merienda"
+    },
+    "empty": {
+      "title": "Escanea tu primera comida",
+      "body": "Toca Escanear y apunta la cámara a tu plato. Revisas el resultado antes de guardar nada."
+    },
+    "emptyPast": {
+      "title": "No hay nada registrado este día",
+      "body": "Las comidas que registres para este día aparecen aquí."
+    },
+    "noTargets": "Todavía no hay objetivos diarios. Tus comidas se siguen contando.",
+    "loadingDay": "Cargando tu día",
+    "error": {
+      "title": "No se pudo cargar tu día",
+      "message": "Tus datos siguen en este teléfono. Reintenta y, si sigue fallando, reinicia la aplicación."
+    },
+    "devSeed": "Cargar datos de ejemplo (solo desarrollo)",
+    "devSeedDone": "Día de ejemplo agregado"
+  },
+  "insight": {
+    "protein_low_late": "Te faltan {{remainingG}} g de proteína para llegar a tu objetivo.",
+    "kcal_left_empty_slot": {
+      "breakfast": "Te quedan {{remainingKcal}} kcal y todavía no registraste el desayuno.",
+      "lunch": "Te quedan {{remainingKcal}} kcal y todavía no registraste el almuerzo.",
+      "dinner": "Te quedan {{remainingKcal}} kcal y todavía no registraste la cena."
+    },
+    "fiber_low_recent": "En los últimos {{days}} días promediaste {{gramsPer1000Kcal}} g de fibra por cada 1000 kcal. Las legumbres, la avena y las verduras aportan más.",
+    "sodium_high_recent": "En los últimos {{days}} días promediaste {{averageMg}} mg de sodio al día, por encima del límite de {{limitMg}} mg.",
+    "target_reached": "Llevas {{kcal}} de {{targetKcal}} kcal: el objetivo de hoy está cumplido."
+  },
+  "startup": {
+    "loading": "Abriendo tus datos",
+    "recovery": {
+      "title": "No se pudieron abrir tus datos",
+      "message": "La actualización de la base de datos local no terminó y tus datos existentes quedaron sin cambios. Reintenta. Si sigue fallando, reinicia la aplicación.",
+      "retry": "Reintentar"
+    }
   },
   "progress": {
     "title": "Progreso",

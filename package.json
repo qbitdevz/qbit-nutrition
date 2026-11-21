@@ -12,13 +12,19 @@
     "test": "jest",
     "catalog:build": "tsx scripts/catalog/build.ts",
     "bench": "tsx bench/run.ts",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "web": "expo start --web"
   },
   "dependencies": {
+    "@expo-google-fonts/figtree": "^0.4.1",
+    "@expo-google-fonts/outfit": "^0.4.3",
+    "@expo/metro-runtime": "~58.0.17",
     "drizzle-orm": "1.0.0-rc.6",
     "expo": "~58.0.26",
     "expo-asset": "~58.0.21",
     "expo-constants": "~58.0.16",
+    "expo-font": "~58.0.12",
+    "expo-linear-gradient": "~58.0.4",
     "expo-linking": "~58.0.17",
     "expo-localization": "~58.0.5",
     "expo-router": "~58.0.32",
@@ -35,10 +41,13 @@
     "react-native-reanimated": "4.7.1",
     "react-native-safe-area-context": "~5.11.1",
     "react-native-screens": "~4.30.1",
+    "react-native-svg": "15.16.0",
+    "react-native-web": "^0.21.4",
     "react-native-worklets": "0.13.0",
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@testing-library/react-native": "^14.1.0",
     "@types/jest": "30.0.0",
     "@types/node": "^26.0.0",
     "@types/react": "~19.3.0",
@@ -48,6 +57,7 @@
     "eslint-config-expo": "~58.0.4",
     "jest": "~30.5.2",
     "jest-expo": "~58.0.15",
+    "test-renderer": "^1.3.1",
     "tsx": "^4.23.15",
     "typescript": "~6.0.3"
   },
@@ -62,6 +72,10 @@
       "/node_modules/(?!(.pnpm|react-native|@react-native|@react-native-community|expo|@expo|@expo-google-fonts|react-navigation|@react-navigation|@sentry/react-native|native-base|standard-navigation|drizzle-orm))",
       "/node_modules/react-native-reanimated/plugin/",
       "/node_modules/@react-native/babel-preset/"
-    ]
+    ],
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    },
+    "resolver": "react-native-reanimated/jest/resolver"
   }
 }
