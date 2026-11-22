@@ -105,6 +105,31 @@ function sampleTable(): Uint8Array {
   );
 }
 
+/** A SYNTHETIC table in the layout of a published one that comes in several files (invented foods, one file per food group). */
+function sampleTablePart(group: string, foods: string[]): Uint8Array {
+  return strToU8(
+    [
+      `${group};;;;;`,
+      'Por 100 g de porción comestible;;;;;',
+      'Nº;Alimento;Género - especie - variedad;Energía (Kcal);Proteínas (g);Sodio (mg)',
+      ';;;<ENERC>;<PROTCNT>;<NA>',
+      ';;;2*1;3*1;13*1',
+      ...foods.map((food, i) => `${i + 1};${food};;${100 + i * 12};${i + 1},5;${10 + i}`),
+    ].join('\n'),
+  );
+}
+
+/** What the preview's picker hands out when several files are chosen on the table screens: parts of one table, a sheet with nothing usable, a loose table, a file that cannot be read. */
+function sampleTableFiles(): { name: string; bytes: Uint8Array }[] {
+  return [
+    { name: 'Alimentos inventados 01.csv', bytes: sampleTablePart('CEREALES INVENTADOS', ['Arroz inventado', 'Avena ficticia', 'Trigo de ejemplo']) },
+    { name: 'Alimentos inventados 02.csv', bytes: sampleTablePart('FRUTAS INVENTADAS', ['Manzana ficticia', 'Pera de ejemplo']) },
+    { name: 'Ácidos grasos inventados.csv', bytes: strToU8('Alimento;C18:2 (g);C18:3 (g)\nAceite inventado;50;1\nManteca ficticia;2;0\n') },
+    { name: 'Tabla suelta inventada.csv', bytes: sampleTable() },
+    { name: 'Tabla publicada.pdf', bytes: strToU8('%PDF-1.7') },
+  ];
+}
+
 export function createDevDataPlatform(): DataPlatform {
   const photo = Uint8Array.from([0xff, 0xd8, 0xff, 0xe0, 0, 16, 1, 2, 3, 4]);
   const platform = createFakeDataPlatform({
@@ -120,6 +145,12 @@ export function createDevDataPlatform(): DataPlatform {
     const onTableScreen = typeof window !== 'undefined' && /import-table/.test(window.location.pathname);
     platform.state.nextPick = onTableScreen ? { name: 'Tabla inventada.csv', bytes: sampleTable() } : { name: 'qbit-nutrition-export-2026-11-21.json', bytes: sampleExport() };
     return pick();
+  };
+  const pickMany = platform.picker.pickMany;
+  platform.picker.pickMany = async () => {
+    const onTableScreen = typeof window !== 'undefined' && /import-table/.test(window.location.pathname);
+    platform.state.nextPicks = onTableScreen ? sampleTableFiles() : null;
+    return pickMany();
   };
   return platform;
 }

@@ -34,6 +34,16 @@ export function withHealthSync(repos: Repositories, health: Pick<HealthSync, 'me
         changed(mealId);
         return mealId;
       },
+      async restoreItem(item) {
+        const restored = await meals.restoreItem(item);
+        changed(restored.mealId);
+        return restored;
+      },
+      async restoreMeal(saved) {
+        const restored = await meals.restoreMeal(saved);
+        changed(restored.id);
+        return restored;
+      },
       async deleteMeal(mealId) {
         await meals.deleteMeal(mealId);
         void health.mealDeleted(mealId).catch(() => undefined);

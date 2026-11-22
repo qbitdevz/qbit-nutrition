@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BackHandler, Image, StyleSheet, View } from 'react-native';
+import { BackHandler, StyleSheet, View } from 'react-native';
 
 import { isRecipeRef, type FoodRef } from '@/core/catalog';
 import { computeItemNutrients, sumNutrients, type MealSlot } from '@/core/nutrition';
+import { isDataError } from '@/data';
 import { formatDecimal, formatNumber } from '@/i18n/format';
 import type { Locale } from '@/i18n/locale';
 import {
@@ -37,6 +38,7 @@ import { isEdited, itemState, useMealDraft, type DraftItem } from './draft';
 import { gramsMessage } from './gramsMessage';
 import { GRAM_STEP, GRAMS_RANGE, validateGrams } from './limits';
 import { pickSlot, SLOT_ORDER } from './mealSlot';
+import { ReviewPhotoHeader } from './ReviewPhotoHeader';
 import { RecipeMethodSheet, RecipeTag } from './RecipeMethod';
 import { draftToSaveItems } from './saveDraft';
 
@@ -87,7 +89,7 @@ export function ReviewScreen({ now = systemNow, onAddItem, onSwap, onRetake, onS
   const [footerHeight, setFooterHeight] = useState(240);
   const [confirmExit, setConfirmExit] = useState<Exit | null>(null);
   const [saving, setSaving] = useState(false);
-  const [saveFailed, setSaveFailed] = useState(false);
+  const [saveFailed, setSaveFailed] = useState<false | 'save' | 'date'>(false);
   const [method, setMethod] = useState<{ ref: FoodRef; name: string } | null>(null);
 
   const slot: MealSlot = draft.slot ?? pickSlot(now());
@@ -155,10 +157,11 @@ export function ReviewScreen({ now = systemNow, onAddItem, onSwap, onRetake, onS
         name: review?.dishName || null,
         items: draftToSaveItems(draft.items),
       });
-    } catch {
+    } catch (error) {
       // The items stay exactly as they are; the person can try again. A photo copied for this save is not left behind.
       if (photoPath) await platform.files.remove(photoPath).catch(() => undefined);
-      setSaveFailed(true);
+      // A meal is dated "now": refused only when this phone's date is outside what the app accepts, so that is what the message says.
+      setSaveFailed(isDataError(error, 'date_out_of_range') ? 'date' : 'save');
       setSaving(false);
       return;
     }
@@ -202,25 +205,21 @@ export function ReviewScreen({ now = systemNow, onAddItem, onSwap, onRetake, onS
 
   return (
     <ScreenFrame
+      edgeToEdge={review !== null}
       header={
-        <TopBar
-          title={t('log.review.title')}
-          onBack={back}
-          backLabel={t('log.review.back')}
-          right={
-            review && onRetake ? (
-              <PressableScale
-                accessibilityRole="button"
-                accessibilityLabel={t('log.review.retake')}
-                onPress={retake}
-                testID="review-retake"
-                style={[styles.retake, { borderColor: colors.borderStrong }]}>
-                <Icon name="retake" size={18} color={colors.text} />
-                <AppText variant="bodyMd">{t('log.review.retake')}</AppText>
-              </PressableScale>
-            ) : undefined
-          }
-        />
+        review ? (
+          <ReviewPhotoHeader
+            photoUri={review.photoUri}
+            photoLabel={t('log.review.photoLabel')}
+            foundLabel={t('log.review.aiFound', { count: draft.items.length })}
+            backLabel={t('log.review.back')}
+            retakeLabel={onRetake ? t('log.review.retake') : null}
+            onBack={back}
+            onRetake={retake}
+          />
+        ) : (
+          <TopBar title={t('log.review.title')} onBack={back} backLabel={t('log.review.back')} />
+        )
       }
       footer={
         <ScreenFooter onLayout={setFooterHeight}>
@@ -252,7 +251,7 @@ export function ReviewScreen({ now = systemNow, onAddItem, onSwap, onRetake, onS
             value={slot}
             onChange={(value) => value && draft.setSlot(value)}
           />
-          {saveFailed ? <FieldMessage message={t('log.review.saveError')} /> : null}
+          {saveFailed ? <FieldMessage message={t(saveFailed === 'date' ? 'log.review.dateError' : 'log.review.saveError')} /> : null}
           {disabledReason ? (
             <AppText variant="bodySm" tone="muted" style={styles.center}>
               {disabledReason}
@@ -268,20 +267,18 @@ export function ReviewScreen({ now = systemNow, onAddItem, onSwap, onRetake, onS
       }>
       <View style={styles.body}>
         {review ? (
-          <View style={styles.photoWrap}>
-            <Image source={{ uri: review.photoUri }} style={[styles.photo, { backgroundColor: colors.surface }]} resizeMode="cover" accessibilityLabel={t('log.review.photoLabel')} testID="scan-photo" />
-            <View style={[styles.photoChip, { backgroundColor: colors.aiSoft }]}>
-              <Icon name="sparkle" size={16} color={colors.ai} />
-              <AppText variant="bodySm" tone="ai">
-                {t('log.review.aiFound', { count: draft.items.length })}
-              </AppText>
-            </View>
+          // With a photo the title is the page heading under it (the artboard); without one it is in the bar above.
+          <View style={styles.titleBlock}>
+            <AppText variant="title" accessibilityRole="header">
+              {t('log.review.title')}
+            </AppText>
+            <AppText tone="muted">{t('log.review.subtitle')}</AppText>
           </View>
-        ) : null}
-
-        <AppText tone="muted" style={styles.subtitle}>
-          {t('log.review.subtitle')}
-        </AppText>
+        ) : (
+          <AppText tone="muted" style={styles.subtitle}>
+            {t('log.review.subtitle')}
+          </AppText>
+        )}
 
         {showMealWarning ? (
           <View style={[styles.warning, { backgroundColor: colors.warningSoft }]} accessibilityRole="alert">
@@ -458,10 +455,7 @@ function Flag({ label }: { label: string }) {
 const styles = StyleSheet.create({
   body: { paddingHorizontal: layout.screenMargin, paddingTop: spacing.s1, paddingBottom: spacing.s6, gap: spacing.s4 },
   subtitle: { paddingHorizontal: spacing.s2 },
-  retake: { minHeight: layout.touchTarget, flexDirection: 'row', alignItems: 'center', gap: spacing.s2, paddingHorizontal: spacing.s4, borderRadius: radius.pill, borderWidth: 1.5 },
-  photoWrap: { borderRadius: radius.lg, overflow: 'hidden' },
-  photo: { width: '100%', height: 168 },
-  photoChip: { position: 'absolute', left: spacing.s3, bottom: spacing.s3, flexDirection: 'row', alignItems: 'center', gap: spacing.s2, paddingHorizontal: spacing.s3, paddingVertical: spacing.s1, borderRadius: radius.pill },
+  titleBlock: { paddingHorizontal: spacing.s2, paddingTop: spacing.s4, gap: 2 },
   warning: { flexDirection: 'row', alignItems: 'center', gap: spacing.s2, padding: spacing.s3, borderRadius: radius.md },
   warningText: { flex: 1 },
   items: { gap: spacing.s2 },

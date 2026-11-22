@@ -4,8 +4,9 @@ import type { NutrientAmounts } from '../../core/nutrition';
 import type { AppTransaction } from '../database';
 import { DataError } from '../errors';
 import { COLLECTION_BASES, foodCollection, foodUsage, importedFood, importedFoodToken, matchMemory } from '../schema';
+import { contentFingerprint, sampleIndexes } from './fingerprint';
 import { IMPORT_LIMITS, requireImportedPer100g } from './limits';
-import { TEXT_LIMITS, invalid, nutrientEntries, requireMaxLength, type RepositoryContext } from './shared';
+import { TEXT_LIMITS, invalid, isBlankText, isPlainFileName, nutrientEntries, requireMaxLength, type RepositoryContext } from './shared';
 
 type CollectionRow = typeof foodCollection.$inferSelect;
 type FoodRow = typeof importedFood.$inferSelect;
@@ -24,6 +25,8 @@ export interface ImportedCollection {
   presetId: string | null;
   /** What the values are per: 100 g, or 100 ml (flagged: the app applies no density). */
   basis: CollectionBasis;
+  /** Fingerprint of the content (`contentFingerprint`); null for a table imported before it existed. */
+  contentHash: string | null;
 }
 
 export interface NewImportedFood {
@@ -58,9 +61,36 @@ export interface ImportCollectionInput {
   basis?: CollectionBasis;
 }
 
+/** A table about to be imported, as far as recognising one that is already here needs. */
+export interface DuplicateCandidate {
+  contentHash: string;
+  name: string;
+  fileName: string | null;
+  basis?: CollectionBasis;
+  foods: readonly { name: string }[];
+}
+
 export interface ImportedFoodRepository {
   /** Stores the collection and all its foods in ONE transaction: if any food is refused, nothing is stored. */
   importCollection(input: ImportCollectionInput, foods: readonly NewImportedFood[]): Promise<ImportedCollection>;
+  /**
+   * The tables already here that have the same content as `candidate`: the same fingerprint or, for a table imported before fingerprints
+   * existed (none stored), the same number of foods, the same name or file, and the same food names at a sample of positions. Oldest first.
+   */
+  findMatches(candidate: DuplicateCandidate): Promise<ImportedCollection[]>;
+  /**
+   * Swaps the tables `oldIds` for this one in ONE transaction (all or nothing): the old tables go with their foods, search entries,
+   * favorites, recents and learned matches, the new one is stored. Meals already logged are not touched. The old tables do not count
+   * against the limit of tables. Rejects with `not_found` when an id is not a table, `invalid_input` when a food is refused.
+   */
+  replaceCollections(oldIds: readonly string[], input: ImportCollectionInput, foods: readonly NewImportedFood[]): Promise<ImportedCollection>;
+  /** Removes several tables at once, all or nothing (the same clean-up as `removeCollection`). Resolves with the foods removed. */
+  removeCollections(ids: readonly string[]): Promise<{ foods: number }>;
+  /**
+   * Groups of tables whose content is identical (two or more each, oldest first). A table imported before fingerprints existed gets its
+   * fingerprint here, from its stored foods, so what is compared is the content itself and the next look is instant.
+   */
+  duplicateGroups(options?: { yieldToUi?: () => Promise<void> }): Promise<ImportedCollection[][]>;
   /** Oldest first. */
   listCollections(): Promise<ImportedCollection[]>;
   renameCollection(id: string, name: string): Promise<ImportedCollection>;
@@ -96,6 +126,7 @@ const toCollection = (row: CollectionRow): ImportedCollection => ({
   foodCount: row.foodCount,
   presetId: row.presetId,
   basis: row.basis,
+  contentHash: row.contentHash,
 });
 
 const toFood = (row: FoodRow): ImportedFood => ({
@@ -113,7 +144,7 @@ function chunks<T>(rows: readonly T[], size: number): T[][] {
 }
 
 function validateFood(food: NewImportedFood, label: string): void {
-  if (food.name.trim() === '') throw invalid(`${label}.name must not be blank`);
+  if (isBlankText(food.name)) throw invalid(`${label}.name must not be blank`);
   requireMaxLength(food.name.trim(), TEXT_LIMITS.name, `${label}.name`);
   requireMaxLength(food.group, TEXT_LIMITS.name, `${label}.group`);
   const entries = nutrientEntries(food.per100g, `${label}.per100g`);
@@ -122,16 +153,17 @@ function validateFood(food: NewImportedFood, label: string): void {
 }
 
 function validateCollection(input: ImportCollectionInput): void {
-  if (input.name.trim() === '') throw invalid('name must not be blank');
+  if (isBlankText(input.name)) throw invalid('name must not be blank');
   requireMaxLength(input.name.trim(), TEXT_LIMITS.label, 'name');
   requireMaxLength(input.fileName, TEXT_LIMITS.name, 'fileName');
+  if (input.fileName != null && !isPlainFileName(input.fileName)) throw invalid('fileName must be a file name, not a path');
   requireMaxLength(input.presetId, TEXT_LIMITS.label, 'presetId');
 }
 
 /** Writes a collection, its foods and their search entries inside the caller's transaction. Shared with the backup repository. */
 export function insertCollection(
   tx: Pick<AppTransaction, 'insert' | 'select'>,
-  collection: ImportedCollection,
+  collection: Omit<ImportedCollection, 'contentHash'> & { contentHash?: string | null },
   foods: readonly { id: string; name: string; group: string | null; per100g: NutrientAmounts }[],
 ): void {
   tx.insert(foodCollection)
@@ -143,6 +175,8 @@ export function insertCollection(
       foodCount: foods.length,
       presetId: collection.presetId,
       basis: collection.basis,
+      // A restore from a backup has no fingerprint in the file: it is computed from the foods, like for a new import.
+      contentHash: collection.contentHash ?? contentFingerprint(collection.basis, foods),
     })
     .run();
   const top = tx
@@ -167,6 +201,32 @@ export function insertCollection(
   }
   const tokens = keyed.flatMap((f) => nameIndexTokens(f.name).map((token) => ({ term: token, foodSeq: f.seq })));
   for (const batch of chunks(tokens, TOKEN_CHUNK)) tx.insert(importedFoodToken).values(batch).run();
+}
+
+/** Removes one collection with everything that points at its foods, inside the caller's transaction. */
+function removeIn(tx: Pick<AppTransaction, 'select' | 'delete'>, id: string): number {
+  const row = tx.select().from(foodCollection).where(eq(foodCollection.id, id)).get();
+  if (!row) throw new DataError('not_found', `imported table not found: ${id}`);
+  const of = tx.select({ id: importedFood.id }).from(importedFood).where(eq(importedFood.collectionId, id));
+  // Favorites, recents and learned matches of these foods would point at nothing: they go with the table.
+  tx.delete(foodUsage).where(and(eq(foodUsage.foodSource, 'custom'), inArray(foodUsage.foodRef, of))).run();
+  tx.delete(matchMemory).where(and(eq(matchMemory.foodSource, 'custom'), inArray(matchMemory.foodRef, of))).run();
+  // The foods and their search entries go with the collection (ON DELETE CASCADE). Meal items have no reference to delete.
+  tx.delete(foodCollection).where(eq(foodCollection.id, id)).run();
+  return row.foodCount;
+}
+
+/** Checks the input of an import like `importCollection` does and returns the stored basis. */
+function validateImport(input: ImportCollectionInput, foods: readonly NewImportedFood[]): CollectionBasis {
+  validateCollection(input);
+  if (foods.length === 0) throw invalid('a table needs at least one food');
+  if (foods.length > IMPORT_LIMITS.foodsPerCollection) {
+    throw invalid(`a table may have at most ${IMPORT_LIMITS.foodsPerCollection} foods, got ${foods.length}`);
+  }
+  foods.forEach((food, index) => validateFood(food, `foods[${index}]`));
+  const basis = input.basis ?? 'g';
+  if (!COLLECTION_BASES.includes(basis)) throw invalid(`basis must be one of ${COLLECTION_BASES.join(', ')}`);
+  return basis;
 }
 
 export function createImportedFoodRepository({ db, now, newId }: RepositoryContext): ImportedFoodRepository {
@@ -207,15 +267,8 @@ export function createImportedFoodRepository({ db, now, newId }: RepositoryConte
 
   return {
     async importCollection(input, foods) {
-      validateCollection(input);
-      if (foods.length === 0) throw invalid('a table needs at least one food');
-      if (foods.length > IMPORT_LIMITS.foodsPerCollection) {
-        throw invalid(`a table may have at most ${IMPORT_LIMITS.foodsPerCollection} foods, got ${foods.length}`);
-      }
-      foods.forEach((food, index) => validateFood(food, `foods[${index}]`));
-      const basis = input.basis ?? 'g';
-      if (!COLLECTION_BASES.includes(basis)) throw invalid(`basis must be one of ${COLLECTION_BASES.join(', ')}`);
-
+      const basis = validateImport(input, foods);
+      const stored = foods.map((f) => ({ id: newId(), name: f.name.trim(), group: f.group?.trim() ? f.group.trim() : null, per100g: { ...f.per100g } }));
       const collection: ImportedCollection = {
         id: newId(),
         name: input.name.trim(),
@@ -224,18 +277,91 @@ export function createImportedFoodRepository({ db, now, newId }: RepositoryConte
         foodCount: foods.length,
         presetId: input.presetId ?? null,
         basis,
+        contentHash: contentFingerprint(basis, stored),
       };
       // One transaction: the collection, every food and every search entry, or none of them.
       db.transaction((tx) => {
         const existing = Number(tx.select({ n: sql<number>`count(*)` }).from(foodCollection).get()?.n ?? 0);
         if (existing >= IMPORT_LIMITS.collections) throw invalid(`at most ${IMPORT_LIMITS.collections} imported tables at once`);
-        insertCollection(
-          tx,
-          collection,
-          foods.map((f) => ({ id: newId(), name: f.name.trim(), group: f.group?.trim() ? f.group.trim() : null, per100g: { ...f.per100g } })),
-        );
+        insertCollection(tx, collection, stored);
       });
       return collection;
+    },
+
+    async replaceCollections(oldIds, input, foods) {
+      const basis = validateImport(input, foods);
+      const stored = foods.map((f) => ({ id: newId(), name: f.name.trim(), group: f.group?.trim() ? f.group.trim() : null, per100g: { ...f.per100g } }));
+      const collection: ImportedCollection = {
+        id: newId(),
+        name: input.name.trim(),
+        fileName: input.fileName ?? null,
+        importedAt: now().toISOString(),
+        foodCount: foods.length,
+        presetId: input.presetId ?? null,
+        basis,
+        contentHash: contentFingerprint(basis, stored),
+      };
+      // One transaction: the old tables go and the new one comes in, or nothing changes.
+      db.transaction((tx) => {
+        for (const id of new Set(oldIds)) removeIn(tx, id);
+        const existing = Number(tx.select({ n: sql<number>`count(*)` }).from(foodCollection).get()?.n ?? 0);
+        if (existing >= IMPORT_LIMITS.collections) throw invalid(`at most ${IMPORT_LIMITS.collections} imported tables at once`);
+        insertCollection(tx, collection, stored);
+      });
+      return collection;
+    },
+
+    async removeCollections(ids) {
+      return db.transaction((tx) => {
+        let foods = 0;
+        for (const id of new Set(ids)) foods += removeIn(tx, id);
+        return { foods };
+      });
+    },
+
+    async findMatches(candidate) {
+      const basis = candidate.basis ?? 'g';
+      const sample = sampleIndexes(candidate.foods.length).map((i) => candidate.foods[i]!.name.trim());
+      const rows = db.select().from(foodCollection).orderBy(asc(foodCollection.importedAt), asc(foodCollection.id)).all();
+      return rows
+        .filter((row) => {
+          if (row.contentHash !== null) return row.contentHash === candidate.contentHash;
+          // Imported before fingerprints: the same count, basis and name or file, then the names at the sampled positions.
+          if (row.foodCount !== candidate.foods.length || row.basis !== basis) return false;
+          const sameOrigin = row.name === candidate.name.trim() || (row.fileName !== null && row.fileName === candidate.fileName);
+          if (!sameOrigin) return false;
+          return sampleIndexes(row.foodCount).every((position, index) => {
+            const stored = db
+              .select({ name: importedFood.name })
+              .from(importedFood)
+              .where(eq(importedFood.collectionId, row.id))
+              .orderBy(asc(importedFood.seq))
+              .limit(1)
+              .offset(position)
+              .get();
+            return stored?.name === sample[index];
+          });
+        })
+        .map(toCollection);
+    },
+
+    async duplicateGroups(options = {}) {
+      const rows = db.select().from(foodCollection).orderBy(asc(foodCollection.importedAt), asc(foodCollection.id)).all();
+      const groups = new Map<string, ImportedCollection[]>();
+      for (const row of rows) {
+        let hash = row.contentHash;
+        if (hash === null) {
+          const foods = db.select().from(importedFood).where(eq(importedFood.collectionId, row.id)).orderBy(asc(importedFood.seq)).all();
+          hash = contentFingerprint(
+            row.basis,
+            foods.map((f) => ({ name: f.name, group: f.foodGroup, per100g: JSON.parse(f.per100gJson) as NutrientAmounts })),
+          );
+          db.update(foodCollection).set({ contentHash: hash }).where(eq(foodCollection.id, row.id)).run();
+          await options.yieldToUi?.();
+        }
+        groups.set(hash, [...(groups.get(hash) ?? []), toCollection({ ...row, contentHash: hash })]);
+      }
+      return [...groups.values()].filter((group) => group.length > 1);
     },
 
     async listCollections() {
@@ -251,17 +377,7 @@ export function createImportedFoodRepository({ db, now, newId }: RepositoryConte
     },
 
     async removeCollection(id) {
-      return db.transaction((tx) => {
-        const row = tx.select().from(foodCollection).where(eq(foodCollection.id, id)).get();
-        if (!row) throw new DataError('not_found', `imported table not found: ${id}`);
-        const of = tx.select({ id: importedFood.id }).from(importedFood).where(eq(importedFood.collectionId, id));
-        // Favorites, recents and learned matches of these foods would point at nothing: they go with the table.
-        tx.delete(foodUsage).where(and(eq(foodUsage.foodSource, 'custom'), inArray(foodUsage.foodRef, of))).run();
-        tx.delete(matchMemory).where(and(eq(matchMemory.foodSource, 'custom'), inArray(matchMemory.foodRef, of))).run();
-        // The foods and their search entries go with the collection (ON DELETE CASCADE). Meal items have no reference to delete.
-        tx.delete(foodCollection).where(eq(foodCollection.id, id)).run();
-        return { foods: row.foodCount };
-      });
+      return db.transaction((tx) => ({ foods: removeIn(tx, id) }));
     },
 
     async getFood(id) {

@@ -50,11 +50,13 @@ interface MealDetailScreenProps {
 }
 
 const systemNow = () => new Date();
+const IN_SCREEN_SNACKBAR_OFFSET = spacing.s4;
 
 /**
  * Meal detail (S7, FR-41, FR-42): a saved meal on any day with its items and the nutrient detail,
- * where the person can change grams, delete an item (after a confirmation) or the whole meal (after
- * a confirmation, with undo), change the meal type, and copy the meal to today (FR-33).
+ * where the person can change grams, remove an item (at once, with a 5-second undo, as in the review of a scan) or the whole meal
+ * (after a confirmation, with undo), change the meal type, and copy the meal to today (FR-33). Removing the only item removes the
+ * meal, the same as deleting it, with the same undo.
  */
 export function MealDetailScreen({ mealId, now = systemNow, onClose, onCopied }: MealDetailScreenProps) {
   const { t, i18n } = useTranslation();
@@ -65,7 +67,6 @@ export function MealDetailScreen({ mealId, now = systemNow, onClose, onCopied }:
   const snackbar = useSnackbar();
   const { notifyChange } = useSession();
   const [state, setState] = useState<State>({ status: 'loading' });
-  const [deleteItem, setDeleteItem] = useState<MealItem | null>(null);
   const [deleteMeal, setDeleteMeal] = useState(false);
   const [actionFailed, setActionFailed] = useState(false);
   const [method, setMethod] = useState<{ ref: FoodRef; name: string } | null>(null);
@@ -98,8 +99,11 @@ export function MealDetailScreen({ mealId, now = systemNow, onClose, onCopied }:
     }
   };
 
-  const removeMeal = async (meal: MealWithItems) => {
-    setDeleteItem(null);
+  /**
+   * Removes the meal. `lastItem` is set when the person removed the only item: the message then says so. Undo puts back the same
+   * meal and items (same ids, so the Health Connect record is the same one, and no new use of the foods is counted).
+   */
+  const removeMeal = async (meal: MealWithItems, lastItem?: MealItem) => {
     setDeleteMeal(false);
     try {
       await repos.meals.deleteMeal(meal.id);
@@ -112,16 +116,49 @@ export function MealDetailScreen({ mealId, now = systemNow, onClose, onCopied }:
     notifyChange();
     setState({ status: 'missing' });
     snackbar.show({
-      message: t('meal.deleted'),
+      message: lastItem ? t('meal.itemDeletedLast', { name: lastItem.displayName }) : t('meal.deleted'),
       actionLabel: t('common.undo'),
       onAction: () => {
-        void repos.meals.save(mealToSaveInput(meal)).then(() => {
-          notifyChange();
-          snackbar.show({ message: t('meal.restored') });
-        });
+        void repos.meals.restoreMeal({ ...meal, photoPath: null }).then(
+          () => {
+            notifyChange();
+            snackbar.show({ message: t('meal.restored') });
+          },
+          () => snackbar.show({ message: t('meal.undoFailed') }),
+        );
       },
     });
     onClose();
+  };
+
+  /** Removes one item at once and offers undo for 5 seconds (the snackbar's time with an action), as the review does. */
+  const removeItem = async (meal: MealWithItems, item: MealItem) => {
+    if (meal.items.length === 1) return removeMeal(meal, item);
+    setActionFailed(false);
+    try {
+      await repos.meals.deleteItem(item.id);
+    } catch {
+      setActionFailed(true);
+      load(true);
+      return;
+    }
+    notifyChange();
+    load(true);
+    snackbar.show({
+      message: t('meal.itemDeleted', { name: item.displayName }),
+      actionLabel: t('common.undo'),
+      bottomOffset: IN_SCREEN_SNACKBAR_OFFSET, // this screen has no dock to clear
+      onAction: () => {
+        void repos.meals.restoreItem(item).then(
+          () => {
+            notifyChange();
+            load(true);
+            snackbar.show({ message: t('meal.itemRestored', { name: item.displayName }), bottomOffset: IN_SCREEN_SNACKBAR_OFFSET });
+          },
+          () => snackbar.show({ message: t('meal.undoFailed'), bottomOffset: IN_SCREEN_SNACKBAR_OFFSET }),
+        );
+      },
+    });
   };
 
   const copyToToday = async (meal: MealWithItems) => {
@@ -223,7 +260,7 @@ export function MealDetailScreen({ mealId, now = systemNow, onClose, onCopied }:
               locale={locale}
               origin={item.foodRef !== null && item.foodSource === 'custom' ? origins.get(item.foodRef) : undefined}
               onGrams={(grams) => change(async () => void (await repos.meals.updateItemGrams(item.id, grams)))}
-              onDelete={() => setDeleteItem(item)}
+              onDelete={() => void removeItem(meal, item)}
               onMethod={(ref) => setMethod({ ref, name: item.displayName })}
             />
           ))}
@@ -236,26 +273,6 @@ export function MealDetailScreen({ mealId, now = systemNow, onClose, onCopied }:
       </View>
 
       <RecipeMethodSheet food={method} onClose={() => setMethod(null)} />
-      <ConfirmSheet
-        visible={deleteItem !== null}
-        title={t('meal.deleteItemTitle')}
-        body={deleteItem ? t('meal.deleteItemBody', { name: deleteItem.displayName }) : ''}
-        note={meal.items.length === 1 ? t('meal.deleteItemLast') : undefined}
-        confirmLabel={t('meal.deleteItemConfirm')}
-        cancelLabel={t('meal.keep')}
-        closeLabel={t('common.close')}
-        onCancel={() => setDeleteItem(null)}
-        onConfirm={() => {
-          const item = deleteItem;
-          if (!item) return;
-          if (meal.items.length === 1) return void removeMeal(meal);
-          setDeleteItem(null);
-          void change(async () => {
-            await repos.meals.deleteItem(item.id);
-            snackbar.show({ message: t('meal.itemDeleted', { name: item.displayName }) });
-          });
-        }}
-      />
       <ConfirmSheet
         visible={deleteMeal}
         title={t('meal.deleteMealTitle')}

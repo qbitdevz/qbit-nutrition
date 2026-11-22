@@ -1,5 +1,6 @@
 import type { NutrientAmounts } from '@/core/nutrition';
-import type { BackupSnapshot, MealWithItems, Profile } from '@/data';
+import { plainFileName } from '@/data';
+import type { BackupSnapshot, DayBounds, MealWithItems, Measurement, Profile } from '@/data';
 import { EXPORT_FORMAT, EXPORT_FORMAT_VERSION, isKnownTestResult, type ExportDocument } from './exportFormat';
 import { IMPORTED_PROVIDER_PREFIX, portableSettings } from './settingsPolicy';
 
@@ -101,7 +102,8 @@ export function documentFromSnapshot(snapshot: BackupSnapshot, { appVersion, exp
     imported_collections: snapshot.importedCollections.map((c) => ({
       id: c.id,
       name: c.name,
-      file_name: c.fileName,
+      // A stored name with a path or control character (an older build) is exported as its base name: the file would be refused otherwise.
+      file_name: plainFileName(c.fileName),
       imported_at: c.importedAt,
       preset_id: c.presetId,
       basis: c.basis,
@@ -171,6 +173,67 @@ export interface ToSnapshotOptions {
    * the profile id, so a reused id could pair a key that existed before the import with a profile (and a host) it was never entered for.
    */
   newId: () => string;
+}
+
+/**
+ * Rule for weights that came from Health Connect on another phone (A2): they arrive as the person's own history (`manual`), because the
+ * weight sync replaces and removes only the rows it read itself (`health_connect`) and would otherwise remove, within the last 30 days,
+ * every restored row this phone's Health Connect does not have. A restore must never lead to removing what it just restored.
+ *
+ * Where the person also has their own entry for the same kind and day, that entry is kept and the Health Connect reading of that day is
+ * not stored (a day holds one value per kind and source; two `manual` rows cannot share a day). The preview says how many, before anything is replaced.
+ */
+export function measurementsFromDocument(doc: Pick<ExportDocument, 'body_measurements'>): { rows: Measurement[]; fromHealthConnect: number; merged: number } {
+  const ownDays = new Set(doc.body_measurements.filter((m) => m.source === 'manual').map((m) => `${m.measured_on}|${m.kind}`));
+  const rows: Measurement[] = [];
+  let fromHealthConnect = 0;
+  let merged = 0;
+  for (const m of doc.body_measurements) {
+    if (m.source === 'health_connect') {
+      fromHealthConnect += 1;
+      if (ownDays.has(`${m.measured_on}|${m.kind}`)) {
+        merged += 1;
+        continue;
+      }
+    }
+    rows.push({ id: m.id, measuredOn: m.measured_on, kind: m.kind, value: m.value, source: 'manual' });
+  }
+  return { rows, fromHealthConnect, merged };
+}
+
+/**
+ * Timestamps that only record WHEN a row was written or last touched (not a day the person chose): a phone whose clock was wrong for a
+ * day wrote them. One of those beyond the day limits must not stop an export or make the file unimportable, so it is brought to the limit:
+ * a future one to the export instant, one before 2000 to 2000-01-01. Returns how many were changed. Days the person chose (a meal's
+ * date, a measurement, a goal) are never touched here.
+ */
+export function boundAuditTimestamps(doc: ExportDocument, bounds: DayBounds, exportedAt: Date): number {
+  let changed = 0;
+  const bound = (value: string): string => {
+    const day = value.slice(0, 10);
+    if (day > bounds.latest) {
+      changed += 1;
+      return exportedAt.toISOString();
+    }
+    if (day < bounds.earliest) {
+      changed += 1;
+      return `${bounds.earliest}T00:00:00.000Z`;
+    }
+    return value;
+  };
+  if (doc.profile) {
+    doc.profile.created_at = bound(doc.profile.created_at);
+    doc.profile.updated_at = bound(doc.profile.updated_at);
+  }
+  for (const m of doc.meals) {
+    m.created_at = bound(m.created_at);
+    m.updated_at = bound(m.updated_at);
+  }
+  for (const p of doc.barcode_products) p.fetched_at = bound(p.fetched_at);
+  for (const c of doc.imported_collections) c.imported_at = bound(c.imported_at);
+  for (const u of doc.food_usage) u.last_used_at = bound(u.last_used_at);
+  for (const m of doc.match_memory) m.updated_at = bound(m.updated_at);
+  return changed;
 }
 
 /** The notice acceptance of an installation that has none: never equal to the current notice version, so it is asked. */
@@ -253,7 +316,7 @@ export function snapshotFromDocument(doc: ExportDocument, { storedPhotos, localP
       basisWeightKg: g.basis_weight_kg,
       formulaVersion: g.formula_version,
     })),
-    measurements: doc.body_measurements.map((m) => ({ id: m.id, measuredOn: m.measured_on, kind: m.kind, value: m.value, source: m.source })),
+    measurements: measurementsFromDocument(doc).rows,
     meals,
     customFoods: doc.custom_foods.map((f) => {
       const other = f.other_nutrients && Object.keys(f.other_nutrients).length > 0 ? ({ ...f.other_nutrients } as NutrientAmounts) : null;
@@ -277,6 +340,7 @@ export function snapshotFromDocument(doc: ExportDocument, { storedPhotos, localP
       foodCount: c.foods.length,
       presetId: c.preset_id,
       basis: c.basis,
+      contentHash: null,
       foods: c.foods.map((f) => ({ id: f.id, collectionId: c.id, name: f.name, group: f.group, per100g: { ...f.per_100g } as NutrientAmounts })),
     })),
     barcodeProducts: doc.barcode_products.map((p) => {

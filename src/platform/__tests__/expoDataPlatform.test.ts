@@ -14,6 +14,7 @@ interface Entry {
 const mockDisk = new Map<string, Entry>();
 const mockDirs = new Set<string>();
 const mockFailDelete = new Set<string>();
+let mockPickOptions: unknown[] = [];
 let mockPick: { canceled: boolean; assets?: { uri: string; name: string; size?: number }[] } = { canceled: true };
 let mockSharingAvailable = true;
 const mockShared: { uri: string; options: unknown }[] = [];
@@ -74,7 +75,12 @@ jest.mock('expo-file-system', () => {
   }
   return { Directory, File, Paths: { document: { uri: 'file:///documents' }, cache: { uri: 'file:///cache' } } };
 });
-jest.mock('expo-document-picker', () => ({ getDocumentAsync: async () => mockPick }));
+jest.mock('expo-document-picker', () => ({
+  getDocumentAsync: async (options: unknown) => {
+    mockPickOptions.push(options);
+    return mockPick;
+  },
+}));
 jest.mock('expo-sharing', () => ({
   isAvailableAsync: async () => mockSharingAvailable,
   shareAsync: async (uri: string, options: unknown) => void mockShared.push({ uri, options }),
@@ -149,6 +155,35 @@ describe('the cache', () => {
     mockFailDelete.add(uri);
     await expect(platform.cache.remove(uri)).rejects.toThrow('could not delete file');
     await expect(platform.cache.remove('file:///cache/never-existed')).resolves.toBeUndefined();
+  });
+});
+
+describe('the file picker, for several files at once (B2)', () => {
+  it('asks the system picker for multiple selection (supported by expo-document-picker on Android and the web) and returns every copy', async () => {
+    const platform = createExpoDataPlatform();
+    mockPickOptions = [];
+    mockPick = {
+      canceled: false,
+      assets: [
+        { uri: 'file:///cache/DocumentPicker/1/a.xls', name: 'a.xls', size: 10 },
+        { uri: 'file:///cache/DocumentPicker/2/b.xls', name: 'b.xls' },
+      ],
+    };
+    expect(await platform.picker.pickMany()).toEqual([
+      { uri: 'file:///cache/DocumentPicker/1/a.xls', name: 'a.xls', size: 10 },
+      { uri: 'file:///cache/DocumentPicker/2/b.xls', name: 'b.xls', size: null },
+    ]);
+    expect(mockPickOptions).toEqual([expect.objectContaining({ multiple: true, copyToCacheDirectory: true })]);
+  });
+
+  it('returns nothing when the person closes it, and keeps pick() for one file', async () => {
+    const platform = createExpoDataPlatform();
+    mockPick = { canceled: true };
+    expect(await platform.picker.pickMany()).toEqual([]);
+    mockPickOptions = [];
+    mockPick = { canceled: false, assets: [{ uri: 'file:///cache/DocumentPicker/1/a.xls', name: 'a.xls', size: 10 }] };
+    await platform.picker.pick();
+    expect(mockPickOptions).toEqual([expect.objectContaining({ multiple: false })]);
   });
 });
 

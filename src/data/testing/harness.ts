@@ -38,6 +38,8 @@ export interface Harness extends NodeAppDatabase {
   catalog: Catalog;
   /** Moves the clock the repositories read. */
   setNow(iso: string): void;
+  /** Moves the device clock that dates are bounded against (default: the real clock, which is what the screens under test read). */
+  setDayClock(iso: string): void;
 }
 
 export async function createHarness(options: { file?: string } = {}): Promise<Harness> {
@@ -46,11 +48,13 @@ export async function createHarness(options: { file?: string } = {}): Promise<Ha
 
   let now = new Date('2026-06-15T12:00:00.000Z');
   const clock = () => new Date(now);
+  let dayNow: Date | null = null;
+  const dayClock = () => (dayNow ? new Date(dayNow) : new Date());
 
   const catalogClient = nodeCatalogClient(fixtureCatalogFile());
   const memory = createMatchMemoryRepository({ db: node.db, now: clock });
   const catalog = createCatalog({ db: createSqliteCatalogDb(catalogClient), memory });
-  const repos = createRepositories({ db: node.db, catalog, now: clock });
+  const repos = createRepositories({ db: node.db, catalog, now: clock, dayClock });
 
   return {
     ...node,
@@ -62,6 +66,9 @@ export async function createHarness(options: { file?: string } = {}): Promise<Ha
     catalog,
     setNow(iso) {
       now = new Date(iso);
+    },
+    setDayClock(iso) {
+      dayNow = new Date(iso);
     },
   };
 }

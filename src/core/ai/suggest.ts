@@ -14,6 +14,7 @@ import type { Locale } from './prompt';
 import { MAX_SUGGESTIONS, Suggestion, SuggestionList, suggestionsJsonSchema } from './suggestSchema';
 import { SUGGEST_PROMPT_VERSION, buildSuggestRepairMessage, buildSuggestSystemPrompt } from './suggestPrompt';
 import { breaksWordingRules, foldText, plainText } from './suggestRules';
+import { createUsageTally } from './usage';
 import type { AiDeps, OutputFormat, OutputMode, ProviderProfile, Usage } from './types';
 import { assertSecureBaseUrl } from './url';
 
@@ -55,7 +56,10 @@ export interface SuggestOutput {
   suggestions: FoodSuggestion[];
   /** Answers the checks removed (too many calories for what is left, numbers that do not add up, wording rules). */
   dropped: number;
+  /** The tokens of the whole request; set only when every call reported its usage. */
   usage?: Usage;
+  /** The tokens of the calls that reported, when another call of the same request did not: NOT the total. */
+  usagePartial?: Usage;
   latencyMs: number;
   repaired: boolean;
   outputModeUsed: OutputMode;
@@ -161,12 +165,6 @@ function refine(items: Suggestion[], remainingKcal: number): { suggestions: Food
   return { suggestions: kept, dropped };
 }
 
-function addUsage(total: Usage | undefined, next: Usage | undefined): Usage | undefined {
-  if (!next) return total;
-  if (!total) return { ...next };
-  return { inputTokens: total.inputTokens + next.inputTokens, outputTokens: total.outputTokens + next.outputTokens };
-}
-
 export async function suggestFoods(input: SuggestInput, deps: AiDeps, options: { maxRepairs?: 0 | 1 } = {}): Promise<SuggestOutput> {
   // Nothing or almost nothing left: no request at all (and nothing about the day leaves the phone).
   if (!(input.remaining.kcal >= MIN_REMAINING_KCAL_FOR_SUGGESTIONS)) throw new NothingToSuggestError();
@@ -187,7 +185,7 @@ export async function suggestFoods(input: SuggestInput, deps: AiDeps, options: {
   const userText = buildSuggestUserText({ remaining: input.remaining, goal: input.goal, locale: input.locale });
   const maxRepairs = options.maxRepairs ?? 1;
 
-  let usage: Usage | undefined;
+  const usage = createUsageTally();
   let repair: { previousOutput: string; message: string } | undefined;
   for (let attempt = 0; ; attempt++) {
     const response = await adapter.generate({
@@ -201,12 +199,12 @@ export async function suggestFoods(input: SuggestInput, deps: AiDeps, options: {
       signal: input.signal,
       http,
     });
-    usage = addUsage(usage, response.usage);
+    usage.add(response.usage);
 
     const parsed = parseSuggestions(response.text);
     if (parsed.ok) {
       const { suggestions, dropped } = refine(parsed.value.suggestions, Math.round(input.remaining.kcal));
-      return { suggestions, dropped, usage, latencyMs: now() - started, repaired: attempt > 0, outputModeUsed: mode, promptVersion: SUGGEST_PROMPT_VERSION };
+      return { suggestions, dropped, usage: usage.complete, usagePartial: usage.partial, latencyMs: now() - started, repaired: attempt > 0, outputModeUsed: mode, promptVersion: SUGGEST_PROMPT_VERSION };
     }
 
     if (attempt >= maxRepairs) {

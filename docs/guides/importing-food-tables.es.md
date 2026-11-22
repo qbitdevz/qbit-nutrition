@@ -27,7 +27,7 @@ nombre de alimento.
 
 | Tabla | Página del editor | Cómo se publica (comprobado el 2026-11-22) | En la app |
 | --- | --- | --- | --- |
-| **ARGENFOODS** (Argentina, Universidad Nacional de Luján) | [índice de argenfoods](http://www.unlu.edu.ar/~argenfoods/Tablas/Varios/Indice.htm) | Un archivo Excel (`.xls`) y un PDF por grupo de alimentos: 12 archivos Excel en total (cereales, vegetales, frutas, grasas y aceites, pescados y mariscos, carnes, leche, huevos, productos azucarados, misceláneos; pescados y carnes tienen además un archivo de ácidos grasos). El sitio es `http` simple. | **Preajuste.** Descarga el `.xls` de cada grupo que quieras; cada archivo se importa como una tabla propia llamada «ARGENFOODS · grupo». Los archivos de ácidos grasos traen ácidos grasos individuales que la app no registra, así que tienen poco para importar. |
+| **ARGENFOODS** (Argentina, Universidad Nacional de Luján) | [índice de argenfoods](http://www.unlu.edu.ar/~argenfoods/Tablas/Varios/Indice.htm) | Un archivo Excel (`.xls`) y un PDF por grupo de alimentos: 12 archivos Excel en total (cereales, vegetales, frutas, grasas y aceites, pescados y mariscos, carnes, leche, huevos, productos azucarados, misceláneos; pescados y carnes tienen además un archivo de ácidos grasos). El sitio es `http` simple. | **Preajuste.** Descarga el `.xls` de cada grupo que quieras; elige todos los archivos a la vez y se importan como una sola tabla «ARGENFOODS» (o una tabla por archivo, llamada «ARGENFOODS · grupo»). Los archivos de ácidos grasos traen ácidos grasos individuales que la app no registra, así que tienen poco para importar. |
 | **BEDCA** (España, AESAN) | [bedca.net/bdpub](https://www.bedca.net/bdpub/) | Solo una consulta web («Consulta»); sin descarga. Todos los derechos reservados. | Sin preajuste. No hay nada que descargar: la importación genérica sirve solo si la AESAN te da una planilla. |
 | **México, INCMNSZ** (Tabla de Composición de Alimentos y Productos Alimenticios Mexicanos) | [incmnsz.mx](https://www.incmnsz.mx/) | INFOODS la lista como un PDF en `incmnsz.mx/2019/TABLAS_ALIMENTOS.pdf`; esa dirección respondió «no encontrado» el día de la comprobación. Sin planilla. | Sin preajuste. Pide al INCMNSZ una versión en planilla y usa la importación genérica. |
 | **Colombia, TCAC** (ICBF, Tabla de Composición de Alimentos Colombianos) | [ICBF, TCAC 2018](https://www.icbf.gov.co/tabla-de-composicion-de-alimentos-colombianos-tcac-2018) | Solo un PDF (2018; la edición 2015 también es PDF). Sin planilla. | Sin preajuste. Pide al ICBF una versión en planilla y usa la importación genérica. |
@@ -39,20 +39,32 @@ avisar. Busca la versión en planilla del editor. Si copias tú una tabla de un 
 
 ## Pasos en la app
 
-1. Descarga el archivo desde la página del editor de arriba, en tu teléfono (o pásalo a él).
-2. Abre **Ajustes → Datos → Tablas importadas → Agregar una tabla**. Lee el aviso, luego **Elegir un archivo** y elígelo. La app lee archivos
-   `.xlsx`, `.xls` y `.csv` de hasta 25 MB; un archivo más grande o ilegible se rechaza con el motivo, y no se importa nada.
-3. **Relaciona las columnas.** Una tabla reconocida llega ya completada; si no, la app sugiere las columnas por las etiquetas del encabezado
-   (español, inglés, portugués y francés) y puedes cambiar cada una: el nombre del alimento, un grupo de alimentos opcional, a qué se refieren
-   los valores (100 g, 100 ml o 1 kg; «por porción» y similares no se pueden importar) y cada nutriente con la unidad en que está escrita su
-   columna. Las reglas para leer los valores están en la pantalla.
-4. **Revisa la importación.** Ves cuántos alimentos y nutrientes se encontraron, qué filas quedaron fuera y por qué, cuántas celdas se guardan
-   como desconocidas, avisos (por ejemplo una energía que no coincide con proteínas, carbohidratos y grasas; se importa tal como está) y una
-   muestra de alimentos como se guardarán. Ponle un nombre a la tabla: aparece como etiqueta en cada alimento de ella.
-5. **Importar.** Es todo o nada. Busca un alimento: los de tu tabla llevan la etiqueta. Se pueden registrar, marcar con estrella y el escaneo con
-   IA los puede relacionar como a cualquier alimento.
-6. Para quitar una tabla, ve a **Tablas importadas** y elige **Quitar**. Se van todos sus alimentos a la vez; tus comidas registradas conservan
-   sus valores.
+1. Descarga el archivo (o todos los archivos de una tabla publicada por partes) desde la página del editor de arriba, en tu teléfono (o pásalos a él).
+2. Abre **Ajustes → Datos → Tablas importadas → Agregar una tabla**. Lee el aviso, luego **Elegir archivos** y elige un archivo **o varios a la vez**.
+   La app lee archivos `.xlsx`, `.xls` y `.csv` de hasta 25 MB cada uno; un archivo más grande o ilegible aparece en la lista con el motivo, y no se
+   importa nada de él.
+3. **Revisa todo en una sola vista previa.** Los archivos se leen uno tras otro y ves una tarjeta por archivo:
+   - **Qué se reconoció, en una línea**, por ejemplo «Formato ARGENFOODS reconocido: 11 nutrientes, valores por 100 g». Cuando la app está segura,
+     eso es todo: la pantalla de columnas es opcional (**Cambiar columnas**).
+   - **Qué confirmar, cuando no está segura.** La vista previa dice exactamente qué punto es débil y espera tu confirmación: una columna reconocida solo
+     por una abreviatura («Prot», «CHO», «Na»), una unidad que el encabezado no indica, valores por 100 ml (se usan como por 100 g), una base que la
+     tabla no indica, una columna de nombres encontrada por su contenido, muchos alimentos cuya energía no encaja con sus macros, o muchas filas
+     excluidas por valores imposibles. Un archivo con un punto sin confirmar no se importa; confírmalo o desmarca el archivo.
+   - **Una tabla que ya está aquí.** Si un archivo tiene el mismo contenido que una tabla que ya importaste, eliges: **Reemplazarla** (la tabla anterior
+     se va con sus favoritos y recientes; las comidas que registraste conservan sus valores), **Conservar ambas** o **No importar**. Nada se importa dos
+     veces a menos que lo elijas.
+   - **Archivos que son partes de una misma tabla** (el mismo formato reconocido, por ejemplo ARGENFOODS) se ofrecen como **una sola tabla**, con su
+     nombre, o como una tabla por archivo. Como una sola tabla, quitarla después quita todos los archivos a la vez.
+   - **Un archivo sin nada que la app pueda usar** (por ejemplo una hoja solo de ácidos grasos) aparece como tal, no como un error.
+   - Desmarca un archivo para dejarlo fuera. **Cambiar columnas** abre la pantalla de columnas de un archivo: el nombre del alimento, un grupo de
+     alimentos opcional, a qué se refieren los valores (100 g, 100 ml o 1 kg; «por porción» y similares no se pueden importar) y cada nutriente con la
+     unidad en que está escrita su columna.
+4. **Importar.** Cada tabla se guarda todo o nada, una tras otra: un archivo que falla no guarda nada de sí mismo y no deshace las tablas ya guardadas.
+   El resumen dice exactamente cuáles se importaron (y qué reemplazaron), cuáles fallaron y cuáles se dejaron fuera y por qué. Busca un alimento: los de
+   tu tabla llevan la etiqueta. Se pueden registrar, marcar con estrella y el escaneo con IA los puede relacionar como a cualquier alimento.
+5. Para quitar una tabla, ve a **Tablas importadas** y elige **Quitar**. Se van todos sus alimentos a la vez; tus comidas registradas conservan sus valores.
+6. **Duplicados que ya existen.** Si la misma tabla se importó más de una vez, **Tablas importadas** lo muestra arriba: las copias de cada tabla
+   aparecen agrupadas, eliges cuál se queda (la más antigua por defecto) y quitas el resto. Las copias se comparan por contenido, no por nombre.
 
 ## Límites
 

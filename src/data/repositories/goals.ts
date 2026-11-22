@@ -1,4 +1,5 @@
 import { and, asc, desc, eq, gte, isNull, lte, or } from 'drizzle-orm';
+import { isDayInBounds, requireDayInBounds } from '../dayBounds';
 import { DataError } from '../errors';
 import { addDays } from '../localDate';
 import { goal } from '../schema';
@@ -39,14 +40,15 @@ export interface GoalRepository {
    * Changes the goal from `startDate` on: the open period is closed the day before and a new one
    * is opened, so earlier days keep the targets they had. Changing on the start day of the open
    * period replaces it. A `startDate` before the open period's start is a `goal_date_conflict`.
-   * One transaction.
+   * Repair path: an open period whose own start date is outside `dayBounds` (set while the phone's clock was wrong) is REPLACED by the new
+   * one (deleted, not closed: it could not be closed before it started), and comes back as `replacedOutOfRange`. One transaction.
    */
-  set(input: GoalInput): Promise<Goal>;
+  set(input: GoalInput): Promise<Goal & { replacedOutOfRange?: Goal }>;
 }
 
 const toGoal = (row: GoalRow): Goal => ({ ...row, isCustom: row.isCustom === 1 });
 
-export function createGoalRepository({ db, newId }: RepositoryContext): GoalRepository {
+export function createGoalRepository({ db, newId, dayClock }: RepositoryContext): GoalRepository {
   return {
     async current() {
       const row = db.select().from(goal).where(isNull(goal.endDate)).get();
@@ -71,6 +73,7 @@ export function createGoalRepository({ db, newId }: RepositoryContext): GoalRepo
 
     async set(input) {
       requireLocalDate(input.startDate, 'startDate');
+      requireDayInBounds(input.startDate, 'startDate', dayClock());
       for (const [label, value] of [
         ['kcalTarget', input.kcalTarget],
         ['proteinGTarget', input.proteinGTarget],
@@ -99,7 +102,13 @@ export function createGoalRepository({ db, newId }: RepositoryContext): GoalRepo
       };
 
       return db.transaction((tx) => {
-        const open = tx.select().from(goal).where(isNull(goal.endDate)).get();
+        let open = tx.select().from(goal).where(isNull(goal.endDate)).get();
+        let replaced: Goal | undefined;
+        if (open && !isDayInBounds(open.startDate, dayClock())) {
+          replaced = toGoal(open);
+          tx.delete(goal).where(eq(goal.id, open.id)).run();
+          open = undefined;
+        }
         if (open && open.startDate > input.startDate) {
           throw new DataError(
             'goal_date_conflict',
@@ -118,7 +127,7 @@ export function createGoalRepository({ db, newId }: RepositoryContext): GoalRepo
         }
         const id = newId();
         tx.insert(goal).values({ id, startDate: input.startDate, endDate: null, ...values }).run();
-        return toGoal(tx.select().from(goal).where(eq(goal.id, id)).get()!);
+        return { ...toGoal(tx.select().from(goal).where(eq(goal.id, id)).get()!), ...(replaced ? { replacedOutOfRange: replaced } : {}) };
       });
     },
   };

@@ -101,16 +101,52 @@ describe('release.yml (S11)', () => {
 
   it('names a debug-signed manual build as not for distribution, and refuses to publish one', () => {
     expect(text).toContain('-debug-signed-NOT-FOR-DISTRIBUTION.apk');
-    expect(text).toContain('CN=Android Debug');
+    // The debug-certificate judgement lives in check-signing-cert.sh (debug mode accepts only it; release mode rejects it), tested in release-scripts.test.ts.
+    expect(readFileSync(path.join(ROOT, 'scripts/release/check-signing-cert.sh'), 'utf8')).toContain('CN=Android Debug');
     expect(job(text, 'publish')).not.toContain('debug-signed');
-    // The release job downloads what the build job named; a tag run cannot reach it without the signed name.
-    expect(text).toMatch(/the debug certificate. It will not be published|still carries the debug certificate/);
   });
 
-  it('attaches the APK to a GitHub Release on a tag run and uploads it as an artifact otherwise', () => {
+  it('uploads the APK as an artifact, and the publishing job hands the release to publish-release.sh (draft, verify assets, publish)', () => {
     expect(text).toContain('actions/upload-artifact@');
-    expect(text).toContain('gh release create');
-    expect(text).toContain('--verify-tag');
+    const publish = job(text, 'publish');
+    expect(publish).toContain('bash scripts/release/publish-release.sh');
+    // The release is never created or published by an inline command any more: one script, tested in release-scripts.test.ts.
+    expect(publish).not.toContain('gh release create');
+    expect(publish).not.toContain('gh release edit');
+    // The script comes from the tagged commit; the checkout leaves no token in .git.
+    expect(publish).toMatch(/uses: actions\/checkout@[0-9a-f]{40}/);
+    expect(publish).toContain('persist-credentials: false');
+    expect(publish).toMatch(/needs: build/);
+  });
+
+  it('downloads the built APK into dist-apk before the publish script runs, because the publish job starts on a fresh runner', () => {
+    const publish = job(text, 'publish');
+    expect(publish).toMatch(/uses: actions\/download-artifact@[0-9a-f]{40}/);
+    expect(publish).toContain('name: ${{ needs.build.outputs.apk-name }}');
+    expect(publish).toContain('path: dist-apk');
+    expect(publish.indexOf('actions/download-artifact@')).toBeLessThan(publish.indexOf('bash scripts/release/publish-release.sh'));
+  });
+
+  it('accepts a signed build only when apksigner reports the expected release certificate (S2)', () => {
+    const build = job(text, 'build');
+    const step = build.slice(build.indexOf('- name: Check the signature'));
+    expect(step).toContain('apksigner" verify --print-certs');
+    expect(step).toContain('scripts/release/check-signing-cert.sh');
+    expect(step).toContain('scripts/release/expected-signing-cert.sha256');
+    // A signed run and an unsigned (debug) run take different, explicit modes; nothing falls through to the other one.
+    expect(step).toMatch(/mode=release/);
+    expect(step).toMatch(/mode=debug/);
+    expect(step).toContain('check-signing-cert.sh "$mode"');
+    // The check reads the whole output before judging, and a verify failure still fails the step.
+    expect(step).toContain('could not verify the APK');
+    // The old grep-only checks are gone: no pass-through when no certificate line is found.
+    expect(step).not.toContain('grep -q "CN=Android Debug"');
+  });
+
+  it('keeps the expected certificate digest in a committed file, so a key rotation is a reviewed edit', () => {
+    const digest = readFileSync(path.join(ROOT, 'scripts/release/expected-signing-cert.sha256'), 'utf8');
+    expect(digest).toMatch(/^[0-9a-f]{64}$/m);
+    expect(text).not.toMatch(/vars\.[A-Z_]*CERT/);
   });
 
   it('checks that the tag matches the app version and that a versionCode is set, so phones accept the update', () => {

@@ -1,6 +1,7 @@
 import { and, asc, eq, gte, lte, sql, type SQL } from 'drizzle-orm';
 import { computeItemNutrients, type NutrientAmounts } from '../../core/nutrition';
 import type { AppDatabase, AppTransaction } from '../database';
+import { requireDayInBounds } from '../dayBounds';
 import { DataError } from '../errors';
 import { deriveMealTime } from '../localDate';
 import { meal, mealItem, mealItemNutrient, REF_FOOD_SOURCES } from '../schema';
@@ -106,9 +107,49 @@ export interface MealRepository {
   deleteItem(itemId: string): Promise<string>;
   /** Deletes the meal; its items and snapshots go with it (foreign key cascade). */
   deleteMeal(mealId: string): Promise<void>;
+  /**
+   * Undo of `deleteItem`: puts the item back as it was, with the same id, position, values, origin, confidences and nutrient
+   * snapshot (pass the item as it was read). It is not a new use of the food: usage counters and favorites are not touched.
+   * Fails with `not_found` when the meal is gone, and with `invalid_input` when the item (or its position) is taken or its
+   * values are outside the limits; nothing is written then.
+   */
+  restoreItem(item: MealItem): Promise<MealItem>;
+  /**
+   * Undo of `deleteMeal`: puts the meal and all its items back as they were (pass the meal as it was read), with the same ids.
+   * Like `restoreItem`, it counts no new use of the foods. A `photoPath` that is still set must point to a file that exists.
+   */
+  restoreMeal(saved: MealWithItems): Promise<MealWithItems>;
 }
 
 const ZERO_HEADLINE: NutrientAmounts = { kcal: 0, protein: 0, carbs: 0, fat: 0 };
+
+const itemColumns = (item: ItemRow) => ({
+  id: item.id,
+  mealId: item.mealId,
+  position: item.position,
+  displayName: item.displayName,
+  grams: item.grams,
+  foodSource: item.foodSource,
+  foodRef: item.foodRef,
+  origin: item.origin,
+  confidenceFood: item.confidenceFood,
+  confidencePortion: item.confidencePortion,
+  kcal: item.kcal,
+  proteinG: item.proteinG,
+  carbsG: item.carbsG,
+  fatG: item.fatG,
+});
+
+/** The same checks `save` makes on an item, for an item that already has its snapshot columns. */
+function requireRestorableItem(item: MealItem, label: string): void {
+  if (!Number.isInteger(item.position) || item.position < 0) throw invalid(`${label}.position must be a whole number of 0 or more`);
+  requireFinite(item.grams, `${label}.grams`, { min: 0 });
+  if (item.displayName.trim() === '') throw invalid(`${label}.displayName must not be blank`);
+  requireMaxLength(item.displayName, TEXT_LIMITS.name, `${label}.displayName`);
+  const amounts: NutrientAmounts = { ...item.nutrients, kcal: item.kcal, protein: item.proteinG, carbs: item.carbsG, fat: item.fatG };
+  nutrientEntries(amounts, `${label}.nutrients`);
+  requireItemWithinLimits(item.grams, amounts, label);
+}
 
 /** Replaces the snapshot columns and nutrient rows of an item. */
 function writeSnapshot(tx: AppTransaction, itemId: string, amounts: NutrientAmounts): void {
@@ -207,25 +248,28 @@ function queryTotals(db: Pick<AppDatabase, 'select'>, from: string, to: string):
 }
 
 export function createMealRepository(
-  { db, now, newId }: RepositoryContext,
+  { db, now, dayClock, newId }: RepositoryContext,
   resolveFood: FoodResolver,
 ): MealRepository {
   const loadMeal = (id: string): MealWithItems | null => loadMeals(db, eq(meal.id, id))[0] ?? null;
 
-  const loadItem = (id: string): MealItem | null => {
-    const row = db.select().from(mealItem).where(eq(mealItem.id, id)).get();
+  const loadItemIn = (reader: Pick<AppDatabase, 'select'>, id: string): MealItem | null => {
+    const row = reader.select().from(mealItem).where(eq(mealItem.id, id)).get();
     if (!row) return null;
     const nutrients: NutrientAmounts = {};
-    for (const n of db.select().from(mealItemNutrient).where(eq(mealItemNutrient.mealItemId, id)).all()) {
+    for (const n of reader.select().from(mealItemNutrient).where(eq(mealItemNutrient.mealItemId, id)).all()) {
       nutrients[n.nutrientCode as keyof NutrientAmounts] = n.amount;
     }
     return { ...row, nutrients };
   };
+  const loadItem = (id: string): MealItem | null => loadItemIn(db, id);
 
   return {
     async save(input) {
       if (input.items.length === 0) throw invalid('a meal needs at least one item');
       const { eatenAt, localDate } = deriveMealTime(input.eatenAt, input.timeZone);
+      requireDayInBounds(localDate, 'localDate', dayClock());
+      requireDayInBounds(eatenAt.slice(0, 10), 'eatenAt', dayClock());
       requireMaxLength(input.name, TEXT_LIMITS.mealName, 'name');
       requireMaxLength(input.note, TEXT_LIMITS.note, 'note');
       if (input.photoPath != null && !PHOTO_PATH_PATTERN.test(input.photoPath)) throw invalid(`photoPath must be photos/<name>.jpg, got "${input.photoPath}"`);
@@ -395,6 +439,48 @@ export function createMealRepository(
         tx.update(meal).set({ updatedAt: now().toISOString() }).where(eq(meal.id, removed[0]!.mealId)).run();
         return removed[0]!.mealId;
       });
+    },
+
+    async restoreItem(item) {
+      requireRestorableItem(item, 'item');
+      return db.transaction((tx) => {
+        if (!tx.select({ id: meal.id }).from(meal).where(eq(meal.id, item.mealId)).get()) {
+          throw new DataError('not_found', `meal not found: ${item.mealId}`);
+        }
+        if (tx.select({ id: mealItem.id }).from(mealItem).where(eq(mealItem.id, item.id)).get()) {
+          throw invalid(`item ${item.id} is already in the meal`);
+        }
+        if (tx.select({ id: mealItem.id }).from(mealItem).where(and(eq(mealItem.mealId, item.mealId), eq(mealItem.position, item.position))).get()) {
+          throw invalid(`position ${item.position} of the meal is taken by another item`);
+        }
+        tx.insert(mealItem).values(itemColumns(item)).run();
+        writeSnapshot(tx, item.id, { ...item.nutrients, kcal: item.kcal, protein: item.proteinG, carbs: item.carbsG, fat: item.fatG });
+        tx.update(meal).set({ updatedAt: now().toISOString() }).where(eq(meal.id, item.mealId)).run();
+        return loadItemIn(tx, item.id)!;
+      });
+    },
+
+    async restoreMeal(saved) {
+      if (saved.items.length === 0) throw invalid('a meal needs at least one item');
+      requireMaxLength(saved.name, TEXT_LIMITS.mealName, 'name');
+      requireMaxLength(saved.note, TEXT_LIMITS.note, 'note');
+      requireLocalDate(saved.localDate, 'localDate');
+      // Restoring a row that existed (Undo) is not an entry: its stored date is what it was, even when that is out of range, or the meal and its photo would be lost.
+      if (saved.photoPath != null && !PHOTO_PATH_PATTERN.test(saved.photoPath)) throw invalid(`photoPath must be photos/<name>.jpg, got "${saved.photoPath}"`);
+      saved.items.forEach((item, i) => {
+        if (item.mealId !== saved.id) throw invalid(`items[${i}] belongs to another meal`);
+        requireRestorableItem(item, `items[${i}]`);
+      });
+      db.transaction((tx) => {
+        if (tx.select({ id: meal.id }).from(meal).where(eq(meal.id, saved.id)).get()) throw invalid(`meal ${saved.id} already exists`);
+        const { items, ...row } = saved;
+        tx.insert(meal).values(row).run();
+        for (const item of items) {
+          tx.insert(mealItem).values(itemColumns(item)).run();
+          writeSnapshot(tx, item.id, { ...item.nutrients, kcal: item.kcal, protein: item.proteinG, carbs: item.carbsG, fat: item.fatG });
+        }
+      });
+      return loadMeal(saved.id)!;
     },
 
     async deleteMeal(mealId) {

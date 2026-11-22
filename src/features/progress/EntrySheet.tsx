@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
-import { isDataError } from '@/data';
+import { DateOutOfRangeError, isDataError } from '@/data';
 import { formatDecimal, formatLongDate } from '@/i18n/format';
 import type { Locale } from '@/i18n/locale';
 import { AppText, BottomSheet, Button, FieldMessage, TextField, spacing } from '@/ui';
@@ -44,7 +44,8 @@ export function EntrySheet({ visible, kind, units, today, editing, points, onClo
   const [date, setDate] = useState(today);
   const [text, setText] = useState('');
   const [fieldError, setFieldError] = useState<string | null>(null);
-  const [problem, setProblem] = useState<'save' | 'conflict' | 'delete' | null>(null);
+  const [problem, setProblem] = useState<'save' | 'conflict' | 'delete' | 'date' | null>(null);
+  const [bounds, setBounds] = useState<{ earliest: string; latest: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
@@ -81,7 +82,8 @@ export function EntrySheet({ visible, kind, units, today, editing, points, onClo
       else await repos.measurements.record({ measuredOn: date, kind, value: parsed.value });
       onDone({ type: 'saved', kind, displayValue: fromMetric(kind, parsed.value, units) });
     } catch (error) {
-      setProblem(isDataError(error, 'measurement_conflict') ? 'conflict' : 'save');
+      setProblem(isDataError(error, 'measurement_conflict') ? 'conflict' : error instanceof DateOutOfRangeError ? 'date' : 'save');
+      setBounds(error instanceof DateOutOfRangeError ? error.bounds : null);
       setBusy(false);
     }
   };
@@ -138,7 +140,15 @@ export function EntrySheet({ visible, kind, units, today, editing, points, onClo
               {t('progress.entry.replaces', { value: number(sameDay.value), unit })}
             </AppText>
           ) : null}
-          {problem ? <FieldMessage message={t(problem === 'conflict' ? 'progress.entry.conflict' : problem === 'delete' ? 'progress.entry.deleteError' : 'progress.entry.saveError')} /> : null}
+          {problem ? (
+            <FieldMessage
+              message={
+                problem === 'date' && bounds
+                  ? t('progress.entry.dateOutOfRange', { from: bounds.earliest, to: bounds.latest })
+                  : t(problem === 'conflict' ? 'progress.entry.conflict' : problem === 'delete' ? 'progress.entry.deleteError' : 'progress.entry.saveError')
+              }
+            />
+          ) : null}
           <View style={styles.actions}>
             <Button label={t('progress.entry.save')} disabled={busy} onPress={() => void save()} testID="entry-save" />
             {editing ? <Button label={t('progress.entry.delete')} variant="secondary" onPress={() => setConfirmingDelete(true)} testID="entry-delete" /> : null}

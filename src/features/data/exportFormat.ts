@@ -7,7 +7,10 @@
  * What the file holds: everything the person created (profile, goals, weights and body measurements, meals with
  * their items and nutrient snapshots, custom foods, recents and favorites, learned matches, settings) and the
  * AI provider profiles WITHOUT keys. It holds the barcode products that something refers to (a saved item, a favorite or
- * recent, a learned match), so those references do not dangle on the new phone; the rest of the lookup cache stays behind.
+ * recent, a learned match), so those references do not dangle on the new phone, and the products the person completed by hand
+ * (`edited`) even when nothing refers to them yet; the rest of the lookup cache stays behind.
+ * Weights that Health Connect read arrive as the person's own entries (`measurementsFromDocument`), so a weight sync never removes them.
+ * The file is written compactly and is never larger than the importer reads (`DEFAULT_LIMITS` in `archive.ts`, checked by the exporter).
  * It also holds the food tables the person imported from a file (`imported_collections`, with all their foods): they are the person's data, so a
  * personal export carries them and a restore brings them back. The consequence is stated on the screen and in the guide: an export file made after an
  * import CONTAINS that table, so it is for the person's own backup and must not be shared or published (the table's license applies to the file).
@@ -30,7 +33,7 @@ import { z } from 'zod';
 
 import { assertSecureBaseUrl, type ProviderErrorCode } from '@/core/ai';
 import { NUTRIENT_CODES } from '@/core/nutrition';
-import { IMPORT_LIMITS, MAX_TIMEOUT_S, importedPer100gMax, MIN_TIMEOUT_S, PHOTO_PATH_PATTERN as STORED_PHOTO_PATH, TEXT_LIMITS, VALUE_LIMITS, addDays, isLocalDate, schema } from '@/data';
+import { EARLIEST_DAY, IMPORT_LIMITS, MAX_TIMEOUT_S, importedPer100gMax, MIN_TIMEOUT_S, PHOTO_PATH_PATTERN as STORED_PHOTO_PATH, TEXT_LIMITS, VALUE_LIMITS, dayBounds, isBlankText, isLocalDate, isPlainFileName, schema } from '@/data';
 import { TARGET_RANGES } from '../goals/targetsForm';
 import { CUSTOM_FOOD_RANGES, GRAMS_RANGE } from '../logging/limits';
 import { HEIGHT_CM, MIN_BIRTH_AGE_YEARS, WEIGHT_KG } from '../profile/units';
@@ -52,10 +55,8 @@ export const PHOTO_PATH_PATTERN = STORED_PHOTO_PATH;
 const ITEM_MAX = VALUE_LIMITS.item;
 const NUTRIENT_MAX = VALUE_LIMITS.nutrientMax;
 const COUNT_MAX = VALUE_LIMITS.countMax;
-/** Earliest day any record may have (the app did not exist before). A birth date is bounded by `MIN_BIRTH_AGE_YEARS` instead. */
-export const EARLIEST_DAY = '2000-01-01';
-/** A file may name days up to this many days after it was exported (time zones, a clock a little ahead). */
-const FUTURE_SLACK_DAYS = 2;
+/** The days a record may have are `dayBounds` in the data layer (the repositories enforce it where a date enters): one definition. A birth date is bounded by `MIN_BIRTH_AGE_YEARS` instead. */
+export { EARLIEST_DAY };
 
 /** What the last "Test connection" may store: `ok` or a provider error code. Anything else (free text from a provider) is not exported. */
 const TEST_RESULTS: Record<ProviderErrorCode | 'ok' | 'key_storage', true> = {
@@ -200,7 +201,7 @@ const importedPer100g = z.record(z.string(), z.number().finite().min(0)).superRe
 
 const importedFood = z.object({
   id,
-  name: z.string().min(1).max(TEXT_LIMITS.name),
+  name: z.string().max(TEXT_LIMITS.name).refine((value) => !isBlankText(value), 'a food needs a name'),
   group: nullable(z.string().max(TEXT_LIMITS.name)),
   per_100g: importedPer100g,
 });
@@ -208,8 +209,9 @@ const importedFood = z.object({
 /** A food composition table the person imported, with its foods. Values are per 100 g, or per 100 ml when `basis` is `ml`; a nutrient the table had no number for has no key (unknown, not zero). */
 const importedCollection = z.object({
   id,
-  name: z.string().min(1).max(TEXT_LIMITS.label),
-  file_name: nullable(z.string().max(TEXT_LIMITS.name)),
+  // The rules of the file importer (`importCollection`): a name with something in it, and the file's own name, never a path.
+  name: z.string().max(TEXT_LIMITS.label).refine((value) => !isBlankText(value), 'a table needs a name'),
+  file_name: nullable(z.string().max(TEXT_LIMITS.name).refine(isPlainFileName, 'must be a file name, not a path')),
   imported_at: instant,
   preset_id: nullable(z.string().max(TEXT_LIMITS.label)),
   basis: z.enum(schema.COLLECTION_BASES),
@@ -367,7 +369,7 @@ export function createExportSchema(clock: () => Date) {
 
     // Dates: plausible against the device clock, and consistent with each other.
     const today = clock().toISOString().slice(0, 10);
-    const latest = addDays(today, FUTURE_SLACK_DAYS);
+    const { latest } = dayBounds(clock());
     if (doc.exported_at.slice(0, 10) > latest) issue(['exported_at'], `a file cannot be exported after ${latest} on this device's clock`);
     const plausible = (path: (string | number)[], day: string) => {
       if (day < EARLIEST_DAY || day > latest) issue(path, `must be between ${EARLIEST_DAY} and ${latest}`);

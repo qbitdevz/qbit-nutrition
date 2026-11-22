@@ -4,15 +4,17 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
+import { EARLIEST_DAY, dayBounds } from '@/data';
 import { deviceLocale } from '@/i18n';
-import { formatInstantDate, formatLongDate } from '@/i18n/format';
+import { formatDecimal, formatInstantDate, formatLongDate } from '@/i18n/format';
 import type { Locale } from '@/i18n/locale';
 import { AppText, BottomSheet, Button, ChoiceChips, ErrorState, FieldMessage, Icon, ScreenFrame, TextField, TopBar, layout, radius, spacing, useSnackbar, useTheme } from '@/ui';
 import { useSession } from '../session/AppSession';
 import { useServices } from '../startup/AppProvider';
 import { useDataPlatform } from './DataPlatformContext';
 import { HealthRecordsNotRemovedError, WipeFailedError } from '../health/healthSync';
-import { DeleteIncompleteError, ExportError, ImportError, createDataService, type ImportResult, type ImportPreview, type PreparedImport, type SkippedRow } from './dataService';
+import type { ArchiveLimits } from './archive';
+import { DeleteIncompleteError, ExportError, ImportError, createDataService, type ImportProgress, type ImportResult, type ImportPreview, type PreparedImport, type SkippedRow } from './dataService';
 
 interface DataScreenProps {
   onBack?: () => void;
@@ -20,15 +22,19 @@ interface DataScreenProps {
   onOpenProviders?: () => void;
   /** Opens Imported tables (food tables the person loaded from a file). */
   onOpenImportedTables?: () => void;
+  /** Opens a meal (the export names the meal it could not write, and offers to open it). */
+  onOpenMeal?: (mealId: string) => void;
   /** The clock; tests pass a fixed one. */
   now?: () => Date;
+  /** Size limits of the export and the import (one definition); tests lower them. */
+  limits?: Partial<ArchiveLimits>;
 }
 
 type ImportState =
   | { kind: 'idle' }
   | { kind: 'reading' }
   | { kind: 'preview'; prepared: PreparedImport }
-  | { kind: 'applying'; prepared: PreparedImport }
+  | { kind: 'applying'; prepared: PreparedImport; progress: ImportProgress | null }
   | { kind: 'done'; result: ImportResult }
   | { kind: 'error'; error: ImportError };
 
@@ -46,14 +52,15 @@ const ERROR_KEY: Record<ImportError['code'], string> = {
   write_failed: 'writeFailed',
 };
 
-const COUNT_ROWS = ['meals', 'weights', 'measurements', 'goals', 'customFoods', 'importedTables', 'providers', 'photos'] as const;
+/** The kinds of data shown in the preview, in the order a person thinks of them: what the phone has now next to what the file brings. */
+const COUNT_ROWS = ['meals', 'weights', 'measurements', 'goals', 'customFoods', 'importedTables', 'importedFoods', 'favoritesAndRecents', 'learnedMatches', 'barcodeProducts', 'providers', 'photos'] as const;
 
 /**
  * Settings → Data (docs/04 flow F, S3): export everything to one file and share it, import a file to replace the
  * data, delete everything. Every destructive step is confirmed first and the safe choice is the primary button.
  * The work is in `dataService.ts`; this file lays out the steps and the messages.
  */
-export function DataScreen({ onBack, onOpenProviders, onOpenImportedTables, now }: DataScreenProps) {
+export function DataScreen({ onBack, onOpenProviders, onOpenImportedTables, onOpenMeal, now, limits }: DataScreenProps) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language as Locale;
   const { colors } = useTheme();
@@ -62,8 +69,8 @@ export function DataScreen({ onBack, onOpenProviders, onOpenImportedTables, now 
   const { repos, providers, health } = useServices();
   const session = useSession();
   const service = useMemo(
-    () => createDataService({ repos, providers, platform, appVersion: Constants.expoConfig?.version ?? '0.0.0', now }),
-    [repos, providers, platform, now],
+    () => createDataService({ repos, providers, platform, appVersion: Constants.expoConfig?.version ?? '0.0.0', now, limits }),
+    [repos, providers, platform, now, limits],
   );
 
   // Export.
@@ -75,10 +82,11 @@ export function DataScreen({ onBack, onOpenProviders, onOpenImportedTables, now 
   const [exportProblem, setExportProblem] = useState<ExportError | 'failed' | null>(null);
   const [skippedPhotos, setSkippedPhotos] = useState(0);
   const [skippedRows, setSkippedRows] = useState<SkippedRow[]>([]);
+  const [clampedDates, setClampedDates] = useState(0);
   // Import.
   const [imported, setImported] = useState<ImportState>({ kind: 'idle' });
   // Delete.
-  const [deleting, setDeleting] = useState<'closed' | 'confirm' | 'working' | 'failed'>('closed');
+  const [deleting, setDeleting] = useState<'closed' | 'confirm' | 'working' | 'failed' | 'leftover'>('closed');
   const [word, setWord] = useState('');
   const confirmWord = t('data.delete.word');
   // Health Connect: when the integration is on, deleting everything also offers to remove the records this app wrote there.
@@ -128,11 +136,13 @@ export function DataScreen({ onBack, onOpenProviders, onOpenImportedTables, now 
     setExportProblem(null);
     setSkippedPhotos(0);
     setSkippedRows([]);
+    setClampedDates(0);
     setExporting(true);
     try {
       const result = await service.exportData({ withPhotos: withPhotos && photoCount > 0, shareTitle: t('data.export.shareTitle') });
       setSkippedPhotos(result.skippedPhotos.length);
       setSkippedRows(result.skippedRows);
+      setClampedDates(result.clampedDates);
       snackbar.show({ message: t('data.export.done', { name: result.fileName }), bottomOffset: spacing.s6 });
     } catch (error) {
       setExportProblem(error instanceof ExportError ? error : 'failed');
@@ -156,10 +166,10 @@ export function DataScreen({ onBack, onOpenProviders, onOpenImportedTables, now 
   };
 
   const replace = async (prepared: PreparedImport) => {
-    setImported({ kind: 'applying', prepared });
+    setImported({ kind: 'applying', prepared, progress: null });
     let result: ImportResult;
     try {
-      result = await service.applyImport(prepared);
+      result = await service.applyImport(prepared, { onProgress: (progress) => setImported({ kind: 'applying', prepared, progress }) });
     } catch (error) {
       // Nothing was replaced: the service rolled everything back.
       setImported({ kind: 'error', error: error instanceof ImportError ? error : new ImportError('write_failed') });
@@ -180,10 +190,12 @@ export function DataScreen({ onBack, onOpenProviders, onOpenImportedTables, now 
     setDeleting('working');
     setHealthFailed(false);
     setDeleteReport(null);
+    let leftover = false;
     try {
       // One exclusive step: a Health Connect sync already under way finishes first, the records this app wrote are removed first (if
       // Health Connect refuses, nothing has been deleted), and no sync can add anything after the wipe.
-      await health.wipe(healthOn && removeHealth, () => service.deleteAll({ confirmation: word }));
+      const result = await health.wipe(healthOn && removeHealth, () => service.deleteAll({ confirmation: word }));
+      leftover = result.exportFilesLeft;
     } catch (error) {
       if (error instanceof HealthRecordsNotRemovedError) {
         setHealthFailed(true);
@@ -196,6 +208,15 @@ export function DataScreen({ onBack, onOpenProviders, onOpenImportedTables, now 
       setDeleting('failed');
       return;
     }
+    // Everything is deleted. A copy of an earlier export that could not be removed is said first: the app resets only after it has been read.
+    if (leftover) {
+      setDeleting('leftover');
+      return;
+    }
+    await finishDelete();
+  };
+
+  const finishDelete = async () => {
     setDeleting('closed');
     setWord('');
     // First launch again: the language is the device's, not the one chosen on the data that is gone.
@@ -238,7 +259,8 @@ export function DataScreen({ onBack, onOpenProviders, onOpenImportedTables, now 
             </View>
           ) : null}
           {exporting ? <Busy label={t('data.export.preparing')} /> : null}
-          {exportProblem ? <FieldMessage message={exportMessage(t, exportProblem)} /> : null}
+          {exportProblem ? <ExportProblemView problem={exportProblem} locale={locale} today={dayBounds((now ?? (() => new Date()))()).latest} onOpenMeal={onOpenMeal} /> : null}
+          {clampedDates > 0 ? <FieldMessage message={t('data.export.datesCorrected', { count: clampedDates })} /> : null}
           {skippedPhotos > 0 ? <FieldMessage message={t('data.export.photosSkipped', { count: skippedPhotos })} /> : null}
           {skippedRows.length > 0 ? <FieldMessage message={t('data.export.rowsSkipped', { count: skippedRows.length, what: skippedRows.slice(0, 3).map((row) => row.detail).join(', ') + (skippedRows.length > 3 ? '…' : '') })} /> : null}
           <Button label={t('data.export.button')} icon="copy" disabled={exporting} onPress={() => setReminder(true)} testID="export-button" />
@@ -250,8 +272,8 @@ export function DataScreen({ onBack, onOpenProviders, onOpenImportedTables, now 
           </AppText>
           <AppText tone="muted">{t('data.import.body')}</AppText>
           {imported.kind === 'reading' ? <Busy label={t('data.import.reading')} /> : null}
-          {imported.kind === 'applying' ? <Busy label={t('data.import.importing')} /> : null}
-          {imported.kind === 'error' ? <ImportProblem error={imported.error} onRetry={() => void chooseFile()} /> : null}
+          {imported.kind === 'applying' ? <Busy label={importLabel(t, imported.progress)} /> : null}
+          {imported.kind === 'error' ? <ImportProblem error={imported.error} locale={locale} onRetry={() => void chooseFile()} /> : null}
           {imported.kind === 'done' ? <ImportDone result={imported.result} onOpenProviders={onOpenProviders} /> : null}
           {imported.kind !== 'error' ? (
             <Button label={t('data.import.button')} variant="secondary" icon="plus" disabled={imported.kind === 'reading' || imported.kind === 'applying'} onPress={() => void chooseFile()} testID="import-button" />
@@ -315,7 +337,23 @@ export function DataScreen({ onBack, onOpenProviders, onOpenImportedTables, now 
         </View>
       </BottomSheet>
 
-      <BottomSheet visible={deleting !== 'closed'} onClose={deleting === 'working' ? () => undefined : closeDelete} title={t('data.delete.sheetTitle')} closeLabel={t('common.close')}>
+      <BottomSheet
+        visible={deleting !== 'closed'}
+        onClose={deleting === 'working' ? () => undefined : deleting === 'leftover' ? () => void finishDelete() : closeDelete}
+        title={t('data.delete.sheetTitle')}
+        closeLabel={t('common.close')}>
+        {deleting === 'leftover' ? (
+          <>
+            <View style={styles.notice} testID="delete-leftover">
+              <Icon name="alert" color={colors.warning} />
+              <AppText style={styles.noticeText}>{t('data.delete.leftover')}</AppText>
+            </View>
+            <View style={styles.actions}>
+              <Button label={t('data.delete.continue')} onPress={() => void finishDelete()} testID="delete-continue" />
+            </View>
+          </>
+        ) : (
+          <>
         <AppText tone="muted">{t('data.delete.sheetBody')}</AppText>
         <TextField
           label={t('data.delete.fieldLabel')}
@@ -355,6 +393,8 @@ export function DataScreen({ onBack, onOpenProviders, onOpenImportedTables, now 
           <Button label={t('data.delete.keep')} disabled={deleting === 'working'} onPress={closeDelete} />
           <Button label={t('data.delete.confirm')} variant="secondary" disabled={!wordMatches || deleting === 'working'} onPress={() => void deleteEverything()} testID="delete-everything" />
         </View>
+          </>
+        )}
       </BottomSheet>
     </ScreenFrame>
   );
@@ -365,7 +405,11 @@ function DeleteReportView({ report }: { report: { incomplete: DeleteIncompleteEr
   const e = report.incomplete;
   const lines: string[] = [];
   if (!e) lines.push(t('data.delete.incomplete.unknown'));
-  else if (e.stage === 'keys') lines.push(e.keysUnlistable && e.keysFailed === 0 ? t('data.delete.incomplete.keysUnlistable') : t('data.delete.incomplete.keys', { count: e.keysFailed }));
+  else if (e.stage === 'keys') {
+    // Every key is tried before this is reported, so say how many are already gone: "nothing was deleted" is only true when none was.
+    if (e.keysUnlistable && e.keysFailed === 0) lines.push(e.keysDeleted > 0 ? t('data.delete.incomplete.keysUnlistableSome', { count: e.keysDeleted }) : t('data.delete.incomplete.keysUnlistable'));
+    else lines.push(e.keysDeleted > 0 ? t('data.delete.incomplete.keysSome', { count: e.keysFailed, removed: e.keysDeleted }) : t('data.delete.incomplete.keys', { count: e.keysFailed }));
+  }
   else if (e.stage === 'photos') {
     lines.push(
       e.photosUnlistable
@@ -383,12 +427,48 @@ function DeleteReportView({ report }: { report: { incomplete: DeleteIncompleteEr
   );
 }
 
-function exportMessage(t: TFunction, problem: ExportError | 'failed'): string {
+const MEGABYTE = 1024 * 1024;
+
+/** A size the person can read: "412.0 KB", "63.5 MB". */
+const formatSize = (locale: Locale, bytes: number): string => (bytes < MEGABYTE ? `${formatDecimal(locale, bytes / 1024, 1)} KB` : `${formatDecimal(locale, bytes / MEGABYTE, 1)} MB`);
+
+function exportMessage(t: TFunction, locale: Locale, today: string, problem: ExportError | 'failed'): string {
   if (problem === 'failed') return t('data.export.error');
   if (problem.code === 'secret_in_field') return t('data.export.errorSecret', { where: problem.where });
   if (problem.code === 'keys_unreadable') return t('data.export.errorKeys');
+  if (problem.code === 'meal_out_of_range' && problem.meal) {
+    const more = problem.moreMeals ? ` ${t('data.export.errorMealMore', { count: problem.moreMeals })}` : '';
+    return `${t('data.export.errorMeal', { name: problem.meal.name ?? t('meal.title'), date: formatLongDate(locale, problem.meal.date), from: formatLongDate(locale, EARLIEST_DAY), to: formatLongDate(locale, today) })}${more}`;
+  }
+  if (problem.code === 'invalid_value' && problem.meal) return t('data.export.errorMealValue', { name: problem.meal.name ?? t('meal.title'), date: formatLongDate(locale, problem.meal.date), where: problem.where });
   if (problem.code === 'invalid_value') return t('data.export.errorValue', { where: problem.where });
+  if (problem.code === 'too_large') {
+    const sizes = { size: formatSize(locale, problem.size ?? 0), limit: formatSize(locale, problem.limit ?? 0) };
+    // The photos are what can be left out: say so first when leaving them out would fit.
+    if (problem.kind === 'photos') return t('data.export.errorTooManyPhotos', { count: problem.size ?? 0, limit: problem.limit ?? 0 });
+    if (problem.withoutPhotosFits) return t('data.export.errorTooLargePhotos', sizes);
+    return t(problem.kind === 'file' ? 'data.export.errorTooLargeFile' : 'data.export.errorTooLarge', sizes);
+  }
   return t('data.export.error');
+}
+
+/** What stopped an export, in words the person can act on, with a way to open the meal when it is a meal. */
+function ExportProblemView({ problem, locale, today, onOpenMeal }: { problem: ExportError | 'failed'; locale: Locale; today: string; onOpenMeal?: (mealId: string) => void }) {
+  const { t } = useTranslation();
+  const meal = problem !== 'failed' ? problem.meal : undefined;
+  return (
+    <View style={styles.group}>
+      <FieldMessage message={exportMessage(t, locale, today, problem)} />
+      {meal && onOpenMeal ? <Button label={t('data.export.openMeal')} variant="secondary" icon="plate" onPress={() => onOpenMeal(meal.id)} testID="open-meal" /> : null}
+    </View>
+  );
+}
+
+/** The line shown while an import runs: which of its steps is under way. */
+function importLabel(t: TFunction, progress: ImportProgress | null): string {
+  if (!progress) return t('data.import.importing');
+  if (progress.step === 'photos') return t('data.import.progressPhotos', { done: Math.min(progress.done + 1, progress.total), total: progress.total });
+  return t(progress.step === 'writing' ? 'data.import.progressWriting' : 'data.import.progressCleaning');
 }
 
 /** A line that says work is under way; announced to screen readers as a progress element. */
@@ -410,27 +490,38 @@ function PreviewBody({ preview, locale }: { preview: ImportPreview; locale: Loca
   return (
     <>
       <AppText tone="muted">{t('data.import.contains', { date: formatInstantDate(locale, new Date(preview.exportedAt)), version: preview.appVersion })}</AppText>
-      <View style={[styles.counts, { backgroundColor: colors.surface }]} accessibilityLabel={t('data.import.contents')}>
-        {COUNT_ROWS.filter((row) => preview.counts[row] > 0).map((row) => (
-          <AppText key={row} variant="itemName">
-            {t(`data.import.${row}`, { count: preview.counts[row] })}
-          </AppText>
-        ))}
-        {!preview.hasProfile ? (
-          <AppText variant="bodySm" tone="muted">
-            {t('data.import.noProfile')}
-          </AppText>
-        ) : null}
-      </View>
+      <CountsTable preview={preview} locale={locale} />
+      {!preview.hasProfile ? (
+        <AppText variant="bodySm" tone="muted">
+          {t('data.import.noProfile')}
+        </AppText>
+      ) : null}
       <AppText variant="bodyMd">
         {preview.dateRange ? t('data.import.range', { from: formatLongDate(locale, preview.dateRange.from), to: formatLongDate(locale, preview.dateRange.to) }) : t('data.import.noRange')}
       </AppText>
       <View style={styles.notice}>
         <Icon name="alert" color={colors.warning} />
-        <AppText variant="bodyMd" style={styles.noticeText}>
+        <AppText variant="bodyMd" style={styles.noticeText} testID="replace-warning">
           {t('data.import.replaceWarning')}
         </AppText>
       </View>
+      {preview.providerHosts.length > 0 ? (
+        <View style={[styles.counts, { backgroundColor: colors.warningSoft }]} testID="provider-hosts">
+          <AppText variant="itemName">{t('data.import.providersHosts')}</AppText>
+          {preview.providerHosts.map((provider, index) => (
+            <AppText key={`${provider.label}-${index}`} variant="bodyMd">
+              {`${provider.label} → ${provider.host}`}
+            </AppText>
+          ))}
+          <AppText variant="bodySm">{t('data.import.providersCheck')}</AppText>
+        </View>
+      ) : null}
+      {preview.healthConnectWeights > 0 ? (
+        <AppText variant="bodySm" tone="muted" testID="health-weights-note">
+          {t('data.import.healthWeights', { count: preview.healthConnectWeights })}
+          {preview.mergedWeights > 0 ? ` ${t('data.import.healthMerged', { count: preview.mergedWeights })}` : ''}
+        </AppText>
+      ) : null}
       {preview.providersNeedingKey > 0 ? (
         <AppText variant="bodySm" tone="muted">
           {t('data.import.providersNote')}
@@ -443,12 +534,50 @@ function PreviewBody({ preview, locale }: { preview: ImportPreview; locale: Loca
   );
 }
 
-function ImportProblem({ error, onRetry }: { error: ImportError; onRetry: () => void }) {
+/** What the phone has now next to what the file brings, one row per kind of data that either side has. */
+function CountsTable({ preview, locale }: { preview: ImportPreview; locale: Locale }) {
   const { t } = useTranslation();
-  const message = t(`data.import.error.${ERROR_KEY[error.code]}`, {
+  const { colors } = useTheme();
+  const rows = COUNT_ROWS.filter((row) => preview.counts[row] > 0 || preview.current[row] > 0);
+  const number = (value: number) => formatDecimal(locale, value, 0);
+  return (
+    <View style={[styles.counts, { backgroundColor: colors.surface }]} testID="import-counts" accessibilityLabel={t('data.import.contents')}>
+      <View style={[styles.countRow, styles.countHead]}>
+        <View style={styles.countLabel} />
+        <AppText variant="caption" tone="muted" style={styles.countValue}>
+          {t('data.import.columnNow')}
+        </AppText>
+        <AppText variant="caption" tone="muted" style={styles.countValue}>
+          {t('data.import.columnFile')}
+        </AppText>
+      </View>
+      {rows.map((row) => (
+        <View key={row} style={styles.countRow} testID={`count-${row}`} accessible accessibilityLabel={t('data.import.rowLabel', { label: t(`data.import.rows.${row}`), now: number(preview.current[row]), file: number(preview.counts[row]) })}>
+          <AppText variant="bodyMd" style={styles.countLabel}>
+            {t(`data.import.rows.${row}`)}
+          </AppText>
+          <AppText variant="itemName" style={styles.countValue}>
+            {number(preview.current[row])}
+          </AppText>
+          <AppText variant="itemName" style={styles.countValue}>
+            {number(preview.counts[row])}
+          </AppText>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+function ImportProblem({ error, locale, onRetry }: { error: ImportError; locale: Locale; onRetry: () => void }) {
+  const { t } = useTranslation();
+  // A refusal that is probably the phone's own date says so, with both dates, instead of only naming a place in the file.
+  const clockKey = error.code === 'invalid' && error.clock ? (error.clock.fileDate ? 'invalidClock' : 'invalidClockNoFile') : null;
+  const message = t(`data.import.error.${clockKey ?? ERROR_KEY[error.code]}`, {
     where: error.where ?? '',
     fileVersion: error.fileVersion,
     supportedVersion: error.supportedVersion,
+    deviceDate: error.clock ? formatLongDate(locale, error.clock.deviceDate) : '',
+    fileDate: error.clock?.fileDate ? formatLongDate(locale, error.clock.fileDate) : '',
   });
   return (
     <ErrorState title={t('data.import.error.title')} message={message} icon="alert">
@@ -486,5 +615,9 @@ const styles = StyleSheet.create({
   noticeText: { flex: 1 },
   busy: { flexDirection: 'row', gap: spacing.s3, alignItems: 'center', borderRadius: radius.lg, paddingHorizontal: spacing.s4, paddingVertical: spacing.s3 },
   counts: { borderRadius: radius.lg, padding: spacing.s4, gap: spacing.s1 },
+  countRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.s2 },
+  countHead: { alignItems: 'flex-end' },
+  countLabel: { flex: 1 },
+  countValue: { width: 76, textAlign: 'right' },
   done: { borderRadius: radius.lg, padding: spacing.s4, gap: spacing.s2 },
 });

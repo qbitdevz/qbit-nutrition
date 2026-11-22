@@ -1,4 +1,5 @@
 import { and, asc, desc, eq, gte, lte } from 'drizzle-orm';
+import { requireDayInBounds } from '../dayBounds';
 import { DataError } from '../errors';
 import { bodyMeasurement } from '../schema';
 import { VALUE_LIMITS, requireWithin } from './limits';
@@ -32,10 +33,11 @@ export interface MeasurementRepository {
   delete(id: string): Promise<void>;
 }
 
-export function createMeasurementRepository({ db, newId }: RepositoryContext): MeasurementRepository {
+export function createMeasurementRepository({ db, newId, dayClock }: RepositoryContext): MeasurementRepository {
   return {
     async record(input) {
       requireLocalDate(input.measuredOn, 'measuredOn');
+      requireDayInBounds(input.measuredOn, 'measuredOn', dayClock());
       if (!Number.isFinite(input.value) || input.value <= 0) {
         throw invalid(`value must be a positive finite number, got ${input.value}`);
       }
@@ -101,6 +103,8 @@ export function createMeasurementRepository({ db, newId }: RepositoryContext): M
         if (patch.value !== undefined) requireWithin(patch.value, VALUE_LIMITS.measurement[current.kind], `${current.kind} value`);
         const measuredOn = patch.measuredOn ?? current.measuredOn;
         if (measuredOn !== current.measuredOn) {
+          // Only a day the entry MOVES to is bounded: editing the value of an entry already stored out of range must work (it is the way to fix it).
+          requireDayInBounds(measuredOn, 'measuredOn', dayClock());
           const taken = tx
             .select({ id: bodyMeasurement.id })
             .from(bodyMeasurement)

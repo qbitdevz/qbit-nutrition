@@ -298,3 +298,79 @@ describe('updateMeal', () => {
     await expectDataError(h.repos.meals.updateMeal('nope', { slot: 'lunch' }), 'not_found');
   });
 });
+
+describe('restoring what was deleted (undo of a removed item or meal)', () => {
+  const usageRows = async () => ({ recents: await h.repos.foodUsage.recents(20), favorites: await h.repos.foodUsage.favorites() });
+
+  it('puts a removed item back exactly: same id, position, values, origin, confidences and nutrients; the day totals return', async () => {
+    const m = await h.repos.meals.save(
+      meal([
+        await bananaItem(100),
+        await bananaItem(200, { displayName: 'Plátano AI', origin: 'ai', confidenceFood: 'high', confidencePortion: 'low', nutrients: { kcal: 178, protein: 2, carbs: 44, fat: 0.6, vit_c: 18, fiber: 5.2 } }),
+        await bananaItem(50),
+      ]),
+    );
+    const before = await h.repos.meals.getDay('2026-06-15');
+    const removed = m.items[1]!;
+
+    await h.repos.meals.deleteItem(removed.id);
+    expect((await h.repos.meals.getDay('2026-06-15')).totals.kcal).toBeCloseTo((before.totals.kcal ?? 0) - 178);
+
+    const restored = await h.repos.meals.restoreItem(removed);
+    expect(restored).toEqual(removed);
+    const after = await h.repos.meals.getDay('2026-06-15');
+    expect(after.meals[0]!.items).toEqual(before.meals[0]!.items); // same order, because the position is the same
+    expect(after.totals).toEqual(before.totals);
+    expect(count('meal_item_nutrient')).toBe(before.meals[0]!.items.reduce((n, i) => n + Object.keys(i.nutrients).length, 0));
+  });
+
+  it('does not touch favorites or usage counters', async () => {
+    const m = await h.repos.meals.save(meal([await bananaItem(100), await bananaItem(200)]));
+    await h.repos.foodUsage.setFavorite({ source: 'catalog', id: '1001' }, true);
+    const before = await usageRows();
+    expect(before.favorites).toHaveLength(1);
+
+    await h.repos.meals.deleteItem(m.items[0]!.id);
+    await h.repos.meals.restoreItem(m.items[0]!);
+    expect(await usageRows()).toEqual(before);
+  });
+
+  it('refuses an unknown meal, an item that is still there, an occupied position, and values outside the limits', async () => {
+    const m = await h.repos.meals.save(meal([await bananaItem(100), await bananaItem(200)]));
+    const [a, b] = m.items;
+    await expectDataError(h.repos.meals.restoreItem({ ...a!, mealId: 'nope' }), 'not_found');
+    await expectDataError(h.repos.meals.restoreItem(a!), 'invalid_input'); // still present
+    await h.repos.meals.deleteItem(a!.id);
+    await expectDataError(h.repos.meals.restoreItem({ ...a!, position: b!.position }), 'invalid_input'); // taken by another item
+    await expectDataError(h.repos.meals.restoreItem({ ...a!, grams: -1 }), 'invalid_input');
+    expect((await h.repos.meals.getMeal(m.id))!.items.map((i) => i.id)).toEqual([b!.id]); // nothing was half-written
+    expect(count('meal_item_nutrient')).toBe(2);
+  });
+
+  it('puts a removed meal back exactly, with the same ids, and without counting a new use of its foods', async () => {
+    const m = await h.repos.meals.save(meal([await bananaItem(100), await bananaItem(200, { origin: 'ai', confidenceFood: 'medium' })], { name: 'Cena', note: 'rápida' }));
+    await h.repos.foodUsage.setFavorite({ source: 'catalog', id: '1001' }, true);
+    const before = await usageRows();
+    const original = (await h.repos.meals.getMeal(m.id))!;
+    const dayBefore = await h.repos.meals.getDay('2026-06-15');
+
+    await h.repos.meals.deleteMeal(m.id);
+    expect(await h.repos.meals.getMeal(m.id)).toBeNull();
+    const restored = await h.repos.meals.restoreMeal(original);
+
+    expect(restored).toEqual(original);
+    expect(await h.repos.meals.getDay('2026-06-15')).toEqual(dayBefore);
+    expect(await usageRows()).toEqual(before);
+    await expectDataError(h.repos.meals.restoreMeal(original), 'invalid_input'); // already there
+  });
+
+  it('refuses a meal without items, and writes nothing when one of its items is invalid', async () => {
+    const m = await h.repos.meals.save(meal([await bananaItem(100)]));
+    const original = (await h.repos.meals.getMeal(m.id))!;
+    await h.repos.meals.deleteMeal(m.id);
+    await expectDataError(h.repos.meals.restoreMeal({ ...original, items: [] }), 'invalid_input');
+    await expectDataError(h.repos.meals.restoreMeal({ ...original, items: [{ ...original.items[0]!, grams: -5 }] }), 'invalid_input');
+    expect(count('meal')).toBe(0);
+    expect(count('meal_item')).toBe(0);
+  });
+});

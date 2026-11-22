@@ -86,7 +86,7 @@ export interface HealthSync {
    * Health Connect refuses nothing else happens (`HealthRecordsNotRemovedError`). If the task then fails, `WipeFailedError` says whether
    * the records were already removed.
    */
-  wipe(removeRecords: boolean, task: () => Promise<void>): Promise<void>;
+  wipe<T>(removeRecords: boolean, task: () => Promise<T>): Promise<T>;
   /** Resolves when everything queued so far has been tried. For tests and for the screen. */
   idle(): Promise<void>;
   openSettings(): void;
@@ -405,7 +405,7 @@ export function createHealthSync({ repos, platform, now = () => new Date() }: De
           recordsRemoved = true;
         }
         try {
-          await task();
+          return await task();
         } catch (cause) {
           throw new WipeFailedError(recordsRemoved, { cause });
         }

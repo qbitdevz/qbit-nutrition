@@ -53,6 +53,33 @@ const RULES: Rule[] = [
 const NAME = /^(alimentos?|nombre|descripcion|food|food name|food item|name|description|nome|aliment|nom|designation|denomination|libelle|producto|ingrediente|item)( |$)/;
 const GROUP = /^(grupo|group|groupe|categoria|category|categorie|tipo|familia|clase)( |$)|\b(food group|grupo de alimentos|groupe d aliments?)\b/;
 
+/** The names of the nutrients whose rule above also accepts an abbreviation: a label that has one of these is a strong match; one that matched only the abbreviation is weak. */
+const STRONG: Partial<Record<NutrientCode, RegExp>> = {
+  protein: /\b(proteinas?|proteines?|proteins?|protides?)\b/,
+  carbs: /\b(carbohidratos?|carbohydrates?|carboidratos?|glucides?|glucidos?|hidratos?( de carbono)?)\b/,
+  sat_fat: /\bsatur\w*/,
+  sodium: /\b(sodio|sodium)\b/,
+  potassium: /\b(potasio|potassium|potassio)\b/,
+  calcium: /\b(calcio|calcium)\b/,
+  iron: /\b(hierro|iron|ferro|fer)\b/,
+  zinc: /\b(zinc|zinco)\b/,
+};
+
+/**
+ * How a header label matched `code`: `strong` when it names the nutrient ("Proteínas (g)", "Energía (kcal)"), `weak` when only an abbreviation
+ * did ("Prot", "CHO", "Na", "K", "AGS"), null when it is not that nutrient's label at all. A weak match is a guess the person should confirm.
+ */
+export function labelStrength(code: NutrientCode, label: string): 'strong' | 'weak' | null {
+  if (matchNutrient(label) !== code) return null;
+  const strong = STRONG[code];
+  return !strong || strong.test(normalizeLabel(label)) ? 'strong' : 'weak';
+}
+
+/** True for a header that names the foods ("Alimento", "Food name"), as opposed to a column found by looking at its contents. */
+export function isNameHeader(label: string): boolean {
+  return NAME.test(normalizeLabel(label)) && matchNutrient(label) === null;
+}
+
 export function matchNutrient(label: string): NutrientCode | null {
   const n = normalizeLabel(label);
   if (n === '') return null;

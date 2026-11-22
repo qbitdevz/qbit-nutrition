@@ -34,7 +34,8 @@ import type { RepositoryContext } from './shared';
  * Everything the user created, as the repositories return it (docs/08 section 9). It deliberately has no `scan`
  * rows (diagnostic data) and no API keys (those are in secure storage, and a provider profile has no key field).
  * The `barcode_product` cache is NOT copied whole, but the products that something refers to are: a saved item, a
- * favorite or recent, or a learned match. Without them those references would dangle after moving phones.
+ * favorite or recent, or a learned match (without them those references would dangle after moving phones), and the
+ * products the person completed by hand (`edited`), which are their own work even when nothing refers to them yet.
  */
 export interface BackupSnapshot {
   profile: Profile | null;
@@ -48,7 +49,7 @@ export interface BackupSnapshot {
    * and a restore brings them back: the export file then CONTAINS those tables, and must not be shared as if it did not.
    */
   importedCollections: ImportedCollectionWithFoods[];
-  /** Only the cached products that a meal item, `food_usage` or `match_memory` refers to. */
+  /** Only the cached products that a meal item, `food_usage` or `match_memory` refers to, and those the person edited by hand. */
   barcodeProducts: BarcodeProductRecord[];
   foodUsage: FoodUsageEntry[];
   matchMemory: MatchMemoryEntry[];
@@ -56,7 +57,29 @@ export interface BackupSnapshot {
   settings: Record<string, string>;
 }
 
+/** How many rows of each kind of data are stored (what a backup would carry, and what a restore replaces). Photos are files, counted elsewhere. */
+export interface BackupCounts {
+  meals: number;
+  items: number;
+  weights: number;
+  /** Waist, hips, chest and body fat entries. */
+  measurements: number;
+  goals: number;
+  customFoods: number;
+  importedTables: number;
+  importedFoods: number;
+  /** Favorites and recents. */
+  favoritesAndRecents: number;
+  /** Learned matches between a detected name and a food. */
+  learnedMatches: number;
+  /** Every cached product, edited or not: a restore replaces the whole cache. */
+  barcodeProducts: number;
+  providers: number;
+}
+
 export interface BackupRepository {
+  /** Row counts, cheap (no rows are read): what "replace my data" would remove. */
+  counts(): Promise<BackupCounts>;
   /** All of it, read in one transaction so the pieces belong together. */
   read(): Promise<BackupSnapshot>;
   /**
@@ -98,6 +121,25 @@ function wipe(tx: AppTransaction): void {
 
 export function createBackupRepository({ db }: RepositoryContext): BackupRepository {
   return {
+    async counts() {
+      const n = (query: ReturnType<typeof sql>) => Number(db.get<{ n: number }>(query)?.n ?? 0);
+      const rows = (table: string, where = '1 = 1') => n(sql.raw(`SELECT count(*) AS n FROM "${table}" WHERE ${where}`));
+      return {
+        meals: rows('meal'),
+        items: rows('meal_item'),
+        weights: rows('body_measurement', `kind = 'weight'`),
+        measurements: rows('body_measurement', `kind != 'weight'`),
+        goals: rows('goal'),
+        customFoods: rows('custom_food'),
+        importedTables: rows('food_collection'),
+        importedFoods: rows('imported_food'),
+        favoritesAndRecents: rows('food_usage'),
+        learnedMatches: rows('match_memory'),
+        barcodeProducts: rows('barcode_product'),
+        providers: rows('ai_provider'),
+      };
+    },
+
     async read() {
       return db.transaction((tx) => ({
         profile: tx.select().from(profile).limit(1).get() ?? null,
@@ -123,6 +165,7 @@ export function createBackupRepository({ db }: RepositoryContext): BackupReposit
             foodCount: c.foodCount,
             presetId: c.presetId,
             basis: c.basis,
+            contentHash: c.contentHash,
             foods: tx
               .select()
               .from(importedFood)
@@ -138,7 +181,8 @@ export function createBackupRepository({ db }: RepositoryContext): BackupReposit
             sql`${barcodeProduct.barcode} IN (
               SELECT ${mealItem.foodRef} FROM ${mealItem} WHERE ${mealItem.foodSource} = 'barcode' AND ${mealItem.foodRef} IS NOT NULL
               UNION SELECT ${foodUsage.foodRef} FROM ${foodUsage} WHERE ${foodUsage.foodSource} = 'barcode'
-              UNION SELECT ${matchMemory.foodRef} FROM ${matchMemory} WHERE ${matchMemory.foodSource} = 'barcode')`,
+              UNION SELECT ${matchMemory.foodRef} FROM ${matchMemory} WHERE ${matchMemory.foodSource} = 'barcode')
+            OR CASE WHEN json_valid(${barcodeProduct.rawJson}) THEN json_extract(${barcodeProduct.rawJson}, '$.edited') = 1 ELSE 0 END`,
           )
           .orderBy(asc(barcodeProduct.barcode))
           .all()

@@ -81,7 +81,10 @@ export interface ScanChecks {
 
 export interface AnalyzeOutput {
   result: ScanResult; // validated; see document 07
+  /** The tokens of the whole request; set only when every call (the scan and its repair retry) reported its usage. */
   usage?: Usage;
+  /** The tokens of the calls that reported, when another call of the same request did not: NOT the total. */
+  usagePartial?: Usage;
   latencyMs: number;
   repaired: boolean;
   outputModeUsed: OutputMode;

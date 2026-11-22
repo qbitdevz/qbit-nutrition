@@ -5,6 +5,8 @@ export type DataErrorCode =
   | 'foreign_keys_unavailable'
   | 'not_found'
   | 'invalid_input'
+  /** A date outside what a record may have (`dayBounds`): before 2000, or more than two days after the device's date. */
+  | 'date_out_of_range'
   /** A goal change that would rewrite or overlap an earlier period. */
   | 'goal_date_conflict'
   /** Moving a measurement onto a day that already has one of the same kind and source. */

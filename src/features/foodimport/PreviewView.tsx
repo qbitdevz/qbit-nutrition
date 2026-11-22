@@ -13,16 +13,19 @@ const UNIT_SYMBOL = { kcal: 'kcal', g: 'g', mg: 'mg', ug: 'µg' } as const;
 interface PreviewViewProps {
   preview: ImportPreview;
   locale: Locale;
-  name: string;
-  onName: (name: string) => void;
-  nameProblem: boolean;
+  /** The name of the table: asked here only when `onName` is given (a single table); the batch view asks it itself. */
+  name?: string;
+  onName?: (name: string) => void;
+  nameProblem?: boolean;
+  /** Inside another screen's content: no margins of its own. */
+  embedded?: boolean;
 }
 
 /**
  * The preview (S4): what will be stored and what will not, before anything is written. Counts, why each kind of row is left out, the
  * cells stored as unknown, warnings that change nothing, and a sample of foods exactly as they will be stored.
  */
-export function PreviewView({ preview, locale, name, onName, nameProblem }: PreviewViewProps) {
+export function PreviewView({ preview, locale, name = '', onName, nameProblem = false, embedded = false }: PreviewViewProps) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const { counts } = preview;
@@ -31,7 +34,7 @@ export function PreviewView({ preview, locale, name, onName, nameProblem }: Prev
   const value = (code: NutrientCode, amount: number) => `${t(`nutrient.${code}`)} ${formatDecimal(locale, amount, 3)} ${UNIT_SYMBOL[NUTRIENT_UNITS[code]]}`;
 
   return (
-    <View style={styles.body}>
+    <View style={embedded ? styles.embedded : styles.body}>
       <View style={[styles.card, { backgroundColor: colors.surface }]} testID="preview-counts">
         <AppText variant="heading" accessibilityRole="header">
           {t('import.preview.foods', { count: counts.foods })}
@@ -100,21 +103,24 @@ export function PreviewView({ preview, locale, name, onName, nameProblem }: Prev
         ))}
       </View>
 
-      <TextField
-        label={t('import.preview.name')}
-        hint={t('import.preview.nameHint')}
-        value={name}
-        onChangeText={onName}
-        error={nameProblem && name.trim() === '' ? t('import.preview.nameBlank') : null}
-        maxLength={200}
-        returnKeyType="done"
-        testID="table-name"
-      />
+      {onName ? (
+        <TextField
+          label={t('import.preview.name')}
+          hint={t('import.preview.nameHint')}
+          value={name}
+          onChangeText={onName}
+          error={nameProblem && name.trim() === '' ? t('import.preview.nameBlank') : null}
+          maxLength={200}
+          returnKeyType="done"
+          testID="table-name"
+        />
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  embedded: { gap: spacing.s4 },
   body: { paddingHorizontal: layout.screenMargin, paddingTop: spacing.s2, paddingBottom: spacing.s10, gap: spacing.s4 },
   card: { borderRadius: radius.lg, padding: spacing.s5, gap: spacing.s2 },
   group: { gap: spacing.s2 },

@@ -4,6 +4,7 @@ export { AppText } from './AppText';
 export type { TextTone, TextVariant } from './AppText';
 export { BottomSheet } from './BottomSheet';
 export { Button } from './Button';
+export { CheckRow } from './CheckRow';
 export { ChoiceChips, OptionList } from './Choice';
 export type { ChoiceOption } from './Choice';
 export { ConfirmSheet } from './ConfirmSheet';

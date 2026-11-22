@@ -34,6 +34,8 @@ export class KeysNotRemovedError extends Error {
     readonly failed: number,
     /** True when the store could not be read for what it holds (not merely "unavailable"). */
     readonly unlistable: boolean,
+    /** Keys that WERE removed before the failure was reported (every key is tried). */
+    readonly removed: number = 0,
   ) {
     super('Some AI provider keys could not be removed.');
     this.name = 'KeysNotRemovedError';
@@ -287,14 +289,18 @@ export function createProviderService({ aiProviders, settings, secrets: store, c
         unlistable = !(error instanceof SecretStoreError && error.code === 'unavailable');
       }
       let failed = 0;
+      let removed = 0;
       for (const id of new Set([...rowIds, ...listed])) {
         try {
+          // Only a key known to have existed is counted: a store that cannot say counts none.
+          const held = await store.has(id).catch(() => false);
           await secrets.remove(id);
+          if (held) removed += 1;
         } catch {
           failed += 1;
         }
       }
-      if (failed > 0 || unlistable) throw new KeysNotRemovedError(failed, unlistable);
+      if (failed > 0 || unlistable) throw new KeysNotRemovedError(failed, unlistable, removed);
     },
 
     async removeOrphanKeys() {
@@ -347,7 +353,8 @@ export function createProviderService({ aiProviders, settings, secrets: store, c
     },
 
     async testConnection(draft, signal) {
-      if (draft.apiKey && (await isImported(draft.id))) throw new ProviderNotConfirmedError();
+      // An imported profile points where a file said: nothing is sent to it, with or without a key, until the person has looked at it.
+      if (await isImported(draft.id)) throw new ProviderNotConfirmedError();
       const profile = profileOf(draft);
       let apiKey: string | null;
       try {
@@ -362,7 +369,7 @@ export function createProviderService({ aiProviders, settings, secrets: store, c
     },
 
     async listModels(draft, signal) {
-      if (draft.apiKey && (await isImported(draft.id))) throw new ProviderNotConfirmedError();
+      if (await isImported(draft.id)) throw new ProviderNotConfirmedError();
       try {
         const apiKey = await keyFor(draft); // a SecretStoreError propagates: no list is fetched without the key
         const models = await client.listModels(profileOf(draft), apiKey, signal);

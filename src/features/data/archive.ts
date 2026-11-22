@@ -132,12 +132,15 @@ export function parseJson(text: string): unknown {
   }
 }
 
-/** The document as a plain JSON file's bytes. */
-export const writeJson = (document: unknown): Uint8Array => strToU8(JSON.stringify(document, null, 2));
+/**
+ * The document as a plain JSON file's bytes. Compact on purpose: indentation is a third of the size of a large export, and the size is
+ * what the limits below are measured on (the export checks it against the same limits the importer applies).
+ */
+export const writeJson = (document: unknown): Uint8Array => strToU8(JSON.stringify(document));
 
-/** The document and its photos as one ZIP (photos stored, the document deflated). */
-export function writeZip(document: unknown, photos: ReadonlyMap<string, Uint8Array>): Uint8Array {
-  const files: Zippable = { [DOCUMENT_NAME]: [writeJson(document), { level: 6 }] };
+/** The document's bytes (`writeJson`) and its photos as one ZIP (photos stored, the document deflated). */
+export function writeZip(documentBytes: Uint8Array, photos: ReadonlyMap<string, Uint8Array>): Uint8Array {
+  const files: Zippable = { [DOCUMENT_NAME]: [documentBytes, { level: 6 }] };
   for (const [path, bytes] of photos) files[path] = [bytes, { level: 0 }];
   return zipSync(files);
 }

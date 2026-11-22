@@ -160,10 +160,10 @@ describe('Settings → Data: import (S3)', () => {
     await press('Choose a file');
 
     expect(await screen.findByText('Replace your data?')).toBeOnTheScreen();
-    expect(screen.getByText('3 meals')).toBeOnTheScreen();
-    expect(screen.getByText('3 weight entries')).toBeOnTheScreen();
-    expect(screen.getByText('2 body measurements')).toBeOnTheScreen();
-    expect(screen.getByText('2 AI providers')).toBeOnTheScreen();
+    expect(screen.getByLabelText('Meals: 0 on this phone now, 3 in the file')).toBeOnTheScreen();
+    expect(screen.getByLabelText('Weight entries: 0 on this phone now, 3 in the file')).toBeOnTheScreen();
+    expect(screen.getByLabelText('Body measurements: 0 on this phone now, 2 in the file')).toBeOnTheScreen();
+    expect(screen.getByLabelText('AI providers: 0 on this phone now, 2 in the file')).toBeOnTheScreen();
     expect(screen.getByText(/Exported on .* with app version 1\.0\.0/)).toBeOnTheScreen();
     expect(screen.getByText('Covers Jun 1, 2026 to Jun 3, 2026.')).toBeOnTheScreen();
     expect(screen.getByText(/^Importing replaces everything on this phone/)).toBeOnTheScreen();
@@ -188,7 +188,7 @@ describe('Settings → Data: import (S3)', () => {
     await open('en', { onOpenProviders });
     await press('Choose a file');
     await press('Replace my data');
-    await press('Open AI providers');
+    fireEvent.press(await screen.findByRole('button', { name: 'Open AI providers' }));
     expect(onOpenProviders).toHaveBeenCalled();
   });
 
