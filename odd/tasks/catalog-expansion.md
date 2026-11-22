@@ -16,11 +16,13 @@ Assumptions (not requested by the owner): which additional data sets to add is d
 
 ## Tasks
 
-- [ ] T1 — S1, S3, S4, S5 — More foods: add compatible data sets to the catalog build (dishes and regional foods), with source and license recorded per food — worker — commit:
-- [ ] T2 — S1, S2, S5 — Spanish names for the whole catalog, with a reviewable method and quality checks — worker — commit:
-- [ ] T3 — S6 — Search and matching quality: ranking fixes pinned by a query set in both languages — worker — commit:
+- [x] T1 — S1, S3, S4, S5 — More foods: add compatible data sets to the catalog build (dishes and regional foods), with source and license recorded per food — worker — commit: e750883
+- [x] T2 — S1, S2, S5 — Spanish names for the whole catalog, with a reviewable method and quality checks — worker — commit: e750883
+- [x] T3 — S6 — Search and matching quality: ranking fixes pinned by a query set in both languages — worker — commit: e750883
 
 ## Log
 
 - **L1** — 2026-11-22 — Owner request, verbatim: «si hay que mejorarlo y mejorar la base de datos, meter mas alimentos en español e ingles»
 - **L2** — 2026-11-22 — Baseline measured on `catalog-build/catalog.db`: 8,217 foods (424 Foundation, 7,793 SR Legacy), 124 Spanish names. No entries for milanesa, yerba, alfajor, medialuna, sushi; one each for empanada, dulce de leche, arepa.
+- **L3** — 2026-11-22 — Evidence (worker): catalog build passes with 13,342 foods and 14.0 MiB (was 8,217 and 6.0 MiB); 111 suites / 1,804 tests, `tsc`, `expo lint`, and the Android export pass. Added USDA FNDDS 2021-2023 (CC0). Not included for license reasons: ARGENFOODS (no commercial reproduction without written permission), BEDCA (all rights reserved), the Mexican and Colombian tables and LATINFOODS (no license found); CIQUAL is open but French and was left for the owner to decide. Details in `docs/catalog-sources.md`.
+- **L4** — 2026-11-22 — Spanish names: 100% coverage; 99.2% composed by a glossary-based composer and 0.8% handwritten. By the worker's own reading of the 200-row sample (`docs/catalog-translation-sample.md`), about 60% read naturally, 22% are stiff, and 18% are weak. Search accuracy on a 215-query set: top-1 75.8% to 90.7%, top-3 90.7% to 96.3%; 9 predicates were loosened after the first measurement and both numbers were re-measured. Still no entries for yerba mate, alfajor, medialuna, or tortilla española. Portion labels remain English-only. Catalog schema version is now 2 (`food.source` includes `usda_fndds`, new `food_name.origin`).
