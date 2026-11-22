@@ -2,12 +2,12 @@
 bcdd: 1
 proyecto: Qbit Nutrition
 cliente: Proyecto personal (el dueño del producto)
-version: 4
+version: 5
 estado: aprobado
-actualizado: 2026-11-21
-ultima_fuente: chat con el dueño del 2026-11-21 (pedido de diseño)
-aprobado_equipo: el dueño del producto · 2026-11-21
-aprobado_cliente: el dueño del producto · 2026-11-21 · chat
+actualizado: 2026-11-22
+ultima_fuente: chat con el dueño del 2026-11-22 (mínimo de calorías y titular de la licencia)
+aprobado_equipo: el dueño del producto · 2026-11-22
+aprobado_cliente: el dueño del producto · 2026-11-22 · chat
 ---
 
 # Contrato de negocio — Qbit Nutrition
@@ -35,9 +35,7 @@ aprobado_cliente: el dueño del producto · 2026-11-21 · chat
 - Publicar en tiendas de aplicaciones — tienen costo.
 
 **Preguntas abiertas:**
-- **P-02:** ¿Aprobás 1.200 calorías diarias para mujeres y 1.500 para hombres como mínimo inicial? Sale de una guía oficial de Estados Unidos, edición 2015–2020, ya reemplazada por una más nueva que no repite la cifra. — responde: el dueño — frena: RN-14
 - **P-06:** ¿Confirmás la propuesta de diseño "Orbit" o preferís "Ledger" o "Bento"? El equipo avanza con Orbit de forma provisoria. — responde: el dueño — no frena requisitos; cambiarla después implica rehacer pantallas.
-- **P-04:** ¿A nombre de quién va la licencia MIT? — responde: el dueño — no frena requisitos; frena la publicación.
 
 ## 2. Cómo funciona
 
@@ -74,7 +72,7 @@ flowchart TD
 | RN-11 | La primera versión es solo para Android. | Acordada | chat con el dueño · 2026-11-21 · «Android primero, iOS documentado» |
 | RN-12 | La clave del servicio de IA nunca se incluye en lo que la persona exporta ni se muestra después de guardarla. | Acordada | chat con el dueño · 2026-11-21 · «12 ok» |
 | RN-13 | Las calorías, proteínas, carbohidratos y demás nutrientes diarios se recomiendan a partir del peso, la altura y los demás datos de la persona que influyen: edad, sexo, nivel de actividad y objetivo. | Acordada | chat con el dueño · 2026-11-21 · «en base al peso, altura y todo lo que influya» |
-| RN-14 | Valor inicial del mínimo diario de calorías, antes de que la persona lo ajuste: 1.200 para mujeres y 1.500 para hombres, según las Guías Alimentarias para Estadounidenses 2015–2020. | A confirmar | equipo |
+| RN-14 | Valor inicial del mínimo diario de calorías, antes de que la persona lo ajuste: 1.200 para mujeres y 1.500 para hombres, según las Guías Alimentarias para Estadounidenses 2015–2020. | Acordada | chat con el dueño · 2026-11-22 · «lo apruebo» |
 | RN-15 | El diseño es moderno, con animaciones, efectos, transiciones y botones redondeados, cuida la experiencia de uso y lleva la identidad de la marca personal qbitdev. | Acordada | chat con el dueño · 2026-11-21 · «moderno con animaciones, efectos, transiciones, botones redondeados» |
 
 ## 4. Requisitos
@@ -101,6 +99,11 @@ flowchart TD
 | REQ-18 | Registrar un producto envasado con su código de barras | Acordado | Sin cambios | Al leer el código de barras de un producto conocido aparecen su nombre y sus valores nutricionales, y se puede guardar indicando la cantidad | RN-04, RN-05 | chat con el dueño · 2026-11-21 · «Sí, incluirlo» |
 
 ## 5. Cambios
+
+### v5 — 2026-11-22 — decisiones del dueño
+- **Confirmado por el dueño:** RN-14, el mínimo inicial de 1.200 calorías para mujeres y 1.500 para hombres pasa de "A confirmar" a "Acordada". Cierra P-02.
+- **Pregunta cerrada:** P-04, la licencia MIT va a nombre de qbitdevz (Leandro M. Álvarez Skeiker).
+- Sigue abierta P-06, la elección de la propuesta de diseño.
 
 ### v4 — 2026-11-21 — pedido de diseño del dueño
 - **Regla nueva:** RN-15, diseño moderno con la identidad de qbitdev. Reemplaza la línea visual que había propuesto el equipo.
