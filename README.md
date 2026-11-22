@@ -3,11 +3,11 @@
 An open-source, local-first nutrition tracker for Android. Take a photo of your plate, confirm what the AI detected, and the
 meal is logged. Your data stays on your phone, and you choose the AI provider and model. Available in English and Spanish.
 
-> **Status: built, not yet proven.** The first version is written and tested on a computer (type check, lint and about 1,600
-> automated tests), and its screens were checked in a browser preview. **The maintainers have not yet run it on an Android
-> device**, no APK has been published, **the accuracy of the photo analysis has not been measured** (the benchmark has no
-> meals yet; see [contributing meals](docs/guides/weighing-protocol.md)), and the privacy policy and health notice are
-> **drafts pending legal review**. Do not rely on it for anything yet.
+> **Status: version 1.0.** The app has been installed and used on one Android phone by its maintainer, with an AI provider
+> configured through OpenRouter. It is tested by about 2,200 automated tests, a type check, and lint. What is **not** established:
+> **the accuracy of the photo analysis has not been measured** (the benchmark has no weighed meals yet; see
+> [contributing meals](docs/guides/weighing-protocol.md)), it has been tried on a single device, and the privacy policy and
+> health notice are **drafts pending legal review**. Treat calorie figures from photos as rough estimates.
 
 > **Not medical advice.** Values estimated from a photo are approximate and can be wrong. See the
 > [health notice](docs/12-legal-and-privacy.md).
