@@ -122,7 +122,11 @@ describe('release.yml (S11)', () => {
   it('downloads the built APK into dist-apk before the publish script runs, because the publish job starts on a fresh runner', () => {
     const publish = job(text, 'publish');
     expect(publish).toMatch(/uses: actions\/download-artifact@[0-9a-f]{40}/);
-    expect(publish).toContain('name: ${{ needs.build.outputs.apk-name }}');
+    // The APK name must not travel between jobs as an output: GitHub drops a job output that contains a secret's value, and the
+    // key alias secret can be a substring of the file name (it was, on the first v1.0.0 run: the output arrived empty).
+    expect(text).not.toContain('apk-name');
+    expect(publish).toContain('name: qbit-nutrition-${{ needs.build.outputs.version }}.apk');
+    expect(publish).toContain('APK: qbit-nutrition-${{ needs.build.outputs.version }}.apk');
     expect(publish).toContain('path: dist-apk');
     expect(publish.indexOf('actions/download-artifact@')).toBeLessThan(publish.indexOf('bash scripts/release/publish-release.sh'));
   });
