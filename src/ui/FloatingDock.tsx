@@ -54,7 +54,8 @@ export function FloatingDock({ tabs, scanLabel, scanCaption, onScan, navLabel, p
       <DockTabButton tab={tabs[0]} />
       <View style={styles.scanSlot}>
         <ScanButton label={scanLabel} onPress={onScan} pulse={pulse} />
-        <AppText variant="caption" style={styles.scanCaption} aria-hidden>
+        {/* Decorative (the button has its own name) and drawn over the dock: it stops growing at 130% so it never covers the button at 200% text. */}
+        <AppText variant="caption" style={styles.scanCaption} maxFontSizeMultiplier={1.3} aria-hidden>
           {scanCaption}
         </AppText>
       </View>
@@ -135,7 +136,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: layout.dockInset,
     right: layout.dockInset,
-    height: layout.dockHeight,
+    // minHeight, not height: at a large system font size the tab labels need more room and the bar grows with them.
+    minHeight: layout.dockHeight,
     borderRadius: layout.dockHeight / 2,
     borderWidth: 1,
     flexDirection: 'row',

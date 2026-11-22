@@ -8,10 +8,43 @@ import { SAMPLE_MEAL_JPEG_BASE64 } from './sampleMeal';
 
 /** `setting` key that records the one-time "this photo will be sent to [provider]" notice (docs/12 section 4), per profile. */
 export const noticeKey = (providerId: string): string => `ai_notice_ack.${providerId}`;
+/** `setting` key of the one-time "these numbers will be sent to [provider]" notice before food suggestions (S6, S9), per profile. */
+export const suggestNoticeKey = (providerId: string): string => `notice_ack.suggest.${providerId}`;
+
+/**
+ * `setting` key that marks a profile as imported from a file and not yet looked at by the person. It exists only on this installation:
+ * it is never exported, and a file cannot carry it (`settingsPolicy.ts`).
+ */
+export const importedKey = (providerId: string): string => `ai_imported.${providerId}`;
+
+/** An imported profile that has not been confirmed was asked to do something that needs the person to have looked at its address first. */
+export class ProviderNotConfirmedError extends Error {
+  readonly code = 'not_confirmed' as const;
+  constructor() {
+    super('This profile was imported and has not been confirmed.');
+    this.name = 'ProviderNotConfirmedError';
+  }
+}
+
+/** Some keys could not be removed, or the secure store could not be listed so that keys without a profile could not be looked for. */
+export class KeysNotRemovedError extends Error {
+  readonly code = 'keys_not_removed' as const;
+  constructor(
+    /** Keys that were tried and could not be removed. */
+    readonly failed: number,
+    /** True when the store could not be read for what it holds (not merely "unavailable"). */
+    readonly unlistable: boolean,
+  ) {
+    super('Some AI provider keys could not be removed.');
+    this.name = 'KeysNotRemovedError';
+  }
+}
 
 /** A profile as screens see it: whether a key is stored, never the key. */
 export interface ProviderView extends AiProvider {
   hasKey: boolean;
+  /** Came from an import and has not been confirmed: it is never active, and takes no key, until it is. */
+  imported: boolean;
 }
 
 /** What "Test connection" tells the screen. Only the code: the redacted detail stays inside `core/ai`. */
@@ -61,6 +94,31 @@ export interface ProviderService {
   /** Changing the base URL clears the stored key first (docs/06 section 6), unless a new key is given with it. */
   update(id: string, patch: Partial<AiProviderInput> & ProviderWrite): Promise<SaveResult>;
   removeKey(id: string): Promise<ProviderView>;
+  /** The person looked at the imported profile's address and accepts it: from now on it behaves like any other profile. */
+  confirmImported(id: string): Promise<ProviderView>;
+  /**
+   * Removes the stored keys of these profile ids, whether or not a profile row still exists (an import or a
+   * delete-all clears keys that no longer have a row). Tries every id, then fails with a `SecretStoreError`
+   * if any removal failed.
+   */
+  removeKeys(ids: readonly string[]): Promise<void>;
+  /**
+   * Removes every stored key: those of the profiles, and those tracked by the secure store whose profile is gone. Tries all, then
+   * rejects with `KeysNotRemovedError` (how many failed; whether the store could not be listed). A store that is "unavailable" cannot hold
+   * a key, so it is nothing to delete and does not block.
+   */
+  removeAllKeys(): Promise<void>;
+  /**
+   * Removes the keys whose profile no longer exists (left by an import, a crash, or a failed removal). First adopts the
+   * keys of existing profiles that the secure store did not track yet (stored by an older version). Returns how many were removed.
+   */
+  removeOrphanKeys(): Promise<number>;
+  /**
+   * A test for "does this text contain a stored key?" (the key as typed, URL-encoded, or percent-encoded as a URL), built from the keys
+   * of every profile. The keys stay inside the function: nothing can read one back through it. Rejects if a key cannot be read, so a
+   * caller never proceeds on the assumption that nothing leaks.
+   */
+  keyMatcher(): Promise<(text: string) => boolean>;
   /** Exactly one profile is active afterwards. */
   setActive(id: string): Promise<ProviderView>;
   /** Deletes the key first, then the profile and its notice mark. */
@@ -78,6 +136,7 @@ export interface ProviderServiceDeps {
 }
 
 const MAX_SUGGESTIONS = 100;
+const MIN_KEY_LENGTH = 6;
 
 function rethrowSafely(error: unknown): never {
   throw error instanceof SecretStoreError ? error : new SecretStoreError('failed', 'Secure storage did not complete the request.');
@@ -96,7 +155,12 @@ export function createProviderService({ aiProviders, settings, secrets: store, c
     remove: (id: string) => store.remove(id).catch(rethrowSafely),
   };
   const hasKey = (id: string) => secrets.has(id).catch(() => false);
-  const view = async (provider: AiProvider): Promise<ProviderView> => ({ ...provider, hasKey: await hasKey(provider.id) });
+  const view = async (provider: AiProvider): Promise<ProviderView> => ({
+    ...provider,
+    hasKey: await hasKey(provider.id),
+    imported: (await settings.get(importedKey(provider.id)).catch(() => null)) !== null,
+  });
+  const isImported = async (id: string | undefined): Promise<boolean> => id !== undefined && (await settings.get(importedKey(id))) !== null;
   const mustGet = async (id: string): Promise<AiProvider> => {
     const found = await aiProviders.get(id);
     if (!found) throw new DataError('not_found', `There is no AI provider with id "${id}".`);
@@ -163,6 +227,8 @@ export function createProviderService({ aiProviders, settings, secrets: store, c
 
     async update(id, { apiKey, test, ...patch }) {
       const current = await mustGet(id);
+      // A key may only be entered for an address the person has looked at.
+      if (apiKey && (await isImported(id))) throw new ProviderNotConfirmedError();
       let baseUrlChanged = false;
       if (patch.baseUrl !== undefined) {
         const baseUrl = normalizeBaseUrl(patch.baseUrl);
@@ -174,7 +240,11 @@ export function createProviderService({ aiProviders, settings, secrets: store, c
       // row changes next, and the new key is stored last. If a step fails, the later ones do not run.
       if (baseUrlChanged) await secrets.remove(id);
       await aiProviders.update(id, patch);
-      if (baseUrlChanged) await settings.remove(noticeKey(id)); // the destination is new: the notice applies again
+      if (baseUrlChanged) {
+        // the destination is new: both notices apply again
+        await settings.remove(noticeKey(id));
+        await settings.remove(suggestNoticeKey(id));
+      }
       if (apiKey) {
         const hadKey = !baseUrlChanged && (await hasKey(id));
         try {
@@ -194,7 +264,77 @@ export function createProviderService({ aiProviders, settings, secrets: store, c
       return view(found);
     },
 
+    async removeKeys(ids) {
+      let failure: unknown = null;
+      for (const id of new Set(ids)) {
+        try {
+          await secrets.remove(id);
+        } catch (error) {
+          failure ??= error;
+        }
+      }
+      if (failure) throw failure;
+    },
+
+    async removeAllKeys() {
+      const rowIds = (await aiProviders.list()).map((p) => p.id);
+      let listed: string[] = [];
+      let unlistable = false;
+      try {
+        listed = await store.list();
+      } catch (error) {
+        // "Unavailable" means there is no secure storage on this device (the web preview): it holds no key, so there is nothing to find.
+        unlistable = !(error instanceof SecretStoreError && error.code === 'unavailable');
+      }
+      let failed = 0;
+      for (const id of new Set([...rowIds, ...listed])) {
+        try {
+          await secrets.remove(id);
+        } catch {
+          failed += 1;
+        }
+      }
+      if (failed > 0 || unlistable) throw new KeysNotRemovedError(failed, unlistable);
+    },
+
+    async removeOrphanKeys() {
+      // The keys are listed FIRST and the profiles read AFTER: a profile created in between has a row by the time the rows are read, so
+      // its key is never taken for an orphan. (The other order would delete the key of a profile created between the two reads.)
+      const tracked = await store.list();
+      const rowIds = new Set((await aiProviders.list()).map((p) => p.id));
+      await store.track([...rowIds]);
+      const orphans = tracked.filter((id) => !rowIds.has(id));
+      let failure: unknown = null;
+      for (const id of orphans) {
+        try {
+          await secrets.remove(id);
+        } catch (error) {
+          failure ??= error;
+        }
+      }
+      if (failure) throw failure;
+      return orphans.length;
+    },
+
+    async keyMatcher() {
+      const ids = new Set([...(await aiProviders.list()).map((p) => p.id), ...(await store.list())]);
+      const forms: string[] = [];
+      for (const id of ids) {
+        const key = await secrets.get(id);
+        // Same floor as `redact` in core/ai: a shorter "key" is not a key, and would match ordinary words.
+        if (key && key.length >= MIN_KEY_LENGTH) forms.push(key, encodeURIComponent(key), encodeURI(key));
+      }
+      return (text) => forms.some((form) => text.includes(form));
+    },
+
+    async confirmImported(id) {
+      await mustGet(id);
+      await settings.remove(importedKey(id));
+      return view(await mustGet(id));
+    },
+
     async setActive(id) {
+      if (await isImported(id)) throw new ProviderNotConfirmedError();
       return view(await aiProviders.setActive(id));
     },
 
@@ -202,9 +342,12 @@ export function createProviderService({ aiProviders, settings, secrets: store, c
       await secrets.remove(id);
       await aiProviders.remove(id);
       await settings.remove(noticeKey(id));
+      await settings.remove(suggestNoticeKey(id));
+      await settings.remove(importedKey(id));
     },
 
     async testConnection(draft, signal) {
+      if (draft.apiKey && (await isImported(draft.id))) throw new ProviderNotConfirmedError();
       const profile = profileOf(draft);
       let apiKey: string | null;
       try {
@@ -219,6 +362,7 @@ export function createProviderService({ aiProviders, settings, secrets: store, c
     },
 
     async listModels(draft, signal) {
+      if (draft.apiKey && (await isImported(draft.id))) throw new ProviderNotConfirmedError();
       try {
         const apiKey = await keyFor(draft); // a SecretStoreError propagates: no list is fetched without the key
         const models = await client.listModels(profileOf(draft), apiKey, signal);

@@ -41,6 +41,20 @@ export interface CameraSurfaceProps {
   onError: () => void;
 }
 
+/** A barcode the camera read: the digits, and the format the scanner reported (`ean13`, `upc_a`...). */
+export interface BarcodeScan {
+  code: string;
+  format: string;
+}
+
+export interface BarcodeSurfaceProps {
+  torch: boolean;
+  /** Called for every read; the caller takes the first and stops listening (the camera keeps reading while it is on screen). */
+  onScanned: (scan: BarcodeScan) => void;
+  onReady: () => void;
+  onError: () => void;
+}
+
 export interface PhotoFiles {
   /** Deletes a temporary file. A file that is already gone is not an error. */
   discard(uri: string): Promise<void>;
@@ -58,6 +72,8 @@ export interface ScanPlatform {
     requestPermission(): Promise<CameraPermission>;
     openSettings(): Promise<void>;
     Surface: ComponentType<CameraSurfaceProps>;
+    /** A live viewfinder that reads product barcodes only (EAN-13, EAN-8, UPC-A, UPC-E). No photo is taken or kept. */
+    BarcodeSurface: ComponentType<BarcodeSurfaceProps>;
   };
   picker: {
     /** Opens the gallery; null when the person closes it without choosing. */

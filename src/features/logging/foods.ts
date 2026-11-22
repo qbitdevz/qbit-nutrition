@@ -1,5 +1,6 @@
 import type { FoodDetail, FoodNameEntry, FoodRef } from '@/core/catalog';
 import type { NutrientAmounts } from '@/core/nutrition';
+import i18n from '@/i18n';
 import type { Locale } from '@/i18n/locale';
 import type { AppServices } from '../startup/types';
 
@@ -13,6 +14,8 @@ export interface FoodRow {
   fat100g: number;
   /** Created by the person (FR-32), shown with a "Custom" tag. */
   custom: boolean;
+  /** A packaged product from a barcode lookup (S5), shown with a "Barcode" tag. */
+  barcode?: boolean;
 }
 
 /** What the portion sheet needs: nutrients per 100 g and the household measures. */
@@ -58,8 +61,21 @@ function viewFromCatalog(detail: FoodDetail, locale: Locale): FoodView {
   };
 }
 
-/** Reads one food (catalog or custom) with everything needed to compute a portion. Null when it no longer exists. */
+/** Reads one food (catalog, custom or a barcode product) with everything needed to compute a portion. Null when it no longer exists. */
 export async function loadFoodView(services: AppServices, ref: FoodRef, locale: Locale): Promise<FoodView | null> {
+  if (ref.source === 'barcode') {
+    const product = await services.repos.barcodeProducts.get(ref.id);
+    // A product still missing values has nothing to compute a portion from: it is completed before it can be added.
+    if (!product || product.missing.some((field) => field !== 'name') || product.name === '') return null;
+    const serving = product.servingG;
+    return {
+      ref,
+      name: product.name,
+      per100g: product.per100g,
+      portions: serving !== null ? [{ label: i18n.getFixedT(locale)('barcode.result.servingLabel'), grams: serving }] : [],
+      defaultGrams: serving,
+    };
+  }
   if (ref.source === 'custom') {
     const food = await services.repos.customFoods.get(ref.id);
     return food ? { ref, name: food.name, per100g: food.per100g, portions: [], defaultGrams: food.defaultPortionG } : null;
@@ -72,7 +88,13 @@ export async function loadFoodView(services: AppServices, ref: FoodRef, locale: 
   }
 }
 
-export const rowFromView = (view: FoodView): FoodRow => ({ ref: view.ref, name: view.name, ...headline(view.per100g), custom: view.ref.source === 'custom' });
+export const rowFromView = (view: FoodView): FoodRow => ({
+  ref: view.ref,
+  name: view.name,
+  ...headline(view.per100g),
+  custom: view.ref.source === 'custom',
+  barcode: view.ref.source === 'barcode',
+});
 
 /**
  * Local, instant search (FR-30): the catalog in the app language with English as fallback, plus the

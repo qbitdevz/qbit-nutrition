@@ -11,9 +11,20 @@ export interface SecretStore {
   get(id: string): Promise<string | null>;
   /** Stores or replaces the secret. Rejects an empty secret. */
   set(id: string, secret: string): Promise<void>;
-  /** Removing a secret that is not there is not an error. */
+  /**
+   * Removing a secret that is not there is not an error, and neither is removing under an id that cannot hold a
+   * secret (`isValidSecretId` is false): nothing is stored under it, so such an id never blocks a removal.
+   */
   remove(id: string): Promise<void>;
+  /** The ids that hold a secret, as far as the store tracks them (an index on a device), so a secret whose profile is gone can be found and removed. */
+  list(): Promise<string[]>;
+  /** Adds ids that already hold a secret to the tracked list (secrets stored before tracking existed). Ids without a secret, or invalid, are ignored. */
+  track(ids: readonly string[]): Promise<void>;
 }
+
+/** Secure-store names may contain only letters, digits, `.`, `-` and `_`; profile ids are UUIDs. One rule for the device store and the test store. */
+export const SECRET_ID_PATTERN = /^[A-Za-z0-9._-]{1,128}$/;
+export const isValidSecretId = (id: string): boolean => SECRET_ID_PATTERN.test(id);
 
 export type SecretStoreErrorCode = 'unavailable' | 'failed' | 'invalid';
 

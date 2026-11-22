@@ -156,11 +156,18 @@ describe('deleting', () => {
   it('deletes one item with its snapshot and updates the day totals', async () => {
     const m = await h.repos.meals.save(meal([await bananaItem(100), await bananaItem(200)]));
     const [a, b] = m.items;
-    await h.repos.meals.deleteItem(a!.id);
+    expect(await h.repos.meals.deleteItem(a!.id)).toBe(m.id); // the meal it belonged to (Health Connect updates that meal's record)
     const day = await h.repos.meals.getDay('2026-06-15');
     expect(day.meals[0]?.items.map((i) => i.id)).toEqual([b!.id]);
     expect(day.totals.kcal).toBeCloseTo(178);
     expect(count('meal_item_nutrient')).toBe(2);
+  });
+
+  it('lists the id of every saved meal, oldest first', async () => {
+    expect(await h.repos.meals.listIds()).toEqual([]);
+    const late = await h.repos.meals.save(meal([await bananaItem(100)], { eatenAt: new Date('2026-06-16T10:00:00.000Z') }));
+    const early = await h.repos.meals.save(meal([await bananaItem(100)], { eatenAt: new Date('2026-06-14T10:00:00.000Z') }));
+    expect(await h.repos.meals.listIds()).toEqual([early.id, late.id]);
   });
 
   it('reports unknown ids', async () => {

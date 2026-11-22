@@ -2,7 +2,8 @@ import { asc, eq, sql } from 'drizzle-orm';
 import type { NutrientAmounts } from '../../core/nutrition';
 import { DataError } from '../errors';
 import { customFood } from '../schema';
-import { invalid, isHeadline, nutrientEntries, requireFinite, type RepositoryContext } from './shared';
+import { VALUE_LIMITS, requireWithin } from './limits';
+import { TEXT_LIMITS, invalid, isHeadline, nutrientEntries, requireFinite, requireMaxLength, type RepositoryContext } from './shared';
 
 type CustomFoodRow = typeof customFood.$inferSelect;
 
@@ -56,11 +57,17 @@ export function toCustomFood(row: CustomFoodRow): CustomFood {
 
 function validate(input: Partial<CustomFoodInput>): void {
   if (input.name !== undefined && input.name.trim() === '') throw invalid('name must not be blank');
+  requireMaxLength(input.name, TEXT_LIMITS.name, 'name');
   for (const key of ['kcal100g', 'protein100g', 'carbs100g', 'fat100g'] as const) {
     const value = input[key];
     if (value !== undefined) requireFinite(value, key, { min: 0 });
   }
-  if (input.defaultPortionG != null) requireFinite(input.defaultPortionG, 'defaultPortionG', { min: 0 });
+  if (input.defaultPortionG != null) requireWithin(input.defaultPortionG, { min: 0, max: VALUE_LIMITS.gramsMax }, 'defaultPortionG');
+  if (input.kcal100g !== undefined) requireWithin(input.kcal100g, VALUE_LIMITS.per100g.kcal, 'kcal100g');
+  for (const key of ['protein100g', 'carbs100g', 'fat100g'] as const) {
+    const value = input[key];
+    if (value !== undefined) requireWithin(value, VALUE_LIMITS.per100g[key.slice(0, -4) as 'protein' | 'carbs' | 'fat'], key);
+  }
   if (input.otherNutrients) {
     for (const [code] of nutrientEntries(input.otherNutrients, 'otherNutrients')) {
       if (isHeadline(code)) throw invalid(`otherNutrients must not repeat the headline nutrient "${code}"`);

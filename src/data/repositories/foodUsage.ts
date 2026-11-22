@@ -2,7 +2,8 @@ import { and, desc, eq, gt, sql } from 'drizzle-orm';
 import type { FoodRef } from '../../core/catalog';
 import type { AppTransaction } from '../database';
 import { foodUsage } from '../schema';
-import { requireFinite, type RepositoryContext } from './shared';
+import { VALUE_LIMITS, requireWithin } from './limits';
+import type { RepositoryContext } from './shared';
 
 type UsageRow = typeof foodUsage.$inferSelect;
 
@@ -41,7 +42,7 @@ export function upsertUsage(
 export function createFoodUsageRepository({ db, now }: RepositoryContext): FoodUsageRepository {
   return {
     async recordUse(ref, grams = null) {
-      if (grams != null) requireFinite(grams, 'grams', { min: 0 });
+      if (grams != null) requireWithin(grams, { min: 0, max: VALUE_LIMITS.gramsMax }, 'grams');
       upsertUsage(db, ref, now().toISOString(), grams);
     },
 

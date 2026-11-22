@@ -7,7 +7,7 @@ import { useEffect, useRef } from 'react';
 import { Linking, StyleSheet } from 'react-native';
 
 import { processPhoto, type ImageSource, type OpenImage } from './imageProcessor';
-import type { CameraPermission, CameraSurfaceProps, Photo, PhotoFiles, ScanPlatform } from './scanPlatform';
+import type { BarcodeSurfaceProps, CameraPermission, CameraSurfaceProps, Photo, PhotoFiles, ScanPlatform } from './scanPlatform';
 
 /** The device implementation of `ScanPlatform`: expo-camera, expo-image-picker, expo-image-manipulator, expo-file-system, expo-clipboard. */
 
@@ -44,6 +44,29 @@ function CameraSurface({ flash, handleRef, onReady, onError }: CameraSurfaceProp
   );
 }
 
+/** The only formats of products on a shelf; QR codes and the like are never read. */
+const PRODUCT_BARCODES = ['ean13', 'ean8', 'upc_a', 'upc_e'] as const;
+
+/**
+ * Barcode reading with expo-camera's `CameraView` (`onBarcodeScanned`): on Android that is ML Kit's bundled barcode model
+ * through CameraX, with no Google Play services needed at run time for this path. (`launchScanner`, the Google code
+ * scanner, is not used: it needs Play services.) No picture is taken.
+ */
+function BarcodeSurface({ torch, onScanned, onReady, onError }: BarcodeSurfaceProps) {
+  return (
+    <CameraView
+      style={StyleSheet.absoluteFill}
+      facing="back"
+      mode="picture"
+      enableTorch={torch}
+      barcodeScannerSettings={{ barcodeTypes: [...PRODUCT_BARCODES] }}
+      onBarcodeScanned={(result) => onScanned({ code: result.data, format: result.type })}
+      onCameraReady={onReady}
+      onMountError={onError}
+    />
+  );
+}
+
 function wrap(ref: ImageRef): OpenImage {
   return {
     width: ref.width,
@@ -73,7 +96,8 @@ const files: PhotoFiles = {
     const directory = new Directory(Paths.document, PHOTO_DIR);
     directory.create({ idempotent: true, intermediates: true });
     const name = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}.jpg`;
-    new File(uri).copy(new File(directory, name));
+    // `copy` is asynchronous: the path is returned (and a meal saved with it) only once the file is complete.
+    await new File(uri).copy(new File(directory, name));
     return `${PHOTO_DIR}/${name}`;
   },
   async remove(path) {
@@ -94,6 +118,7 @@ export function createExpoScanPlatform(): ScanPlatform {
       requestPermission: async () => toPermission(await Camera.requestCameraPermissionsAsync()),
       openSettings: () => Linking.openSettings(),
       Surface: CameraSurface,
+      BarcodeSurface,
     },
     picker: {
       async pick(): Promise<Photo | null> {

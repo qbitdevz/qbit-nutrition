@@ -9,7 +9,7 @@ import { AppText, Button, FieldMessage, ScreenFooter, ScreenFrame, TextField, To
 import { parseNumber } from '../forms/numbers';
 import { useServices } from '../startup/AppProvider';
 import { useMealDraft } from './draft';
-import { GRAMS_RANGE } from './limits';
+import { CUSTOM_FOOD_RANGES } from './limits';
 
 interface CustomFoodScreenProps {
   /** What was searched for: the starting name. */
@@ -22,7 +22,7 @@ interface CustomFoodScreenProps {
 type Field = 'name' | 'kcal' | 'protein' | 'carbs' | 'fat' | 'portion';
 
 /** Per 100 g, as on a label. A guard against typos: kcal up to 1,000 (pure fat is 900), grams up to 100. */
-const RANGES = { kcal: { min: 0, max: 1000 }, protein: { min: 0, max: 100 }, carbs: { min: 0, max: 100 }, fat: { min: 0, max: 100 }, portion: GRAMS_RANGE } as const;
+const RANGES = CUSTOM_FOOD_RANGES;
 
 /**
  * Create a custom food (FR-32, flow D "no results"): a name and the four headline values per 100 g,

@@ -41,3 +41,6 @@ export {
   SODIUM_LIMIT_MG,
   TARGET_REACHED_KCAL_RANGE,
 } from './insight-constants';
+
+export { MIN_LOGGED_DAYS_FOR_AVERAGE, periodRange, shiftPeriod, summarizePeriod, targetsOn } from './periods';
+export type { Averages, DateRange, DaySummary, GoalPeriod, LoggedDay, PeriodKind, PeriodSummary, SummarizeInput } from './periods';

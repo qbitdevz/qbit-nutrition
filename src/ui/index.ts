@@ -27,6 +27,8 @@ export { EmptyState, ErrorState, Skeleton } from './States';
 export { FieldMessage, TextField } from './TextField';
 export type { TextFieldProps } from './TextField';
 export { TopBar } from './TopBar';
+export { TrendChart } from './TrendChart';
+export type { ChartPoint } from './chartGeometry';
 export { layout, palette, radius, spacing, typography } from './tokens';
 export type { Colors } from './tokens';
 export { ThemeProvider, useTheme } from './useTheme';

@@ -115,8 +115,9 @@ describe('settings menu', () => {
     await press('Profile and units');
     await press('Goal and targets');
     await press('Minimum daily energy');
+    await press('Data');
     await press('About and health notice');
-    expect(onOpen.mock.calls.map((c) => c[0])).toEqual(['profile', 'goal', 'minimum', 'about']);
+    expect(onOpen.mock.calls.map((c) => c[0])).toEqual(['profile', 'goal', 'minimum', 'data', 'about']);
   });
 });
 
@@ -258,5 +259,21 @@ describe('about', () => {
     await renderApp(<AboutScreen />, { services });
     expect(await screen.findByText('This app is not medical advice')).toBeOnTheScreen();
     expect(screen.getByText(/Accepted on .*2026-11-21\)/)).toBeOnTheScreen();
+  });
+
+  it('lists the data sources with the Open Food Facts attribution (ODbL) and the USDA citation (S5, docs/12 section 7)', async () => {
+    await seedProfile();
+    await renderApp(<AboutScreen />, { services });
+    expect(await screen.findByText('Data sources')).toBeOnTheScreen();
+    expect(screen.getByText(/Open Food Facts, made available under the Open Database License \(ODbL\)/)).toBeOnTheScreen();
+    expect(screen.getByText(/Database Contents License/)).toBeOnTheScreen();
+    expect(screen.getByText('Food composition data: U.S. Department of Agriculture, Agricultural Research Service. FoodData Central.')).toBeOnTheScreen();
+  });
+
+  it('lists them in Spanish too', async () => {
+    await seedProfile();
+    await renderApp(<AboutScreen />, { services, locale: 'es' });
+    expect(await screen.findByText('Fuentes de datos')).toBeOnTheScreen();
+    expect(screen.getByText(/Open Food Facts, disponibles bajo la Open Database License \(ODbL\)/)).toBeOnTheScreen();
   });
 });

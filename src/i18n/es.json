@@ -96,7 +96,135 @@
   },
   "progress": {
     "title": "Progreso",
-    "empty": "Registra algunos días para ver tendencias"
+    "empty": "Registra algunos días para ver tendencias",
+    "loading": "Cargando tu progreso",
+    "error": {
+      "title": "No se pudo cargar tu progreso",
+      "message": "Tus datos siguen en este teléfono. Inténtalo de nuevo y reinicia la aplicación si sigue fallando."
+    },
+    "views": {
+      "label": "Secciones de progreso",
+      "nutrition": "Nutrición",
+      "weight": "Peso",
+      "measures": "Medidas"
+    },
+    "kind": {
+      "weight": "Peso",
+      "waist": "Cintura",
+      "hips": "Cadera",
+      "chest": "Pecho",
+      "body_fat_pct": "Grasa corporal"
+    },
+    "kindLower": {
+      "weight": "peso",
+      "waist": "cintura",
+      "hips": "cadera",
+      "chest": "pecho",
+      "body_fat_pct": "grasa corporal"
+    },
+    "kindChip": {
+      "weight": "Peso",
+      "waist": "Cintura",
+      "hips": "Cadera",
+      "chest": "Pecho",
+      "body_fat_pct": "% grasa"
+    },
+    "unitSpoken": {
+      "kg": "kilogramos",
+      "lb": "libras",
+      "cm": "centímetros",
+      "in": "pulgadas",
+      "%": "por ciento"
+    },
+    "range": {
+      "label": "Rango de tiempo",
+      "30d": "30 días",
+      "90d": "90 días",
+      "1y": "1 año",
+      "all": "Todo"
+    },
+    "rangeSpoken": {
+      "30d": "últimos 30 días",
+      "90d": "últimos 90 días",
+      "1y": "último año",
+      "all": "todos los registros"
+    },
+    "nutrition": {
+      "periodLabel": "Periodo",
+      "week": "Semana",
+      "month": "Mes",
+      "previousWeek": "Semana anterior",
+      "previousMonth": "Mes anterior",
+      "nextWeek": "Semana siguiente",
+      "nextMonth": "Mes siguiente",
+      "nextUnavailable": "Periodo siguiente, no disponible",
+      "thisWeek": "Esta semana",
+      "thisMonth": "Este mes",
+      "empty": {
+        "title": "Registra algunos días para ver tendencias",
+        "body": "Los promedios aparecen aquí cuando tienes comidas registradas en suficientes días."
+      },
+      "daysLogged": "{{logged}} de {{total}} días registrados",
+      "partial_one": "Solo {{count}} día tiene comidas. Un promedio necesita al menos {{min}} días, así que aquí ves lo que registraste.",
+      "partial_other": "Solo {{count}} días tienen comidas. Un promedio necesita al menos {{min}} días, así que aquí ves lo que registraste.",
+      "averageTitle": "Promedio por día registrado",
+      "kcalUnit": "kcal al día",
+      "target": "Objetivo {{target}} kcal",
+      "underTarget": "{{amount}} kcal por debajo del objetivo",
+      "overTarget": "{{amount}} kcal por encima del objetivo",
+      "atTarget": "En el objetivo",
+      "noTarget": "Sin objetivo de calorías en estos días",
+      "targetsChanged": "Tus objetivos cambiaron durante este periodo. Cada día se compara con los objetivos de su propio periodo de meta; los objetivos que ves son su promedio.",
+      "macros": "Promedio de macronutrientes",
+      "summary": "{{period}}. Promedio de {{logged}} días registrados: {{kcal}} kilocalorías, {{protein}} gramos de proteína, {{carbs}} gramos de carbohidratos, {{fat}} gramos de grasa.",
+      "summaryTarget": "Objetivo promedio: {{kcal}} kilocalorías.",
+      "daysHeading": "Días registrados",
+      "dayRow": "{{date}}, {{kcal}} kilocalorías, {{protein}} gramos de proteína, {{carbs}} gramos de carbohidratos, {{fat}} gramos de grasa",
+      "dayMacros": "{{protein}} g proteína · {{carbs}} g carbohidratos · {{fat}} g grasa"
+    },
+    "series": {
+      "empty": {
+        "title": "Aún no hay registros de {{kind}}",
+        "body": "Registra un valor para un día y el gráfico muestra cómo cambia con el tiempo."
+      },
+      "emptyRange": "No hay registros en este rango. Elige un rango más largo para ver los anteriores.",
+      "onePoint": "Solo hay un registro. Registra otro día para ver una tendencia.",
+      "log": "Registrar {{kind}}",
+      "latest": "Último",
+      "change": "Cambio",
+      "changeNone": "Aún sin cambio",
+      "listTitle": "Registros",
+      "showAll": "Ver los {{count}} registros",
+      "showFewer": "Ver menos",
+      "rowLabel": "{{date}}, {{value}} {{unit}}. Editar este registro.",
+      "summaryOne": "{{kind}}, {{range}}: un registro, {{value}} {{unit}} el {{date}}.",
+      "summary": "{{kind}}, {{range}}: {{count}} registros desde el {{firstDate}} ({{firstValue}} {{unit}}) hasta el {{lastDate}} ({{lastValue}} {{unit}}). Cambio {{change}} {{unit}}. Mínimo {{min}}, máximo {{max}} {{unit}}."
+    },
+    "entry": {
+      "logTitle": "Registrar {{kind}}",
+      "editTitle": "Editar {{kind}}",
+      "date": "Fecha",
+      "today": "Hoy",
+      "previousDay": "Día anterior",
+      "nextDay": "Día siguiente",
+      "nextDayUnavailable": "Día siguiente, no disponible",
+      "required": "Escribe un valor.",
+      "notNumber": "Usa solo números, por ejemplo 82,5.",
+      "range": "{{kind}} debe estar entre {{min}} y {{max}} {{unit}}.",
+      "last": "Último registro: {{value}} {{unit}} el {{date}}.",
+      "replaces": "Este día ya tiene un registro ({{value}} {{unit}}). Al guardar se reemplaza.",
+      "save": "Guardar",
+      "saved": "{{kind}} guardado · {{value}} {{unit}}",
+      "saveError": "No se pudo guardar. Tu valor sigue aquí; inténtalo de nuevo.",
+      "conflict": "Ese día ya tiene un registro. Elige otro día o edita ese registro.",
+      "delete": "Eliminar registro",
+      "deleteTitle": "¿Eliminar este registro?",
+      "deleteBody": "El registro del {{date}} ({{value}} {{unit}}) se quita de tu historial.",
+      "keep": "Conservar registro",
+      "deleted": "Registro eliminado",
+      "deleteError": "No se pudo eliminar. Inténtalo de nuevo.",
+      "undoFailed": "No se pudo restaurar el registro."
+    }
   },
   "scan": {
     "title": "Escanear",
@@ -232,7 +360,12 @@
     "keepPhotos": "Conservar fotos de comidas",
     "keepPhotosHint": "Una copia comprimida de cada comida escaneada se queda en este teléfono. Al eliminar una comida se elimina su foto.",
     "keepPhotosOn": "Conservar",
-    "keepPhotosOff": "No conservar"
+    "keepPhotosOff": "No conservar",
+    "data": "Datos",
+    "dataDetail": "Exportar, importar, borrar",
+    "integrations": "Integraciones",
+    "integrationsOn": "Health Connect · Activado",
+    "integrationsOff": "Health Connect · Desactivado"
   },
   "legal": {
     "disclaimer": {
@@ -255,6 +388,94 @@
         "body": "Nunca la uses para decidir si un alimento es seguro para ti."
       },
       "closing": "Si registrar tus comidas te genera malestar, deja de usar la aplicación y busca apoyo de un profesional de la salud."
+    },
+    "update": {
+      "title": "El aviso de salud cambió",
+      "intro": "Se actualizó el texto del aviso de salud. Vuelve a leerlo antes de continuar. Tus datos no se han tocado.",
+      "accept": "Lo he leído",
+      "decline": "No acepto",
+      "declinedTitle": "La aplicación necesita que aceptes este aviso",
+      "declinedBody": "Tus datos siguen en este teléfono y no se han cambiado. Puedes volver a leer el aviso o cerrar la aplicación.",
+      "readAgain": "Volver a leer el aviso",
+      "close": "Cerrar la aplicación",
+      "failed": "No se pudo guardar la aceptación. Inténtalo de nuevo."
+    },
+    "version": {
+      "draft": "Borrador, pendiente de revisión legal.",
+      "updated": "Última actualización: {{date}}."
+    },
+    "privacy": {
+      "title": "Política de privacidad — Qbit Nutrition",
+      "summary": {
+        "lead": "Resumen.",
+        "body": "Tus datos se quedan en tu dispositivo. Nosotros, los mantenedores, no recopilamos, recibimos ni almacenamos ninguno de ellos."
+      },
+      "stores": {
+        "lead": "Qué guarda la aplicación en tu dispositivo.",
+        "body": "Tu perfil (si lo completas), tus objetivos, tus comidas, los valores nutricionales, tus medidas corporales, las fotos de tus comidas (si decides conservarlas) y la configuración de tu proveedor de IA. Las claves de API se guardan en el almacenamiento seguro de tu dispositivo."
+      },
+      "leaves": {
+        "lead": "Qué sale de tu dispositivo, y solo cuando tú lo pides.",
+        "dataLabel": "Datos enviados",
+        "recipientLabel": "Destinatario",
+        "photo": {
+          "action": "Analizar la foto de una comida",
+          "data": "La foto (reducida de tamaño y sin metadatos de ubicación), tu indicación opcional y tu idioma",
+          "recipient": "El proveedor de IA que configuraste"
+        },
+        "suggest": {
+          "action": "Pedir sugerencias de alimentos",
+          "data": "Las calorías y los nutrientes que te quedan en el día, tu objetivo y tu idioma",
+          "recipient": "El proveedor de IA que configuraste"
+        },
+        "barcode": {
+          "action": "Buscar un código de barras",
+          "data": "El número del código de barras y, en la cabecera de la petición, el nombre de la aplicación, su versión y la dirección del proyecto",
+          "recipient": "Open Food Facts"
+        },
+        "export": {
+          "action": "Exportar",
+          "data": "Un archivo con tus datos",
+          "recipient": "Donde tú lo envíes"
+        },
+        "note": "Tu proveedor de IA procesa lo que le envías según sus propios términos y su política de privacidad, que aceptaste al crear tu cuenta con él. Algunos proveedores usan el contenido enviado en los planes gratuitos para mejorar sus productos. Revisa los términos de tu proveedor. Si usas un modelo que se ejecuta en tu propio ordenador, no se envía nada a terceros. Como cualquier servicio web, el proveedor de IA y Open Food Facts también ven tu dirección de red cuando reciben una petición."
+      },
+      "never": {
+        "lead": "Lo que la aplicación nunca hace.",
+        "body": "Sin cuentas, sin analítica, sin publicidad, sin informes de fallos, sin rastreo y sin venta ni cesión de datos."
+      },
+      "health": {
+        "lead": "Plataformas de salud.",
+        "body": "Si activas Health Connect, la aplicación escribe en él cada comida guardada como un registro de nutrición (hora, tipo de comida, calorías, nutrientes y el nombre de la comida) y lee de él tu peso, en tu dispositivo y con los permisos que concedas. Los dos permisos son independientes y puedes rechazar cualquiera de ellos. Las otras aplicaciones que permitas en Health Connect pueden leer lo que esta aplicación escribió. Puedes desactivarlo en la aplicación y revocar los permisos en los ajustes del sistema en cualquier momento. Al borrar todos los datos en la aplicación se te ofrece eliminar los registros que escribió."
+      },
+      "control": {
+        "lead": "Tu control.",
+        "body": "Puedes exportar todos tus datos, borrarlos todos desde Ajustes → Datos o desinstalar la aplicación, lo que elimina todo lo que guardó. Los registros ya escritos en Health Connect pertenecen a Health Connect: elimínalos con la opción de Borrar todos los datos o en el propio Health Connect."
+      },
+      "children": {
+        "lead": "Menores.",
+        "body": "La aplicación está pensada para personas adultas."
+      },
+      "changes": {
+        "lead": "Cambios.",
+        "body": "Los cambios en esta política se publican en el repositorio del proyecto junto con la versión que los introduce."
+      },
+      "contact": {
+        "lead": "Contacto.",
+        "body": "Abre una incidencia en https://github.com/qbitdevz/qbit-nutrition/issues."
+      }
+    },
+    "licenses": {
+      "intro": "Qbit Nutrition está hecha con el software de código abierto que aparece a continuación. La lista se genera a partir de las dependencias instaladas al construir la aplicación e incluye las herramientas usadas para construirla.",
+      "own": "La propia Qbit Nutrition se publica bajo la licencia MIT.",
+      "count_one": "{{count}} paquete",
+      "count_other": "{{count}} paquetes",
+      "show": "Mostrar el texto de la licencia",
+      "hide": "Ocultar el texto de la licencia",
+      "noText": "Este paquete no incluye un archivo de licencia; su licencia se indica arriba.",
+      "unavailable": "La lista de licencias no está disponible en esta compilación.",
+      "item": "{{name}} {{version}}, {{license}}",
+      "fonts": "Tipografías: Figtree y Outfit, bajo la licencia SIL Open Font License 1.1."
     }
   },
   "onboarding": {
@@ -298,7 +519,10 @@
       "day": "Día",
       "month": "Mes",
       "year": "Año",
-      "hint": "Sirve para calcular tu edad."
+      "hint": "Sirve para calcular tu edad.",
+      "dayHint": "DD",
+      "monthHint": "MM",
+      "yearHint": "AAAA"
     },
     "height": {
       "cm": "Altura (cm)",
@@ -510,7 +734,10 @@
       "favoriteRemove": "Quitar {{name}} de favoritos",
       "review": "Revisar comida ({{count}})",
       "error": "La búsqueda de alimentos falló. Inténtalo de nuevo.",
-      "loading": "Buscando"
+      "loading": "Buscando",
+      "barcode": "Escanear código de barras",
+      "barcodeHint": "Encuentra un alimento envasado con su código de barras.",
+      "barcodeTag": "Código de barras"
     },
     "portion": {
       "amount": "Cantidad en gramos",
@@ -573,7 +800,9 @@
       "needMatch": "Elige un alimento para cada ítem que lo necesite, o quítalo.",
       "swap": "Cambiar el alimento de {{name}}",
       "noNumbers": "Aún sin valores",
-      "photoKept": "No se pudo conservar la foto. La comida se guardó sin ella."
+      "photoKept": "No se pudo conservar la foto. La comida se guardó sin ella.",
+      "barcode": "Código de barras",
+      "gramsAnnounce": "{{value}} gramos"
     },
     "custom": {
       "title": "Crear alimento personalizado",
@@ -622,7 +851,8 @@
     "loadError": "No se pudo cargar la comida. Tus datos siguen en este teléfono. Inténtalo de nuevo.",
     "actionError": "No se pudo guardar ese cambio. Inténtalo de nuevo.",
     "photoLabel": "Foto de esta comida",
-    "aiEstimate": "Estimación de la IA"
+    "aiEstimate": "Estimación de la IA",
+    "gramsAnnounce": "{{value}} gramos"
   },
   "nutrient": {
     "kcal": "Energía",
@@ -656,8 +886,30 @@
     "accepted": "Aceptado el {{date}} (versión del texto {{version}})",
     "notAccepted": "Todavía no aceptado",
     "version": "Versión {{version}}",
-    "privacy": "Todo se queda en este teléfono. No hay cuenta ni analítica.",
-    "how": "Cómo se calculan los objetivos"
+    "privacy": "Tus datos se quedan en este teléfono. Solo sale lo que tú decides enviar: una foto de tu comida, o los números detrás de una sugerencia de alimentos, al proveedor de IA que configuraste; un número de código de barras a Open Food Facts; y los archivos que exportas. No hay cuenta ni analítica.",
+    "how": "Cómo se calculan los objetivos",
+    "sources": {
+      "title": "Fuentes de datos",
+      "usda": "Datos de composición de alimentos: U.S. Department of Agriculture, Agricultural Research Service. FoodData Central.",
+      "off": "Datos de productos: Open Food Facts, disponibles bajo la Open Database License (ODbL), con contenidos individuales bajo la Database Contents License. Los productos se buscan de a un código y se guardan en este teléfono; la base de datos no viene incluida en la app.",
+      "offLink": "Licencia y términos de Open Food Facts",
+      "usdaNote": "Los valores nutricionales de la lista de alimentos incluida provienen de esta fuente.",
+      "offNote": "No se usan las imágenes de productos de Open Food Facts."
+    },
+    "appName": "Qbit Nutrition",
+    "by": "Por qbitdev",
+    "license": "Código abierto con licencia MIT.",
+    "source": "Código fuente en GitHub",
+    "sourceLabel": "Abrir el código fuente en GitHub (se abre en tu navegador)",
+    "healthNotice": "Aviso de salud",
+    "privacyRow": "Política de privacidad",
+    "privacyRowDetail": "Qué se queda en tu teléfono y qué eliges enviar",
+    "licensesRow": "Licencias de código abierto",
+    "licensesRowDetail": "El software con el que está hecha esta aplicación",
+    "names": {
+      "title": "Nombres y marcas",
+      "body": "Los nombres de proveedores y servicios de IA, como OpenAI, Anthropic, Google Gemini, OpenRouter y Ollama, se usan solo para identificar servicios con los que esta aplicación puede funcionar. Qbit Nutrition no está afiliada, respaldada ni patrocinada por ninguno de ellos, y no usa sus logotipos."
+    }
   },
   "providers": {
     "title": "Proveedores de IA",
@@ -666,7 +918,7 @@
     "keySaved": "Clave guardada",
     "noKey": "Sin clave",
     "notAffiliated": "Los nombres de los proveedores aparecen solo para indicar con qué servicios funciona esta aplicación. Qbit Nutrition no está afiliada, respaldada ni patrocinada por ninguno de ellos.",
-    "privacy": "Las fotos de tus comidas van solo al proveedor que elijas, con tu propia cuenta. No se envía nada a ningún otro lugar.",
+    "privacy": "Las fotos de tus comidas, y los números de calorías y macros detrás de las sugerencias de alimentos, van solo al proveedor que elijas, con tu propia cuenta. Los números de códigos de barras van a Open Food Facts, y solo cuando buscas uno.",
     "list": {
       "empty": {
         "title": "Aún no hay proveedor de IA",
@@ -718,7 +970,8 @@
       "deleteFailed": "No se pudo eliminar el proveedor. Inténtalo de nuevo.",
       "moreModels": "Se muestran los primeros {{count}} de {{total}}. Puedes escribir cualquier otro nombre de modelo.",
       "firstActive": "Este es tu primer proveedor, así que quedará como el activo: las fotos que escanees se enviarán a él.",
-      "savedNoTest": "Proveedor guardado, pero no se pudo conservar el resultado de la prueba."
+      "savedNoTest": "Proveedor guardado, pero no se pudo conservar el resultado de la prueba.",
+      "keyGoesTo": "Esta clave se envía solo a {{host}}."
     },
     "url": {
       "required": "Escribe la dirección del proveedor.",
@@ -772,6 +1025,378 @@
       "body": "El proveedor y su clave guardada se quitan de este teléfono. Las comidas que ya guardaste no se ven afectadas.",
       "confirm": "Eliminarlo",
       "keep": "Conservarlo"
+    },
+    "imported": {
+      "tag": "Importado, sin confirmar",
+      "title": "Este perfil se importó desde un archivo",
+      "banner": "Este perfil se importó desde un archivo. Su nombre puede decir cualquier cosa: envía datos a {{host}}. No está activo, y no se puede añadir una clave, hasta que confirmes esa dirección.",
+      "confirm": "Revisé la dirección: usar {{host}}"
+    }
+  },
+  "data": {
+    "title": "Datos",
+    "intro": "Tus datos se quedan en este teléfono. Aquí puedes sacar una copia, recuperar una copia o borrarlo todo.",
+    "export": {
+      "title": "Exportar tus datos",
+      "body": "Un archivo con todo lo que registraste: perfil, metas, comidas, pesos, medidas, alimentos propios y ajustes. Las claves de los proveedores de IA nunca se incluyen.",
+      "photosLabel": "Fotos de comidas",
+      "photosOff": "Sin fotos",
+      "photosOn_one": "Con {{count}} foto",
+      "photosOn_other": "Con {{count}} fotos",
+      "photosHint": "Con fotos el archivo es un ZIP y mucho más grande.",
+      "button": "Exportar datos",
+      "preparing": "Preparando tu archivo",
+      "reminderTitle": "Antes de compartirlo",
+      "reminderBody": "Este archivo contiene tus datos de salud y no está cifrado. Cualquiera que lo reciba puede leerlo. Compártelo solo con personas y lugares de confianza.",
+      "share": "Compartir archivo",
+      "cancel": "Cancelar",
+      "shareTitle": "Exportar datos de Qbit Nutrition",
+      "done": "Exportación compartida: {{name}}",
+      "error": "No se pudo crear o compartir la exportación. No se cambió nada. Inténtalo de nuevo.",
+      "errorSecret": "Se detuvo la exportación: {{where}} contiene una clave de API. Quita la clave y vuelve a exportar. No se escribió nada.",
+      "errorKeys": "Se detuvo la exportación porque no se pudieron revisar las claves de API guardadas. No se escribió nada. Inténtalo de nuevo.",
+      "errorValue": "Se detuvo la exportación: {{where}} tiene un valor que el archivo no admite. Acórtalo o corrígelo y vuelve a exportar.",
+      "photosSkipped_one": "{{count}} foto de comida no se pudo leer y no está en el archivo. Su comida se exporta sin ella.",
+      "photosSkipped_other": "{{count}} fotos de comidas no se pudieron leer y no están en el archivo. Sus comidas se exportan sin ellas.",
+      "rowsSkipped_one": "{{count}} registro se dejó fuera del archivo porque su valor está fuera de lo que acepta la aplicación: {{what}}. El resto se exportó.",
+      "rowsSkipped_other": "{{count}} registros se dejaron fuera del archivo porque sus valores están fuera de lo que acepta la aplicación: {{what}}. El resto se exportó."
+    },
+    "import": {
+      "title": "Importar datos",
+      "body": "Recupera un archivo que exportaste antes. Reemplaza todo lo que hay en este teléfono.",
+      "button": "Elegir un archivo",
+      "reading": "Revisando el archivo",
+      "previewTitle": "¿Reemplazar tus datos?",
+      "contains": "Exportado el {{date}} con la versión {{version}} de la aplicación.",
+      "range": "Abarca del {{from}} al {{to}}.",
+      "noRange": "No tiene comidas ni medidas.",
+      "noProfile": "No tiene perfil: se queda el de este teléfono.",
+      "meals_one": "{{count}} comida",
+      "meals_other": "{{count}} comidas",
+      "weights_one": "{{count}} registro de peso",
+      "weights_other": "{{count}} registros de peso",
+      "measurements_one": "{{count}} medida corporal",
+      "measurements_other": "{{count}} medidas corporales",
+      "goals_one": "{{count}} periodo de meta",
+      "goals_other": "{{count}} periodos de meta",
+      "customFoods_one": "{{count}} alimento propio",
+      "customFoods_other": "{{count}} alimentos propios",
+      "providers_one": "{{count}} proveedor de IA",
+      "providers_other": "{{count}} proveedores de IA",
+      "photos_one": "{{count}} foto de comida",
+      "photos_other": "{{count}} fotos de comidas",
+      "contents": "En el archivo",
+      "replaceWarning": "Al importar se reemplaza todo lo que hay en este teléfono: tu perfil, metas, comidas, pesos, alimentos propios y ajustes. No se puede deshacer.",
+      "providersNote": "Los proveedores de IA llegan sin sus claves: tendrás que añadir cada clave de nuevo.",
+      "noticeNote": "El aviso de salud que aceptaste en este teléfono se queda como está.",
+      "replace": "Reemplazar mis datos",
+      "keep": "Conservar mis datos",
+      "importing": "Importando",
+      "doneTitle": "Datos importados",
+      "done_one": "Se importó {{count}} comida.",
+      "done_other": "Se importaron {{count}} comidas.",
+      "needKey_one": "{{count}} proveedor de IA necesita su clave de nuevo.",
+      "needKey_other": "{{count}} proveedores de IA necesitan su clave de nuevo.",
+      "openProviders": "Abrir proveedores de IA",
+      "leftovers": "Tus datos se importaron, pero no se pudieron quitar algunos archivos o claves antiguos. Nunca se usan, y la aplicación los quita la próxima vez que se inicie.",
+      "error": {
+        "title": "No se puede importar este archivo",
+        "notChanged": "Tus datos actuales no cambiaron.",
+        "tooLarge": "El archivo es demasiado grande para importarlo.",
+        "unreadable": "No se pudo abrir el archivo. Elígelo de nuevo.",
+        "damaged": "El archivo está incompleto o dañado. Expórtalo de nuevo desde el teléfono original.",
+        "notExport": "Este no es un archivo de exportación de Qbit Nutrition.",
+        "newerVersion": "Este archivo lo creó una versión más nueva de Qbit Nutrition (formato {{fileVersion}}; esta aplicación lee el formato {{supportedVersion}} y anteriores). Actualiza la aplicación e inténtalo de nuevo.",
+        "invalid": "El archivo tiene algo que esta aplicación no puede leer, en {{where}}.",
+        "photosMissing": "El archivo menciona una foto que no contiene: {{where}}.",
+        "photoInvalid": "Una foto del archivo no es una imagen JPEG válida: {{where}}.",
+        "writeFailed": "No se pudo completar la importación y se deshizo. Tus datos actuales están como estaban.",
+        "retry": "Elegir otro archivo",
+        "archiveTooLarge": "El archivo ocuparía más de lo que esta aplicación acepta al descomprimirse. Elige una exportación más pequeña.",
+        "storageUnreadable": "No se pudieron leer los datos o la carpeta de fotos de este teléfono, así que no se pudo reemplazar nada de forma segura."
+      }
+    },
+    "delete": {
+      "title": "Borrar todos los datos",
+      "body": "Quita de este teléfono todo: tu perfil, metas, comidas, pesos, alimentos propios, ajustes, fotos de comidas y claves de los proveedores de IA. La aplicación vuelve a su primer inicio. No se puede deshacer. Exporta antes si quieres una copia.",
+      "button": "Borrar todos los datos",
+      "sheetTitle": "¿Borrarlo todo?",
+      "sheetBody": "Todos tus datos se quitan de este teléfono y no se pueden recuperar.",
+      "word": "BORRAR",
+      "fieldLabel": "Palabra de confirmación",
+      "type": "Escribe {{word}} para confirmar.",
+      "disabledWhy": "El botón se activa cuando escribes {{word}}.",
+      "confirm": "Borrar todo",
+      "keep": "Conservar mis datos",
+      "deleting": "Borrando",
+      "healthTitle": "Health Connect",
+      "healthBody": "Qbit Nutrition ha guardado comidas en Health Connect. ¿Quieres eliminar también esos registros?",
+      "healthRemove": "Eliminar también los registros que esta aplicación escribió en Health Connect",
+      "healthKeep": "Conservarlos en Health Connect",
+      "healthFailed": "No se pudieron eliminar los registros de Health Connect, así que no se borró nada. Inténtalo de nuevo o elige conservarlos.",
+      "incomplete": {
+        "unknown": "El borrado no terminó y no se sabe qué se quitó. Volver a intentarlo es seguro.",
+        "keys": "{{count}} de tus claves de proveedores de IA no se pudieron quitar. No se borró nada más. Volver a intentarlo es seguro.",
+        "keysUnlistable": "No se pudo leer el almacenamiento seguro de claves, así que no se pudieron revisar tus claves de proveedores de IA. No se borró nada. Volver a intentarlo es seguro.",
+        "photos_one": "Quitado: tus claves de proveedores de IA y {{removed}} de {{total}} fotos de comidas. Sin quitar: {{count}} foto de comida y todos tus datos. Volver a intentarlo es seguro y termina el resto.",
+        "photos_other": "Quitado: tus claves de proveedores de IA y {{removed}} de {{total}} fotos de comidas. Sin quitar: {{count}} fotos de comidas y todos tus datos. Volver a intentarlo es seguro y termina el resto.",
+        "photosUnlistable": "Quitado: tus claves de proveedores de IA. Sin quitar: no se pudo leer la lista de fotos de comidas, y todos tus datos. Volver a intentarlo es seguro y termina el resto.",
+        "data": "Quitado: tus claves de proveedores de IA y todas las fotos de comidas. Sin quitar: no se pudieron borrar tus datos. Volver a intentarlo es seguro.",
+        "health": "Los registros que esta aplicación escribió en Health Connect se quitaron."
+      }
+    }
+  },
+  "barcode": {
+    "title": "Escanear código de barras",
+    "cameraLabel": "Vista de la cámara. Apúntala a un código de barras.",
+    "frameHint": "Apunta la cámara al código de barras. Se lee solo.",
+    "torch": "Luz",
+    "torchOn": "Luz encendida",
+    "cameraError": "La cámara no pudo iniciar. Puedes escribir el número.",
+    "manualTitle": "O escribe el número",
+    "manualLabel": "Número del código de barras",
+    "manualHint": "Los dígitos impresos debajo de las barras.",
+    "lookup": "Buscar producto",
+    "errors": {
+      "empty": "Escribe el número del código de barras.",
+      "digits": "Usa solo dígitos.",
+      "length": "El código de barras de un producto tiene 8, 12 o 13 dígitos.",
+      "check": "Ese número no es un código de barras válido. Revisa los dígitos e inténtalo de nuevo.",
+      "scanned": "La cámara leyó un código que no es un código de barras de producto válido. Inténtalo de nuevo o escribe el número."
+    },
+    "permission": {
+      "title": "Usa la cámara para leer códigos de barras",
+      "body": "La cámara solo lee el código de barras. No se toma ni se guarda ninguna foto. También puedes escribir el número.",
+      "allow": "Permitir cámara",
+      "deniedTitle": "La cámara está desactivada para esta app",
+      "deniedBody": "Puedes escribir el número del código de barras abajo, o activar la cámara en los ajustes del teléfono.",
+      "openSettings": "Abrir ajustes"
+    },
+    "notice": {
+      "title": "¿Enviar este número a Open Food Facts?",
+      "body": "Para encontrar el producto, el número del código de barras se envía a Open Food Facts, una base de datos de alimentos pública y gratuita. No se envía nada más: ni fotos, ni cuenta, nada sobre ti. Este aviso aparece solo una vez.",
+      "continue": "Buscar producto",
+      "decline": "Ahora no"
+    },
+    "loading": "Buscando {{code}}",
+    "loadingHint": "Consultando Open Food Facts.",
+    "result": {
+      "title": "Producto encontrado",
+      "brand": "Marca: {{brand}}",
+      "serving": "Porción: {{grams}} g",
+      "source": "Datos del producto de Open Food Facts, bajo la Open Database License (ODbL). Son datos colaborativos: compáralos con el envase.",
+      "stale": "Guardado en este teléfono el {{date}}. Ahora no se pudo actualizar.",
+      "saved": "Guardado en este teléfono",
+      "choose": "Elegir cantidad",
+      "another": "Escanear otro",
+      "servingLabel": "Porción"
+    },
+    "incomplete": {
+      "title": "Este producto está incompleto",
+      "body": "Open Food Facts no tiene todos los valores de este producto. Completa los que faltan con la etiqueta del envase. No se adivina nada.",
+      "inconsistent": "Las calorías no coinciden con las proteínas, los carbohidratos y la grasa. Revisa los valores con el envase.",
+      "missing": "Falta en Open Food Facts",
+      "save": "Usar estos valores",
+      "saveError": "No se pudieron guardar los valores. Lo que escribiste sigue aquí. Inténtalo de nuevo.",
+      "fixErrors": "Corrige los campos marcados para continuar."
+    },
+    "failure": {
+      "title": "No se pudo buscar el producto",
+      "not_found": {
+        "title": "Producto no encontrado",
+        "message": "Open Food Facts no tiene ningún producto con este código. Revisa el número o crea el alimento tú mismo."
+      },
+      "no_network": {
+        "title": "Sin conexión",
+        "message": "No se pudo buscar este producto sin internet. Los productos que buscaste antes se guardan en este teléfono y funcionan sin conexión."
+      },
+      "timeout": {
+        "title": "Sin respuesta a tiempo",
+        "message": "Open Food Facts tardó demasiado en responder. Inténtalo de nuevo en un momento."
+      },
+      "rate_limited": {
+        "title": "Demasiadas búsquedas",
+        "message": "Open Food Facts permite un número limitado de búsquedas por minuto. Espera un momento e inténtalo de nuevo.",
+        "messageWait": "Open Food Facts permite un número limitado de búsquedas por minuto. Inténtalo de nuevo en {{seconds}} segundos."
+      },
+      "service_error": {
+        "title": "El servicio tuvo un problema",
+        "message": "Open Food Facts no respondió bien. Inténtalo de nuevo en unos minutos, o crea el alimento tú mismo."
+      },
+      "invalid_code": {
+        "title": "Ese no es un código de barras válido",
+        "message": "Revisa los dígitos e inténtalo de nuevo."
+      },
+      "typeAnother": "Escribir otro número",
+      "create": "Crear alimento propio"
+    }
+  },
+  "suggest": {
+    "action": "Sugerir alimentos",
+    "actionHint": "Ideas de tu proveedor de IA para lo que te queda hoy. Solo se envían tus calorías y macros restantes.",
+    "aiTag": "IA",
+    "title": "Ideas de alimentos",
+    "close": "Cerrar",
+    "notice": {
+      "title": "¿Enviar a {{provider}} lo que te queda hoy?",
+      "body": "Para sugerir alimentos se envían estos números a {{provider}}: lo que te queda hoy de calorías, proteínas, carbohidratos y grasa, el tipo de objetivo y el idioma de la app. No se envían fotos, comidas, perfil ni historial. {{provider}} los trata bajo sus propios términos. Este aviso aparece una vez por proveedor.",
+      "sends": "Se envía: te quedan {{kcal}} kcal, {{protein}} g de proteínas, {{carbs}} g de carbohidratos y {{fat}} g de grasa. Objetivo: {{goal}}. Idioma: {{language}}.",
+      "continue": "Obtener sugerencias",
+      "decline": "Ahora no"
+    },
+    "loading": "Buscando alimentos que encajen",
+    "loadingHint": "Consultando a {{provider}}. No se guarda nada.",
+    "result": {
+      "intro": "Ideas para lo que te queda hoy. Las cantidades y los valores son estimaciones de la IA: los valores reales salen de la base de alimentos cuando eliges un alimento.",
+      "estimate": "Estimación de IA",
+      "line": "Unos {{grams}} g · ≈ {{kcal}} kcal · P {{protein}} · C {{carbs}} · G {{fat}}",
+      "add": "Agregar a la comida",
+      "addLabel": "Agregar {{name}} a la comida",
+      "again": "Sugerir de nuevo",
+      "emptyTitle": "Sin sugerencias esta vez",
+      "emptyBody": "Ninguna idea encajaba con lo que te queda hoy. Inténtalo de nuevo."
+    },
+    "blocked": {
+      "noProvider": {
+        "title": "No hay proveedor de IA configurado",
+        "message": "Las sugerencias usan el proveedor de IA que configures. No se envía nada hasta que lo hagas.",
+        "action": "Configurar un proveedor de IA"
+      },
+      "noTargets": {
+        "title": "Primero define tus objetivos",
+        "message": "Las sugerencias necesitan tu objetivo diario de calorías para saber qué te queda.",
+        "action": "Definir objetivos"
+      },
+      "nothingLeft": {
+        "title": "No queda nada que sugerir hoy",
+        "message": "Ya llegaste a las calorías de hoy, así que no hay nada que añadir. No se piden sugerencias."
+      }
+    },
+    "failure": {
+      "providerSettings": "Ajustes del proveedor de IA",
+      "no_network": {
+        "title": "Sin conexión",
+        "message": "No se pudieron pedir las sugerencias sin internet. Inténtalo de nuevo cuando tengas conexión."
+      },
+      "timeout": {
+        "title": "Sin respuesta a tiempo",
+        "message": "El proveedor de IA tardó demasiado en responder. Inténtalo de nuevo en un momento."
+      },
+      "auth_invalid": {
+        "title": "El proveedor de IA rechazó la clave",
+        "message": "Revisa la clave en los ajustes del proveedor e inténtalo de nuevo."
+      },
+      "model_not_found": {
+        "title": "Modelo no disponible",
+        "message": "El proveedor no conoce el modelo que elegiste. Elige otro en los ajustes del proveedor."
+      },
+      "no_vision": {
+        "title": "El modelo no pudo responder",
+        "message": "Revisa el modelo en los ajustes del proveedor e inténtalo de nuevo."
+      },
+      "quota": {
+        "title": "Límite del proveedor alcanzado",
+        "message": "Tu proveedor de IA no tiene solicitudes disponibles por ahora.",
+        "messageWait": "Tu proveedor de IA no tiene solicitudes disponibles por ahora. El límite se reinicia en {{time}}."
+      },
+      "provider_unavailable": {
+        "title": "El proveedor no está disponible",
+        "message": "El proveedor de IA tuvo un problema. Inténtalo de nuevo en unos minutos."
+      },
+      "invalid_output": {
+        "title": "No se pudo leer la respuesta",
+        "message": "El modelo no respondió en el formato esperado. Inténtalo de nuevo, o elige otro modelo en los ajustes del proveedor."
+      },
+      "no_food": {
+        "title": "El modelo declinó",
+        "message": "El proveedor de IA declinó responder esta solicitud. Inténtalo más tarde."
+      },
+      "provider_changed": {
+        "title": "El proveedor cambió",
+        "message": "El proveedor de IA cambió mientras empezaba la solicitud. Inténtalo de nuevo."
+      },
+      "insecure_url": {
+        "title": "La dirección del proveedor no está permitida",
+        "message": "La dirección del proveedor debe usar una conexión segura. Revísala en los ajustes del proveedor."
+      },
+      "unknown": {
+        "title": "Algo salió mal",
+        "message": "No se pudieron pedir las sugerencias. Inténtalo de nuevo. El detalle de abajo ayuda si sigue pasando."
+      }
+    }
+  },
+  "health": {
+    "title": "Integraciones",
+    "intro": "Health Connect es el lugar de Android donde las aplicaciones de salud comparten datos en tu teléfono. Permanece desactivado a menos que lo actives aquí.",
+    "connect": "Health Connect",
+    "turnOn": "Activar Health Connect",
+    "turnOff": "Desactivar",
+    "manage": "Gestionar el acceso en Health Connect",
+    "install": "Obtener Health Connect",
+    "update": "Actualizar Health Connect",
+    "allow": "Permitir",
+    "allowNamed": "Permitir: {{name}}",
+    "working": "Trabajando con Health Connect…",
+    "status": {
+      "off": "Desactivado. No se comparte nada con Health Connect.",
+      "on": "Activado."
+    },
+    "grant": {
+      "writeNutrition": "Guardar mis comidas en Health Connect",
+      "readWeight": "Leer mi peso desde Health Connect"
+    },
+    "grantState": {
+      "granted": "Permitido",
+      "not_granted": "No permitido",
+      "revoked": "El acceso se quitó en Health Connect"
+    },
+    "notice": {
+      "declined": "No se concedió ningún acceso, así que Health Connect sigue desactivado. Puedes intentarlo de nuevo cuando quieras.",
+      "not_installed": "Health Connect no está instalado en este teléfono. Instálalo, vuelve y actívalo.",
+      "needs_update": "Health Connect necesita una actualización para poder usarse. Actualízalo y vuelve.",
+      "unavailable": "Health Connect no se puede usar en este teléfono.",
+      "available": "Health Connect está listo.",
+      "sent_one": "Se puso en cola {{count}} comida para guardarla en Health Connect.",
+      "sent_other": "Se pusieron en cola {{count}} comidas para guardarlas en Health Connect."
+    },
+    "sync": {
+      "title": "Comidas guardadas",
+      "none": "Todas las comidas guardadas están al día en Health Connect.",
+      "pending_one": "{{count}} comida está esperando para escribirse en Health Connect.",
+      "pending_other": "{{count}} comidas están esperando para escribirse en Health Connect.",
+      "failing": "El último intento no funcionó. Tus comidas están a salvo en esta aplicación y se enviarán cuando Health Connect responda.",
+      "retry": "Intentar de nuevo ahora",
+      "weightAt": "Peso leído por última vez el {{date}}.",
+      "weightNever": "Todavía no se ha leído el peso.",
+      "weightsIgnored_one": "{{count}} lectura de peso de Health Connect está fuera del rango que acepta esta aplicación y se dejó fuera.",
+      "weightsIgnored_other": "{{count}} lecturas de peso de Health Connect están fuera del rango que acepta esta aplicación y se dejaron fuera."
+    },
+    "existing": {
+      "title": "Comidas que ya registraste",
+      "body": "Al activar Health Connect se guardan las comidas nuevas y las que edites. Las comidas que registraste antes, o que importaste, no se envían a menos que lo pidas.",
+      "button": "Enviar mis comidas existentes",
+      "needsGrant": "Permite guardar comidas para usar esto."
+    },
+    "rationale": {
+      "title": "Para qué usa Qbit Nutrition Health Connect",
+      "intro": "Estos son los dos tipos de datos y para qué se usa cada uno. No se lee ni se escribe nada más.",
+      "writes": "Escribe",
+      "reads": "Lee",
+      "nutrition": {
+        "title": "Nutrición",
+        "body": "Cada comida que guardas se convierte en un registro de nutrición: cuándo comiste, el tipo de comida, calorías, proteínas, carbohidratos, grasas, y la fibra, los azúcares, el sodio y las vitaminas y minerales que sigue esta aplicación. Así tus otras aplicaciones de salud pueden mostrar lo que comiste. Si editas o borras una comida aquí, su registro se actualiza o se elimina."
+      },
+      "weight": {
+        "title": "Peso",
+        "body": "Los registros de peso de los últimos 30 días se copian a esta aplicación para que aparezcan en tu gráfico de peso. Se marcan como procedentes de Health Connect. No se escribe nada de peso de vuelta."
+      },
+      "yourControl": "Tú tienes el control",
+      "separate": "Puedes permitir uno de los dos y rechazar el otro. El otro sigue funcionando.",
+      "local": "Health Connect guarda sus datos en este teléfono. Nunca se comparten con él las fotos, los datos de proveedores de IA ni las claves.",
+      "revoke": "Puedes desactivarlo aquí, o quitar el acceso en Health Connect, cuando quieras.",
+      "privacy": "Leer la política de privacidad",
+      "continue": "Continuar a los permisos",
+      "notNow": "Ahora no"
     }
   }
 }

@@ -4,3 +4,9 @@
  * `src/i18n/*.json`.
  */
 export const DISCLAIMER_VERSION = '2026-11-21';
+
+/**
+ * Last-updated date of the privacy policy (`legal.privacy` in `src/i18n/*.json` and `PRIVACY.md`). It does not make anyone
+ * accept anything again: the policy is read, not accepted. Edit it with any edit to the policy text.
+ */
+export const PRIVACY_VERSION = '2026-11-21';

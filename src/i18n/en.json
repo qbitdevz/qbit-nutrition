@@ -96,7 +96,135 @@
   },
   "progress": {
     "title": "Progress",
-    "empty": "Log a few days to see trends"
+    "empty": "Log a few days to see trends",
+    "loading": "Loading your progress",
+    "error": {
+      "title": "Your progress could not be loaded",
+      "message": "Your data is still on this phone. Try again, and restart the app if it keeps failing."
+    },
+    "views": {
+      "label": "Progress sections",
+      "nutrition": "Nutrition",
+      "weight": "Weight",
+      "measures": "Measures"
+    },
+    "kind": {
+      "weight": "Weight",
+      "waist": "Waist",
+      "hips": "Hips",
+      "chest": "Chest",
+      "body_fat_pct": "Body fat"
+    },
+    "kindLower": {
+      "weight": "weight",
+      "waist": "waist",
+      "hips": "hips",
+      "chest": "chest",
+      "body_fat_pct": "body fat"
+    },
+    "kindChip": {
+      "weight": "Weight",
+      "waist": "Waist",
+      "hips": "Hips",
+      "chest": "Chest",
+      "body_fat_pct": "Body fat"
+    },
+    "unitSpoken": {
+      "kg": "kilograms",
+      "lb": "pounds",
+      "cm": "centimeters",
+      "in": "inches",
+      "%": "percent"
+    },
+    "range": {
+      "label": "Time range",
+      "30d": "30 days",
+      "90d": "90 days",
+      "1y": "1 year",
+      "all": "All"
+    },
+    "rangeSpoken": {
+      "30d": "last 30 days",
+      "90d": "last 90 days",
+      "1y": "last year",
+      "all": "all entries"
+    },
+    "nutrition": {
+      "periodLabel": "Period",
+      "week": "Week",
+      "month": "Month",
+      "previousWeek": "Previous week",
+      "previousMonth": "Previous month",
+      "nextWeek": "Next week",
+      "nextMonth": "Next month",
+      "nextUnavailable": "Next period, not available",
+      "thisWeek": "This week",
+      "thisMonth": "This month",
+      "empty": {
+        "title": "Log a few days to see trends",
+        "body": "Averages appear here once you have meals logged on enough days."
+      },
+      "daysLogged": "{{logged}} of {{total}} days logged",
+      "partial_one": "Only {{count}} day has meals. An average needs at least {{min}} days, so here is what you logged.",
+      "partial_other": "Only {{count}} days have meals. An average needs at least {{min}} days, so here is what you logged.",
+      "averageTitle": "Average per logged day",
+      "kcalUnit": "kcal a day",
+      "target": "Target {{target}} kcal",
+      "underTarget": "{{amount}} kcal under target",
+      "overTarget": "{{amount}} kcal over target",
+      "atTarget": "At target",
+      "noTarget": "No calorie target for these days",
+      "targetsChanged": "Your targets changed during this period. Each day counts against the targets of its own goal period; the targets shown are their average.",
+      "macros": "Average macronutrients",
+      "summary": "{{period}}. Average of {{logged}} logged days: {{kcal}} kilocalories, {{protein}} grams of protein, {{carbs}} grams of carbohydrates, {{fat}} grams of fat.",
+      "summaryTarget": "Average target: {{kcal}} kilocalories.",
+      "daysHeading": "Days logged",
+      "dayRow": "{{date}}, {{kcal}} kilocalories, {{protein}} grams of protein, {{carbs}} grams of carbohydrates, {{fat}} grams of fat",
+      "dayMacros": "{{protein}} g protein · {{carbs}} g carbs · {{fat}} g fat"
+    },
+    "series": {
+      "empty": {
+        "title": "No {{kind}} logged yet",
+        "body": "Log a value for a day and the chart shows how it changes over time."
+      },
+      "emptyRange": "No entries in this range. Choose a longer range to see earlier ones.",
+      "onePoint": "One entry so far. Log another day to see a trend.",
+      "log": "Log {{kind}}",
+      "latest": "Latest",
+      "change": "Change",
+      "changeNone": "No change yet",
+      "listTitle": "Entries",
+      "showAll": "Show all {{count}} entries",
+      "showFewer": "Show fewer",
+      "rowLabel": "{{date}}, {{value}} {{unit}}. Edit this entry.",
+      "summaryOne": "{{kind}}, {{range}}: one entry, {{value}} {{unit}} on {{date}}.",
+      "summary": "{{kind}}, {{range}}: {{count}} entries from {{firstDate}} ({{firstValue}} {{unit}}) to {{lastDate}} ({{lastValue}} {{unit}}). Change {{change}} {{unit}}. Lowest {{min}}, highest {{max}} {{unit}}."
+    },
+    "entry": {
+      "logTitle": "Log {{kind}}",
+      "editTitle": "Edit {{kind}}",
+      "date": "Date",
+      "today": "Today",
+      "previousDay": "Previous day",
+      "nextDay": "Next day",
+      "nextDayUnavailable": "Next day, not available",
+      "required": "Enter a value.",
+      "notNumber": "Use numbers only, for example 82.5.",
+      "range": "{{kind}} must be between {{min}} and {{max}} {{unit}}.",
+      "last": "Last entry: {{value}} {{unit}} on {{date}}.",
+      "replaces": "This day already has an entry ({{value}} {{unit}}). Saving replaces it.",
+      "save": "Save",
+      "saved": "{{kind}} saved · {{value}} {{unit}}",
+      "saveError": "It could not be saved. Your value is still here; try again.",
+      "conflict": "That day already has an entry. Pick another day, or edit that entry.",
+      "delete": "Delete entry",
+      "deleteTitle": "Delete this entry?",
+      "deleteBody": "The entry of {{date}} ({{value}} {{unit}}) is removed from your history.",
+      "keep": "Keep entry",
+      "deleted": "Entry deleted",
+      "deleteError": "It could not be deleted. Try again.",
+      "undoFailed": "The entry could not be restored."
+    }
   },
   "scan": {
     "title": "Scan",
@@ -232,7 +360,12 @@
     "keepPhotos": "Keep meal photos",
     "keepPhotosHint": "A compressed copy of each scanned meal stays on this phone. Deleting a meal deletes its photo.",
     "keepPhotosOn": "Keep",
-    "keepPhotosOff": "Don't keep"
+    "keepPhotosOff": "Don't keep",
+    "data": "Data",
+    "dataDetail": "Export, import, delete",
+    "integrations": "Integrations",
+    "integrationsOn": "Health Connect · On",
+    "integrationsOff": "Health Connect · Off"
   },
   "legal": {
     "disclaimer": {
@@ -255,6 +388,94 @@
         "body": "Never use it to decide whether a food is safe for you."
       },
       "closing": "If tracking food causes you distress, stop using the app and seek support from a health professional."
+    },
+    "update": {
+      "title": "The health notice changed",
+      "intro": "The text of the health notice was updated. Please read it again before you continue. Your data has not been touched.",
+      "accept": "I have read it",
+      "decline": "I do not accept",
+      "declinedTitle": "The app needs this notice to be accepted",
+      "declinedBody": "Your data is still on this phone and has not been changed. You can read the notice again, or close the app.",
+      "readAgain": "Read the notice again",
+      "close": "Close the app",
+      "failed": "The acceptance could not be saved. Try again."
+    },
+    "version": {
+      "draft": "Draft, pending legal review.",
+      "updated": "Last updated: {{date}}."
+    },
+    "privacy": {
+      "title": "Privacy policy — Qbit Nutrition",
+      "summary": {
+        "lead": "Summary.",
+        "body": "Your data stays on your device. We, the maintainers, do not collect, receive, or store any of it."
+      },
+      "stores": {
+        "lead": "What the app stores on your device.",
+        "body": "Your profile (if you fill it in), goals, meals, nutrient values, body measurements, meal photos (if you keep them), and your AI provider settings. API keys are stored in your device's secure storage."
+      },
+      "leaves": {
+        "lead": "What leaves your device, and only when you trigger it.",
+        "dataLabel": "Data sent",
+        "recipientLabel": "Recipient",
+        "photo": {
+          "action": "Analyze a meal photo",
+          "data": "The photo (reduced in size, without location metadata), your optional hint, your language",
+          "recipient": "The AI provider you configured"
+        },
+        "suggest": {
+          "action": "Ask for food suggestions",
+          "data": "Remaining calories and nutrients for the day, your goal, your language",
+          "recipient": "The AI provider you configured"
+        },
+        "barcode": {
+          "action": "Look up a barcode",
+          "data": "The barcode number, and the app name, version and project address in the request header",
+          "recipient": "Open Food Facts"
+        },
+        "export": {
+          "action": "Export",
+          "data": "A file with your data",
+          "recipient": "Wherever you send it"
+        },
+        "note": "Your AI provider processes what you send under its own terms and privacy policy, which you accepted when you created your account with it. Some providers use content sent on free plans to improve their products. Check your provider's terms. If you use a model running on your own computer, nothing is sent to a third party. Like any web service, the AI provider and Open Food Facts also see your network address when they receive a request."
+      },
+      "never": {
+        "lead": "What the app never does.",
+        "body": "No accounts, no analytics, no advertising, no crash reports, no tracking, no selling or sharing of data."
+      },
+      "health": {
+        "lead": "Health platforms.",
+        "body": "If you turn on Health Connect, the app writes each saved meal to it as a nutrition record (time, meal type, calories, nutrients and the meal's name) and reads your weight from it, on your device, with the permissions you grant. The two permissions are separate and you can decline either. Other apps that you allow in Health Connect can read what this app wrote. You can turn it off in the app and revoke the permissions in system settings at any time. Deleting all data in the app offers to remove the records it wrote."
+      },
+      "control": {
+        "lead": "Your control.",
+        "body": "You can export all your data, delete it all from Settings → Data, or uninstall the app, which removes everything it stored. Records already written to Health Connect belong to Health Connect: remove them with the option in Delete all data, or in Health Connect itself."
+      },
+      "children": {
+        "lead": "Children.",
+        "body": "The app is intended for adults."
+      },
+      "changes": {
+        "lead": "Changes.",
+        "body": "Changes to this policy are published in the project repository with the release that introduces them."
+      },
+      "contact": {
+        "lead": "Contact.",
+        "body": "Open an issue at https://github.com/qbitdevz/qbit-nutrition/issues."
+      }
+    },
+    "licenses": {
+      "intro": "Qbit Nutrition is built with the open-source software below. The list is generated from the dependencies installed when the app was built, and includes the tools used to build it.",
+      "own": "Qbit Nutrition itself is released under the MIT license.",
+      "count_one": "{{count}} package",
+      "count_other": "{{count}} packages",
+      "show": "Show license text",
+      "hide": "Hide license text",
+      "noText": "This package does not ship a license file; its license is named above.",
+      "unavailable": "The license list is not available in this build.",
+      "item": "{{name}} {{version}}, {{license}}",
+      "fonts": "Fonts: Figtree and Outfit, under the SIL Open Font License 1.1."
     }
   },
   "onboarding": {
@@ -298,7 +519,10 @@
       "day": "Day",
       "month": "Month",
       "year": "Year",
-      "hint": "Used to work out your age."
+      "hint": "Used to work out your age.",
+      "dayHint": "DD",
+      "monthHint": "MM",
+      "yearHint": "YYYY"
     },
     "height": {
       "cm": "Height (cm)",
@@ -510,7 +734,10 @@
       "review": "Review meal ({{count}})",
       "error": "The food search failed. Try again.",
       "loading": "Searching",
-      "emptyTitle": "Find a food"
+      "emptyTitle": "Find a food",
+      "barcode": "Scan a barcode",
+      "barcodeHint": "Find a packaged food with its barcode.",
+      "barcodeTag": "Barcode"
     },
     "portion": {
       "amount": "Amount in grams",
@@ -573,7 +800,9 @@
       "needMatch": "Pick a food for each item that needs a match, or remove it.",
       "swap": "Change food for {{name}}",
       "noNumbers": "No numbers yet",
-      "photoKept": "The photo could not be kept. The meal was saved without it."
+      "photoKept": "The photo could not be kept. The meal was saved without it.",
+      "barcode": "Barcode",
+      "gramsAnnounce": "{{value}} grams"
     },
     "custom": {
       "title": "Create custom food",
@@ -622,7 +851,8 @@
     "loadError": "The meal could not be loaded. Your data is still on this phone. Try again.",
     "actionError": "That change could not be saved. Try again.",
     "photoLabel": "Photo of this meal",
-    "aiEstimate": "AI estimate"
+    "aiEstimate": "AI estimate",
+    "gramsAnnounce": "{{value}} grams"
   },
   "nutrient": {
     "kcal": "Energy",
@@ -656,8 +886,30 @@
     "accepted": "Accepted on {{date}} (text version {{version}})",
     "notAccepted": "Not accepted yet",
     "version": "Version {{version}}",
-    "privacy": "Everything stays on this phone. There is no account and no analytics.",
-    "how": "How targets are calculated"
+    "privacy": "Your data stays on this phone. Only what you choose to send leaves it: a meal photo, or the numbers behind a food suggestion, to the AI provider you set up; a barcode number to Open Food Facts; and the files you export. There is no account and no analytics.",
+    "how": "How targets are calculated",
+    "sources": {
+      "title": "Data sources",
+      "usda": "Food composition data: U.S. Department of Agriculture, Agricultural Research Service. FoodData Central.",
+      "off": "Product data: Open Food Facts, made available under the Open Database License (ODbL), with individual contents under the Database Contents License. Products are looked up one barcode at a time and saved on this phone; the database is not included in the app.",
+      "offLink": "Open Food Facts license and terms",
+      "usdaNote": "The nutrient values in the bundled food list come from this source.",
+      "offNote": "Product images from Open Food Facts are not used."
+    },
+    "appName": "Qbit Nutrition",
+    "by": "By qbitdev",
+    "license": "Open source under the MIT license.",
+    "source": "Source code on GitHub",
+    "sourceLabel": "Open the source code on GitHub (opens your browser)",
+    "healthNotice": "Health notice",
+    "privacyRow": "Privacy policy",
+    "privacyRowDetail": "What stays on your phone and what you choose to send",
+    "licensesRow": "Open-source licenses",
+    "licensesRowDetail": "The software this app is built with",
+    "names": {
+      "title": "Names and trademarks",
+      "body": "Names of AI providers and services, such as OpenAI, Anthropic, Google Gemini, OpenRouter and Ollama, are used only to identify services this app can work with. Qbit Nutrition is not affiliated with, endorsed by, or sponsored by any of them, and does not use their logos."
+    }
   },
   "providers": {
     "title": "AI providers",
@@ -666,7 +918,7 @@
     "keySaved": "Key saved",
     "noKey": "No key",
     "notAffiliated": "Provider names appear only to say which services this app works with. Qbit Nutrition is not affiliated with, endorsed by, or sponsored by any of them.",
-    "privacy": "Your meal photos go only to the provider you choose, with your own account. Nothing is sent anywhere else.",
+    "privacy": "Your meal photos, and the calorie and macro numbers behind food suggestions, go only to the provider you choose, with your own account. Barcode numbers go to Open Food Facts, and only when you look one up.",
     "list": {
       "empty": {
         "title": "No AI provider yet",
@@ -718,7 +970,8 @@
       "deleteFailed": "The provider could not be deleted. Try again.",
       "moreModels": "Showing the first {{count}} of {{total}}. You can type any other model name.",
       "firstActive": "This is your first provider, so it will become the active one: photos you scan will be sent to it.",
-      "savedNoTest": "Provider saved, but the test result could not be kept."
+      "savedNoTest": "Provider saved, but the test result could not be kept.",
+      "keyGoesTo": "This key is sent only to {{host}}."
     },
     "url": {
       "required": "Enter the provider's address.",
@@ -772,6 +1025,378 @@
       "body": "The provider and its saved key are removed from this phone. Meals you already saved are not affected.",
       "confirm": "Delete it",
       "keep": "Keep it"
+    },
+    "imported": {
+      "tag": "Imported, not confirmed",
+      "title": "This profile was imported from a file",
+      "banner": "This profile was imported from a file. Its name can say anything: it sends data to {{host}}. It is not active, and no key can be added, until you confirm that address.",
+      "confirm": "I checked the address: use {{host}}"
+    }
+  },
+  "data": {
+    "title": "Data",
+    "intro": "Your data stays on this phone. Here you can take a copy of it, bring a copy back, or erase it.",
+    "export": {
+      "title": "Export your data",
+      "body": "One file with everything you logged: profile, goals, meals, weights, measurements, custom foods and settings. AI provider keys are never included.",
+      "photosLabel": "Meal photos",
+      "photosOff": "Without photos",
+      "photosOn_one": "With {{count}} photo",
+      "photosOn_other": "With {{count}} photos",
+      "photosHint": "Photos make the file a ZIP and much larger.",
+      "button": "Export data",
+      "preparing": "Preparing your file",
+      "reminderTitle": "Before you share it",
+      "reminderBody": "This file contains your health data and is not encrypted. Anyone who gets it can read it. Share it only with people and places you trust.",
+      "share": "Share file",
+      "cancel": "Cancel",
+      "shareTitle": "Export Qbit Nutrition data",
+      "done": "Export shared: {{name}}",
+      "error": "The export could not be created or shared. Nothing was changed. Try again.",
+      "errorSecret": "The export was stopped: {{where}} contains an API key. Remove the key from it, then export again. Nothing was written.",
+      "errorKeys": "The export was stopped because the stored API keys could not be checked. Nothing was written. Try again.",
+      "errorValue": "The export was stopped: {{where}} holds a value the export file cannot take. Shorten or correct it, then export again.",
+      "photosSkipped_one": "{{count}} meal photo could not be read and is not in the file. Its meal is exported without it.",
+      "photosSkipped_other": "{{count}} meal photos could not be read and are not in the file. Their meals are exported without them.",
+      "rowsSkipped_one": "{{count}} entry was left out of the file because its value is outside what the app accepts: {{what}}. The rest was exported.",
+      "rowsSkipped_other": "{{count}} entries were left out of the file because their values are outside what the app accepts: {{what}}. The rest was exported."
+    },
+    "import": {
+      "title": "Import data",
+      "body": "Bring back a file you exported before. It replaces everything on this phone.",
+      "button": "Choose a file",
+      "reading": "Checking the file",
+      "previewTitle": "Replace your data?",
+      "contains": "Exported on {{date}} with app version {{version}}.",
+      "range": "Covers {{from}} to {{to}}.",
+      "noRange": "It has no meals or measurements.",
+      "noProfile": "It has no profile: the one on this phone stays.",
+      "meals_one": "{{count}} meal",
+      "meals_other": "{{count}} meals",
+      "weights_one": "{{count}} weight entry",
+      "weights_other": "{{count}} weight entries",
+      "measurements_one": "{{count}} body measurement",
+      "measurements_other": "{{count}} body measurements",
+      "goals_one": "{{count}} goal period",
+      "goals_other": "{{count}} goal periods",
+      "customFoods_one": "{{count}} custom food",
+      "customFoods_other": "{{count}} custom foods",
+      "providers_one": "{{count}} AI provider",
+      "providers_other": "{{count}} AI providers",
+      "photos_one": "{{count}} meal photo",
+      "photos_other": "{{count}} meal photos",
+      "contents": "In the file",
+      "replaceWarning": "Importing replaces everything on this phone: your profile, goals, meals, weights, custom foods and settings. This cannot be undone.",
+      "providersNote": "AI provider profiles come without their keys: you add each key again.",
+      "noticeNote": "The health notice you accepted on this phone stays as it is.",
+      "replace": "Replace my data",
+      "keep": "Keep my data",
+      "importing": "Importing",
+      "doneTitle": "Data imported",
+      "done_one": "{{count}} meal was imported.",
+      "done_other": "{{count}} meals were imported.",
+      "needKey_one": "{{count}} AI provider needs its key again.",
+      "needKey_other": "{{count}} AI providers need their key again.",
+      "openProviders": "Open AI providers",
+      "leftovers": "Your data was imported, but some old files or keys could not be removed. They are never used, and the app removes them the next time it starts.",
+      "error": {
+        "title": "This file cannot be imported",
+        "notChanged": "Your current data was not changed.",
+        "tooLarge": "The file is too large to import.",
+        "unreadable": "The file could not be opened. Choose it again.",
+        "damaged": "The file is incomplete or damaged. Export it again from the original phone.",
+        "notExport": "This is not a Qbit Nutrition export file.",
+        "newerVersion": "This file was made by a newer version of Qbit Nutrition (file format {{fileVersion}}; this app reads format {{supportedVersion}} and older). Update the app and try again.",
+        "invalid": "The file has something this app cannot read, at {{where}}.",
+        "photosMissing": "The file refers to a photo it does not contain: {{where}}.",
+        "photoInvalid": "A photo in the file is not a valid JPEG image: {{where}}.",
+        "writeFailed": "The import could not be completed and was undone. Your current data is as it was.",
+        "retry": "Choose another file",
+        "archiveTooLarge": "The file would unpack to more than this app accepts. Choose a smaller export.",
+        "storageUnreadable": "This phone's data or photo folder could not be read, so nothing could be replaced safely."
+      }
+    },
+    "delete": {
+      "title": "Delete all data",
+      "body": "Removes everything from this phone: your profile, goals, meals, weights, custom foods, settings, meal photos and AI provider keys. The app goes back to its first launch. This cannot be undone. Export first if you want a copy.",
+      "button": "Delete all data",
+      "sheetTitle": "Delete everything?",
+      "sheetBody": "All your data is removed from this phone and cannot be recovered.",
+      "word": "DELETE",
+      "fieldLabel": "Confirmation word",
+      "type": "Type {{word}} to confirm.",
+      "disabledWhy": "The button turns on when you type {{word}}.",
+      "confirm": "Delete everything",
+      "keep": "Keep my data",
+      "deleting": "Deleting",
+      "healthTitle": "Health Connect",
+      "healthBody": "Qbit Nutrition has saved meals to Health Connect. Remove those records too?",
+      "healthRemove": "Also remove the records this app wrote to Health Connect",
+      "healthKeep": "Keep them in Health Connect",
+      "healthFailed": "The records in Health Connect could not be removed, so nothing was deleted. Try again, or choose to keep them.",
+      "incomplete": {
+        "unknown": "Deleting did not finish, and it is not known what was removed. Trying again is safe.",
+        "keys": "{{count}} of your AI provider keys could not be removed. Nothing else was deleted. Trying again is safe.",
+        "keysUnlistable": "The secure key storage could not be read, so your AI provider keys could not be checked. Nothing was deleted. Trying again is safe.",
+        "photos_one": "Removed: your AI provider keys and {{removed}} of {{total}} meal photos. Not removed: {{count}} meal photo and all your data. Trying again is safe and finishes the rest.",
+        "photos_other": "Removed: your AI provider keys and {{removed}} of {{total}} meal photos. Not removed: {{count}} meal photos and all your data. Trying again is safe and finishes the rest.",
+        "photosUnlistable": "Removed: your AI provider keys. Not removed: the meal photos could not be listed, and all your data. Trying again is safe and finishes the rest.",
+        "data": "Removed: your AI provider keys and all meal photos. Not removed: your data could not be cleared. Trying again is safe.",
+        "health": "The records this app wrote to Health Connect were removed."
+      }
+    }
+  },
+  "barcode": {
+    "title": "Scan a barcode",
+    "cameraLabel": "Camera preview. Point it at a barcode.",
+    "frameHint": "Point the camera at the barcode. It is read on its own.",
+    "torch": "Light",
+    "torchOn": "Light on",
+    "cameraError": "The camera could not start. You can type the number instead.",
+    "manualTitle": "Or type the number",
+    "manualLabel": "Barcode number",
+    "manualHint": "The digits printed under the bars.",
+    "lookup": "Look up product",
+    "errors": {
+      "empty": "Type the barcode number.",
+      "digits": "Use digits only.",
+      "length": "A product barcode has 8, 12 or 13 digits.",
+      "check": "That number is not a valid barcode. Check the digits and try again.",
+      "scanned": "The camera read a code that is not a valid product barcode. Try again or type the number."
+    },
+    "permission": {
+      "title": "Use the camera to read barcodes",
+      "body": "The camera only reads the barcode. No photo is taken or saved. You can also type the number.",
+      "allow": "Allow camera",
+      "deniedTitle": "The camera is off for this app",
+      "deniedBody": "You can type the barcode number below, or turn the camera on in your phone settings.",
+      "openSettings": "Open settings"
+    },
+    "notice": {
+      "title": "Send this number to Open Food Facts?",
+      "body": "To find the product, the barcode number is sent to Open Food Facts, a free public food database. Nothing else is sent: no photo, no account, nothing about you. This notice appears only once.",
+      "continue": "Look up product",
+      "decline": "Not now"
+    },
+    "loading": "Looking up {{code}}",
+    "loadingHint": "Searching Open Food Facts.",
+    "result": {
+      "title": "Product found",
+      "brand": "Brand: {{brand}}",
+      "serving": "Serving: {{grams}} g",
+      "source": "Product data from Open Food Facts, under the Open Database License (ODbL). Crowd-sourced, so check it against the package.",
+      "stale": "Saved on this phone on {{date}}. It could not be refreshed now.",
+      "saved": "Saved on this phone",
+      "choose": "Choose amount",
+      "another": "Scan another",
+      "servingLabel": "Serving"
+    },
+    "incomplete": {
+      "title": "This product is incomplete",
+      "body": "Open Food Facts does not have all the values of this product. Fill in the missing ones from the package label. Nothing is guessed.",
+      "inconsistent": "The calories do not match the protein, carbs and fat. Check the values against the package.",
+      "missing": "Missing in Open Food Facts",
+      "save": "Use these values",
+      "saveError": "The values could not be saved. What you typed is still here. Try again.",
+      "fixErrors": "Fix the highlighted fields to continue."
+    },
+    "failure": {
+      "title": "The product could not be looked up",
+      "not_found": {
+        "title": "Product not found",
+        "message": "Open Food Facts has no product with this barcode. Check the number, or create the food yourself."
+      },
+      "no_network": {
+        "title": "No connection",
+        "message": "This product could not be looked up without internet. Products you looked up before are saved on this phone and work offline."
+      },
+      "timeout": {
+        "title": "No answer in time",
+        "message": "Open Food Facts took too long to answer. Try again in a moment."
+      },
+      "rate_limited": {
+        "title": "Too many lookups",
+        "message": "Open Food Facts allows a limited number of lookups per minute. Wait a moment and try again.",
+        "messageWait": "Open Food Facts allows a limited number of lookups per minute. Try again in {{seconds}} seconds."
+      },
+      "service_error": {
+        "title": "The service had a problem",
+        "message": "Open Food Facts did not answer correctly. Try again in a few minutes, or create the food yourself."
+      },
+      "invalid_code": {
+        "title": "That is not a valid barcode",
+        "message": "Check the digits and try again."
+      },
+      "typeAnother": "Type another number",
+      "create": "Create custom food"
+    }
+  },
+  "suggest": {
+    "action": "Suggest foods",
+    "actionHint": "Ideas from your AI provider for what is left today. Only your remaining calories and macros are sent.",
+    "aiTag": "AI",
+    "title": "Food ideas",
+    "close": "Close",
+    "notice": {
+      "title": "Send what is left today to {{provider}}?",
+      "body": "To suggest foods, these numbers are sent to {{provider}}: what is left today of calories, protein, carbs and fat, your goal type and the app language. No photos, no meals, no profile and no history are sent. {{provider}} handles them under its own terms. This notice appears once for each provider.",
+      "sends": "Sent: {{kcal}} kcal, {{protein}} g protein, {{carbs}} g carbs and {{fat}} g fat left. Goal: {{goal}}. Language: {{language}}.",
+      "continue": "Get suggestions",
+      "decline": "Not now"
+    },
+    "loading": "Looking for foods that fit",
+    "loadingHint": "Asking {{provider}}. Nothing is saved.",
+    "result": {
+      "intro": "Ideas for what is left today. Amounts and values are AI estimates: the real values come from the food database when you pick a food.",
+      "estimate": "AI estimate",
+      "line": "About {{grams}} g · ≈ {{kcal}} kcal · P {{protein}} · C {{carbs}} · F {{fat}}",
+      "add": "Add to a meal",
+      "addLabel": "Add {{name}} to a meal",
+      "again": "Suggest again",
+      "emptyTitle": "No suggestions this time",
+      "emptyBody": "None of the ideas fit what is left today. Try again."
+    },
+    "blocked": {
+      "noProvider": {
+        "title": "No AI provider set up",
+        "message": "Food suggestions use the AI provider you set up. Nothing is sent until you do.",
+        "action": "Set up an AI provider"
+      },
+      "noTargets": {
+        "title": "Set your targets first",
+        "message": "Suggestions need your daily calorie target to know what is left.",
+        "action": "Set up targets"
+      },
+      "nothingLeft": {
+        "title": "Nothing left to suggest today",
+        "message": "You have reached today’s calories, so there is nothing to add. Suggestions are not requested."
+      }
+    },
+    "failure": {
+      "providerSettings": "AI provider settings",
+      "no_network": {
+        "title": "No connection",
+        "message": "The suggestions could not be requested without internet. Try again when you are online."
+      },
+      "timeout": {
+        "title": "No answer in time",
+        "message": "The AI provider took too long to answer. Try again in a moment."
+      },
+      "auth_invalid": {
+        "title": "The AI provider refused the key",
+        "message": "Check the key in the provider settings, then try again."
+      },
+      "model_not_found": {
+        "title": "Model not available",
+        "message": "The provider does not know the model you chose. Pick another in the provider settings."
+      },
+      "no_vision": {
+        "title": "The model could not answer",
+        "message": "Check the model in the provider settings, then try again."
+      },
+      "quota": {
+        "title": "Provider limit reached",
+        "message": "Your AI provider has no requests left for now.",
+        "messageWait": "Your AI provider has no requests left for now. The limit resets in {{time}}."
+      },
+      "provider_unavailable": {
+        "title": "The provider is not available",
+        "message": "The AI provider had a problem. Try again in a few minutes."
+      },
+      "invalid_output": {
+        "title": "The answer could not be read",
+        "message": "The model did not answer in the expected format. Try again, or pick another model in the provider settings."
+      },
+      "no_food": {
+        "title": "The model declined",
+        "message": "The AI provider declined to answer this request. Try again later."
+      },
+      "provider_changed": {
+        "title": "The provider changed",
+        "message": "The AI provider changed while the request started. Try again."
+      },
+      "insecure_url": {
+        "title": "The provider address is not allowed",
+        "message": "The provider address must use a secure connection. Check it in the provider settings."
+      },
+      "unknown": {
+        "title": "Something went wrong",
+        "message": "The suggestions could not be requested. Try again. The detail below can help if it keeps happening."
+      }
+    }
+  },
+  "health": {
+    "title": "Integrations",
+    "intro": "Health Connect is the Android place where health apps share data on your phone. It stays off unless you turn it on here.",
+    "connect": "Health Connect",
+    "turnOn": "Turn on Health Connect",
+    "turnOff": "Turn off",
+    "manage": "Manage access in Health Connect",
+    "install": "Get Health Connect",
+    "update": "Update Health Connect",
+    "allow": "Allow",
+    "allowNamed": "Allow: {{name}}",
+    "working": "Working with Health Connect…",
+    "status": {
+      "off": "Off. Nothing is shared with Health Connect.",
+      "on": "On."
+    },
+    "grant": {
+      "writeNutrition": "Save my meals to Health Connect",
+      "readWeight": "Read my weight from Health Connect"
+    },
+    "grantState": {
+      "granted": "Allowed",
+      "not_granted": "Not allowed",
+      "revoked": "Access was taken away in Health Connect"
+    },
+    "notice": {
+      "declined": "No access was granted, so Health Connect stays off. You can try again whenever you like.",
+      "not_installed": "Health Connect is not installed on this phone. Install it, then come back and turn it on.",
+      "needs_update": "Health Connect needs an update before it can be used. Update it, then come back.",
+      "unavailable": "Health Connect cannot be used on this phone.",
+      "available": "Health Connect is ready.",
+      "sent_one": "{{count}} meal was queued to be saved to Health Connect.",
+      "sent_other": "{{count}} meals were queued to be saved to Health Connect."
+    },
+    "sync": {
+      "title": "Saved meals",
+      "none": "Every saved meal is up to date in Health Connect.",
+      "pending_one": "{{count}} meal is waiting to be written to Health Connect.",
+      "pending_other": "{{count}} meals are waiting to be written to Health Connect.",
+      "failing": "The last attempt did not work. Your meals are safe in this app and will be sent when Health Connect answers.",
+      "retry": "Try again now",
+      "weightAt": "Weight last read on {{date}}.",
+      "weightNever": "Weight has not been read yet.",
+      "weightsIgnored_one": "{{count}} weight reading from Health Connect is outside the range this app accepts and was left out.",
+      "weightsIgnored_other": "{{count}} weight readings from Health Connect are outside the range this app accepts and were left out."
+    },
+    "existing": {
+      "title": "Meals you already logged",
+      "body": "Turning on Health Connect saves new and edited meals. Meals you logged before, or imported, are not sent unless you ask.",
+      "button": "Send my existing meals",
+      "needsGrant": "Allow saving meals to use this."
+    },
+    "rationale": {
+      "title": "What Qbit Nutrition uses Health Connect for",
+      "intro": "These are the two kinds of data, and why each one is used. Nothing else is read or written.",
+      "writes": "Writes",
+      "reads": "Reads",
+      "nutrition": {
+        "title": "Nutrition",
+        "body": "Each meal you save becomes a nutrition record: when you ate, the meal type, calories, protein, carbohydrates, fat, and the fiber, sugars, sodium and vitamins and minerals this app tracks. This lets your other health apps show what you ate. Editing or deleting a meal here updates or removes its record."
+      },
+      "weight": {
+        "title": "Weight",
+        "body": "Weight entries from the last 30 days are copied into this app so they appear in your weight chart. They are marked as coming from Health Connect. Nothing about weight is written back."
+      },
+      "yourControl": "You stay in control",
+      "separate": "You can allow one of the two and decline the other. The other still works.",
+      "local": "Health Connect keeps its data on this phone. Photos, AI provider details and keys are never shared with it.",
+      "revoke": "You can turn this off here, or take access away in Health Connect, at any time.",
+      "privacy": "Read the privacy policy",
+      "continue": "Continue to permissions",
+      "notNow": "Not now"
     }
   }
 }

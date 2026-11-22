@@ -26,6 +26,7 @@ import {
   useTheme,
 } from '@/ui';
 import { useSession } from '../session/AppSession';
+import { hostOf } from './destination';
 import { useServices } from '../startup/AppProvider';
 import { getPreset, noteIn, type Preset } from './presets';
 import { ProviderSaveError, normalizeBaseUrl, type ProviderView, type TestOutcome } from './providerService';
@@ -109,6 +110,8 @@ function ProviderEditor({ existing: initial, preset, onBack, onDone }: { existin
   const [apiKey, setApiKey] = useState('');
   const hasKey = existing?.hasKey ?? false;
   const isActive = existing?.isActive ?? false;
+  // Imported from a file and not confirmed: the address is shown, and nothing can be sent or keyed until the person confirms it.
+  const imported = existing?.imported ?? false;
   const [firstProvider, setFirstProvider] = useState(false);
   const [touched, setTouched] = useState<Record<Field, boolean>>({ name: false, baseUrl: false, model: false, timeout: false });
   const [test, setTest] = useState<TestState>({ status: 'idle' });
@@ -309,6 +312,28 @@ function ProviderEditor({ existing: initial, preset, onBack, onDone }: { existin
         </ScreenFooter>
       }>
       <View style={styles.body}>
+        {imported && existing ? (
+          <View style={[styles.notes, { backgroundColor: colors.warningSoft }]} testID="imported-banner">
+            <AppText variant="heading" accessibilityRole="header">
+              {t('providers.imported.title')}
+            </AppText>
+            <AppText>{t('providers.imported.banner', { host: hostOf(existing.baseUrl) })}</AppText>
+            <Button
+              label={t('providers.imported.confirm', { host: hostOf(existing.baseUrl) })}
+              icon="check"
+              onPress={() => {
+                providers.confirmImported(existing.id).then(
+                  (confirmed) => {
+                    setExisting(confirmed);
+                    notifyChange();
+                  },
+                  () => setProblem('save'),
+                );
+              }}
+              testID="confirm-imported"
+            />
+          </View>
+        ) : null}
         {preset ? (
           <View style={[styles.notes, { backgroundColor: colors.surface }]}>
             <AppText variant="heading" accessibilityRole="header">
@@ -340,6 +365,7 @@ function ProviderEditor({ existing: initial, preset, onBack, onDone }: { existin
           autoCapitalize="none"
         />
 
+        {!imported ? (
         <View style={styles.keyBlock}>
           <TextField label={t('providers.form.apiKey')} value={apiKey} onChangeText={changeKey} secret hint={hasKey ? t('providers.key.saved') : t('providers.key.hint')} />
           {keyWillClear ? (
@@ -354,7 +380,11 @@ function ProviderEditor({ existing: initial, preset, onBack, onDone }: { existin
               {t('providers.key.none')}
             </AppText>
           ) : null}
+          <AppText variant="bodySm" tone="muted" style={styles.indent}>
+            {t('providers.form.keyGoesTo', { host: hostOf(baseUrl) })}
+          </AppText>
         </View>
+        ) : null}
 
         <TextField
           label={t('providers.form.model')}
@@ -381,6 +411,7 @@ function ProviderEditor({ existing: initial, preset, onBack, onDone }: { existin
             ) : null}
           </View>
         ) : null}
+        {!imported ? (
         <Button
           label={t('providers.form.findModels')}
           variant="secondary"
@@ -388,6 +419,7 @@ function ProviderEditor({ existing: initial, preset, onBack, onDone }: { existin
           onPress={() => void findModels()}
           disabled={modelList.status === 'loading'}
         />
+        ) : null}
         {modelList.status === 'none' ? <FieldMessage message={t('providers.form.noModelList')} /> : null}
         {modelList.status === 'storage' ? <FieldMessage message={t('providers.test.result.key_storage')} /> : null}
 
@@ -406,6 +438,7 @@ function ProviderEditor({ existing: initial, preset, onBack, onDone }: { existin
           maxLength={4}
         />
 
+        {!imported ? (
         <View style={styles.testBlock}>
           <Button
             label={test.status === 'running' ? t('providers.form.testing') : t('providers.form.test')}
@@ -416,6 +449,7 @@ function ProviderEditor({ existing: initial, preset, onBack, onDone }: { existin
           />
           <TestResult state={test} />
         </View>
+        ) : null}
 
         {!existing && firstProvider ? (
           <AppText variant="bodySm" tone="muted" style={styles.indent}>

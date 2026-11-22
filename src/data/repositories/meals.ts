@@ -6,12 +6,16 @@ import { deriveMealTime } from '../localDate';
 import { meal, mealItem, mealItemNutrient, REF_FOOD_SOURCES } from '../schema';
 import type { FoodResolver } from './foodResolver';
 import { upsertUsage } from './foodUsage';
+import { requireItemWithinLimits } from './limits';
 import {
+  PHOTO_PATH_PATTERN,
+  TEXT_LIMITS,
   invalid,
   isHeadline,
   nutrientEntries,
   requireFinite,
   requireLocalDate,
+  requireMaxLength,
   type RepositoryContext,
 } from './shared';
 
@@ -78,8 +82,12 @@ export interface MealRepository {
    */
   save(input: SaveMealInput): Promise<MealWithItems>;
   getMeal(id: string): Promise<MealWithItems | null>;
+  /** The id of every saved meal, oldest first. */
+  listIds(): Promise<string[]>;
   /** The meals of a local date (oldest first) with their items, and the day totals. */
   getDay(localDate: string): Promise<DayLog>;
+  /** The distinct photo paths that meals refer to, to tell which kept photos are in use. */
+  photoPaths(): Promise<string[]>;
   /** Totals of one local date (zeros for headline nutrients when empty). */
   dayTotals(localDate: string): Promise<NutrientAmounts>;
   /** Totals per local date between `from` and `to` inclusive; days without meals are omitted. */
@@ -94,7 +102,8 @@ export interface MealRepository {
    * food no longer exists. An item detected by the AI becomes `ai_edited`.
    */
   updateItemGrams(itemId: string, grams: number): Promise<MealItem>;
-  deleteItem(itemId: string): Promise<void>;
+  /** Removes the item and returns the id of the meal it belonged to. */
+  deleteItem(itemId: string): Promise<string>;
   /** Deletes the meal; its items and snapshots go with it (foreign key cascade). */
   deleteMeal(mealId: string): Promise<void>;
 }
@@ -117,7 +126,8 @@ const headline = (a: NutrientAmounts) => ({
   fatG: a.fat ?? 0,
 });
 
-function loadMeals(db: Pick<AppDatabase, 'select'>, where: SQL): MealWithItems[] {
+/** Meals matching `where`, oldest first, with their items and nutrient snapshots. Shared with the backup repository. */
+export function loadMeals(db: Pick<AppDatabase, 'select'>, where: SQL): MealWithItems[] {
   const meals = db
     .select()
     .from(meal)
@@ -216,10 +226,15 @@ export function createMealRepository(
     async save(input) {
       if (input.items.length === 0) throw invalid('a meal needs at least one item');
       const { eatenAt, localDate } = deriveMealTime(input.eatenAt, input.timeZone);
+      requireMaxLength(input.name, TEXT_LIMITS.mealName, 'name');
+      requireMaxLength(input.note, TEXT_LIMITS.note, 'note');
+      if (input.photoPath != null && !PHOTO_PATH_PATTERN.test(input.photoPath)) throw invalid(`photoPath must be photos/<name>.jpg, got "${input.photoPath}"`);
       input.items.forEach((item, i) => {
         requireFinite(item.grams, `items[${i}].grams`, { min: 0 });
         if (item.displayName.trim() === '') throw invalid(`items[${i}].displayName must not be blank`);
+        requireMaxLength(item.displayName, TEXT_LIMITS.name, `items[${i}].displayName`);
         nutrientEntries(item.nutrients, `items[${i}].nutrients`);
+        requireItemWithinLimits(item.grams, item.nutrients, `items[${i}]`);
       });
 
       const at = now().toISOString();
@@ -266,8 +281,26 @@ export function createMealRepository(
       return loadMeal(mealId)!;
     },
 
+    async photoPaths() {
+      return db
+        .selectDistinct({ path: meal.photoPath })
+        .from(meal)
+        .where(sql`${meal.photoPath} IS NOT NULL`)
+        .all()
+        .map((r) => r.path!);
+    },
+
     async getMeal(id) {
       return loadMeal(id);
+    },
+
+    async listIds() {
+      return db
+        .select({ id: meal.id })
+        .from(meal)
+        .orderBy(asc(meal.eatenAt), asc(meal.createdAt), asc(meal.id))
+        .all()
+        .map((r) => r.id);
     },
 
     async getDay(localDate) {
@@ -332,6 +365,7 @@ export function createMealRepository(
         }
       }
       const snapshot = amounts;
+      requireItemWithinLimits(grams, snapshot, 'item');
 
       db.transaction((tx) => {
         const row = tx.select().from(mealItem).where(eq(mealItem.id, itemId)).get();
@@ -351,7 +385,7 @@ export function createMealRepository(
     },
 
     async deleteItem(itemId) {
-      db.transaction((tx) => {
+      return db.transaction((tx) => {
         const removed = tx
           .delete(mealItem)
           .where(eq(mealItem.id, itemId))
@@ -359,6 +393,7 @@ export function createMealRepository(
           .all();
         if (removed.length === 0) throw new DataError('not_found', `meal item not found: ${itemId}`);
         tx.update(meal).set({ updatedAt: now().toISOString() }).where(eq(meal.id, removed[0]!.mealId)).run();
+        return removed[0]!.mealId;
       });
     },
 

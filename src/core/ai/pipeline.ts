@@ -5,7 +5,10 @@ import { checkScanResult } from './checks';
 import { NoFoodDetectedError, ProviderError } from './errors';
 import { createHttpClient } from './http';
 import { PROMPT_VERSION, USER_INSTRUCTION, buildRepairMessage, buildSystemPrompt } from './prompt';
+import { extractJson } from './jsonText';
 import { ScanResult } from './schema';
+import { suggestFoods } from './suggest';
+import type { SuggestInput } from './suggest';
 import type {
   AiDeps,
   AnalyzeInput,
@@ -20,24 +23,6 @@ const MAX_ECHOED_OUTPUT = 8000;
 const MAX_ISSUES = 10;
 
 type Parsed = { ok: true; value: ScanResult } | { ok: false; message: string };
-
-function extractJson(text: string): unknown {
-  const trimmed = text.trim();
-  const candidates = [trimmed];
-  const fenced = /```(?:json)?\s*([\s\S]*?)```/i.exec(trimmed);
-  if (fenced) candidates.push(fenced[1].trim());
-  const first = trimmed.indexOf('{');
-  const last = trimmed.lastIndexOf('}');
-  if (first !== -1 && last > first) candidates.push(trimmed.slice(first, last + 1));
-  for (const candidate of candidates) {
-    try {
-      return JSON.parse(candidate);
-    } catch {
-      // try the next shape
-    }
-  }
-  throw new Error('not JSON');
-}
 
 function parseScanResult(text: string): Parsed {
   let json: unknown;
@@ -188,10 +173,11 @@ export async function listModels(
   return getAdapter(profile.adapter).listModels({ profile, apiKey, signal, http: createHttpClient(deps) });
 }
 
-/** The `VisionAdapter` contract of docs/09 section 1.1 (without `suggestFoods`), bound to injected platform APIs. */
+/** The `VisionAdapter` contract of docs/09 section 1.1, bound to injected platform APIs. */
 export function createVisionGateway(deps: AiDeps) {
   return {
     analyzeMeal: (input: AnalyzeInput) => analyzeMeal(input, deps),
+    suggestFoods: (input: SuggestInput) => suggestFoods(input, deps),
     listModels: (profile: ProviderProfile, apiKey: string | null, signal?: AbortSignal) =>
       listModels(profile, apiKey, deps, signal),
     testConnection: (

@@ -45,6 +45,26 @@ describe('memory secret store', () => {
   it('rejects an empty secret', async () => {
     await expect(createMemorySecretStore().set('a', '')).rejects.toBeInstanceOf(SecretStoreError);
   });
+
+  it('enforces the id rule of the real store, so a test cannot store a key under a name the device would refuse', async () => {
+    const store = createMemorySecretStore();
+    for (const bad of ['bad id/with slash', '../x', '', 'a'.repeat(129), 'ünï']) {
+      await expect(store.set(bad, 'k')).rejects.toMatchObject({ code: 'invalid' });
+      expect(await store.has(bad)).toBe(false);
+      expect(await store.get(bad)).toBeNull();
+      await expect(store.remove(bad)).resolves.toBeUndefined(); // an id that cannot hold a key never blocks a removal
+    }
+    expect(await store.list()).toEqual([]);
+  });
+
+  it('lists the ids that hold a key', async () => {
+    const store = createMemorySecretStore();
+    await store.set('b', 'k-1');
+    await store.set('a', 'k-2');
+    expect((await store.list()).sort()).toEqual(['a', 'b']);
+    await store.remove('a');
+    expect(await store.list()).toEqual(['b']);
+  });
 });
 
 describe('expo secret store', () => {
@@ -58,8 +78,9 @@ describe('expo secret store', () => {
   it('keeps each secret under its own profile id, in a name expo-secure-store accepts', async () => {
     const store = createExpoSecretStore();
     await store.set(ID, 'sk-abc');
-    expect(mockCalls[0]!.name).toBe(`ai_key.${ID}`);
-    expect(mockCalls[0]!.name).toMatch(/^[A-Za-z0-9._-]+$/);
+    const write = mockCalls.find((c) => c.fn === 'set' && c.name === `ai_key.${ID}`);
+    expect(write).toBeDefined();
+    expect(mockCalls.every((c) => /^[A-Za-z0-9._-]+$/.test(c.name))).toBe(true);
     expect(await store.get(ID)).toBe('sk-abc');
     expect(await store.has(ID)).toBe(true);
     await store.remove(ID);
@@ -68,7 +89,7 @@ describe('expo secret store', () => {
 
   it('does not let the secret migrate to another device on iOS', async () => {
     await createExpoSecretStore().set('p', 'sk-abc');
-    expect(mockCalls[0]!.options).toMatchObject({ keychainAccessible: 'afterFirstUnlockThisDeviceOnly' });
+    expect(mockCalls.find((c) => c.name === 'ai_key.p')!.options).toMatchObject({ keychainAccessible: 'afterFirstUnlockThisDeviceOnly' });
   });
 
   it('rejects an id that is not a safe name instead of building a strange one', async () => {
@@ -92,5 +113,53 @@ describe('expo secret store', () => {
     mockFail = new Error('native module missing');
     const error = await createExpoSecretStore().set('p', 'sk-abc').then(() => undefined, (e: unknown) => e as SecretStoreError);
     expect(error?.code).toBe('unavailable');
+  });
+});
+
+
+describe('expo secret store: the index of stored ids', () => {
+  beforeEach(() => {
+    mockVault.clear();
+    mockCalls.length = 0;
+    mockFail = null;
+    mockUnavailable = false;
+  });
+
+  it('lists the ids it stored, and writes the index before the key so the index never misses a key', async () => {
+    const store = createExpoSecretStore();
+    await store.set('a', 'k-1');
+    await store.set('b', 'k-2');
+    expect((await store.list()).sort()).toEqual(['a', 'b']);
+    const firstIndexWrite = mockCalls.findIndex((c) => c.fn === 'set' && c.name === 'ai_key_index');
+    const firstKeyWrite = mockCalls.findIndex((c) => c.fn === 'set' && c.name === 'ai_key.a');
+    expect(firstIndexWrite).toBeGreaterThanOrEqual(0);
+    expect(firstIndexWrite).toBeLessThan(firstKeyWrite);
+    await store.remove('a');
+    expect(await store.list()).toEqual(['b']);
+    expect(await store.has('a')).toBe(false);
+  });
+
+  it('never lets an id that cannot hold a key block a removal or a lookup', async () => {
+    const store = createExpoSecretStore();
+    await expect(store.remove('bad id/with slash')).resolves.toBeUndefined();
+    expect(await store.has('bad id/with slash')).toBe(false);
+    expect(await store.get('bad id/with slash')).toBeNull();
+    await expect(store.set('bad id/with slash', 'k')).rejects.toMatchObject({ code: 'invalid' });
+  });
+
+  it('adopts keys stored before the index existed', async () => {
+    mockVault.set('ai_key.legacy', 'old-key');
+    const store = createExpoSecretStore();
+    expect(await store.list()).toEqual([]);
+    await store.track(['legacy', 'no-key-here', 'bad id']);
+    expect(await store.list()).toEqual(['legacy']);
+  });
+
+  it('survives a damaged index', async () => {
+    mockVault.set('ai_key_index', '{not json');
+    const store = createExpoSecretStore();
+    expect(await store.list()).toEqual([]);
+    await store.set('a', 'k-1');
+    expect(await store.list()).toEqual(['a']);
   });
 });

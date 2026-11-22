@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useImperativeHandle, useRef, useState, type Ref } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { addDays, deriveMealTime } from '@/data';
 import { formatClock, formatDayDate, formatNumber } from '@/i18n/format';
@@ -24,9 +24,19 @@ import {
 } from '@/ui';
 import { useSession } from '../session/AppSession';
 import { useServices } from '../startup/AppProvider';
+import type { FoodSuggestion } from '@/core/ai';
+import { SuggestEntry } from '../suggest/SuggestEntry';
+import { SuggestSheet } from '../suggest/SuggestSheet';
 import type { TodayData } from './loadToday';
 import { insightMessage } from './insightText';
 import { useTodayData } from './useTodayData';
+
+/** DEVELOPMENT ONLY: scenario picker of the browser preview's fake provider (for the food suggestions). `__DEV__` is false in release builds, so Metro drops the require. */
+const DevScanPanel: typeof import('../scan/dev/DevScanPanel').DevScanPanel | null =
+  __DEV__ && Platform.OS === 'web'
+    ? // eslint-disable-next-line @typescript-eslint/no-require-imports
+      (require('../scan/dev/DevScanPanel') as typeof import('../scan/dev/DevScanPanel')).DevScanPanel
+    : null;
 
 /** In development only: Metro removes this branch (and the module) from release bundles. */
 const DevSeedButton: typeof import('./DevSeedButton').DevSeedButton | null = __DEV__
@@ -45,6 +55,10 @@ interface TodayScreenProps {
   onOpenMeal?: (mealId: string) => void;
   /** The action of the "no targets" notice: leads to the goal setup. */
   onSetupTargets?: () => void;
+  /** Food suggestions (S6): the person wants one in a meal. Without it the suggestion action is not offered. */
+  onAddSuggestion?: (suggestion: FoodSuggestion) => void;
+  /** Leads to the AI provider settings (suggestions with no provider, or a failure the settings can fix). */
+  onProviderSettings?: () => void;
   /** The clock; tests pass a fixed one. */
   now?: () => Date;
   /** Tells the dock to pulse its scan button (the first-day prompt). */
@@ -59,7 +73,7 @@ const systemNow = () => new Date();
  * insight, and the day's meals; the arrows open past days (S7). All data comes through the
  * repositories in `useTodayData`; this file only lays it out.
  */
-export function TodayScreen({ onOpenSettings, onOpenMeal, onSetupTargets, now = systemNow, onEmptyDayChange, handleRef }: TodayScreenProps) {
+export function TodayScreen({ onOpenSettings, onOpenMeal, onSetupTargets, onAddSuggestion, onProviderSettings, now = systemNow, onEmptyDayChange, handleRef }: TodayScreenProps) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language as Locale;
   const { repos } = useServices();
@@ -95,7 +109,12 @@ export function TodayScreen({ onOpenSettings, onOpenMeal, onSetupTargets, now = 
   return (
     <ScreenFrame
       bottomInset={layout.dockClearance}
-      header={<WordmarkHeader name={t('app.name')} label={t('app.wordmarkLabel')} settingsLabel={t('today.settings')} onSettings={onOpenSettings} />}>
+      header={
+        <View style={styles.header}>
+          <WordmarkHeader name={t('app.name')} label={t('app.wordmarkLabel')} settingsLabel={t('today.settings')} onSettings={onOpenSettings} />
+          {DevScanPanel ? <DevScanPanel top={14} right={72} /> : null}
+        </View>
+      }>
       <DayNavigation locale={locale} localDate={localDate} today={today} onGo={goTo} />
       {state.status === 'loading' ? <TodaySkeleton /> : null}
       {state.status === 'error' ? (
@@ -105,7 +124,7 @@ export function TodayScreen({ onOpenSettings, onOpenMeal, onSetupTargets, now = 
           </ErrorState>
         </View>
       ) : null}
-      {state.status === 'ready' ? <TodayContent key={state.data.localDate} data={state.data} locale={locale} onSeeded={state.reload} onOpenMeal={onOpenMeal} onSetupTargets={onSetupTargets} /> : null}
+      {state.status === 'ready' ? <TodayContent key={state.data.localDate} data={state.data} locale={locale} onSeeded={state.reload} onOpenMeal={onOpenMeal} onSetupTargets={onSetupTargets} onAddSuggestion={onAddSuggestion} onProviderSettings={onProviderSettings} /> : null}
     </ScreenFrame>
   );
 }
@@ -147,14 +166,19 @@ function TodayContent({
   onSeeded,
   onOpenMeal,
   onSetupTargets,
+  onAddSuggestion,
+  onProviderSettings,
 }: {
   data: TodayData;
   locale: Locale;
   onSeeded: () => void;
   onOpenMeal?: (mealId: string) => void;
   onSetupTargets?: () => void;
+  onAddSuggestion?: (suggestion: FoodSuggestion) => void;
+  onProviderSettings?: () => void;
 }) {
   const { t } = useTranslation();
+  const [suggesting, setSuggesting] = useState(false);
   const n = useCallback((value: number) => formatNumber(locale, value), [locale]);
   const { totals, targets, meals } = data;
 
@@ -237,6 +261,18 @@ function TodayContent({
         </View>
       ) : null}
 
+      {data.isToday && onAddSuggestion ? <SuggestEntry onPress={() => setSuggesting(true)} /> : null}
+      {onAddSuggestion ? (
+        <SuggestSheet
+          visible={suggesting}
+          day={data}
+          onClose={() => setSuggesting(false)}
+          onProviderSettings={() => onProviderSettings?.()}
+          onSetupTargets={onSetupTargets}
+          onAdd={onAddSuggestion}
+        />
+      ) : null}
+
       {meals.length > 0 ? (
         <View accessibilityLabel={t('today.mealsHeading')}>
           <View style={styles.sectionHeader}>
@@ -300,6 +336,8 @@ function TodaySkeleton() {
 }
 
 const styles = StyleSheet.create({
+  // Above the scrolling content, so the development panel's list (which hangs below the header) can be pressed.
+  header: { zIndex: 50 },
   dayNav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.s1 },
   dayTitle: { minWidth: 156, textAlign: 'center' },
   dayDate: { fontWeight: '500' },

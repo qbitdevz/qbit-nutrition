@@ -108,6 +108,13 @@ describe('capture (flow B step 1, S4)', () => {
     expect(screen.queryByText('Whole plate in frame, from above')).toBeNull();
   });
 
+  it('offers "Add manually" on the viewfinder itself, so the manual path (search, custom foods, barcodes) never needs the camera to fail first (docs/04 flow D)', async () => {
+    await open();
+    await screen.findByRole('button', { name: 'Take photo' });
+    await press('Add manually');
+    expect(await screen.findByLabelText('Search foods')).toBeOnTheScreen();
+  });
+
   it('explains the camera permission before asking for it, then shows the camera once it is granted', async () => {
     await open();
     kit.platform.state.permission = 'undetermined';
@@ -165,7 +172,7 @@ describe('the one-time notice (S4)', () => {
   it('sends nothing until it is acknowledged; declining returns to the preview', async () => {
     await open();
     await shootAndAnalyze({ acknowledge: false });
-    expect(await screen.findByText('This photo will be sent to Test provider')).toBeOnTheScreen();
+    expect(await screen.findByText('This photo will be sent to Test provider (llm.example.test)')).toBeOnTheScreen();
     expect(kit.fetch.calls).toHaveLength(0);
     await press('Not now');
     expect(await screen.findByRole('button', { name: 'Analyze' })).toBeOnTheScreen();
@@ -192,7 +199,7 @@ describe('the one-time notice (S4)', () => {
     await cleanup();
     await renderApp(<Flow />, { services: kit.services, scanPlatform: kit.platform });
     await shootAndAnalyze({ acknowledge: false });
-    expect(await screen.findByText('This photo will be sent to Second')).toBeOnTheScreen();
+    expect(await screen.findByText('This photo will be sent to Second (second.example.test)')).toBeOnTheScreen();
     expect(kit.fetch.calls).toHaveLength(2);
   });
 });
@@ -204,7 +211,7 @@ describe('analyzing (flow B step 3)', () => {
     expect(await screen.findByText('Analyzing your meal')).toBeOnTheScreen();
     expect(screen.getByTestId('scan-photo')).toBeOnTheScreen();
     expect(await screen.findByRole('progressbar')).toBeOnTheScreen();
-    expect(screen.getByText('AI provider: Test provider')).toBeOnTheScreen();
+    expect(screen.getByText('AI provider: Test provider (llm.example.test)')).toBeOnTheScreen();
     await waitFor(() => expect(kit.fetch.calls).toHaveLength(1));
 
     await press('Cancel');
@@ -548,7 +555,7 @@ describe('Spanish', () => {
     expect(await screen.findByText('El plato completo en el encuadre, desde arriba')).toBeOnTheScreen();
     await press('Tomar foto');
     await press('Analizar');
-    expect(await screen.findByText('Esta foto se enviará a Test provider')).toBeOnTheScreen();
+    expect(await screen.findByText('Esta foto se enviará a Test provider (llm.example.test)')).toBeOnTheScreen();
     await press('Enviar foto');
     await screen.findByText(/La IA encontró 2 alimentos/);
     expect(kit.fetch.calls[0]!.rawBody).toContain('Spanish (es)');

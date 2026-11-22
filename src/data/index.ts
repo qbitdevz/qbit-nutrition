@@ -6,6 +6,7 @@
  * imported by the app's startup only; `src/core` must never import from `src/data`.
  */
 export { initializeDatabase, bundledMigrations } from './database';
+export { newId } from './ids';
 export type { AppDatabase, MigrationBundle } from './database';
 export { DataError, isDataError } from './errors';
 export type { DataErrorCode } from './errors';

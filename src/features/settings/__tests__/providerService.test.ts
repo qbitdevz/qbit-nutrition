@@ -78,6 +78,33 @@ describe('saving a key (S3)', () => {
     expect(await services.secrets.has(created.id)).toBe(false);
   });
 
+  it('removes the keys of profile ids, including ids that have no profile row any more', async () => {
+    setup();
+    const created = await services.providers.create({ ...base, apiKey: KEY });
+    await services.secrets.set('orphan-id', NEW_KEY);
+    await services.providers.removeKeys([created.id, 'orphan-id', 'never-had-one']);
+    expect(await services.secrets.has(created.id)).toBe(false);
+    expect(await services.secrets.has('orphan-id')).toBe(false);
+  });
+
+  it('tries every key even when one cannot be removed, then reports the failure without the platform detail', async () => {
+    setup();
+    await services.secrets.set('a', KEY);
+    await services.secrets.set('b', NEW_KEY);
+    const remove = services.secrets.remove.bind(services.secrets);
+    jest.spyOn(services.secrets, 'remove').mockImplementation(async (id) => {
+      if (id === 'a') throw new Error(`keystore says ${KEY}`);
+      return remove(id);
+    });
+    const error = await services.providers.removeKeys(['a', 'b']).then(
+      () => null,
+      (e: unknown) => e,
+    );
+    expect(error).toMatchObject({ name: 'SecretStoreError' });
+    expect(String((error as Error).message)).not.toContain(KEY);
+    expect(await services.secrets.has('b')).toBe(false);
+  });
+
   it('does not create a profile whose key could not be stored', async () => {
     setup();
     jest.spyOn(services.secrets, 'set').mockRejectedValue(new Error('keystore unavailable'));

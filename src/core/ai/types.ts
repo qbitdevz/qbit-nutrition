@@ -1,6 +1,6 @@
 import type { ProviderError } from './errors';
 import type { Locale } from './prompt';
-import type { ScanResult } from './schema';
+import type { SchemaDialect, ScanResult } from './schema';
 
 export type { Locale };
 
@@ -91,6 +91,16 @@ export interface AnalyzeOutput {
 
 export type TestConnectionResult = { ok: true; outputMode: OutputMode } | { ok: false; error: ProviderError };
 
+/** What an adapter needs to ask for one kind of structured answer: the names providers show, and the schema in their dialect. */
+export interface OutputFormat {
+  /** Name of the JSON schema (OpenAI `response_format`). */
+  schemaName: string;
+  /** Name and description of the forced tool in tool mode. */
+  toolName: string;
+  toolDescription: string;
+  schema(dialect: SchemaDialect): object;
+}
+
 /** What an adapter sends for one model call. */
 export interface GenerateRequest {
   profile: ProviderProfile;
@@ -98,7 +108,10 @@ export interface GenerateRequest {
   mode: OutputMode;
   system: string;
   userText: string;
-  imageJpegBase64: string;
+  /** Absent for a text-only request (food suggestions send no photo). */
+  imageJpegBase64?: string;
+  /** The answer format; the meal-scan format when absent. */
+  format?: OutputFormat;
   /** Set on the repair retry: the previous reply and what was wrong with it. */
   repair?: { previousOutput: string; message: string };
   signal: AbortSignal;

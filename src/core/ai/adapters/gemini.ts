@@ -5,10 +5,10 @@
 // `usageMetadata`, `promptFeedback.blockReason`, `finishReason`.
 import { ProviderError } from '../errors';
 import { jsonOnlyInstruction } from '../prompt';
-import { providerJsonSchema } from '../schema';
 import type { OutputMode, ProviderAdapter } from '../types';
 import { joinUrl } from '../url';
 import {
+  SCAN_FORMAT,
   getOrNull,
   jsonHeaders,
   malformed,
@@ -47,12 +47,13 @@ export const geminiAdapter: ProviderAdapter = {
   async generate(request) {
     const { profile, apiKey, mode } = request;
     if (!MODES.includes(mode)) throw unsupportedMode('gemini', mode);
-    const schema = providerJsonSchema('gemini');
+    const format = request.format ?? SCAN_FORMAT;
+    const schema = format.schema('gemini');
 
     const contents: Json[] = [
       {
         role: 'user',
-        parts: [{ inlineData: { mimeType: 'image/jpeg', data: request.imageJpegBase64 } }, { text: request.userText }],
+        parts: [...(request.imageJpegBase64 === undefined ? [] : [{ inlineData: { mimeType: 'image/jpeg', data: request.imageJpegBase64 } }]), { text: request.userText }],
       },
     ];
     if (request.repair) {

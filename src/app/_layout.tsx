@@ -6,9 +6,14 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { Platform } from 'react-native';
 
+import { DataPlatformProvider } from '@/features/data/DataPlatformContext';
+import { StartupSweep } from '@/features/data/StartupSweep';
+import { HealthSyncRunner } from '@/features/health/HealthSyncRunner';
+import { NoticeGate } from '@/features/legal/NoticeGate';
 import { MealDraftProvider } from '@/features/logging/draft';
 import { ScanPlatformProvider } from '@/features/scan/ScanPlatformContext';
 import { ScanSessionProvider } from '@/features/scan/ScanSession';
+import { createExpoDataPlatform } from '@/platform/expoDataPlatform';
 import { createExpoScanPlatform } from '@/platform/expoScanPlatform';
 import { AppSession, useSession } from '@/features/session/AppSession';
 import { AppProvider } from '@/features/startup/AppProvider';
@@ -23,6 +28,13 @@ const scanPlatform =
     ? // eslint-disable-next-line @typescript-eslint/no-require-imports
       (require('@/features/scan/dev/devPlatform') as typeof import('@/features/scan/dev/devPlatform')).createDevScanPlatform()
     : createExpoScanPlatform();
+
+// DEVELOPMENT ONLY: the browser preview has no app file folder, share sheet or file picker, so it uses an in-memory stand-in with a sample export. Dropped from release bundles with `__DEV__`.
+const dataPlatform =
+  __DEV__ && Platform.OS === 'web'
+    ? // eslint-disable-next-line @typescript-eslint/no-require-imports
+      (require('@/features/data/dev/devDataPlatform') as typeof import('@/features/data/dev/devDataPlatform')).createDevDataPlatform()
+    : createExpoDataPlatform();
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useAppFonts();
@@ -41,11 +53,17 @@ export default function RootLayout() {
         <AppSession>
           <SnackbarProvider>
             <ScanPlatformProvider platform={scanPlatform}>
-              <ScanSessionProvider>
-                <MealDraftProvider>
-                  <AppStack />
-                </MealDraftProvider>
-              </ScanSessionProvider>
+              <DataPlatformProvider platform={dataPlatform}>
+                <StartupSweep />
+                <HealthSyncRunner />
+                <ScanSessionProvider>
+                  <MealDraftProvider>
+                    <NoticeGate>
+                      <AppStack />
+                    </NoticeGate>
+                  </MealDraftProvider>
+                </ScanSessionProvider>
+              </DataPlatformProvider>
             </ScanPlatformProvider>
           </SnackbarProvider>
         </AppSession>
@@ -77,6 +95,7 @@ function AppStack() {
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="scan" options={{ presentation: 'modal', animation: reduced ? 'fade' : 'slide_from_bottom' }} />
           <Stack.Screen name="log/search" />
+          <Stack.Screen name="log/barcode" />
           <Stack.Screen name="log/review" />
           <Stack.Screen name="log/custom-food" />
           <Stack.Screen name="meal/[id]" />

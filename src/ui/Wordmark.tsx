@@ -6,6 +6,9 @@ import { IconButton } from './IconButton';
 import { fontFamily, layout, spacing, typography } from './tokens';
 import { useTheme } from './useTheme';
 
+/** The credit under the wordmark. Part of the brand mark, like the name: the same in every language, and hidden from screen readers (the spoken name is `label`). */
+const BRAND_CREDIT = 'by qbitdev';
+
 interface WordmarkProps {
   name: string;
   /** Spoken name of the mark, e.g. "Qbit Nutrition by qbitdev". */
@@ -35,7 +38,7 @@ export function Wordmark({ name, label }: WordmarkProps) {
         </SvgText>
       </Svg>
       <AppText variant="caption" tone="muted" style={styles.by} aria-hidden>
-        by qbitdev
+        {BRAND_CREDIT}
       </AppText>
     </View>
   );

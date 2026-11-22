@@ -6,10 +6,13 @@ import { PressableScale } from './PressableScale';
 import { layout, radius, spacing } from './tokens';
 import { useTheme } from './useTheme';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+/** `ai` is the cyan fill reserved for AI actions (design/system.md, "Color rules"). */
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'ai';
 
 interface ButtonProps {
   label: string;
+  /** The accessible name, when it should say more than the visible label ("Add Apple to a meal" for a button that reads "Add to a meal"). */
+  accessibilityLabel?: string;
   onPress?: () => void;
   variant?: ButtonVariant;
   icon?: IconName;
@@ -22,7 +25,7 @@ interface ButtonProps {
 }
 
 /** Primary, secondary and ghost pill buttons (design/system.md, "Components"): 56 high, one primary per screen. */
-export function Button({ label, onPress, variant = 'primary', icon, disabled = false, hint, testID, block = true }: ButtonProps) {
+export function Button({ label, accessibilityLabel, onPress, variant = 'primary', icon, disabled = false, hint, testID, block = true }: ButtonProps) {
   const { colors, scheme } = useTheme();
 
   const fill: ViewStyle =
@@ -30,21 +33,23 @@ export function Button({ label, onPress, variant = 'primary', icon, disabled = f
       ? { backgroundColor: colors.surfaceHigh }
       : variant === 'primary'
         ? { backgroundColor: colors.primary }
-        : variant === 'secondary'
-          ? { borderWidth: 1.5, borderColor: colors.borderStrong }
-          : {};
+        : variant === 'ai'
+          ? { backgroundColor: colors.ai }
+          : variant === 'secondary'
+            ? { borderWidth: 1.5, borderColor: colors.borderStrong }
+            : {};
   const glow: ViewStyle =
     variant === 'primary' && !disabled
       ? scheme === 'dark'
         ? { shadowColor: colors.glow, shadowOpacity: 0.38, shadowRadius: 14, shadowOffset: { width: 0, height: 8 }, elevation: 8 }
         : { shadowColor: colors.glow, shadowOpacity: 0.25, shadowRadius: 10, shadowOffset: { width: 0, height: 8 }, elevation: 4 }
       : {};
-  const tone = disabled ? 'muted' : variant === 'primary' ? 'onPrimary' : variant === 'secondary' ? 'default' : 'primary';
+  const tone = disabled ? 'muted' : variant === 'primary' ? 'onPrimary' : variant === 'ai' ? 'onAi' : variant === 'secondary' ? 'default' : 'primary';
 
   return (
     <PressableScale
       accessibilityRole="button"
-      accessibilityLabel={label}
+      accessibilityLabel={accessibilityLabel ?? label}
       accessibilityHint={hint}
       accessibilityState={{ disabled }}
       disabled={disabled}
@@ -52,7 +57,7 @@ export function Button({ label, onPress, variant = 'primary', icon, disabled = f
       testID={testID}
       style={[styles.base, block ? styles.block : null, fill, glow]}>
       <View style={styles.content}>
-        {icon ? <Icon name={icon} size={22} color={disabled ? colors.textMuted : tone === 'onPrimary' ? colors.onPrimary : tone === 'primary' ? colors.primaryText : colors.text} /> : null}
+        {icon ? <Icon name={icon} size={22} color={disabled ? colors.textMuted : tone === 'onPrimary' ? colors.onPrimary : tone === 'onAi' ? colors.onAi : tone === 'primary' ? colors.primaryText : colors.text} /> : null}
         <AppText variant="button" tone={tone} style={styles.label}>
           {label}
         </AppText>

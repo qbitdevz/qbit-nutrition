@@ -1,8 +1,17 @@
 import { ProviderError } from '../errors';
-import type { HttpClient } from '../types';
+import { providerJsonSchema } from '../schema';
+import type { HttpClient, OutputFormat } from '../types';
 
 export const TOOL_NAME = 'record_scan_result';
 export const TOOL_DESCRIPTION = 'Record the foods detected in the meal photo and their estimated portions.';
+
+/** The meal-scan answer: what every request asked for before food suggestions existed. */
+export const SCAN_FORMAT: OutputFormat = {
+  schemaName: 'scan_result',
+  toolName: TOOL_NAME,
+  toolDescription: TOOL_DESCRIPTION,
+  schema: providerJsonSchema,
+};
 
 export type Json = Record<string, any>;
 

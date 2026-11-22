@@ -2,6 +2,7 @@ import { Image, StyleSheet, View } from 'react-native';
 
 import { createFakeScanPlatform } from '@/platform/fakeScanPlatform';
 import type { CameraSurfaceProps, ScanPlatform } from '@/platform/scanPlatform';
+import { DevBarcodeSurface } from '../../barcode/dev/DevBarcodeSurface';
 import { DEV_SAMPLE_PHOTO } from './devSample';
 
 /**
@@ -20,6 +21,7 @@ export function createDevScanPlatform(): ScanPlatform {
     );
   }
   platform.camera.Surface = DevSurface;
+  platform.camera.BarcodeSurface = DevBarcodeSurface;
   // Kept photos are in memory only: the meal detail shows the sample plate for them.
   platform.files.uriOf = () => DEV_SAMPLE_PHOTO;
   return platform;

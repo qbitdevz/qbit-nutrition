@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { profile } from '../schema';
+import { VALUE_LIMITS, requireWithin } from './limits';
 import { invalid, type RepositoryContext } from './shared';
 
 export type Profile = typeof profile.$inferSelect;
@@ -32,6 +33,7 @@ export function createProfileRepository({ db, now, newId }: RepositoryContext): 
 
     async save(input) {
       if (input.heightCm != null && !(input.heightCm > 0)) throw invalid('heightCm must be positive');
+      if (input.heightCm != null) requireWithin(input.heightCm, VALUE_LIMITS.heightCm, 'heightCm');
       const at = now().toISOString();
       const values = {
         sex: input.sex ?? null,

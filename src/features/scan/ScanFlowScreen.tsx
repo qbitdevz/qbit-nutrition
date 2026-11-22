@@ -1,3 +1,4 @@
+import { destinationOf } from '../settings/destination';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
@@ -150,7 +151,7 @@ export function ScanFlowScreen({ onClose, onManual, onProviderSettings, onReview
     if (!photo || checking) return;
     setChecking(true);
     const provider = await services.scan.activeProvider().catch(() => null);
-    setProviderLabel(provider?.label ?? null);
+    setProviderLabel(provider ? destinationOf(provider) : null);
     if (provider && !(await services.scan.noticeAcknowledged(provider.id).catch(() => false))) {
       setNotice(provider);
       return setChecking(false);
@@ -217,7 +218,7 @@ export function ScanFlowScreen({ onClose, onManual, onProviderSettings, onReview
       ) : null}
       {phase === 'analyzing' ? <AnalyzingView photoUri={photo.uri} providerLabel={providerLabel} slow={slow} onCancel={cancel} /> : null}
       {phase === 'failed' && failure ? <FailureView failure={failure} photoUri={photo.uri} onAction={onFailureAction} onClose={() => leave(onClose)} /> : null}
-      <NoticeSheet provider={notice?.label ?? null} onContinue={() => void acknowledge()} onDecline={decline} />
+      <NoticeSheet provider={notice ? destinationOf(notice) : null} onContinue={() => void acknowledge()} onDecline={decline} />
     </>
   );
 }

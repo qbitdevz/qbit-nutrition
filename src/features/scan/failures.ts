@@ -27,11 +27,13 @@ export interface ScanFailure {
   detail?: string;
   /** The profile the scan used, for "AI provider: X"; null when there was none. */
   providerLabel: string | null;
+  /** The host of that profile's base URL, shown next to the label: a label can say anything, the address cannot. */
+  providerHost?: string | null;
 }
 
 /** What `scan.error_code` stores for an attempt that did not produce a result. */
 export interface Classified {
-  failure: Omit<ScanFailure, 'providerLabel'>;
+  failure: Omit<ScanFailure, 'providerLabel' | 'providerHost'>;
   /** `ok` is never returned here: a finished scan is not a failure. */
   status: 'error' | 'no_food';
   errorCode: string | null;

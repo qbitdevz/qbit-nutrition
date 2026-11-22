@@ -1,4 +1,4 @@
-import { pickInsight, type DayTotals, type Insight, type MealSlot, type Targets } from '@/core/nutrition';
+import { pickInsight, type DayTotals, type GoalType, type Insight, type MealSlot, type Targets } from '@/core/nutrition';
 import { addDays, deriveMealTime, type Repositories } from '@/data';
 
 export interface TodayMeal {
@@ -26,6 +26,8 @@ export interface TodayData {
   totals: TodayTotals;
   /** The targets that applied on that date; every field is null when no goal applied. */
   targets: Targets;
+  /** The type of the goal that applied on that date (lose fat, maintain, gain muscle); null when none did. */
+  goalType: GoalType | null;
   /** At most one suggestion, for today only: its rules depend on the time of day. */
   insight: Insight | null;
 }
@@ -77,6 +79,7 @@ export async function loadToday({ repos, localDate, now }: LoadTodayInput): Prom
       fatG: day.totals.fat ?? 0,
     },
     targets,
+    goalType: goal?.type ?? null,
     insight,
   };
 }

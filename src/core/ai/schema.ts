@@ -97,6 +97,12 @@ function stripProps(props: unknown, drop: ReadonlySet<string>): unknown {
   return Object.fromEntries(Object.entries(props as JsonObject).map(([k, v]) => [k, strip(v, drop)]));
 }
 
+/** The JSON Schema of any of the app's output contracts, in what a provider's dialect accepts. */
+export function toProviderSchema(schema: z.ZodType, dialect: SchemaDialect): JsonObject {
+  const { $schema: _ignored, ...json } = z.toJSONSchema(schema) as JsonObject;
+  return strip(json, STRIP[dialect]) as JsonObject;
+}
+
 export function providerJsonSchema(dialect: SchemaDialect): JsonObject {
   return strip(scanResultJsonSchema(), STRIP[dialect]) as JsonObject;
 }

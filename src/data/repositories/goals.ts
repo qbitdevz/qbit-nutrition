@@ -2,6 +2,7 @@ import { and, asc, desc, eq, gte, isNull, lte, or } from 'drizzle-orm';
 import { DataError } from '../errors';
 import { addDays } from '../localDate';
 import { goal } from '../schema';
+import { VALUE_LIMITS, requireWithin } from './limits';
 import { requireFinite, requireLocalDate, type RepositoryContext } from './shared';
 
 type GoalRow = typeof goal.$inferSelect;
@@ -79,6 +80,11 @@ export function createGoalRepository({ db, newId }: RepositoryContext): GoalRepo
       ] as const) {
         if (value != null) requireFinite(value, label, { min: 0 });
       }
+      if (input.kcalTarget != null) requireWithin(input.kcalTarget, VALUE_LIMITS.targets.kcal, 'kcalTarget');
+      if (input.proteinGTarget != null) requireWithin(input.proteinGTarget, VALUE_LIMITS.targets.protein, 'proteinGTarget');
+      if (input.carbsGTarget != null) requireWithin(input.carbsGTarget, VALUE_LIMITS.targets.carbs, 'carbsGTarget');
+      if (input.fatGTarget != null) requireWithin(input.fatGTarget, VALUE_LIMITS.targets.fat, 'fatGTarget');
+      if (input.basisWeightKg != null) requireWithin(input.basisWeightKg, VALUE_LIMITS.measurement.weight, 'basisWeightKg');
 
       const values = {
         type: input.type,

@@ -58,13 +58,13 @@ export function ProfileFields({ form }: { form: ProfileForm }) {
         </AppText>
         <View style={styles.row}>
           <View style={styles.narrow}>
-            <TextField label={t('profile.birth.day')} value={values.day} onChangeText={(v) => set('day', v)} onBlur={() => blurBirth(false)} invalid={Boolean(birthError)} keyboardType="number-pad" maxLength={2} placeholder="DD" />
+            <TextField label={t('profile.birth.day')} value={values.day} onChangeText={(v) => set('day', v)} onBlur={() => blurBirth(false)} invalid={Boolean(birthError)} keyboardType="number-pad" maxLength={2} placeholder={t('profile.birth.dayHint')} />
           </View>
           <View style={styles.narrow}>
-            <TextField label={t('profile.birth.month')} value={values.month} onChangeText={(v) => set('month', v)} onBlur={() => blurBirth(false)} invalid={Boolean(birthError)} keyboardType="number-pad" maxLength={2} placeholder="MM" />
+            <TextField label={t('profile.birth.month')} value={values.month} onChangeText={(v) => set('month', v)} onBlur={() => blurBirth(false)} invalid={Boolean(birthError)} keyboardType="number-pad" maxLength={2} placeholder={t('profile.birth.monthHint')} />
           </View>
           <View style={styles.wide}>
-            <TextField label={t('profile.birth.year')} value={values.year} onChangeText={(v) => set('year', v)} onBlur={() => blurBirth(true)} invalid={Boolean(birthError)} keyboardType="number-pad" maxLength={4} placeholder="YYYY" />
+            <TextField label={t('profile.birth.year')} value={values.year} onChangeText={(v) => set('year', v)} onBlur={() => blurBirth(true)} invalid={Boolean(birthError)} keyboardType="number-pad" maxLength={4} placeholder={t('profile.birth.yearHint')} />
           </View>
         </View>
         {birthError ? <FieldMessage message={birthError} /> : null}

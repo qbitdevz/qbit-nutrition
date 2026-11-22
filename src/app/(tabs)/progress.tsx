@@ -1,12 +1,11 @@
-import { useTranslation } from 'react-i18next';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
 
-import { AppText, Screen, layout } from '@/ui';
+import { ProgressScreen } from '@/features/progress/ProgressScreen';
 
-export default function ProgressScreen() {
-  const { t } = useTranslation();
-  return (
-    <Screen title={t('progress.title')} bottomInset={layout.dockClearance}>
-      <AppText tone="muted">{t('progress.empty')}</AppText>
-    </Screen>
-  );
+export default function ProgressRoute() {
+  const [focusToken, setFocusToken] = useState(0);
+  // Meals, goals and weights can change while Progress is not on screen: read again on return.
+  useFocusEffect(useCallback(() => setFocusToken((n) => n + 1), []));
+  return <ProgressScreen focusToken={focusToken} />;
 }

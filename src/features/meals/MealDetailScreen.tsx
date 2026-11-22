@@ -311,6 +311,7 @@ function ItemRow({ item, locale, onGrams, onDelete }: ItemRowProps) {
           decreaseLabel={t('meal.decrease', { name: item.displayName })}
           increaseLabel={t('meal.increase', { name: item.displayName })}
           unit="g"
+          announceValue={(value) => t('meal.gramsAnnounce', { value })}
           decreaseDisabled={item.grams <= GRAMS_RANGE.min}
           invalid={touched && problem !== null}
         />

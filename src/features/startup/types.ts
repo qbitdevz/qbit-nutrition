@@ -1,5 +1,7 @@
 import type { Catalog } from '@/core/catalog';
 import type { Repositories } from '@/data';
+import type { BarcodeService } from '../barcode/barcodeService';
+import type { HealthSync } from '../health/healthSync';
 import type { ScanGateway } from '../scan/scanGateway';
 import type { ProviderService } from '../settings/providerService';
 
@@ -11,6 +13,10 @@ export interface AppServices {
   providers: ProviderService;
   /** What the scan flow calls: analysis with the active profile, and the one-time notice. */
   scan: ScanGateway;
+  /** Barcode lookups through Open Food Facts, with the on-phone cache and the one-time notice (S5, S9). */
+  barcode: BarcodeService;
+  /** Health Connect: saved meals out, weights in. Off until the person turns it on (S7); the repositories above already tell it about meal changes. */
+  health: HealthSync;
 }
 
 export type OpenServices = () => Promise<AppServices>;

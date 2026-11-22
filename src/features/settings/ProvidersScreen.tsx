@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { AppText, Button, EmptyState, ErrorState, ScreenFooter, ScreenFrame, SettingsRow, Skeleton, TopBar, layout, spacing } from '@/ui';
 import { useSession } from '../session/AppSession';
+import { hostOf } from './destination';
 import { useServices } from '../startup/AppProvider';
 import type { ProviderView } from './providerService';
 
@@ -66,7 +67,7 @@ export function ProvidersScreen({ onAdd, onOpen, onBack }: ProvidersScreenProps)
                 key={provider.id}
                 icon={provider.isActive ? 'check' : 'sparkle'}
                 title={provider.label}
-                detail={[provider.isActive ? t('providers.active') : null, provider.model, provider.hasKey ? t('providers.keySaved') : t('providers.noKey')]
+                detail={[provider.isActive ? t('providers.active') : null, hostOf(provider.baseUrl), provider.model, provider.hasKey ? t('providers.keySaved') : t('providers.noKey'), provider.imported ? t('providers.imported.tag') : null]
                   .filter(Boolean)
                   .join(' · ')}
                 onPress={() => onOpen(provider.id)}

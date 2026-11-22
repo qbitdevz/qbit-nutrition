@@ -6,8 +6,9 @@ module.exports = defineConfig([
   expoConfig,
   { ignores: ['dist/*', 'android/*', 'ios/*', '.expo/*'] },
   {
-    // S10: every provider request goes through createAiClient, which wraps the fetch it is given in the
-    // redirect-safe wrapper. Only the startup wiring may import the device fetch; nothing may call the global one.
+    // S10: the two network destinations (the AI provider: createAiClient; Open Food Facts: createBarcodeClient) each
+    // wrap the fetch they are given in the redirect-safe wrapper. Only the startup wiring may import the device fetch;
+    // nothing may call the global one.
     // (src/platform/__tests__/fetchGuard.test.ts enforces the same rule by scanning the sources.)
     files: ['src/**/*.{ts,tsx}'],
     ignores: ['src/features/startup/openServicesCore.ts', 'src/platform/deviceFetch.ts', 'src/**/__tests__/**'],

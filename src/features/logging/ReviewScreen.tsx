@@ -316,7 +316,7 @@ export function ReviewScreen({ now = systemNow, onAddItem, onSwap, onRetake, onS
                         {state ? (
                           <StateTag state={state} label={t(`log.review.state.${state === 'needs_match' ? 'needsMatch' : state}`)} />
                         ) : (
-                          <Tag label={item.ref?.source === 'custom' ? t('log.search.custom') : t('log.review.catalog')} />
+                          <Tag label={item.ref?.source === 'custom' ? t('log.search.custom') : item.ref?.source === 'barcode' ? t('log.review.barcode') : t('log.review.catalog')} />
                         )}
                         {scan?.confidenceFood === 'low' ? <Mark label={t('log.review.checkFood')} /> : null}
                         {scan?.confidencePortion === 'low' ? <Mark label={t('log.review.checkPortion')} /> : null}
@@ -349,6 +349,7 @@ export function ReviewScreen({ now = systemNow, onAddItem, onSwap, onRetake, onS
                       decreaseLabel={t('log.review.decrease', { name: item.displayName })}
                       increaseLabel={t('log.review.increase', { name: item.displayName })}
                       unit="g"
+                      announceValue={(value) => t('log.review.gramsAnnounce', { value })}
                       decreaseDisabled={item.grams <= GRAMS_RANGE.min}
                       invalid={problem !== null}
                     />

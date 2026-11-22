@@ -1,3 +1,4 @@
+import { VALUE_LIMITS } from '@/data';
 import { roundTo } from '../forms/numbers';
 
 export type UnitSystem = 'metric' | 'imperial';
@@ -7,8 +8,8 @@ export const CM_PER_INCH = 2.54;
 export const KG_PER_POUND = 0.45359237;
 
 /** Plausible ranges. Anything outside is rejected with a message, never clamped. */
-export const HEIGHT_CM = { min: 50, max: 260 } as const;
-export const WEIGHT_KG = { min: 20, max: 500 } as const;
+export const HEIGHT_CM = VALUE_LIMITS.heightCm;
+export const WEIGHT_KG = VALUE_LIMITS.measurement.weight;
 export const WEIGHT_LB = { min: 45, max: 1100 } as const;
 export const HEIGHT_FEET = { min: 1, max: 8 } as const;
 export const MIN_BIRTH_AGE_YEARS = 120;

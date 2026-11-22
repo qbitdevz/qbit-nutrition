@@ -94,7 +94,7 @@ export function FailureView({ failure, photoUri, onAction, onClose }: FailureVie
             <View style={[styles.chip, { backgroundColor: colors.aiSoft }]}>
               <Icon name="sparkle" size={16} color={colors.ai} />
               <AppText variant="bodySm" tone="ai">
-                {t('scan.analyzing.provider', { provider: failure.providerLabel })}
+                {t('scan.analyzing.provider', { provider: failure.providerHost ? `${failure.providerLabel} (${failure.providerHost})` : failure.providerLabel })}
               </AppText>
             </View>
           ) : null}

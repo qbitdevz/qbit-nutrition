@@ -1,4 +1,5 @@
 import { addDays, deriveMealTime, type Repositories, type SaveMealInput } from '@/data';
+import { DISCLAIMER_VERSION } from '../legal/version';
 
 /**
  * DEVELOPMENT ONLY. Inserts a profile, a goal, and two days of meals so Today can be checked with
@@ -52,7 +53,7 @@ export async function seedSampleDay(repos: Repositories, now: Date = new Date())
       unitSystem: 'metric',
       locale: 'en',
       disclaimerAcceptedAt: now.toISOString(),
-      disclaimerVersion: 'dev-seed',
+      disclaimerVersion: DISCLAIMER_VERSION,
     });
   }
   if (!(await repos.goals.current())) {

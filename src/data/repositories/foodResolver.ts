@@ -1,7 +1,8 @@
 import { eq } from 'drizzle-orm';
 import { CatalogError, type Catalog, type FoodRef } from '../../core/catalog';
-import type { FoodNutrition, NutrientAmounts } from '../../core/nutrition';
+import type { FoodNutrition } from '../../core/nutrition';
 import { barcodeProduct, customFood } from '../schema';
+import { barcodePer100g, toBarcodeRecord } from './barcodeProducts';
 import { toCustomFood } from './customFoods';
 import type { RepositoryContext } from './shared';
 
@@ -31,10 +32,11 @@ export function createFoodResolver(
       case 'barcode': {
         const row = db.select().from(barcodeProduct).where(eq(barcodeProduct.barcode, ref.id)).get();
         if (!row) return null;
-        const other = row.otherNutrientsJson ? (JSON.parse(row.otherNutrientsJson) as NutrientAmounts) : {};
-        return {
-          per100g: { kcal: row.kcal100g, protein: row.protein100g, carbs: row.carbs100g, fat: row.fat100g, ...other },
-        };
+        // A product whose headline values the lookup did not have has nothing to recalculate from (and nothing is invented
+        // for it): the item is then scaled from its own snapshot, like an AI estimate.
+        const { missing } = toBarcodeRecord(row);
+        if (missing.some((field) => field !== 'name')) return null;
+        return { per100g: barcodePer100g(row, missing) };
       }
     }
   };

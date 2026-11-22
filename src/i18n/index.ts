@@ -4,7 +4,7 @@ import { initReactI18next } from 'react-i18next';
 
 import en from './en.json';
 import es from './es.json';
-import { DEFAULT_LOCALE, resolveLocale } from './locale';
+import { DEFAULT_LOCALE, resolveLocale, type Locale } from './locale';
 
 const i18n = createInstance();
 
@@ -14,5 +14,8 @@ void i18n.use(initReactI18next).init({
   fallbackLng: DEFAULT_LOCALE,
   interpolation: { escapeValue: false },
 });
+
+/** The language of the device, or English when it is not one the app has: what the app uses before anyone chose a language. */
+export const deviceLocale = (): Locale => resolveLocale(getLocales()[0]?.languageCode);
 
 export default i18n;

@@ -1,3 +1,4 @@
+import { hostOf } from '../settings/destination';
 import { CancelledError, PROMPT_VERSION, type AnalyzeOutput, type MealWarning } from '@/core/ai';
 import type { Catalog, FoodRef } from '@/core/catalog';
 import type { NutrientAmounts } from '@/core/nutrition';
@@ -76,7 +77,7 @@ export async function analyzePhoto(deps: AnalyzeDeps, request: AnalyzeRequest): 
     if (signal.aborted || error instanceof CancelledError) return cancelled();
     const { failure, status, errorCode } = classifyFailure(error);
     await record({ status, errorCode });
-    return { kind: 'failed', failure: { ...failure, providerLabel: provider.label }, prepared };
+    return { kind: 'failed', failure: { ...failure, providerLabel: provider.label, providerHost: hostOf(provider.baseUrl) }, prepared };
   };
 
   if (signal.aborted) return cancelled();
@@ -86,7 +87,7 @@ export async function analyzePhoto(deps: AnalyzeDeps, request: AnalyzeRequest): 
       prepared = await deps.prepare(request.photo);
     } catch {
       await record({ status: 'error', errorCode: 'image_failed' });
-      return { kind: 'failed', failure: { kind: 'photo_unreadable', providerLabel: provider.label }, prepared: null };
+      return { kind: 'failed', failure: { kind: 'photo_unreadable', providerLabel: provider.label, providerHost: hostOf(provider.baseUrl) }, prepared: null };
     }
     if (signal.aborted) return cancelled();
   }

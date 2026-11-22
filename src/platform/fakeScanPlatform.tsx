@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { View } from 'react-native';
 
-import type { CameraPermissionStatus, CameraSurfaceProps, Photo, PreparedPhoto, ScanPlatform } from './scanPlatform';
+import type { BarcodeScan, BarcodeSurfaceProps, CameraPermissionStatus, CameraSurfaceProps, Photo, PreparedPhoto, ScanPlatform } from './scanPlatform';
 
 /** A string that stands for JPEG data in tests; adapters never decode it. */
 export const FAKE_JPEG_BASE64 = '/9j/4AAQSkZJRgABAQ';
@@ -27,10 +27,17 @@ export interface FakeScanState {
   settingsOpened: number;
   /** Override of what the capture returns (the development preview shows a sample picture). */
   photoUri: string | null;
+  /** The barcode viewfinder fails to start (the camera is busy or broken). */
+  failBarcodeCamera: boolean;
+  /** Whether a barcode viewfinder is on screen right now, and its torch. */
+  barcodeCameraOn: boolean;
+  barcodeTorch: boolean;
 }
 
 export interface FakeScanPlatform extends ScanPlatform {
   state: FakeScanState;
+  /** What the barcode camera "reads": delivers the scan to the viewfinder on screen (nothing happens when none is). */
+  emitBarcode(code: string, format?: string): void;
 }
 
 /**
@@ -55,9 +62,13 @@ export function createFakeScanPlatform(initial: Partial<FakeScanState> = {}): Fa
     copied: [],
     settingsOpened: 0,
     photoUri: null,
+    failBarcodeCamera: false,
+    barcodeCameraOn: false,
+    barcodeTorch: false,
     ...initial,
   };
   let counter = 0;
+  let barcodeListener: ((scan: BarcodeScan) => void) | null = null;
 
   const newPhoto = (): Photo => {
     counter += 1;
@@ -83,8 +94,26 @@ export function createFakeScanPlatform(initial: Partial<FakeScanState> = {}): Fa
     return <View testID="fake-camera" accessibilityLabel="Camera preview" style={{ flex: 1, backgroundColor: '#222' }} />;
   }
 
+  function BarcodeSurface({ torch, onScanned, onReady, onError }: BarcodeSurfaceProps) {
+    useEffect(() => {
+      barcodeListener = onScanned;
+      state.barcodeCameraOn = true;
+      if (state.failBarcodeCamera) onError();
+      else onReady();
+      return () => {
+        barcodeListener = null;
+        state.barcodeCameraOn = false;
+      };
+    }, [onScanned, onReady, onError]);
+    useEffect(() => {
+      state.barcodeTorch = torch;
+    }, [torch]);
+    return <View testID="fake-barcode-camera" accessibilityLabel="Camera preview" style={{ flex: 1, backgroundColor: '#222' }} />;
+  }
+
   return {
     state,
+    emitBarcode: (code, format = 'ean13') => barcodeListener?.({ code, format }),
     camera: {
       getPermission: async () => ({ status: state.permission, canAskAgain: state.canAskAgain }),
       requestPermission: async () => {
@@ -96,6 +125,7 @@ export function createFakeScanPlatform(initial: Partial<FakeScanState> = {}): Fa
         state.settingsOpened += 1;
       },
       Surface,
+      BarcodeSurface,
     },
     picker: { pick: async () => (state.nextPick === 'photo' ? newPhoto() : null) },
     images: {

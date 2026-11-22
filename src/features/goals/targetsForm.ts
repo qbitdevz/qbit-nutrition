@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 
+import { VALUE_LIMITS } from '@/data';
 import { parseWhole, type FieldError } from '../forms/numbers';
 
 export type TargetField = 'kcal' | 'protein' | 'carbs' | 'fat';
@@ -8,12 +9,7 @@ export type TargetValues = Record<TargetField, string>;
 export type TargetNumbers = Record<TargetField, number | null>;
 
 /** Typo guards for targets typed by hand. Values outside are rejected with a message, never clamped. */
-export const TARGET_RANGES: Record<TargetField, { min: number; max: number }> = {
-  kcal: { min: 500, max: 10000 },
-  protein: { min: 1, max: 1000 },
-  carbs: { min: 1, max: 1000 },
-  fat: { min: 1, max: 1000 },
-};
+export const TARGET_RANGES: Record<TargetField, { min: number; max: number }> = VALUE_LIMITS.targets;
 
 export const TARGET_FIELDS: readonly TargetField[] = ['kcal', 'protein', 'carbs', 'fat'];
 
