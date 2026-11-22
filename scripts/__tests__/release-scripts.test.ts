@@ -101,6 +101,12 @@ describe('check-signing-cert.sh (S2)', () => {
 describe('publish-release.sh (S3)', () => {
   const APK = 'qbit-nutrition-1.0.0.apk';
 
+  it('states what is known of the build: used on one Android phone by the maintainer, accuracy not measured', () => {
+    const script = readFileSync(PUBLISH, 'utf8');
+    expect(script).toContain('an earlier build was installed and used on one Android phone by the maintainer, and the accuracy of the photo analysis has not been measured');
+    expect(script).not.toContain('has not been verified by the maintainers on an Android device');
+  });
+
   /** A fake `gh` on PATH with a release store on disk: releases file `id<TAB>draft`, `assets_<id>` files `name<TAB>size<TAB>state`. */
   function setup(releases: string[] = []) {
     const dir = tmp();
