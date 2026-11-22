@@ -15,7 +15,7 @@ import {
   writeZip,
   type ArchiveLimits,
 } from './archive';
-import { PHOTO_PATH_PATTERN, createExportSchema, describePath, parseExportDocument, referencedPhotos, type ExportDocument } from './exportFormat';
+import { PHOTO_PATH_PATTERN, createExportSchema, describePath, isOutOfRangeDayIssue, parseExportDocument, referencedPhotos, type ExportDocument } from './exportFormat';
 import { boundAuditTimestamps, documentFromSnapshot, measurementsFromDocument, snapshotFromDocument } from './exportMapping';
 import { keptSettings } from './settingsPolicy';
 
@@ -79,6 +79,8 @@ export type ExportErrorCode =
   | 'keys_unreadable'
   /** A stored value is outside what the format allows; `where` names it (and `meal` says which meal when it is one). */
   | 'invalid_value'
+  /** A goal period the file cannot take for a reason other than its dates being out of range (periods overlap, or the open one is not the latest): `where` and `goal` name it. */
+  | 'goal_invalid'
   /** A meal's day is outside the days a record may have (`dayBounds`): `meal` names it, so the person can open it and change it or delete it. */
   | 'meal_out_of_range'
   /** The file would be bigger than the importer reads (the same limits): nothing was written or shared. See `kind`. */
@@ -103,6 +105,8 @@ export interface ExportMealRef {
 export interface ExportErrorDetails {
   cause?: unknown;
   meal?: ExportMealRef;
+  /** `goal_invalid`: the dates of the goal period (`to` is null while it is open). */
+  goal?: { from: string; to: string | null };
   /** Other meals with the same problem, besides `meal`. */
   moreMeals?: number;
   /** `too_large`: what is over its limit: the document, the document and photos together, the file itself, or the number of photos. */
@@ -117,6 +121,7 @@ export class ExportError extends Error {
   readonly code: ExportErrorCode;
   readonly where?: string;
   readonly meal?: ExportMealRef;
+  readonly goal?: { from: string; to: string | null };
   readonly moreMeals?: number;
   readonly kind?: ExportErrorDetails['kind'];
   readonly size?: number;
@@ -128,6 +133,7 @@ export class ExportError extends Error {
     this.code = code;
     this.where = where;
     this.meal = details.meal;
+    this.goal = details.goal;
     this.moreMeals = details.moreMeals;
     this.kind = details.kind;
     this.size = details.size;
@@ -269,6 +275,8 @@ export interface SkippedRow {
   id: string;
   /** A few words that tell the person which row it was ("weight 2026-06-04"). */
   detail: string;
+  /** A goal period left out: its dates (`to` is null while it was open), so the screen can say which days lose their targets after a restore. */
+  goal?: { from: string; to: string | null };
 }
 
 export interface SweepSummary {
@@ -474,20 +482,27 @@ export function createDataService(deps: DataServiceDeps): DataService {
       const clampedDates = boundAuditTimestamps(raw, dayBounds(exportedAt), exportedAt);
       let parsed = schemaFor(now).safeParse(raw);
       const skippedRows: SkippedRow[] = emptyMeals.map((m) => ({ collection: 'meals' as const, id: m.id, detail: `meal ${m.localDate} ${m.slot} (no items)` }));
+      // Barcode products whose stored notes are damaged and that nothing refers to: they cannot be told apart from a product the person completed by hand, so they are
+      // not in the snapshot; they are reported like any row left out.
+      for (const barcode of await repos.backup.unreadableBarcodeProducts()) skippedRows.push({ collection: 'barcode_products', id: barcode, detail: barcode });
       if (!parsed.success) {
         const bad = new Map<SkippableCollection, Set<number>>();
         let onlySkippable = true;
         for (const issue of parsed.error.issues) {
           const [collection, index] = issue.path;
-          // A goal period is only left out for a DATE outside the limits (a clock that was wrong when it was set): any other goal problem stops the export.
-          const goalDate = collection !== 'goals' || issue.path[2] === 'start_date' || issue.path[2] === 'end_date';
-          if (isSkippable(collection) && goalDate && typeof index === 'number') bad.set(collection, (bad.get(collection) ?? new Set()).add(index));
+          // A goal period is only left out for a DATE outside the limits (a clock that was wrong when it was set): any other goal problem (overlap, an open
+          // period that is not the latest) stops the export, because leaving the period out would hide it instead of reporting it.
+          const skippable = isSkippable(collection) && typeof index === 'number' && (collection !== 'goals' || isOutOfRangeDayIssue(issue));
+          if (skippable) bad.set(collection, (bad.get(collection) ?? new Set()).add(index));
           else onlySkippable = false;
         }
         if (onlySkippable && bad.size > 0) {
           const rows = raw as unknown as Record<SkippableCollection, Record<string, unknown>[]>;
           for (const [collection, indexes] of bad) {
-            for (const index of [...indexes].sort((x, y) => x - y)) skippedRows.push({ collection, id: rowId(collection, rows[collection]![index]!), detail: rowDetail(collection, rows[collection]![index]!) });
+            for (const index of [...indexes].sort((x, y) => x - y)) {
+              const row = rows[collection]![index]!;
+              skippedRows.push({ collection, id: rowId(collection, row), detail: rowDetail(collection, row), ...(collection === 'goals' ? { goal: { from: String(row.start_date), to: row.end_date === null ? null : String(row.end_date) } } : {}) });
+            }
             rows[collection] = rows[collection]!.filter((_, i) => !indexes.has(i));
           }
           raw = rows as unknown as typeof raw;
@@ -511,6 +526,10 @@ export function createDataService(deps: DataServiceDeps): DataService {
           const meal = `meal ${first.ref.date} ${first.ref.name ?? first.ref.slot}`;
           throw new ExportError(first.dayProblem ? 'meal_out_of_range' : 'invalid_value', first.dayProblem ? meal : `${first.field} of ${meal}`, { meal: first.ref, moreMeals: meals.size - 1 });
         }
+        // A goal period that cannot be written: named by its dates, not by a position.
+        const goalIssue = parsed.error.issues.find((issue) => issue.path[0] === 'goals' && typeof issue.path[1] === 'number' && !isOutOfRangeDayIssue(issue));
+        const goalRow = goalIssue ? (raw.goals[goalIssue.path[1] as number] as unknown as Record<string, unknown> | undefined) : undefined;
+        if (goalRow) throw new ExportError('goal_invalid', rowDetail('goals', goalRow), { goal: { from: String(goalRow.start_date), to: goalRow.end_date === null ? null : String(goalRow.end_date) } });
         throw new ExportError('invalid_value', describePath(parsed.error.issues[0]?.path ?? []) || 'file');
       }
       const document = parsed.data;

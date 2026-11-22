@@ -71,7 +71,8 @@ export function createRepositories(options: RepositoryOptions): Repositories {
 
 export type { BackupCounts, BackupRepository, BackupSnapshot } from './backup';
 export type { Profile, ProfileInput, ProfileRepository } from './profile';
-export type { Goal, GoalInput, GoalRepository } from './goals';
+export { GoalConflictError } from './goals';
+export type { Goal, GoalConflictReason, GoalInput, GoalRepository, GoalSetOptions } from './goals';
 export type {
   DayLog,
   DayTotals,

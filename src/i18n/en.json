@@ -600,7 +600,19 @@
     "loadError": "Your goal could not be read. Try again.",
     "saved": "Targets saved",
     "saveError": "The targets could not be saved. Your entries are still here. Try again.",
-    "noneTitle": "No targets yet"
+    "noneTitle": "No targets yet",
+    "savedReplaced": "Targets saved. The goal that started on {{date}} was replaced.",
+    "conflict": {
+      "later": "This phone’s date looks earlier than your current goal’s start date. Your current goal starts on {{open}}, and this phone says today is {{today}}. Check the date and time settings, then save again. Nothing was changed.",
+      "overlap": "A goal starting on {{today}} would overlap an earlier goal period in your history. This phone’s date may be wrong: check the date and time settings, then save again. Nothing was changed."
+    },
+    "replace": {
+      "title": "Replace your current goal?",
+      "body": "Your current goal starts on {{open}}, which is after this phone’s date ({{today}}). Correcting the date and time settings is the better fix. If you replace it instead, it is deleted and the new goal starts on {{today}}.",
+      "values": "The goal that would be deleted: {{type}}, from {{open}}. {{kcal}} kcal · Protein {{protein}} g · Carbs {{carbs}} g · Fat {{fat}} g.",
+      "confirm": "Replace the goal",
+      "cancel": "Keep my current goal"
+    }
   },
   "targets": {
     "title": "Your daily targets",
@@ -1082,8 +1094,13 @@
       "errorValue": "The export was stopped: {{where}} holds a value the export file cannot take. Shorten or correct it, then export again.",
       "photosSkipped_one": "{{count}} meal photo could not be read and is not in the file. Its meal is exported without it.",
       "photosSkipped_other": "{{count}} meal photos could not be read and are not in the file. Their meals are exported without them.",
-      "rowsSkipped_one": "{{count}} entry was left out of the file because its value is outside what the app accepts: {{what}}. The rest was exported.",
-      "rowsSkipped_other": "{{count}} entries were left out of the file because their values are outside what the app accepts: {{what}}. The rest was exported.",
+      "rowsSkipped_one": "{{count}} entry was left out of the file because its stored data is damaged or outside what the app accepts: {{what}}. The rest was exported.",
+      "rowsSkipped_other": "{{count}} entries were left out of the file because their stored data is damaged or outside what the app accepts: {{what}}. The rest was exported.",
+      "goalSkipped": "A goal period was left out of the file: {{from}} to {{to}}. Its dates are outside what the app accepts, so after a restore the days it covered will have no targets. To check your goals, open the goal settings.",
+      "goalSkippedOpen": "A goal period was left out of the file: the one that starts on {{from}} and has no end. Its dates are outside what the app accepts, so after a restore the days it covered will have no targets. To check your goals, open the goal settings.",
+      "errorGoal": "The export was stopped: the goal period {{from}} to {{to}} cannot be written to the file (it overlaps another goal period, is out of order, or holds a value the file cannot take). Nothing was written. To check your goals, open the goal settings.",
+      "errorGoalOpen": "The export was stopped: the goal period that starts on {{from}} and has no end cannot be written to the file (it overlaps another goal period, is out of order, or holds a value the file cannot take). Nothing was written. To check your goals, open the goal settings.",
+      "openGoals": "Open goal settings",
       "reminderTables": "You imported {{count}} food table(s). This file contains them in full: keep it for yourself and do not share it.",
       "errorMeal": "The export was stopped: the meal “{{name}}” on {{date}} has a date this app cannot export (it must fall between {{from}} and {{to}}). Copy it to today if you want to keep it, then delete it. If this phone’s date was wrong when you logged it, correct the phone’s date first. Nothing was written.",
       "errorMealMore_one": "{{count}} more meal has the same problem.",
@@ -1768,7 +1785,8 @@
         "notDone": "{{file}}: still needed a choice, so it was not imported.",
         "duplicate_in_batch": "{{file}}: same content as another file in this import, imported once."
       },
-      "sameInBatch": "Same content as “{{file}}” in this import. Only one of them is imported unless you tick this one too."
+      "sameInBatch": "Same content as “{{file}}” in this import. Only one of them is imported unless you tick this one too.",
+      "sameInBatchInstead": "Same content as “{{file}}”, which you left out, so this one is imported instead. Untick it too if you do not want this table."
     }
   }
 }

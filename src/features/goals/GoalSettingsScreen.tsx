@@ -2,14 +2,21 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
-import { deriveMealTime, type Goal } from '@/data';
+import { GoalConflictError, deriveMealTime, type Goal, type GoalInput } from '@/data';
 import { formatLongDate, formatNumber } from '@/i18n/format';
 import type { Locale } from '@/i18n/locale';
-import { AppText, Button, EmptyState, ErrorState, ScreenFrame, Skeleton, TopBar, layout, radius, spacing, useSnackbar, useTheme } from '@/ui';
+import { AppText, Button, ConfirmSheet, EmptyState, ErrorState, ScreenFrame, Skeleton, TopBar, layout, radius, spacing, useSnackbar, useTheme } from '@/ui';
 import { useSession } from '../session/AppSession';
 import { useServices } from '../startup/AppProvider';
+import { goalConflictMessage } from './goalConflict';
 import { loadGoalContext, type GoalContext } from './goalContext';
 import { GoalSetup, type GoalChoice } from './GoalSetup';
+
+/** A change that needs the person's yes: the stored goal starts after the phone's date, so replacing it deletes it. */
+interface PendingReplace {
+  input: GoalInput;
+  stored: Goal;
+}
 
 type State = { status: 'loading' } | { status: 'error' } | { status: 'ready'; context: GoalContext };
 
@@ -51,46 +58,96 @@ export function GoalSettingsScreen({ now = systemNow, onBack, onEditProfile }: G
 
   const today = deriveMealTime(now()).localDate;
 
-  const save = async (choice: GoalChoice | null) => {
-    if (state.status !== 'ready') return;
-    const current = state.context.goal;
-    const type = choice?.type ?? current?.type ?? 'maintain';
-    await repos.goals.set(
-      choice
-        ? {
-            type: choice.type,
-            pace: choice.pace,
-            startDate: today,
-            kcalTarget: choice.targets.kcal,
-            proteinGTarget: choice.targets.protein,
-            carbsGTarget: choice.targets.carbs,
-            fatGTarget: choice.targets.fat,
-            isCustom: choice.isCustom,
-            basisWeightKg: choice.basisWeightKg,
-            formulaVersion: choice.formulaVersion,
-          }
-        : { type, startDate: today },
-    );
+  const [pending, setPending] = useState<PendingReplace | null>(null);
+
+  /** Stores the goal. A conflict that can be resolved by replacing the stored goal asks first; any other refusal reaches the form, which explains it. */
+  const commit = async (input: GoalInput, replaceGoalId?: string) => {
+    const saved = await repos.goals.set(input, replaceGoalId ? { replaceGoalId } : undefined);
     notifyChange();
-    snackbar.show({ message: t('goal.saved') });
+    snackbar.show({ message: saved.replaced ? t('goal.savedReplaced', { date: formatLongDate(locale, saved.replaced.startDate) }) : t('goal.saved') });
     setEditing(false);
     load();
   };
 
+  const save = async (choice: GoalChoice | null) => {
+    if (state.status !== 'ready') return;
+    const current = state.context.goal;
+    const type = choice?.type ?? current?.type ?? 'maintain';
+    const input: GoalInput = choice
+      ? {
+          type: choice.type,
+          pace: choice.pace,
+          startDate: today,
+          kcalTarget: choice.targets.kcal,
+          proteinGTarget: choice.targets.protein,
+          carbsGTarget: choice.targets.carbs,
+          fatGTarget: choice.targets.fat,
+          isCustom: choice.isCustom,
+          basisWeightKg: choice.basisWeightKg,
+          formulaVersion: choice.formulaVersion,
+        }
+      : { type, startDate: today };
+    try {
+      await commit(input);
+    } catch (error) {
+      if (error instanceof GoalConflictError && error.canReplace && error.openGoal) {
+        setPending({ input, stored: error.openGoal });
+        return;
+      }
+      throw error;
+    }
+  };
+
+  const confirmReplace = async () => {
+    if (!pending) return;
+    const { input, stored } = pending;
+    setPending(null);
+    try {
+      await commit(input, stored.id);
+    } catch (error) {
+      snackbar.show({ message: goalConflictMessage(t, locale, error) ?? t('goal.saveError') });
+    }
+  };
+
+  const n = (value: number | null) => (value === null ? '–' : formatNumber(locale, value));
+  const replaceSheet = pending ? (
+    <ConfirmSheet
+      visible
+      title={t('goal.replace.title')}
+      body={t('goal.replace.body', { open: formatLongDate(locale, pending.stored.startDate), today: formatLongDate(locale, pending.input.startDate) })}
+      note={t('goal.replace.values', {
+        type: t(`goal.type.${pending.stored.type}`),
+        open: formatLongDate(locale, pending.stored.startDate),
+        kcal: n(pending.stored.kcalTarget),
+        protein: n(pending.stored.proteinGTarget),
+        carbs: n(pending.stored.carbsGTarget),
+        fat: n(pending.stored.fatGTarget),
+      })}
+      confirmLabel={t('goal.replace.confirm')}
+      cancelLabel={t('goal.replace.cancel')}
+      closeLabel={t('common.close')}
+      onConfirm={() => void confirmReplace()}
+      onCancel={() => setPending(null)}
+    />
+  ) : null;
+
   if (state.status === 'ready' && editing) {
     const { context } = state;
     return (
-      <GoalSetup
-        profile={context.input}
-        referenceDate={today}
-        initialMinimum={context.minimumKcal}
-        initialGoal={context.goal ? { type: context.goal.type, pace: context.goal.pace } : null}
-        onExit={() => setEditing(false)}
-        onEditProfile={onEditProfile}
-        onSave={save}
-        saveLabel={t('targets.save')}
-        note={t('goal.periodNote')}
-      />
+      <>
+        <GoalSetup
+          profile={context.input}
+          referenceDate={today}
+          initialMinimum={context.minimumKcal}
+          initialGoal={context.goal ? { type: context.goal.type, pace: context.goal.pace } : null}
+          onExit={() => setEditing(false)}
+          onEditProfile={onEditProfile}
+          onSave={save}
+          saveLabel={t('targets.save')}
+          note={t('goal.periodNote')}
+        />
+        {replaceSheet}
+      </>
     );
   }
 
@@ -119,6 +176,7 @@ export function GoalSettingsScreen({ now = systemNow, onBack, onEditProfile }: G
           </>
         ) : null}
       </View>
+      {replaceSheet}
     </ScreenFrame>
   );
 }

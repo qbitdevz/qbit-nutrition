@@ -14,6 +14,7 @@ import { formatNumber } from '@/i18n/format';
 import type { Locale } from '@/i18n/locale';
 import { AppText, Button, ChoiceChips, InsightLine, OptionList, ScreenFooter, ScreenFrame, TextField, TopBar, layout, radius, spacing, useTheme } from '@/ui';
 import { CalculationScreen } from './CalculationScreen';
+import { goalConflictMessage } from './goalConflict';
 import { hasNoProfileData } from './goalContext';
 import { MinimumEnergyEditor } from './MinimumEnergyEditor';
 import { emptyTargetValues, TARGET_FIELDS, targetValuesFrom, useTargetsForm, type TargetField, type TargetNumbers } from './targetsForm';
@@ -193,16 +194,16 @@ function TargetsStep({ mode, proposal, goal, profile, eyebrow, onBack, onSave, s
     proposal ? targetValuesFrom({ kcal: proposal.kcal, protein: proposal.proteinG, carbs: proposal.carbsG, fat: proposal.fatG }) : emptyTargetValues(),
   );
   const [busy, setBusy] = useState(false);
-  const [failed, setFailed] = useState(false);
+  const [failure, setFailure] = useState<unknown>(null);
   const [invalid, setInvalid] = useState(false);
 
   const store = async (choice: GoalChoice | null) => {
     setBusy(true);
-    setFailed(false);
+    setFailure(null);
     try {
       await onSave(choice);
-    } catch {
-      setFailed(true);
+    } catch (error) {
+      setFailure(error ?? new Error('save failed'));
     } finally {
       setBusy(false);
     }
@@ -237,7 +238,7 @@ function TargetsStep({ mode, proposal, goal, profile, eyebrow, onBack, onSave, s
         <ScreenFooter>
           {note ? <AppText variant="bodySm" tone="muted" style={styles.note}>{note}</AppText> : null}
           {invalid ? <AppText variant="bodySm" tone="warning" style={styles.note}>{t('targets.errors.fixErrors')}</AppText> : null}
-          {failed ? <AppText variant="bodySm" tone="warning" style={styles.note}>{t('goal.saveError')}</AppText> : null}
+          {failure !== null ? <AppText variant="bodySm" tone="warning" style={styles.note}>{goalConflictMessage(t, i18n.language as Locale, failure) ?? t('goal.saveError')}</AppText> : null}
           <Button label={saveLabel} onPress={save} disabled={busy} />
           {mode !== 'proposal' ? <Button label={t('targets.none')} variant="secondary" onPress={() => void store(null)} disabled={busy} /> : null}
         </ScreenFooter>
@@ -288,7 +289,7 @@ function RefusalStep({ refusal, eyebrow, onBack, onManual, onSave, onEditProfile
   const locale = i18n.language as Locale;
   const [editingMinimum, setEditingMinimum] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [failed, setFailed] = useState(false);
+  const [failure, setFailure] = useState<unknown>(null);
 
   const key = refusal.reason === 'special_condition' ? refusal.condition : refusal.reason;
   const body =
@@ -300,11 +301,11 @@ function RefusalStep({ refusal, eyebrow, onBack, onManual, onSave, onEditProfile
 
   const withoutTargets = async () => {
     setBusy(true);
-    setFailed(false);
+    setFailure(null);
     try {
       await onSave(null);
-    } catch {
-      setFailed(true);
+    } catch (error) {
+      setFailure(error ?? new Error('save failed'));
     } finally {
       setBusy(false);
     }
@@ -315,7 +316,7 @@ function RefusalStep({ refusal, eyebrow, onBack, onManual, onSave, onEditProfile
       header={<TopBar eyebrow={eyebrow} onBack={onBack} backLabel={t('common.back')} />}
       footer={
         <ScreenFooter>
-          {failed ? <AppText variant="bodySm" tone="warning" style={styles.note}>{t('goal.saveError')}</AppText> : null}
+          {failure !== null ? <AppText variant="bodySm" tone="warning" style={styles.note}>{goalConflictMessage(t, i18n.language as Locale, failure) ?? t('goal.saveError')}</AppText> : null}
           <Button label={t('targets.enterOwn')} onPress={onManual} disabled={busy} />
           <Button label={t('targets.none')} variant="secondary" onPress={() => void withoutTargets()} disabled={busy} />
         </ScreenFooter>

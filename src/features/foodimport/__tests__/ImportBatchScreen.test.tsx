@@ -103,6 +103,23 @@ describe('several files in one go (B2)', () => {
     expect(await h.repos.importedFoods.listCollections()).toHaveLength(1);
   });
 
+  it('F4 — deselecting the first of two identical files selects the copy and says so; the content is imported once', async () => {
+    const CLEAN = ['Alimento;Energía (kcal/100 g);Proteínas (g/100 g);Hidratos de carbono (g/100 g);Grasa total (g/100 g)', 'Manzana inventada;52;0,3;13,8;0,2', 'Pan de ejemplo;265;9;49;3,2'].join(String.fromCharCode(10));
+    await open();
+    pickMany(['a.csv', CLEAN], ['b.csv', CLEAN]);
+    await choose();
+    await screen.findByTestId('file-1');
+    expect(screen.getByTestId('same-in-batch-1')).toHaveTextContent(/Only one of them is imported unless you tick this one too/);
+    await fireEvent.press(screen.getByTestId('include-0')); // leave the first one out
+    await waitFor(() => expect(screen.getByTestId('same-in-batch-1')).toHaveTextContent('Same content as “a.csv”, which you left out, so this one is imported instead. Untick it too if you do not want this table.'));
+    await waitFor(() => expect(screen.getByTestId('confirm-import').props.accessibilityState?.disabled).toBeFalsy());
+    await fireEvent.press(screen.getByTestId('confirm-import'));
+    await screen.findByTestId('import-done');
+    const tables = await h.repos.importedFoods.listCollections();
+    expect(tables).toHaveLength(1);
+    expect(tables[0]!.fileName).toBe('b.csv');
+  });
+
   it('a file that is not confident waits for its confirmation; the others are not held back once it is left out', async () => {
     await open();
     pickMany(['cereales.csv', CEREALES], ['suelta.csv', SUELTA]);

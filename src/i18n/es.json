@@ -600,7 +600,19 @@
     "setup": "Definir objetivos",
     "loadError": "No se pudo leer tu meta. Inténtalo de nuevo.",
     "saved": "Objetivos guardados",
-    "saveError": "No se pudieron guardar los objetivos. Lo que escribiste sigue aquí. Inténtalo de nuevo."
+    "saveError": "No se pudieron guardar los objetivos. Lo que escribiste sigue aquí. Inténtalo de nuevo.",
+    "savedReplaced": "Objetivos guardados. Se reemplazó el objetivo que empezaba el {{date}}.",
+    "conflict": {
+      "later": "La fecha de este teléfono parece anterior al inicio de tu objetivo actual. Tu objetivo actual empieza el {{open}}, y este teléfono indica que hoy es {{today}}. Revisa la configuración de fecha y hora y vuelve a guardar. No se cambió nada.",
+      "overlap": "Un objetivo que empiece el {{today}} se superpondría con un período de objetivo anterior de tu historial. Puede que la fecha de este teléfono sea incorrecta: revisa la configuración de fecha y hora y vuelve a guardar. No se cambió nada."
+    },
+    "replace": {
+      "title": "¿Reemplazar tu objetivo actual?",
+      "body": "Tu objetivo actual empieza el {{open}}, que es posterior a la fecha de este teléfono ({{today}}). Lo mejor es corregir la configuración de fecha y hora. Si lo reemplazas, se elimina y el nuevo objetivo empieza el {{today}}.",
+      "values": "El objetivo que se eliminaría: {{type}}, desde el {{open}}. {{kcal}} kcal · Proteína {{protein}} g · Carbohidratos {{carbs}} g · Grasa {{fat}} g.",
+      "confirm": "Reemplazar el objetivo",
+      "cancel": "Conservar mi objetivo actual"
+    }
   },
   "targets": {
     "title": "Tus objetivos diarios",
@@ -1082,8 +1094,13 @@
       "errorValue": "Se detuvo la exportación: {{where}} tiene un valor que el archivo no admite. Acórtalo o corrígelo y vuelve a exportar.",
       "photosSkipped_one": "{{count}} foto de comida no se pudo leer y no está en el archivo. Su comida se exporta sin ella.",
       "photosSkipped_other": "{{count}} fotos de comidas no se pudieron leer y no están en el archivo. Sus comidas se exportan sin ellas.",
-      "rowsSkipped_one": "{{count}} registro se dejó fuera del archivo porque su valor está fuera de lo que acepta la aplicación: {{what}}. El resto se exportó.",
-      "rowsSkipped_other": "{{count}} registros se dejaron fuera del archivo porque sus valores están fuera de lo que acepta la aplicación: {{what}}. El resto se exportó.",
+      "rowsSkipped_one": "{{count}} registro se dejó fuera del archivo porque sus datos guardados están dañados o fuera de lo que acepta la aplicación: {{what}}. El resto se exportó.",
+      "rowsSkipped_other": "{{count}} registros se dejaron fuera del archivo porque sus datos guardados están dañados o fuera de lo que acepta la aplicación: {{what}}. El resto se exportó.",
+      "goalSkipped": "Se dejó fuera del archivo un período de objetivo: del {{from}} al {{to}}. Sus fechas están fuera de lo que acepta la aplicación, así que tras restaurar los días que cubría no tendrán objetivos. Para revisar tus objetivos, abre los ajustes del objetivo.",
+      "goalSkippedOpen": "Se dejó fuera del archivo un período de objetivo: el que empieza el {{from}} y no tiene fin. Sus fechas están fuera de lo que acepta la aplicación, así que tras restaurar los días que cubría no tendrán objetivos. Para revisar tus objetivos, abre los ajustes del objetivo.",
+      "errorGoal": "Se detuvo la exportación: el período de objetivo del {{from}} al {{to}} no se puede escribir en el archivo (se superpone con otro período, está fuera de orden o tiene un valor que el archivo no admite). No se escribió nada. Para revisar tus objetivos, abre los ajustes del objetivo.",
+      "errorGoalOpen": "Se detuvo la exportación: el período de objetivo que empieza el {{from}} y no tiene fin no se puede escribir en el archivo (se superpone con otro período, está fuera de orden o tiene un valor que el archivo no admite). No se escribió nada. Para revisar tus objetivos, abre los ajustes del objetivo.",
+      "openGoals": "Abrir ajustes del objetivo",
       "reminderTables": "Importaste {{count}} tabla(s) de alimentos. Este archivo las contiene completas: guárdalo para ti y no lo compartas.",
       "errorMeal": "Se detuvo la exportación: la comida «{{name}}» del {{date}} tiene una fecha que esta aplicación no puede exportar (debe estar entre {{from}} y {{to}}). Cópiala a hoy si quieres conservarla y luego bórrala. Si la fecha del teléfono estaba mal cuando la registraste, corrige primero la fecha del teléfono. No se escribió nada.",
       "errorMealMore_one": "{{count}} comida más tiene el mismo problema.",
@@ -1768,7 +1785,8 @@
         "notDone": "{{file}}: aún faltaba una elección, así que no se importó.",
         "duplicate_in_batch": "{{file}}: mismo contenido que otro archivo de esta importación, se importó una vez."
       },
-      "sameInBatch": "Mismo contenido que «{{file}}» en esta importación. Solo se importa uno de los dos a menos que marques también este."
+      "sameInBatch": "Mismo contenido que «{{file}}» en esta importación. Solo se importa uno de los dos a menos que marques también este.",
+      "sameInBatchInstead": "Mismo contenido que «{{file}}», que dejaste fuera, así que se importa este en su lugar. Desmárcalo también si no quieres esta tabla."
     }
   }
 }

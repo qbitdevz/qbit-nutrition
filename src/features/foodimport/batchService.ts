@@ -196,7 +196,7 @@ export interface Plan {
   /** Files of the same recognised table (two or more) and whether they are offered/imported as one. */
   groups: { presetId: string; presetName: string; files: string[]; combined: boolean }[];
   notImported: { file: AnalysedFile; reason: NotImportedReason }[];
-  /** A file with the same content as an EARLIER file of the batch, by file id (the id of that earlier file). Only the first is imported unless the person ticks the copy. */
+  /** A file with the same content as an EARLIER file of the batch, by file id (the id of that earlier file). Only one of them is imported by default: the first, or the copy when the first is deselected. */
   duplicateOf: Record<string, string>;
   /** Whether each ready file is selected: what the person chose, or by default every file except a copy of an earlier one. */
   selected: Record<string, boolean>;
@@ -218,7 +218,14 @@ export function buildPlan(files: readonly AnalysedFile[], choices: Choices, exis
     else duplicateOf[file.id] = first;
   }
   const selected: Record<string, boolean> = {};
-  for (const file of files) if (file.outcome.kind === 'ready') selected[file.id] = choices.selected[file.id] ?? !(file.id in duplicateOf);
+  // By default a file is left out only when an EARLIER file with the same content is selected: if the person deselects the first of two identical files, the
+  // copy is selected in its place, so the content is neither dropped silently nor needs a second tick.
+  const taken = new Set<string>();
+  for (const file of files) {
+    if (file.outcome.kind !== 'ready') continue;
+    selected[file.id] = choices.selected[file.id] ?? !(file.contentHash && taken.has(file.contentHash));
+    if (selected[file.id] && file.contentHash) taken.add(file.contentHash);
+  }
   const active = files.filter((f) => f.outcome.kind === 'ready' && selected[f.id]);
   const notImported: Plan['notImported'] = files.flatMap((file) => {
     if (active.includes(file)) return [];

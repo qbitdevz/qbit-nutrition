@@ -174,7 +174,7 @@ describe('an export says what it left out (S3)', () => {
     await open();
     await press('Export data');
     await press('Share file');
-    expect(await screen.findByText(/1 entry was left out of the file because its value is outside what the app accepts: weight 2026-06-04\. The rest was exported\./)).toBeOnTheScreen();
+    expect(await screen.findByText(/1 entry was left out of the file because its stored data is damaged or outside what the app accepts: weight 2026-06-04\. The rest was exported\./)).toBeOnTheScreen();
     expect(platform.state.shared).toHaveLength(1);
   });
 });

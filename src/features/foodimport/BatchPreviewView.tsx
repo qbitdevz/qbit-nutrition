@@ -155,7 +155,7 @@ export function BatchPreviewView({ files, plan, choices, locale, nameProblem, on
                 ) : null}
                 {copyOf ? (
                   <AppText variant="bodySm" tone="muted" testID={`same-in-batch-${index}`}>
-                    {t('import.batch.sameInBatch', { file: copyOf.fileName })}
+                    {t(active && plan.selected[copyOf.id] !== true ? 'import.batch.sameInBatchInstead' : 'import.batch.sameInBatch', { file: copyOf.fileName })}
                   </AppText>
                 ) : null}
                 {!single ? <CheckRow label={t('import.batch.include')} checked={active} onChange={(on) => onToggle(file.id, on)} testID={`include-${index}`} /> : null}

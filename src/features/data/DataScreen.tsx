@@ -22,6 +22,8 @@ interface DataScreenProps {
   onOpenProviders?: () => void;
   /** Opens Imported tables (food tables the person loaded from a file). */
   onOpenImportedTables?: () => void;
+  /** Opens the goal settings (the export reports a goal period it left out or could not write, and offers to open them). */
+  onOpenGoals?: () => void;
   /** Opens a meal (the export names the meal it could not write, and offers to open it). */
   onOpenMeal?: (mealId: string) => void;
   /** The clock; tests pass a fixed one. */
@@ -60,7 +62,7 @@ const COUNT_ROWS = ['meals', 'weights', 'measurements', 'goals', 'customFoods', 
  * data, delete everything. Every destructive step is confirmed first and the safe choice is the primary button.
  * The work is in `dataService.ts`; this file lays out the steps and the messages.
  */
-export function DataScreen({ onBack, onOpenProviders, onOpenImportedTables, onOpenMeal, now, limits }: DataScreenProps) {
+export function DataScreen({ onBack, onOpenProviders, onOpenImportedTables, onOpenGoals, onOpenMeal, now, limits }: DataScreenProps) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language as Locale;
   const { colors } = useTheme();
@@ -229,6 +231,9 @@ export function DataScreen({ onBack, onOpenProviders, onOpenImportedTables, onOp
     setWord('');
   };
 
+  // A goal period left out loses the targets of the days it covered after a restore: it has its own message, which names its dates.
+  const skippedGoals = skippedRows.flatMap((row) => (row.collection === 'goals' && row.goal ? [{ id: row.id, goal: row.goal }] : []));
+  const otherSkipped = skippedRows.filter((row) => !(row.collection === 'goals' && row.goal));
   const preview = imported.kind === 'preview' || imported.kind === 'applying' ? imported.prepared.preview : null;
   const wordMatches = word.trim().toLowerCase() === confirmWord.toLowerCase();
 
@@ -259,10 +264,16 @@ export function DataScreen({ onBack, onOpenProviders, onOpenImportedTables, onOp
             </View>
           ) : null}
           {exporting ? <Busy label={t('data.export.preparing')} /> : null}
-          {exportProblem ? <ExportProblemView problem={exportProblem} locale={locale} today={dayBounds((now ?? (() => new Date()))()).latest} onOpenMeal={onOpenMeal} /> : null}
+          {exportProblem ? <ExportProblemView problem={exportProblem} locale={locale} today={dayBounds((now ?? (() => new Date()))()).latest} onOpenMeal={onOpenMeal} onOpenGoals={onOpenGoals} /> : null}
           {clampedDates > 0 ? <FieldMessage message={t('data.export.datesCorrected', { count: clampedDates })} /> : null}
           {skippedPhotos > 0 ? <FieldMessage message={t('data.export.photosSkipped', { count: skippedPhotos })} /> : null}
-          {skippedRows.length > 0 ? <FieldMessage message={t('data.export.rowsSkipped', { count: skippedRows.length, what: skippedRows.slice(0, 3).map((row) => row.detail).join(', ') + (skippedRows.length > 3 ? '…' : '') })} /> : null}
+          {skippedGoals.map((row) => (
+            <View key={row.id} style={styles.group} testID="goal-skipped">
+              <FieldMessage message={row.goal.to === null ? t('data.export.goalSkippedOpen', { from: formatLongDate(locale, row.goal.from) }) : t('data.export.goalSkipped', { from: formatLongDate(locale, row.goal.from), to: formatLongDate(locale, row.goal.to) })} />
+              {onOpenGoals ? <Button label={t('data.export.openGoals')} variant="secondary" onPress={onOpenGoals} testID="open-goals" /> : null}
+            </View>
+          ))}
+          {otherSkipped.length > 0 ? <FieldMessage message={t('data.export.rowsSkipped', { count: otherSkipped.length, what: otherSkipped.slice(0, 3).map((row) => row.detail).join(', ') + (otherSkipped.length > 3 ? '…' : '') })} /> : null}
           <Button label={t('data.export.button')} icon="copy" disabled={exporting} onPress={() => setReminder(true)} testID="export-button" />
         </View>
 
@@ -440,6 +451,10 @@ function exportMessage(t: TFunction, locale: Locale, today: string, problem: Exp
     const more = problem.moreMeals ? ` ${t('data.export.errorMealMore', { count: problem.moreMeals })}` : '';
     return `${t('data.export.errorMeal', { name: problem.meal.name ?? t('meal.title'), date: formatLongDate(locale, problem.meal.date), from: formatLongDate(locale, EARLIEST_DAY), to: formatLongDate(locale, today) })}${more}`;
   }
+  if (problem.code === 'goal_invalid' && problem.goal) {
+    const from = formatLongDate(locale, problem.goal.from);
+    return problem.goal.to === null ? t('data.export.errorGoalOpen', { from }) : t('data.export.errorGoal', { from, to: formatLongDate(locale, problem.goal.to) });
+  }
   if (problem.code === 'invalid_value' && problem.meal) return t('data.export.errorMealValue', { name: problem.meal.name ?? t('meal.title'), date: formatLongDate(locale, problem.meal.date), where: problem.where });
   if (problem.code === 'invalid_value') return t('data.export.errorValue', { where: problem.where });
   if (problem.code === 'too_large') {
@@ -453,13 +468,14 @@ function exportMessage(t: TFunction, locale: Locale, today: string, problem: Exp
 }
 
 /** What stopped an export, in words the person can act on, with a way to open the meal when it is a meal. */
-function ExportProblemView({ problem, locale, today, onOpenMeal }: { problem: ExportError | 'failed'; locale: Locale; today: string; onOpenMeal?: (mealId: string) => void }) {
+function ExportProblemView({ problem, locale, today, onOpenMeal, onOpenGoals }: { problem: ExportError | 'failed'; locale: Locale; today: string; onOpenMeal?: (mealId: string) => void; onOpenGoals?: () => void }) {
   const { t } = useTranslation();
   const meal = problem !== 'failed' ? problem.meal : undefined;
   return (
     <View style={styles.group}>
       <FieldMessage message={exportMessage(t, locale, today, problem)} />
       {meal && onOpenMeal ? <Button label={t('data.export.openMeal')} variant="secondary" icon="plate" onPress={() => onOpenMeal(meal.id)} testID="open-meal" /> : null}
+      {problem !== 'failed' && problem.code === 'goal_invalid' && onOpenGoals ? <Button label={t('data.export.openGoals')} variant="secondary" onPress={onOpenGoals} testID="open-goals" /> : null}
     </View>
   );
 }
