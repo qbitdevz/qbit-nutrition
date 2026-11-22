@@ -1,0 +1,4 @@
+{
+ "version": "2026-11-22.1",
+ "note": "Version of the recipe set. Bump it whenever a recipe, its ingredients or a factor changes; it is stored in catalog_meta.recipe_set_version."
+}

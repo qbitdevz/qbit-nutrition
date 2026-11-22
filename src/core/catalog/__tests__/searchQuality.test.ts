@@ -6,7 +6,7 @@ import { buildFixtureCatalog } from '../../../../scripts/catalog/testing/fixture
 import { InMemoryMatchMemory, NodeSqliteCatalogDb } from '../../../../scripts/catalog/nodeSqlitePort';
 import { createCatalog } from '..';
 import { indexFoods, measure, unsatisfiable } from '../testing/searchHarness';
-import { FIXTURE_CASES, SEARCH_CASES } from '../testing/searchQueries';
+import { FIXTURE_CASES, ORIGINAL_CASES, RECIPE_CASES, SEARCH_CASES } from '../testing/searchQueries';
 
 /**
  * Search quality over everyday queries in English and Spanish (odd/tasks/catalog-expansion.md T3, S6). The full set runs
@@ -58,7 +58,24 @@ describeBuilt(label, () => {
     expect(acc.results.map((r) => [r.case.q, r.rank])).toEqual(known.map((c) => [c.q, 1]));
   });
 
-  it('keeps top-1 accuracy at or above 88 % and top-3 at or above 94 % (measured 90.7 % and 96.3 % after T3; 75.8 % and 90.7 % before)', async () => {
+  it('keeps the accuracy of the original 226 queries where it was before the recipe dishes were added (92.0 % top-1, 97.8 % top-3)', async () => {
+    const index = await indexFoods(db);
+    const acc = await measure(createCatalog({ db, memory: new InMemoryMatchMemory() }), index, ORIGINAL_CASES);
+    expect(acc.total).toBe(226);
+    expect(acc.top1 / acc.total).toBeGreaterThanOrEqual(0.92);
+    expect(acc.top3 / acc.total).toBeGreaterThanOrEqual(0.977);
+  });
+
+  it('puts a recipe-calculated dish first for at least 95 % of the dish queries and in the top 3 for all of them, in both languages (measured 98.8 % and 100 %)', async () => {
+    const index = await indexFoods(db);
+    const acc = await measure(createCatalog({ db, memory: new InMemoryMatchMemory() }), index, RECIPE_CASES);
+    expect(RECIPE_CASES.filter((c) => c.locale === 'en').length).toBeGreaterThanOrEqual(30);
+    expect(RECIPE_CASES.filter((c) => c.locale === 'es').length).toBeGreaterThanOrEqual(30);
+    expect(acc.top1 / acc.total).toBeGreaterThanOrEqual(0.95);
+    expect(acc.top3).toBe(acc.total);
+  });
+
+  it('keeps top-1 accuracy at or above 88 % and top-3 at or above 94 % over all queries (measured 93.8 % and 98.4 % with the recipe dishes; 92.0 % and 97.8 % on the original 226 before them; 75.8 % and 90.7 % before T3)', async () => {
     const index = await indexFoods(db);
     const acc = await measure(createCatalog({ db, memory: new InMemoryMatchMemory() }), index, SEARCH_CASES);
     const failed = acc.results.filter((r) => r.rank !== 1).map((r) => `${r.rank ?? 'miss'} ${r.case.locale}:${r.case.q}`);

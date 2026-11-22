@@ -854,6 +854,26 @@
     "aiEstimate": "AI estimate",
     "gramsAnnounce": "{{value}} grams"
   },
+  "recipe": {
+    "tag": "Calculated from a recipe",
+    "open": "Calculated from a recipe: how it was calculated",
+    "how": "How it was calculated",
+    "lead": "Calculated by the authors of this app from a recipe and the values of its ingredients. Not laboratory data and not an AI estimate.",
+    "ingredients": "Ingredients, as used before cooking",
+    "ingredientLine": "{{name}} · {{grams}} g",
+    "ingredientYield": "{{name}} · {{grams}} g · cooks to {{percent}} % of its weight",
+    "ingredientAbsorbed": "{{name}} · {{grams}} g · fat absorbed in frying (an assumption)",
+    "preparation": "Preparation",
+    "basis": "Where the proportions come from",
+    "weights": "Ingredients {{raw}} g, finished dish {{final}} g",
+    "sources": "Published factors used",
+    "noSources": "No published yield or retention factor was applied to this dish.",
+    "unknown": "Not reported because an ingredient lacks it: {{list}}",
+    "version": "Recipe set {{version}}",
+    "limits": "Real dishes vary: read these values as a typical estimate, not as a measurement of what you ate.",
+    "error": "The recipe could not be loaded.",
+    "close": "Close"
+  },
   "nutrient": {
     "kcal": "Energy",
     "protein": "Protein",
@@ -894,6 +914,7 @@
       "off": "Product data: Open Food Facts, made available under the Open Database License (ODbL), with individual contents under the Database Contents License. Products are looked up one barcode at a time and saved on this phone; the database is not included in the app.",
       "offLink": "Open Food Facts license and terms",
       "usdaNote": "The nutrient values in the bundled food list come from this source: Foundation Foods, SR Legacy and Survey Foods (FNDDS 2021-2023), all in the public domain (CC0 1.0). A food published by more than one of them appears once. Spanish names and search synonyms were written for this app and contain no nutrient values.",
+      "recipesNote": "Some regional dishes (milanesa, empanadas, locro, mate and others) are not laboratory data: they are calculated by the authors of this app from a documented recipe and the values of its ingredients in the list above, using cooking yields and vitamin retention factors published by the U.S. Department of Agriculture. They are marked \"Calculated from a recipe\" and open to show their ingredients. Real dishes vary, so read them as a typical estimate. The method is described in the source code of the app.",
       "offNote": "Product images from Open Food Facts are not used."
     },
     "appName": "Qbit Nutrition",

@@ -854,6 +854,26 @@
     "aiEstimate": "Estimación de la IA",
     "gramsAnnounce": "{{value}} gramos"
   },
+  "recipe": {
+    "tag": "Calculado a partir de una receta",
+    "open": "Calculado a partir de una receta: cómo se calculó",
+    "how": "Cómo se calculó",
+    "lead": "Lo calcularon los autores de esta app a partir de una receta y de los valores de sus ingredientes. No son datos de laboratorio ni una estimación de la IA.",
+    "ingredients": "Ingredientes, tal como se usan antes de cocinar",
+    "ingredientLine": "{{name}} · {{grams}} g",
+    "ingredientYield": "{{name}} · {{grams}} g · al cocinarse queda en {{percent}} % de su peso",
+    "ingredientAbsorbed": "{{name}} · {{grams}} g · grasa absorbida al freír (un supuesto)",
+    "preparation": "Preparación",
+    "basis": "De dónde salen las proporciones",
+    "weights": "Ingredientes {{raw}} g, plato terminado {{final}} g",
+    "sources": "Factores publicados que se usaron",
+    "noSources": "A este plato no se le aplicó ningún rendimiento ni factor de retención publicado.",
+    "unknown": "No se informa porque a un ingrediente le falta: {{list}}",
+    "version": "Conjunto de recetas {{version}}",
+    "limits": "Los platos reales varían: lee estos valores como una estimación típica, no como una medición de lo que comiste.",
+    "error": "No se pudo cargar la receta.",
+    "close": "Cerrar"
+  },
   "nutrient": {
     "kcal": "Energía",
     "protein": "Proteína",
@@ -894,6 +914,7 @@
       "off": "Datos de productos: Open Food Facts, disponibles bajo la Open Database License (ODbL), con contenidos individuales bajo la Database Contents License. Los productos se buscan de a un código y se guardan en este teléfono; la base de datos no viene incluida en la app.",
       "offLink": "Licencia y términos de Open Food Facts",
       "usdaNote": "Los valores nutricionales de la lista de alimentos incluida provienen de esta fuente: Foundation Foods, SR Legacy y Survey Foods (FNDDS 2021-2023), todos de dominio público (CC0 1.0). Un alimento publicado por más de uno de ellos aparece una sola vez. Los nombres en español y los sinónimos de búsqueda se escribieron para esta app y no contienen valores nutricionales.",
+      "recipesNote": "Algunos platos regionales (milanesa, empanadas, locro, mate y otros) no son datos de laboratorio: los calcularon los autores de esta app a partir de una receta documentada y de los valores de sus ingredientes de la lista anterior, con rendimientos de cocción y factores de retención de vitaminas publicados por el Departamento de Agricultura de EE. UU. Se marcan «Calculado a partir de una receta» y se abren para ver sus ingredientes. Los platos reales varían, así que léelos como una estimación típica. El método está descrito en el código fuente de la app.",
       "offNote": "No se usan las imágenes de productos de Open Food Facts."
     },
     "appName": "Qbit Nutrition",

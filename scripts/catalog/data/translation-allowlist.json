@@ -1,5 +1,5 @@
 {
-  "_comment": "Reviewed exceptions of the translation quality gates (scripts/catalog/__tests__/translationQuality.test.ts). sameAsEnglish: English descriptions whose Spanish name is legitimately the same text (loanwords used as such in Spanish, dishes and drinks with an international name, brand and restaurant names). englishWords: tokens allowed in Spanish names although they are English words (initials of brand names).",
+  "_comment": "Reviewed exceptions of the translation quality gates (scripts/catalog/__tests__/translationQuality.test.ts). sameAsEnglish: English descriptions whose Spanish name is legitimately the same text (loanwords used as such in Spanish, dishes and drinks with an international name, brand and restaurant names). englishWords: tokens allowed in Spanish names although they are English words (initials of brand names). englishWords also holds the names of regional dishes calculated from recipes (scripts/catalog/data/recipes/): they are Spanish or Portuguese loanwords that the English names and aliases of those dishes also use.",
   "sameAsEnglish": [
     "archway home style cookies, frosty lemon",
     "arepa dominicana",
@@ -137,6 +137,27 @@
     "l",
     "s",
     "v",
-    "z"
+    "z",
+    "napolitana",
+    "muzzarella",
+    "choripan",
+    "provoleta",
+    "pebete",
+    "locro",
+    "puchero",
+    "tuco",
+    "spaghetti",
+    "faina",
+    "gramajo",
+    "maicena",
+    "chocotorta",
+    "terere",
+    "chipa",
+    "paraguaya",
+    "causa",
+    "limena",
+    "saltado",
+    "feijoada",
+    "pabellon"
   ]
 }

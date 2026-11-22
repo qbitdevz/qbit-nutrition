@@ -7,7 +7,7 @@
 import path from 'node:path';
 import { createCatalog } from '../../src/core/catalog';
 import { indexFoods, measure, unsatisfiable } from '../../src/core/catalog/testing/searchHarness';
-import { SEARCH_CASES } from '../../src/core/catalog/testing/searchQueries';
+import { ORIGINAL_CASES, RECIPE_CASES, SEARCH_CASES } from '../../src/core/catalog/testing/searchQueries';
 import { InMemoryMatchMemory, NodeSqliteCatalogDb } from './nodeSqlitePort';
 
 async function main(): Promise<void> {
@@ -19,6 +19,10 @@ async function main(): Promise<void> {
   const acc = await measure(catalog, index, SEARCH_CASES);
   const by = (loc: string) => acc.results.filter((r) => r.case.locale === loc);
   const pct = (n: number, d: number) => `${n}/${d} = ${((n / d) * 100).toFixed(1)} %`;
+  for (const [name, set] of [['original queries', ORIGINAL_CASES], ['recipe dishes', RECIPE_CASES]] as const) {
+    const part = acc.results.filter((r) => set.includes(r.case));
+    console.log(`${name}: ${part.length} cases, top-1 ${pct(part.filter((r) => r.rank === 1).length, part.length)}   top-3 ${pct(part.filter((r) => r.rank !== null).length, part.length)}`);
+  }
   console.log(`cases ${acc.total} (en ${by('en').length}, es ${by('es').length})`);
   console.log(`top-1 ${pct(acc.top1, acc.total)}   top-3 ${pct(acc.top3, acc.total)}`);
   for (const loc of ['en', 'es']) {

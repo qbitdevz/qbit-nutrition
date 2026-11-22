@@ -1,4 +1,4 @@
-import type { FoodDetail, FoodNameEntry, FoodRef } from '@/core/catalog';
+import { isRecipeRef, type FoodDetail, type FoodNameEntry, type FoodRef } from '@/core/catalog';
 import type { NutrientAmounts } from '@/core/nutrition';
 import i18n from '@/i18n';
 import type { Locale } from '@/i18n/locale';
@@ -16,6 +16,8 @@ export interface FoodRow {
   custom: boolean;
   /** A packaged product from a barcode lookup (S5), shown with a "Barcode" tag. */
   barcode?: boolean;
+  /** Calculated by the project from a recipe (T4, S8), shown with a "Calculated from a recipe" tag. */
+  recipe?: boolean;
 }
 
 /** What the portion sheet needs: nutrients per 100 g and the household measures. */
@@ -94,6 +96,7 @@ export const rowFromView = (view: FoodView): FoodRow => ({
   ...headline(view.per100g),
   custom: view.ref.source === 'custom',
   barcode: view.ref.source === 'barcode',
+  recipe: isRecipeRef(view.ref),
 });
 
 /**
@@ -123,6 +126,7 @@ export async function searchFoods(services: AppServices, query: string, locale: 
       carbs100g: food.carbs100g ?? 0,
       fat100g: food.fat100g ?? 0,
       custom: false,
+      recipe: isRecipeRef(food.ref),
     })),
   ];
 }

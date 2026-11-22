@@ -1,0 +1,853 @@
+[
+ {
+  "id": 1,
+  "key": "milanesa-carne-frita",
+  "nameEn": "Milanesa, breaded beef cutlet, pan-fried",
+  "nameEs": "Milanesa de carne, frita",
+  "aliasesEn": [
+   "beef milanesa",
+   "breaded beef cutlet",
+   "milanesa"
+  ],
+  "aliasesEs": [
+   "milanesa de ternera",
+   "milanesa de bola de lomo",
+   "milanesa"
+  ],
+  "dishType": "breaded_meat",
+  "state": "cooked",
+  "preparation": {
+   "en": "Pound a thin round-cut steak, season, dip in beaten egg, coat with dry breadcrumbs and pan-fry in oil until golden on both sides.",
+   "es": "Aplanar un bife fino de bola de lomo, salar, pasar por huevo batido, empanar con pan rallado y freír en sartén con aceite hasta dorar de ambos lados."
+  },
+  "basis": {
+   "en": "Typical home milanesa written by the project: 120 g raw boneless top round, 20 g egg (an egg is about 50 g), 25 g dry breadcrumbs. The meat keeps 72 % of its raw weight (USDA yield for top round steak, broiled; no published yield for a pan-fried thin cutlet, so the nearest is used). 10 g of oil absorbed is an assumption of the project, not a measurement. The coating has no weight change.",
+   "es": "Milanesa casera típica escrita por el proyecto: 120 g de bola de lomo cruda sin hueso, 20 g de huevo (un huevo pesa unos 50 g), 25 g de pan rallado seco. La carne conserva 72 % de su peso crudo (rendimiento de USDA para bife de bola de lomo a la plancha; no hay uno publicado para milanesa frita, se usa el más cercano). 10 g de el aceite absorbido es un supuesto del proyecto, no una medición. El rebozado no tiene cambio de peso."
+  },
+  "portions": [
+   {
+    "en": "1 medium milanesa",
+    "es": "1 milanesa mediana",
+    "grams": 140
+   },
+   {
+    "en": "1 large milanesa",
+    "es": "1 milanesa grande",
+    "grams": 200
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171743,
+    "description": "Beef, round, top round steak, boneless, separable lean and fat, trimmed to 0\" fat, all grades, raw",
+    "grams": 120,
+    "yield": "13893|Broiled or Grilled",
+    "retention": "0605"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171287,
+    "description": "Egg, whole, raw, fresh",
+    "grams": 20,
+    "retention": "0103"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 174928,
+    "description": "Bread, crumbs, dry, grated, plain",
+    "grams": 25,
+    "retention": "0305"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172370,
+    "description": "Oil, vegetable, soybean, refined",
+    "grams": 10,
+    "absorbed": true
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 1
+   }
+  ]
+ },
+ {
+  "id": 2,
+  "key": "milanesa-carne-horno",
+  "nameEn": "Milanesa, breaded beef cutlet, baked",
+  "nameEs": "Milanesa de carne, al horno",
+  "aliasesEn": [
+   "baked beef milanesa"
+  ],
+  "aliasesEs": [
+   "milanesa de ternera al horno"
+  ],
+  "dishType": "breaded_meat",
+  "state": "cooked",
+  "preparation": {
+   "en": "Prepare the cutlet as for the fried one, place it on an oiled tray and bake in a hot oven, turning once, until golden.",
+   "es": "Preparar la milanesa como la frita, ponerla en una placa aceitada y hornear a horno fuerte, dándola vuelta una vez, hasta dorar."
+  },
+  "basis": {
+   "en": "Same cutlet as the fried milanesa (120 g top round, 20 g egg, 25 g breadcrumbs), meat yield 72 % (USDA, top round steak, broiled). 5 g of tray oil absorbed is an assumption of the project, not a measurement.",
+   "es": "La misma milanesa que la frita (120 g de bola de lomo, 20 g de huevo, 25 g de pan rallado), rendimiento de la carne 72 % (USDA, bife de bola de lomo a la plancha). 5 g de aceite de la placa: el aceite absorbido es un supuesto del proyecto, no una medición."
+  },
+  "portions": [
+   {
+    "en": "1 medium milanesa",
+    "es": "1 milanesa mediana",
+    "grams": 135
+   },
+   {
+    "en": "1 large milanesa",
+    "es": "1 milanesa grande",
+    "grams": 190
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171743,
+    "description": "Beef, round, top round steak, boneless, separable lean and fat, trimmed to 0\" fat, all grades, raw",
+    "grams": 120,
+    "yield": "13893|Broiled or Grilled",
+    "retention": "0601"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171287,
+    "description": "Egg, whole, raw, fresh",
+    "grams": 20,
+    "retention": "0101"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 174928,
+    "description": "Bread, crumbs, dry, grated, plain",
+    "grams": 25,
+    "retention": "0301"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172370,
+    "description": "Oil, vegetable, soybean, refined",
+    "grams": 5,
+    "absorbed": true
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 1
+   }
+  ]
+ },
+ {
+  "id": 3,
+  "key": "milanesa-pollo-frita",
+  "nameEn": "Milanesa, breaded chicken breast cutlet, pan-fried",
+  "nameEs": "Milanesa de pollo, frita",
+  "aliasesEn": [
+   "chicken milanesa",
+   "breaded chicken cutlet"
+  ],
+  "aliasesEs": [
+   "milanesa de pechuga",
+   "milanesa de pechuga de pollo"
+  ],
+  "dishType": "breaded_meat",
+  "state": "cooked",
+  "preparation": {
+   "en": "Slice a skinless chicken breast into a thin cutlet, season, dip in beaten egg, coat with breadcrumbs and pan-fry until golden and cooked through.",
+   "es": "Abrir una pechuga sin piel en un filete fino, salar, pasar por huevo batido, empanar con pan rallado y freír en sartén hasta dorar y cocinar por dentro."
+  },
+  "basis": {
+   "en": "Typical home milanesa written by the project: 130 g raw skinless boneless breast, 20 g egg, 25 g breadcrumbs. The chicken keeps 72 % (USDA yield, chicken breast baked or roasted; the table has no pan-fried skinless breast, so the nearest is used). 10 g of oil absorbed is an assumption of the project, not a measurement.",
+   "es": "Milanesa casera típica escrita por el proyecto: 130 g de pechuga cruda sin piel ni hueso, 20 g de huevo, 25 g de pan rallado. El pollo conserva 72 % (rendimiento de USDA, pechuga de pollo al horno; la tabla no tiene pechuga sin piel frita, se usa la más cercana). 10 g de el aceite absorbido es un supuesto del proyecto, no una medición."
+  },
+  "portions": [
+   {
+    "en": "1 medium milanesa",
+    "es": "1 milanesa mediana",
+    "grams": 150
+   },
+   {
+    "en": "1 large milanesa",
+    "es": "1 milanesa grande",
+    "grams": 210
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171077,
+    "description": "Chicken, broiler or fryers, breast, skinless, boneless, meat only, raw",
+    "grams": 130,
+    "yield": "5060|Baked or Roasted, unspecified",
+    "retention": "0804"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171287,
+    "description": "Egg, whole, raw, fresh",
+    "grams": 20,
+    "retention": "0103"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 174928,
+    "description": "Bread, crumbs, dry, grated, plain",
+    "grams": 25,
+    "retention": "0305"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172370,
+    "description": "Oil, vegetable, soybean, refined",
+    "grams": 10,
+    "absorbed": true
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 1
+   }
+  ]
+ },
+ {
+  "id": 4,
+  "key": "milanesa-pollo-horno",
+  "nameEn": "Milanesa, breaded chicken breast cutlet, baked",
+  "nameEs": "Milanesa de pollo, al horno",
+  "aliasesEn": [
+   "baked chicken milanesa"
+  ],
+  "aliasesEs": [
+   "milanesa de pechuga al horno"
+  ],
+  "dishType": "breaded_meat",
+  "state": "cooked",
+  "preparation": {
+   "en": "Prepare the cutlet as for the fried one and bake it on an oiled tray in a hot oven, turning once.",
+   "es": "Preparar la milanesa como la frita y hornearla en una placa aceitada a horno fuerte, dándola vuelta una vez."
+  },
+  "basis": {
+   "en": "Same cutlet as the fried chicken milanesa; chicken yield 72 % (USDA, chicken breast baked or roasted); 5 g of tray oil absorbed is an assumption of the project, not a measurement.",
+   "es": "La misma milanesa que la de pollo frita; rendimiento del pollo 72 % (USDA, pechuga de pollo al horno); 5 g de aceite de la placa: el aceite absorbido es un supuesto del proyecto, no una medición."
+  },
+  "portions": [
+   {
+    "en": "1 medium milanesa",
+    "es": "1 milanesa mediana",
+    "grams": 145
+   },
+   {
+    "en": "1 large milanesa",
+    "es": "1 milanesa grande",
+    "grams": 200
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171077,
+    "description": "Chicken, broiler or fryers, breast, skinless, boneless, meat only, raw",
+    "grams": 130,
+    "yield": "5060|Baked or Roasted, unspecified",
+    "retention": "0805"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171287,
+    "description": "Egg, whole, raw, fresh",
+    "grams": 20,
+    "retention": "0101"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 174928,
+    "description": "Bread, crumbs, dry, grated, plain",
+    "grams": 25,
+    "retention": "0301"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172370,
+    "description": "Oil, vegetable, soybean, refined",
+    "grams": 5,
+    "absorbed": true
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 1
+   }
+  ]
+ },
+ {
+  "id": 5,
+  "key": "milanesa-napolitana",
+  "nameEn": "Milanesa napolitana, beef cutlet with ham, mozzarella and tomato",
+  "nameEs": "Milanesa a la napolitana",
+  "aliasesEn": [
+   "napolitana",
+   "milanesa with cheese and ham"
+  ],
+  "aliasesEs": [
+   "milanesa napolitana",
+   "napolitana"
+  ],
+  "dishType": "breaded_meat",
+  "state": "cooked",
+  "preparation": {
+   "en": "Bake a breaded beef cutlet, top it with ham, a slice of mozzarella and crushed tomato with oregano, and bake again until the cheese melts.",
+   "es": "Hornear una milanesa de carne, cubrirla con jamón, una feta de muzzarella y tomate triturado con orégano, y volver al horno hasta que se derrita el queso."
+  },
+  "basis": {
+   "en": "The baked beef milanesa of this catalog (120 g top round, 20 g egg, 25 g breadcrumbs, 5 g oil absorbed, an assumption of the project) plus 25 g sliced ham, 45 g whole-milk mozzarella and 40 g canned crushed tomato. Water lost by the cheese in the oven is not counted (no published factor): values are slightly diluted.",
+   "es": "La milanesa de carne al horno de este catálogo (120 g de bola de lomo, 20 g de huevo, 25 g de pan rallado, 5 g de aceite absorbido, un supuesto del proyecto) más 25 g de jamón cocido, 45 g de muzzarella de leche entera y 40 g de tomate triturado en lata. El agua que pierde el queso en el horno no se cuenta (no hay factor publicado): los valores quedan algo diluidos."
+  },
+  "portions": [
+   {
+    "en": "1 whole milanesa napolitana",
+    "es": "1 milanesa napolitana",
+    "grams": 248
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171743,
+    "description": "Beef, round, top round steak, boneless, separable lean and fat, trimmed to 0\" fat, all grades, raw",
+    "grams": 120,
+    "yield": "13893|Broiled or Grilled",
+    "retention": "0601"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171287,
+    "description": "Egg, whole, raw, fresh",
+    "grams": 20,
+    "retention": "0101"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 174928,
+    "description": "Bread, crumbs, dry, grated, plain",
+    "grams": 25,
+    "retention": "0301"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172370,
+    "description": "Oil, vegetable, soybean, refined",
+    "grams": 5,
+    "absorbed": true
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 1
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173864,
+    "description": "Ham, sliced, regular (approximately 11% fat)",
+    "grams": 25
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170845,
+    "description": "Cheese, mozzarella, whole milk",
+    "grams": 45,
+    "retention": "0001"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170501,
+    "description": "Tomatoes, crushed, canned",
+    "grams": 40,
+    "retention": "3751"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171328,
+    "description": "Spices, oregano, dried",
+    "grams": 0.3
+   }
+  ]
+ },
+ {
+  "id": 6,
+  "key": "empanada-carne-horno",
+  "nameEn": "Empanada, Argentine beef, baked",
+  "nameEs": "Empanada de carne, al horno",
+  "aliasesEn": [
+   "beef empanada",
+   "baked empanada"
+  ],
+  "aliasesEs": [
+   "empanada criolla",
+   "empanada de carne criolla",
+   "empanada"
+  ],
+  "dishType": "filled_pastry",
+  "state": "cooked",
+  "preparation": {
+   "en": "Brown ground beef with onion, paprika and cumin, mix in chopped hard-boiled egg and olives, cool, fill discs of lard dough, fold and seal, and bake until golden.",
+   "es": "Dorar carne picada con cebolla, pimentón y comino, agregar huevo duro picado y aceitunas, enfriar, rellenar tapas de masa con grasa, repulgar y hornear hasta dorar."
+  },
+  "basis": {
+   "en": "Per empanada (about 88 g baked): dough of 24 g flour, 6 g lard, 9 g water; filling of 28 g raw ground beef (85 % lean), 18 g onion, 8 g hard-boiled egg, 3 g olives. The beef keeps 67 % of its weight (USDA yield, ground beef crumbles, pan-fried). The dough is baked down to the moisture of baked frozen biscuits (26.7 %, the catalog's own value): this sets its weight only, never its nutrients. The onion has no yield (no published factor).",
+   "es": "Por empanada (unos 88 g horneada): masa de 24 g de harina, 6 g de grasa, 9 g de agua; relleno de 28 g de carne picada cruda (85 % magra), 18 g de cebolla, 8 g de huevo duro, 3 g de aceitunas. La carne conserva 67 % de su peso (rendimiento de USDA, carne picada salteada). La masa se hornea hasta la humedad de bizcochos horneados congelados (26,7 %, valor del propio catálogo): eso fija solo su peso, nunca sus nutrientes. La cebolla no tiene rendimiento (no hay factor publicado)."
+  },
+  "portions": [
+   {
+    "en": "1 empanada",
+    "es": "1 empanada",
+    "grams": 88
+   },
+   {
+    "en": "3 empanadas",
+    "es": "3 empanadas",
+    "grams": 264
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 168894,
+    "description": "Wheat flour, white, all-purpose, enriched, bleached",
+    "grams": 24,
+    "retention": "0301",
+    "group": "dough"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171401,
+    "description": "Lard",
+    "grams": 6,
+    "group": "dough"
+   },
+   {
+    "source": "usda_fndds",
+    "sourceId": 2710707,
+    "description": "Water, tap",
+    "grams": 9,
+    "group": "dough"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 0.4,
+    "group": "dough"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171796,
+    "description": "Beef, ground, 85% lean meat / 15% fat, raw (Includes foods for USDA's Food Distribution Program)",
+    "grams": 28,
+    "yield": "23575|Pan-fried",
+    "retention": "0752"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170000,
+    "description": "Onions, raw",
+    "grams": 18,
+    "retention": "3780"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173424,
+    "description": "Egg, whole, cooked, hard-boiled",
+    "grams": 8
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169096,
+    "description": "Olives, pickled, canned or bottled, green",
+    "grams": 3
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171401,
+    "description": "Lard",
+    "grams": 2
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171329,
+    "description": "Spices, paprika",
+    "grams": 0.3
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170923,
+    "description": "Spices, cumin seed",
+    "grams": 0.2
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 0.4
+   }
+  ],
+  "moistureGroups": {
+   "dough": {
+    "source": "usda_sr_legacy",
+    "sourceId": 172667,
+    "description": "Biscuits, plain or buttermilk, frozen, baked"
+   }
+  }
+ },
+ {
+  "id": 7,
+  "key": "empanada-carne-frita",
+  "nameEn": "Empanada, Argentine beef, fried",
+  "nameEs": "Empanada de carne, frita",
+  "aliasesEn": [
+   "fried beef empanada",
+   "fried empanada"
+  ],
+  "aliasesEs": [
+   "empanada criolla frita",
+   "empanada frita"
+  ],
+  "dishType": "filled_pastry",
+  "state": "cooked",
+  "preparation": {
+   "en": "Fill and seal discs of dough as for the baked empanada, fry in hot oil until golden and drain.",
+   "es": "Rellenar y repulgar tapas de masa como las de horno, freír en aceite caliente hasta dorar y escurrir."
+  },
+  "basis": {
+   "en": "Same filling as the baked empanada, slightly larger dough (26 g flour, 5 g lard, 10 g water) dried to the moisture of a fried french cruller (17.9 %, catalog value). 8 g of frying oil absorbed is an assumption of the project, not a measurement; real values vary with oil temperature and draining.",
+   "es": "El mismo relleno que la empanada al horno, masa algo mayor (26 g de harina, 5 g de grasa, 10 g de agua) seca hasta la humedad de una dona frita (17,9 %, valor del catálogo). 8 g de aceite de fritura: el aceite absorbido es un supuesto del proyecto, no una medición; el valor real varía con la temperatura del aceite y el escurrido."
+  },
+  "portions": [
+   {
+    "en": "1 empanada",
+    "es": "1 empanada",
+    "grams": 93
+   },
+   {
+    "en": "3 empanadas",
+    "es": "3 empanadas",
+    "grams": 279
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 168894,
+    "description": "Wheat flour, white, all-purpose, enriched, bleached",
+    "grams": 26,
+    "retention": "0305",
+    "group": "dough"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171401,
+    "description": "Lard",
+    "grams": 5,
+    "group": "dough"
+   },
+   {
+    "source": "usda_fndds",
+    "sourceId": 2710707,
+    "description": "Water, tap",
+    "grams": 10,
+    "group": "dough"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 0.4,
+    "group": "dough"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171796,
+    "description": "Beef, ground, 85% lean meat / 15% fat, raw (Includes foods for USDA's Food Distribution Program)",
+    "grams": 28,
+    "yield": "23575|Pan-fried",
+    "retention": "0752"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170000,
+    "description": "Onions, raw",
+    "grams": 18,
+    "retention": "3780"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173424,
+    "description": "Egg, whole, cooked, hard-boiled",
+    "grams": 8
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169096,
+    "description": "Olives, pickled, canned or bottled, green",
+    "grams": 3
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171401,
+    "description": "Lard",
+    "grams": 2
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171329,
+    "description": "Spices, paprika",
+    "grams": 0.3
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170923,
+    "description": "Spices, cumin seed",
+    "grams": 0.2
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 0.4
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172370,
+    "description": "Oil, vegetable, soybean, refined",
+    "grams": 8,
+    "absorbed": true
+   }
+  ],
+  "moistureGroups": {
+   "dough": {
+    "source": "usda_sr_legacy",
+    "sourceId": 172756,
+    "description": "Doughnuts, french crullers, glazed"
+   }
+  }
+ },
+ {
+  "id": 8,
+  "key": "empanada-jamon-queso",
+  "nameEn": "Empanada, ham and cheese, baked",
+  "nameEs": "Empanada de jamón y queso, al horno",
+  "aliasesEn": [
+   "ham and cheese empanada"
+  ],
+  "aliasesEs": [
+   "empanada de jamón y muzzarella",
+   "empanada de jyq"
+  ],
+  "dishType": "filled_pastry",
+  "state": "cooked",
+  "preparation": {
+   "en": "Fill discs of dough with diced cooked ham and mozzarella, fold, seal and bake until golden.",
+   "es": "Rellenar tapas de masa con jamón cocido en cubitos y muzzarella, repulgar y hornear hasta dorar."
+  },
+  "basis": {
+   "en": "Per empanada: the baked dough of the beef empanada (24 g flour, 6 g lard, 9 g water, baked to 26.7 % moisture) with 18 g sliced cooked ham and 28 g whole-milk mozzarella. Water lost by the cheese in the oven is not counted.",
+   "es": "Por empanada: la masa horneada de la empanada de carne (24 g de harina, 6 g de grasa, 9 g de agua, horneada hasta 26,7 % de humedad) con 18 g de jamón cocido y 28 g de muzzarella de leche entera. El agua que pierde el queso en el horno no se cuenta."
+  },
+  "portions": [
+   {
+    "en": "1 empanada",
+    "es": "1 empanada",
+    "grams": 82
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 168894,
+    "description": "Wheat flour, white, all-purpose, enriched, bleached",
+    "grams": 24,
+    "retention": "0301",
+    "group": "dough"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171401,
+    "description": "Lard",
+    "grams": 6,
+    "group": "dough"
+   },
+   {
+    "source": "usda_fndds",
+    "sourceId": 2710707,
+    "description": "Water, tap",
+    "grams": 9,
+    "group": "dough"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 0.4,
+    "group": "dough"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173864,
+    "description": "Ham, sliced, regular (approximately 11% fat)",
+    "grams": 18
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170845,
+    "description": "Cheese, mozzarella, whole milk",
+    "grams": 28,
+    "retention": "0001"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171328,
+    "description": "Spices, oregano, dried",
+    "grams": 0.1
+   }
+  ],
+  "moistureGroups": {
+   "dough": {
+    "source": "usda_sr_legacy",
+    "sourceId": 172667,
+    "description": "Biscuits, plain or buttermilk, frozen, baked"
+   }
+  }
+ },
+ {
+  "id": 9,
+  "key": "empanada-humita",
+  "nameEn": "Empanada, corn (humita) and cheese, baked",
+  "nameEs": "Empanada de humita, al horno",
+  "aliasesEn": [
+   "humita empanada",
+   "corn empanada"
+  ],
+  "aliasesEs": [
+   "empanada de choclo",
+   "empanada de humita"
+  ],
+  "dishType": "filled_pastry",
+  "state": "cooked",
+  "preparation": {
+   "en": "Cook grated sweet corn with onion, butter, a little flour and milk into a thick paste, add cheese, cool, fill dough discs and bake.",
+   "es": "Cocinar choclo rallado con cebolla, manteca, un poco de harina y leche hasta lograr una pasta espesa, agregar queso, enfriar, rellenar tapas de masa y hornear."
+  },
+  "basis": {
+   "en": "Per empanada: baked dough as in the beef empanada, and a filling of 40 g raw sweet corn kernels, 8 g onion, 4 g butter, 2 g flour, 10 g milk and 6 g mozzarella. The filling is given no weight change (no published factor).",
+   "es": "Por empanada: masa horneada como la de carne, y un relleno de 40 g de granos de choclo crudos, 8 g de cebolla, 4 g de manteca, 2 g de harina, 10 g de leche y 6 g de muzzarella. Al relleno no se le aplica cambio de peso (no hay factor publicado)."
+  },
+  "portions": [
+   {
+    "en": "1 empanada",
+    "es": "1 empanada",
+    "grams": 108
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 168894,
+    "description": "Wheat flour, white, all-purpose, enriched, bleached",
+    "grams": 24,
+    "retention": "0301",
+    "group": "dough"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171401,
+    "description": "Lard",
+    "grams": 6,
+    "group": "dough"
+   },
+   {
+    "source": "usda_fndds",
+    "sourceId": 2710707,
+    "description": "Water, tap",
+    "grams": 9,
+    "group": "dough"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 0.4,
+    "group": "dough"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169998,
+    "description": "Corn, sweet, yellow, raw",
+    "grams": 40,
+    "retention": "3776"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170000,
+    "description": "Onions, raw",
+    "grams": 8,
+    "retention": "3780"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173410,
+    "description": "Butter, salted",
+    "grams": 4
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 168894,
+    "description": "Wheat flour, white, all-purpose, enriched, bleached",
+    "grams": 2,
+    "retention": "0301"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171265,
+    "description": "Milk, whole, 3.25% milkfat, with added vitamin D",
+    "grams": 10,
+    "retention": "2152"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170845,
+    "description": "Cheese, mozzarella, whole milk",
+    "grams": 6,
+    "retention": "0001"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171329,
+    "description": "Spices, paprika",
+    "grams": 0.2
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 0.3
+   }
+  ],
+  "moistureGroups": {
+   "dough": {
+    "source": "usda_sr_legacy",
+    "sourceId": 172667,
+    "description": "Biscuits, plain or buttermilk, frozen, baked"
+   }
+  }
+ }
+]

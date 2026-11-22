@@ -6,12 +6,15 @@ import { NUTRIENT_CODES, type NutrientCode } from '../../src/core/nutrition/type
 import { deriveState, isBranded } from './classify';
 import type { Glossary } from './compose';
 import { dedupeFoods } from './dedupe';
+import type { ResolvedRecipe } from './recipes';
 import { portionLabelEs } from './portions';
 import { buildNames, type AliasRule, type SynonymFile } from './names';
 import { normalizeUsdaUnit, TRACKED_NUTRIENTS } from './trackedNutrients';
 import type { BuildCounts, CatalogMeta, SourceFood, TranslationEntry } from './types';
 
-export const SCHEMA_VERSION = '3';
+export const SCHEMA_VERSION = '4';
+
+const escapeRe = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /** docs/08-database-schema.md section 5, plus `food.is_branded` and the lookup indexes. */
 const DDL = `
@@ -24,7 +27,7 @@ CREATE TABLE nutrient (
 );
 CREATE TABLE food (
   id INTEGER PRIMARY KEY,
-  source TEXT NOT NULL CHECK (source IN ('usda_foundation', 'usda_sr_legacy', 'usda_fndds', 'usda_branded')),
+  source TEXT NOT NULL CHECK (source IN ('usda_foundation', 'usda_sr_legacy', 'usda_fndds', 'usda_branded', 'qbit_recipe')),
   source_id TEXT NOT NULL,
   category TEXT,
   state TEXT NOT NULL CHECK (state IN ('raw', 'cooked', 'processed', 'unknown')),
@@ -56,6 +59,36 @@ CREATE TABLE food_portion (
   grams REAL NOT NULL
 );
 CREATE INDEX food_portion_food ON food_portion(food_id);
+-- How a recipe-calculated food (food.source = 'qbit_recipe') was made: one row per dish, one row per ingredient (docs/catalog-recipes.md).
+CREATE TABLE recipe (
+  food_id INTEGER PRIMARY KEY REFERENCES food(id),
+  key TEXT NOT NULL,
+  version TEXT NOT NULL,
+  preparation_en TEXT NOT NULL,
+  preparation_es TEXT NOT NULL,
+  basis_en TEXT NOT NULL,
+  basis_es TEXT NOT NULL,
+  raw_grams REAL NOT NULL,
+  final_grams REAL NOT NULL,
+  -- 'yields' (sum of grams x published yield), 'moisture' (some ingredients baked or cooked down to a reference food's water), 'declared' (the recipe states the batch weight).
+  weight_rule TEXT NOT NULL CHECK (weight_rule IN ('yields', 'moisture', 'declared')),
+  -- Tracked nutrients the dish does not report because an ingredient lacked them (comma-separated codes).
+  unknown_nutrients TEXT NOT NULL
+);
+CREATE TABLE recipe_ingredient (
+  food_id INTEGER NOT NULL REFERENCES food(id),
+  position INTEGER NOT NULL,
+  ingredient_food_id INTEGER NOT NULL REFERENCES food(id),
+  -- The exact food the calculation used. ingredient_food_id is the catalog food that stands for it (the same food from a source of higher priority, when the catalog kept that one).
+  source TEXT NOT NULL,
+  source_id TEXT NOT NULL,
+  grams REAL NOT NULL,
+  yield_percent REAL,
+  yield_source TEXT,
+  retention_source TEXT,
+  absorbed INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (food_id, position)
+) WITHOUT ROWID;
 CREATE VIRTUAL TABLE food_fts USING fts5(
   name,
   content='food_name',
@@ -79,6 +112,10 @@ export interface BuildOptions {
   /** Regional and common synonyms, added as aliases (docs/catalog-sources.md is not about names; see names.ts). */
   synonyms?: SynonymFile;
   aliasRules?: readonly AliasRule[];
+  /** Recipe-calculated dishes (recipes.ts): they enter the catalog as foods of source `qbit_recipe`, with their method in `recipe` tables. */
+  recipes?: readonly ResolvedRecipe[];
+  /** Version of the recipe set, recorded in `catalog_meta`. */
+  recipeSetVersion?: string;
   outPath: string;
   meta: CatalogMeta;
 }
@@ -89,10 +126,17 @@ function count(db: DatabaseSync, table: string): number {
 
 /** Builds `catalog.db` at `outPath`. Writes a temp file first, so a failed run keeps the old one. */
 export function buildCatalog(options: BuildOptions): BuildCounts {
-  const { translations, outPath, meta } = options;
+  const { outPath, meta } = options;
+  const recipes = options.recipes ?? [];
+  // A recipe brings its own food, its Spanish name and aliases: names are text, never values.
+  const translations: TranslationEntry[] = [...options.translations, ...recipes.map((r) => ({ en: r.food.description, es: r.nameEs, aliases: r.aliasesEs }))];
+  const aliasRules: AliasRule[] = [
+    ...(options.aliasRules ?? []),
+    ...recipes.filter((r) => r.aliasesEn.length > 0).map((r) => ({ match: `^${escapeRe(r.food.description)}$`, en: r.aliasesEn })),
+  ];
   // Foods with nothing we track never enter the catalog, so they must not hide a duplicate from another source.
-  const { kept: foods, dropped } = dedupeFoods(options.foods.filter((f) => Object.keys(trackedAmounts(f)).length > 0));
-  const names = buildNames(foods, { handwritten: translations, glossary: options.glossary, synonyms: options.synonyms, aliasRules: options.aliasRules });
+  const { kept: foods, dropped } = dedupeFoods([...options.foods, ...recipes.map((r) => r.food)].filter((f) => Object.keys(trackedAmounts(f)).length > 0));
+  const names = buildNames(foods, { handwritten: translations, glossary: options.glossary, synonyms: options.synonyms, aliasRules });
   if (names.stats.missingWords.size > 0) {
     // A Spanish name must never contain English words: add them to scripts/catalog/data/glossary/ (glossaryReport.ts lists them).
     const list = [...names.stats.missingWords].map(([w, n]) => `${w} (${n})`).join(', ');
@@ -100,9 +144,11 @@ export function buildCatalog(options: BuildOptions): BuildCounts {
   }
   // Spanish household measures, composed once per distinct label; an English word left over stops the build like a name would.
   const portionEs = new Map<string, string>();
+  const recipeIds = new Set(recipes.map((r) => r.food.fdcId));
   const portionMissing = new Map<string, number>();
   if (options.portionGlossary) {
     for (const f of foods) {
+      if (f.portionsEs) continue; // written with the food
       for (const p of f.portions) {
         if (portionEs.has(p.label)) continue;
         const r = portionLabelEs(p.label, options.portionGlossary);
@@ -141,9 +187,9 @@ export function buildCatalog(options: BuildOptions): BuildCounts {
       insFood.run(
         food.fdcId,
         food.source,
-        String(food.fdcId),
+        food.sourceId ?? String(food.fdcId),
         food.category,
-        deriveState(food.description, food.category),
+        food.state ?? deriveState(food.description, food.category),
         isBranded(food) ? 1 : 0,
         amounts.kcal ?? null,
         amounts.protein ?? null,
@@ -156,10 +202,29 @@ export function buildCatalog(options: BuildOptions): BuildCounts {
       }
       for (const n of names.rows.get(food.fdcId) ?? []) insName.run(food.fdcId, n.locale, n.name, n.isAlias ? 1 : 0, n.origin);
       for (const p of food.portions) insPortion.run(food.fdcId, 'en', p.label, p.grams);
-      for (const p of food.portions) {
-        const text = portionEs.get(p.label);
-        if (text !== undefined) insPortion.run(food.fdcId, 'es', text, p.grams);
+      if (food.portionsEs) {
+        for (const p of food.portionsEs) insPortion.run(food.fdcId, 'es', p.label, p.grams);
+      } else {
+        for (const p of food.portions) {
+          const text = portionEs.get(p.label);
+          if (text !== undefined) insPortion.run(food.fdcId, 'es', text, p.grams);
+        }
       }
+    }
+
+    // The method of each recipe-calculated food. An ingredient that was dropped as a duplicate points at the food that stands for it.
+    const standIn = new Map(dropped.map((d) => [`${d.food.source}:${d.food.fdcId}`, d.keptId]));
+    const keptIds = new Set(foods.map((f) => f.fdcId));
+    const insRecipe = db.prepare('INSERT INTO recipe VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    const insRecipeIngredient = db.prepare('INSERT INTO recipe_ingredient VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    for (const r of recipes) {
+      if (!recipeIds.has(r.food.fdcId) || !keptIds.has(r.food.fdcId)) continue;
+      insRecipe.run(r.food.fdcId, r.key, r.version, r.preparation.en, r.preparation.es, r.basis.en, r.basis.es, r.rawGrams, r.finalGrams, r.weightRule, r.unknown.join(','));
+      r.ingredients.forEach((ing, i) => {
+        const id = standIn.get(`${ing.source}:${ing.sourceId}`) ?? ing.sourceId;
+        if (!keptIds.has(id)) throw new Error(`Recipe "${r.key}": ingredient ${ing.source}:${ing.sourceId} did not enter the catalog (it has no tracked nutrient)`);
+        insRecipeIngredient.run(r.food.fdcId, i + 1, id, ing.source, String(ing.sourceId), ing.grams, ing.yieldPercent, ing.yieldSource, ing.retentionSource, ing.absorbed ? 1 : 0);
+      });
     }
 
     db.exec(`INSERT INTO food_fts(food_fts) VALUES ('rebuild')`);
@@ -174,12 +239,17 @@ export function buildCatalog(options: BuildOptions): BuildCounts {
     insMeta.run('names_handwritten', String(names.stats.handwritten));
     insMeta.run('names_reviewed', String(names.stats.reviewed));
     insMeta.run('names_composed', String(names.stats.composed));
+    if (recipes.length > 0) {
+      insMeta.run('recipe_set_version', options.recipeSetVersion ?? 'unversioned');
+      insMeta.run('recipes', String(recipes.length));
+    }
     db.exec('COMMIT');
 
     db.exec(`INSERT INTO food_fts(food_fts) VALUES ('optimize')`);
     const counts: BuildCounts = {
       nutrient: count(db, 'nutrient'),
       food: count(db, 'food'),
+      recipes: count(db, 'recipe'),
       food_nutrient: count(db, 'food_nutrient'),
       food_name: count(db, 'food_name'),
       food_portion: count(db, 'food_portion'),

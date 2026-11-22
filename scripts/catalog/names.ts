@@ -205,7 +205,7 @@ export function buildNames(foods: readonly SourceFood[], options: NameOptions): 
   return { rows, stats };
 }
 
-const sourceLabel = (food: SourceFood): string => (food.source === 'usda_foundation' ? 'Foundation' : food.source === 'usda_sr_legacy' ? 'SR Legacy' : food.source === 'usda_branded' ? 'Branded' : 'FNDDS');
+const sourceLabel = (food: SourceFood): string => (food.source === 'usda_foundation' ? 'Foundation' : food.source === 'usda_sr_legacy' ? 'SR Legacy' : food.source === 'usda_branded' ? 'Branded' : food.source === 'qbit_recipe' ? 'receta' : 'FNDDS');
 
 /** What tells a food apart from the others that compose to the same Spanish name: the English words only it has, else its source. */
 function qualifierOf(food: SourceFood, group: readonly SourceFood[], glossary?: Glossary): string {

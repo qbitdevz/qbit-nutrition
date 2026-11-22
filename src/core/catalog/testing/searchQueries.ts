@@ -29,7 +29,7 @@ const c = (q: string, locale: Locale, accept: Accept, note?: string): SearchCase
 const en = (q: string, accept: Accept, note?: string) => c(q, 'en', accept, note);
 const es = (q: string, accept: Accept, note?: string) => c(q, 'es', accept, note);
 
-export const SEARCH_CASES: SearchCase[] = [
+export const ORIGINAL_CASES: SearchCase[] = [
   // --- The known failures of the owner's report -------------------------------------------------------------------
   en('white rice, cooked', { en: /^Rice, white\b/i, not: /glutinous|sweet|flour|noodle|pudding|cake|crispy|ready-to|fried|milk|beverage|bran/i, state: COOKED, generic: true }, 'S6: picked a glutinous variant'),
   en('french fries', { en: /french fr(ies|ied)/i, not: /unprepared|unheated|sweet potato|tots|cheese|chili|school|dip/i, state: ['cooked', 'unknown', 'processed'], generic: true }, 'S6: picked a frozen unprepared entry'),
@@ -151,7 +151,8 @@ export const SEARCH_CASES: SearchCase[] = [
   es('mate cocido', { en: /^Mate cocido/i }, 'regional'),
   es('tortilla española', { en: /tortilla espanola/i }, 'regional'),
   es('tortilla de patatas', { en: /tortilla espanola/i }, 'regional'),
-  es('tortilla de papas', { en: /tortilla espanola/i }, 'regional'),
+  // A potato omelet is what this query asks for: the recipe-calculated dish (T4) is as good an answer as the Branded Spanish omelet.
+  es('tortilla de papas', { en: /tortilla espanola|^Tortilla de papas/i }, 'regional'),
   // --- Plain staples, Spanish --------------------------------------------------------------------------------------
   es('huevo', { en: /^Egg(s)?, (whole|Grade A, Large, egg whole)/i, not: /dried|pickled|substitute|salad|sandwich|roll|yolk|white\b/i, generic: true }),
   es('huevos revueltos', { en: /scrambled|omelet|^Egg, whole, cooked, scrambled/i, not: /substitute|sandwich|salad|frozen|pizza|roll|burrito|bagel|croissant/i, state: COOKED, generic: true }),
@@ -262,6 +263,95 @@ export const SEARCH_CASES: SearchCase[] = [
   es('brócoli al vapor', { en: /^Broccoli\b/i, not: /raab|slaw|leaves|chinese|babyfood|raw|soup|and|cheese|casserole|with sauce/i, state: COOKED, generic: true }, 'cooked preference'),
 ];
 
+/**
+ * Dishes calculated from recipes (odd/tasks/catalog-expansion.md T4, scripts/catalog/data/recipes/), queried the way people type them in
+ * Argentina and nearby countries, in both languages. Added after the 226 queries above: those keep their own measurement
+ * (`ORIGINAL_CASES`), so the new dishes cannot hide a drop in the old ones.
+ */
+const dish = (re: RegExp): Accept => ({ en: re });
+export const RECIPE_CASES: SearchCase[] = [
+  en('milanesa', dish(/^Milanesa/i), 'recipe'),
+  en('beef milanesa', dish(/^Milanesa, breaded beef/i), 'recipe'),
+  en('chicken milanesa', dish(/^Milanesa, breaded chicken/i), 'recipe'),
+  en('milanesa napolitana', dish(/^Milanesa napolitana/i), 'recipe'),
+  en('beef empanada', dish(/^Empanada/i), 'recipe'),
+  en('baked empanada', dish(/^Empanada/i), 'recipe'),
+  en('ham and cheese empanada', dish(/^Empanada, ham and cheese/i), 'recipe'),
+  en('humita empanada', dish(/^Empanada, corn \(humita\)/i), 'recipe'),
+  en('ham and cheese tart', dish(/^Tart, ham and cheese/i), 'recipe'),
+  en('medialuna', dish(/^Medialuna/i), 'recipe'),
+  en('choripan', dish(/^Choripán/i), 'recipe'),
+  en('provoleta', dish(/^Provoleta/i), 'recipe'),
+  en('locro', dish(/^Locro/i), 'recipe'),
+  en('lentil stew', dish(/^Lentil stew/i), 'recipe'),
+  en('puchero', dish(/^Puchero/i), 'recipe'),
+  en('gnocchi with tomato sauce', dish(/gnocchi|^Ñoquis/i), 'recipe'),
+  en('pasta with tuco', dish(/^Pasta with tuco/i), 'recipe'),
+  en('mozzarella pizza', dish(/pizza/i), 'recipe'),
+  en('faina', dish(/^Fainá/i), 'recipe'),
+  en('potato omelet', dish(/omelet|^Tortilla de papas/i), 'recipe'),
+  en('revuelto gramajo', dish(/^Revuelto gramajo/i), 'recipe'),
+  en('sandwich de miga', dish(/^Sandwich de miga/i), 'recipe'),
+  en('alfajor de maicena', dish(/^Alfajor/i), 'recipe'),
+  en('chocotorta', dish(/^Chocotorta/i), 'recipe'),
+  en('flan with dulce de leche', dish(/^Flan/i), 'recipe'),
+  en('mate', dish(/^(Mate|Yerba mate)/i), 'recipe'),
+  en('cafe con leche', dish(/^Café con leche/i), 'recipe'),
+  en('submarino', dish(/^Submarino/i), 'recipe'),
+  en('chipa', dish(/^Chipá/i), 'recipe'),
+  en('sopa paraguaya', dish(/^Sopa paraguaya/i), 'recipe'),
+  en('tacos al pastor', dish(/^Tacos al pastor/i), 'recipe'),
+  en('causa limena', dish(/^Causa limeña/i), 'recipe'),
+  en('lomo saltado', dish(/^Lomo saltado/i), 'recipe'),
+  en('feijoada', dish(/^Feijoada/i), 'recipe'),
+  en('chard tart', dish(/^Tart, chard/i), 'recipe'),
+  en('fried empanada', dish(/^Empanada/i), 'recipe'),
+  en('tostado', dish(/^Tostado/i), 'recipe'),
+  en('pebete', dish(/^Pebete/i), 'recipe'),
+  en('arepa with cheese', dish(/^Arepa/i), 'recipe'),
+  en('pabellon', dish(/^Pabellón/i), 'recipe'),
+  es('milanesa', dish(/^Milanesa/i), 'recipe'),
+  es('milanesa de carne', dish(/^Milanesa, breaded beef/i), 'recipe'),
+  es('milanesa de pollo', dish(/^Milanesa, breaded chicken/i), 'recipe'),
+  es('milanesa napolitana', dish(/^Milanesa napolitana/i), 'recipe'),
+  es('empanada de carne', dish(/^Empanada/i), 'recipe'),
+  es('empanada frita', dish(/^Empanada/i), 'recipe'),
+  es('empanada de jamón y queso', dish(/^Empanada, ham and cheese/i), 'recipe'),
+  es('empanada de humita', dish(/^Empanada, corn \(humita\)/i), 'recipe'),
+  es('tarta de jamón y queso', dish(/^Tart, ham and cheese/i), 'recipe'),
+  es('tarta de verdura', dish(/^Tart, chard/i), 'recipe'),
+  es('medialuna', dish(/^Medialuna/i), 'recipe'),
+  es('medialunas de manteca', dish(/^Medialuna/i), 'recipe'),
+  es('choripán', dish(/^Choripán/i), 'recipe'),
+  es('provoleta', dish(/^Provoleta/i), 'recipe'),
+  es('locro', dish(/^Locro/i), 'recipe'),
+  es('puchero', dish(/^Puchero/i), 'recipe'),
+  es('pastel de papas', dish(/^Pastel de papas/i), 'recipe'),
+  es('ñoquis', dish(/gnocchi|^Ñoquis/i), 'recipe'),
+  es('fideos con tuco', dish(/^Pasta with tuco/i), 'recipe'),
+  es('pizza de muzzarella', dish(/pizza/i), 'recipe'),
+  es('fainá', dish(/^Fainá/i), 'recipe'),
+  es('revuelto gramajo', dish(/^Revuelto gramajo/i), 'recipe'),
+  es('sándwich de miga', dish(/^Sandwich de miga/i), 'recipe'),
+  es('pebete', dish(/^Pebete/i), 'recipe'),
+  es('tostado de jamón y queso', dish(/^Tostado/i), 'recipe'),
+  es('alfajor de maicena', dish(/^Alfajor/i), 'recipe'),
+  es('chocotorta', dish(/^Chocotorta/i), 'recipe'),
+  es('flan con dulce de leche', dish(/^Flan/i), 'recipe'),
+  es('mate amargo', dish(/^(Mate|Yerba mate)/i), 'recipe'),
+  es('tereré', dish(/^Tereré/i), 'recipe'),
+  es('café con leche', dish(/^Café con leche/i), 'recipe'),
+  es('submarino', dish(/^Submarino/i), 'recipe'),
+  es('chipá', dish(/^Chipá/i), 'recipe'),
+  es('sopa paraguaya', dish(/^Sopa paraguaya/i), 'recipe'),
+  es('arepa rellena de queso', dish(/^Arepa/i), 'recipe'),
+  es('tacos al pastor', dish(/^Tacos al pastor/i), 'recipe'),
+  es('causa limeña', dish(/^Causa limeña/i), 'recipe'),
+  es('lomo saltado', dish(/^Lomo saltado/i), 'recipe'),
+  es('feijoada', dish(/^Feijoada/i), 'recipe'),
+  es('pabellón criollo', dish(/^Pabellón/i), 'recipe'),
+];
+
 /** The reduced set that runs against the fixture catalog (ids and names of `scripts/catalog/testing/fixture.ts`). */
 export const FIXTURE_CASES: SearchCase[] = [
   en('banana', { en: /^Bananas, raw$/ }),
@@ -279,3 +369,6 @@ export const FIXTURE_CASES: SearchCase[] = [
   es('jitomate', { en: /^Tomatoes, red, ripe, raw$/ }),
   es('banano', { en: /^Bananas, raw$/ }, 'alias'),
 ];
+
+/** Every query: the original ones and the recipe-calculated dishes. */
+export const SEARCH_CASES: SearchCase[] = [...ORIGINAL_CASES, ...RECIPE_CASES];

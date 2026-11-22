@@ -1,4 +1,5 @@
 import type { FoodNutrition, NutrientAmounts } from '../nutrition/types';
+import type { RecipeDetail } from './recipes';
 
 export type Locale = 'en' | 'es';
 
@@ -104,5 +105,7 @@ export interface Catalog {
   search(query: string, locale: Locale, limit: number): Promise<FoodSummary[]>;
   match(items: readonly MatchInput[], locale: Locale): Promise<MatchResult[]>;
   getFood(ref: FoodRef): Promise<FoodDetail>;
+  /** How a recipe-calculated food was made (`isRecipeRef`), in the language asked for; null for any other food. */
+  getRecipe(ref: FoodRef, locale: Locale): Promise<RecipeDetail | null>;
   rememberCorrection(detectedName: string, ref: FoodRef): Promise<void>;
 }

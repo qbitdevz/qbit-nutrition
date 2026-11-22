@@ -1,0 +1,1242 @@
+[
+ {
+  "id": 29,
+  "key": "alfajor-maicena",
+  "nameEn": "Alfajor de maicena, cornstarch cookies with dulce de leche and coconut",
+  "nameEs": "Alfajor de maicena",
+  "aliasesEn": [
+   "cornstarch alfajor",
+   "alfajor maicena"
+  ],
+  "aliasesEs": [
+   "alfajores de maicena",
+   "alfajor de dulce de leche y coco"
+  ],
+  "dishType": "sweet_biscuit",
+  "state": "cooked",
+  "preparation": {
+   "en": "Bake two crumbly cookies of cornstarch, flour, butter, sugar and yolk, sandwich them with dulce de leche and roll the edge in grated coconut.",
+   "es": "Hornear dos tapitas desmenuzables de maicena, harina, manteca, azúcar y yema, unirlas con dulce de leche y pasar el borde por coco rallado."
+  },
+  "basis": {
+   "en": "Per alfajor (about 47 g): cookie dough of 14 g cornstarch, 7 g flour, 7 g butter, 3.5 g sugar, 3 g egg yolk, 0.5 g baking powder, baked to the moisture of commercial butter cookies (4.6 %, catalog value, a weight rule only), plus 12 g dulce de leche and 2.5 g sweetened grated coconut.",
+   "es": "Por alfajor (unos 47 g): masa de tapitas de 14 g de maicena, 7 g de harina, 7 g de manteca, 3,5 g de azúcar, 3 g de yema, 0,5 g de polvo de hornear, horneada hasta la humedad de galletitas de manteca comerciales (4,6 %, valor del catálogo, solo una regla de peso), más 12 g de dulce de leche y 2,5 g de coco rallado azucarado."
+  },
+  "portions": [
+   {
+    "en": "1 alfajor",
+    "es": "1 alfajor",
+    "grams": 46
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169698,
+    "description": "Cornstarch",
+    "grams": 14,
+    "group": "dough"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 168894,
+    "description": "Wheat flour, white, all-purpose, enriched, bleached",
+    "grams": 7,
+    "retention": "0301",
+    "group": "dough"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173410,
+    "description": "Butter, salted",
+    "grams": 7,
+    "group": "dough"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169655,
+    "description": "Sugars, granulated",
+    "grams": 3.5,
+    "group": "dough"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172184,
+    "description": "Egg, yolk, raw, fresh",
+    "grams": 3,
+    "group": "dough"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172804,
+    "description": "Leavening agents, baking powder, double-acting, straight phosphate",
+    "grams": 0.5,
+    "group": "dough"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173461,
+    "description": "Dulce de Leche",
+    "grams": 12
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 168586,
+    "description": "Nuts, coconut meat, dried (desiccated), sweetened, shredded",
+    "grams": 2.5
+   }
+  ],
+  "moistureGroups": {
+   "dough": {
+    "source": "usda_sr_legacy",
+    "sourceId": 174950,
+    "description": "Cookies, butter, commercially prepared, enriched"
+   }
+  }
+ },
+ {
+  "id": 30,
+  "key": "chocotorta",
+  "nameEn": "Chocotorta, chocolate cookie, dulce de leche and cream cheese cake",
+  "nameEs": "Chocotorta",
+  "aliasesEn": [
+   "choco torta",
+   "chocolate cookie cake"
+  ],
+  "aliasesEs": [
+   "chocotorta casera",
+   "torta de chocolinas"
+  ],
+  "dishType": "dessert",
+  "state": "processed",
+  "preparation": {
+   "en": "Dip chocolate cookies in coffee with milk and layer them with a cream of dulce de leche and cream cheese; chill overnight.",
+   "es": "Mojar galletitas de chocolate en café con leche y armar capas con una crema de dulce de leche y queso crema; enfriar toda la noche."
+  },
+  "basis": {
+   "en": "Whole cake (8 portions): 200 g chocolate wafer cookies, 400 g dulce de leche, 300 g cream cheese, 100 g milk and 50 g coffee for dipping. Nothing is cooked here, so no weight change or retention applies.",
+   "es": "Torta entera (8 porciones): 200 g de galletitas de chocolate, 400 g de dulce de leche, 300 g de queso crema, 100 g de leche y 50 g de café para mojar. Aquí no se cocina nada, por lo que no hay cambio de peso ni retención."
+  },
+  "portions": [
+   {
+    "en": "1 portion (1/8 of the cake)",
+    "es": "1 porción (1/8 de la torta)",
+    "grams": 131
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172714,
+    "description": "Cookies, chocolate wafers",
+    "grams": 200
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173461,
+    "description": "Dulce de Leche",
+    "grams": 400
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173418,
+    "description": "Cheese, cream",
+    "grams": 300
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171265,
+    "description": "Milk, whole, 3.25% milkfat, with added vitamin D",
+    "grams": 100
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171890,
+    "description": "Beverages, coffee, brewed, prepared with tap water",
+    "grams": 50
+   }
+  ]
+ },
+ {
+  "id": 31,
+  "key": "flan-dulce-leche",
+  "nameEn": "Flan, homemade caramel custard with dulce de leche",
+  "nameEs": "Flan casero con dulce de leche",
+  "aliasesEn": [
+   "flan with dulce de leche",
+   "caramel flan"
+  ],
+  "aliasesEs": [
+   "flan mixto",
+   "flan con dulce de leche",
+   "flan casero"
+  ],
+  "dishType": "dessert",
+  "state": "cooked",
+  "preparation": {
+   "en": "Caramelize part of the sugar in a mold, pour in milk beaten with eggs and the rest of the sugar, bake in a water bath until set, chill, unmold and serve with dulce de leche.",
+   "es": "Caramelizar parte del azúcar en el molde, volcar leche batida con huevos y el resto del azúcar, cocinar a baño maría hasta que cuaje, enfriar, desmoldar y servir con dulce de leche."
+  },
+  "basis": {
+   "en": "Whole flan (6 portions): 500 g milk, 4 eggs (200 g), 120 g sugar (caramel included), baked to the moisture of the catalog's caramel custard made from recipe (68 %): a weight rule only; plus 100 g dulce de leche served on top.",
+   "es": "Flan entero (6 porciones): 500 g de leche, 4 huevos (200 g), 120 g de azúcar (con el caramelo), horneado hasta la humedad del flan de caramelo hecho a partir de receta del catálogo (68 %): solo una regla de peso; más 100 g de dulce de leche por encima."
+  },
+  "portions": [
+   {
+    "en": "1 portion (1/6 of the flan)",
+    "es": "1 porción (1/6 del flan)",
+    "grams": 135
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171265,
+    "description": "Milk, whole, 3.25% milkfat, with added vitamin D",
+    "grams": 500,
+    "retention": "2152",
+    "group": "flan"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171287,
+    "description": "Egg, whole, raw, fresh",
+    "grams": 200,
+    "retention": "0101",
+    "group": "flan"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169655,
+    "description": "Sugars, granulated",
+    "grams": 120,
+    "group": "flan"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173461,
+    "description": "Dulce de Leche",
+    "grams": 100
+   }
+  ],
+  "moistureGroups": {
+   "flan": {
+    "source": "usda_sr_legacy",
+    "sourceId": 167574,
+    "description": "Desserts, flan, caramel custard, prepared-from-recipe"
+   }
+  }
+ },
+ {
+  "id": 32,
+  "key": "mate-amargo",
+  "nameEn": "Mate, brewed yerba mate, unsweetened",
+  "nameEs": "Mate cebado, amargo",
+  "aliasesEn": [
+   "mate",
+   "bitter mate",
+   "yerba mate infusion"
+  ],
+  "aliasesEs": [
+   "mate",
+   "mate amargo",
+   "mate cebado"
+  ],
+  "dishType": "infusion",
+  "state": "unknown",
+  "preparation": {
+   "en": "Pour hot water (about 75 °C) over yerba mate in a gourd and drink through the straw.",
+   "es": "Verter agua caliente (unos 75 °C) sobre la yerba en el mate y tomar con la bombilla."
+  },
+  "basis": {
+   "en": "One gourd, about 150 mL of water. The yerba is not counted as an ingredient: no published figure for what the infusion carries over was found, so every tracked nutrient comes from the water alone and the real value may be slightly above zero. The catalog's yerba mate entry is the dry leaf, not the infusion.",
+   "es": "Un mate, unos 150 mL de agua. La yerba no se cuenta como ingrediente: no se encontró una cifra publicada de lo que pasa a la infusión, por lo que todos los nutrientes registrados provienen solo del agua y el valor real puede ser algo mayor que cero. La yerba mate del catálogo es la hoja seca, no la infusión."
+  },
+  "portions": [
+   {
+    "en": "1 gourd (150 mL)",
+    "es": "1 mate (150 mL)",
+    "grams": 150
+   },
+   {
+    "en": "1 thermos (1 L)",
+    "es": "1 termo (1 L)",
+    "grams": 1000
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_fndds",
+    "sourceId": 2710707,
+    "description": "Water, tap",
+    "grams": 150
+   }
+  ]
+ },
+ {
+  "id": 33,
+  "key": "mate-azucar",
+  "nameEn": "Mate, brewed yerba mate, with sugar",
+  "nameEs": "Mate cebado, con azúcar",
+  "aliasesEn": [
+   "sweet mate",
+   "mate with sugar"
+  ],
+  "aliasesEs": [
+   "mate dulce",
+   "mate con azúcar"
+  ],
+  "dishType": "infusion",
+  "state": "unknown",
+  "preparation": {
+   "en": "Put a teaspoon of sugar in the gourd with the yerba, then pour hot water and drink.",
+   "es": "Poner una cucharadita de azúcar en el mate con la yerba, verter agua caliente y tomar."
+  },
+  "basis": {
+   "en": "One gourd: 150 mL of water and 5 g (one level teaspoon) of sugar, an assumption of the project; people use from none to several teaspoons. The yerba is not counted (see the unsweetened mate).",
+   "es": "Un mate: 150 mL de agua y 5 g (una cucharadita al ras) de azúcar, un supuesto del proyecto; la gente usa desde nada hasta varias cucharaditas. La yerba no se cuenta (ver el mate amargo)."
+  },
+  "portions": [
+   {
+    "en": "1 gourd (150 mL)",
+    "es": "1 mate (150 mL)",
+    "grams": 155
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_fndds",
+    "sourceId": 2710707,
+    "description": "Water, tap",
+    "grams": 150
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169655,
+    "description": "Sugars, granulated",
+    "grams": 5
+   }
+  ]
+ },
+ {
+  "id": 34,
+  "key": "mate-cocido-leche",
+  "nameEn": "Mate cocido with milk and sugar",
+  "nameEs": "Mate cocido con leche",
+  "aliasesEn": [
+   "yerba mate tea with milk",
+   "mate cocido"
+  ],
+  "aliasesEs": [
+   "mate cocido",
+   "mate cocido con leche y azúcar"
+  ],
+  "dishType": "hot_drink",
+  "state": "unknown",
+  "preparation": {
+   "en": "Steep a mate cocido tea bag in hot water, add hot milk and sugar.",
+   "es": "Infusionar un saquito de mate cocido en agua caliente, agregar leche caliente y azúcar."
+  },
+  "basis": {
+   "en": "One cup (205 g): 100 g water (the tea bag is not counted), 100 g whole milk heated about 10 minutes (USDA retention), 5 g sugar, an assumption of the project.",
+   "es": "Una taza (205 g): 100 g de agua (el saquito no se cuenta), 100 g de leche entera calentada unos 10 minutos (retención de USDA), 5 g de azúcar, un supuesto del proyecto."
+  },
+  "portions": [
+   {
+    "en": "1 cup (200 mL)",
+    "es": "1 taza (200 mL)",
+    "grams": 205
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_fndds",
+    "sourceId": 2710707,
+    "description": "Water, tap",
+    "grams": 100
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171265,
+    "description": "Milk, whole, 3.25% milkfat, with added vitamin D",
+    "grams": 100,
+    "retention": "2151"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169655,
+    "description": "Sugars, granulated",
+    "grams": 5
+   }
+  ]
+ },
+ {
+  "id": 35,
+  "key": "terere-limon",
+  "nameEn": "Tereré, cold yerba mate with lemon juice",
+  "nameEs": "Tereré con limón",
+  "aliasesEn": [
+   "terere",
+   "cold mate"
+  ],
+  "aliasesEs": [
+   "terere",
+   "tereré"
+  ],
+  "dishType": "infusion",
+  "state": "unknown",
+  "preparation": {
+   "en": "Pour ice-cold water (with a little lemon juice) over yerba mate in a guampa and drink through the straw.",
+   "es": "Verter agua bien fría (con un poco de jugo de limón) sobre la yerba en la guampa y tomar con la bombilla."
+  },
+  "basis": {
+   "en": "One guampa: 200 mL of water and 10 g of lemon juice, an assumption of the project. The yerba is not counted (no published carry-over figure).",
+   "es": "Una guampa: 200 mL de agua y 10 g de jugo de limón, un supuesto del proyecto. La yerba no se cuenta (no hay cifra publicada de lo que pasa a la infusión)."
+  },
+  "portions": [
+   {
+    "en": "1 guampa cup (200 mL)",
+    "es": "1 guampa (200 mL)",
+    "grams": 210
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_fndds",
+    "sourceId": 2710707,
+    "description": "Water, tap",
+    "grams": 200
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 167747,
+    "description": "Lemon juice, raw",
+    "grams": 10
+   }
+  ]
+ },
+ {
+  "id": 36,
+  "key": "cafe-con-leche",
+  "nameEn": "Café con leche, coffee with whole milk",
+  "nameEs": "Café con leche",
+  "aliasesEn": [
+   "coffee with milk",
+   "latte"
+  ],
+  "aliasesEs": [
+   "cortado grande",
+   "café con leche sin azúcar"
+  ],
+  "dishType": "hot_drink",
+  "state": "unknown",
+  "preparation": {
+   "en": "Pour hot brewed coffee and hot whole milk in equal parts.",
+   "es": "Servir café filtrado caliente y leche entera caliente en partes iguales."
+  },
+  "basis": {
+   "en": "One cup (200 g): 100 g brewed coffee and 100 g whole milk heated about 10 minutes (USDA retention). Unsweetened; sugar is not included.",
+   "es": "Una taza (200 g): 100 g de café filtrado y 100 g de leche entera calentada unos 10 minutos (retención de USDA). Sin azúcar; no incluye azúcar."
+  },
+  "portions": [
+   {
+    "en": "1 cup (200 mL)",
+    "es": "1 taza (200 mL)",
+    "grams": 200
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171890,
+    "description": "Beverages, coffee, brewed, prepared with tap water",
+    "grams": 100
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171265,
+    "description": "Milk, whole, 3.25% milkfat, with added vitamin D",
+    "grams": 100,
+    "retention": "2151"
+   }
+  ]
+ },
+ {
+  "id": 37,
+  "key": "submarino",
+  "nameEn": "Submarino, hot milk with a chocolate bar",
+  "nameEs": "Submarino",
+  "aliasesEn": [
+   "hot milk with chocolate bar"
+  ],
+  "aliasesEs": [
+   "submarino con chocolate"
+  ],
+  "dishType": "hot_drink",
+  "state": "unknown",
+  "preparation": {
+   "en": "Heat milk in a tall glass and drop in a bar of chocolate that melts slowly.",
+   "es": "Calentar leche en un vaso alto y hundir una barra de chocolate que se derrite lentamente."
+  },
+  "basis": {
+   "en": "One glass: 250 g whole milk heated about 10 minutes (USDA retention) and 25 g milk chocolate (the catalog's milk chocolate), a bar size assumed by the project.",
+   "es": "Un vaso: 250 g de leche entera calentada unos 10 minutos (retención de USDA) y 25 g de chocolate con leche (el del catálogo), tamaño de barra supuesto por el proyecto."
+  },
+  "portions": [
+   {
+    "en": "1 glass (250 mL)",
+    "es": "1 vaso (250 mL)",
+    "grams": 275
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171265,
+    "description": "Milk, whole, 3.25% milkfat, with added vitamin D",
+    "grams": 250,
+    "retention": "2151"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 167587,
+    "description": "Candies, milk chocolate",
+    "grams": 25
+   }
+  ]
+ },
+ {
+  "id": 38,
+  "key": "chipa",
+  "nameEn": "Chipá, cassava starch and cheese bread roll",
+  "nameEs": "Chipá",
+  "aliasesEn": [
+   "chipa",
+   "cheese bread roll",
+   "paraguayan cheese bread"
+  ],
+  "aliasesEs": [
+   "chipa",
+   "pan de queso paraguayo"
+  ],
+  "dishType": "bread_pastry",
+  "state": "cooked",
+  "preparation": {
+   "en": "Knead cassava starch with cheese, egg, butter, milk and salt, shape small rolls and bake until golden.",
+   "es": "Amasar almidón de mandioca con queso, huevo, manteca, leche y sal, formar bollitos y hornear hasta dorar."
+  },
+  "basis": {
+   "en": "A batch of 5 chipá: 100 g tapioca (dry pearl tapioca stands for cassava starch, both are almost pure starch), 70 g whole-milk mozzarella, 25 g egg, 20 g butter, 30 g milk, 1.5 g salt. Baked to the moisture of the catalog's cheese bread (21.1 %): a weight rule only.",
+   "es": "Una tanda de 5 chipás: 100 g de tapioca (la tapioca seca en perlas representa al almidón de mandioca, ambos son casi almidón puro), 70 g de muzzarella de leche entera, 25 g de huevo, 20 g de manteca, 30 g de leche, 1,5 g de sal. Horneada hasta la humedad del pan de queso del catálogo (21,1 %): solo una regla de peso."
+  },
+  "portions": [
+   {
+    "en": "1 chipá",
+    "es": "1 chipá",
+    "grams": 38
+   },
+   {
+    "en": "3 chipá rolls",
+    "es": "3 chipás",
+    "grams": 114
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169717,
+    "description": "Tapioca, pearl, dry",
+    "grams": 100,
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170845,
+    "description": "Cheese, mozzarella, whole milk",
+    "grams": 70,
+    "retention": "0001",
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171287,
+    "description": "Egg, whole, raw, fresh",
+    "grams": 25,
+    "retention": "0101",
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173410,
+    "description": "Butter, salted",
+    "grams": 20,
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171265,
+    "description": "Milk, whole, 3.25% milkfat, with added vitamin D",
+    "grams": 30,
+    "retention": "2152",
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 1.5,
+    "group": "all"
+   }
+  ],
+  "moistureGroups": {
+   "all": {
+    "source": "usda_sr_legacy",
+    "sourceId": 167944,
+    "description": "Bread, cheese"
+   }
+  }
+ },
+ {
+  "id": 39,
+  "key": "sopa-paraguaya",
+  "nameEn": "Sopa paraguaya, baked cornmeal, cheese and onion cake",
+  "nameEs": "Sopa paraguaya",
+  "aliasesEn": [
+   "paraguayan soup",
+   "paraguayan cornbread"
+  ],
+  "aliasesEs": [
+   "sopa paraguaya casera"
+  ],
+  "dishType": "bread_pastry",
+  "state": "cooked",
+  "preparation": {
+   "en": "Sauté onion, mix with cornmeal, cheese, eggs, milk and fat into a thick batter and bake in a pan until set and golden.",
+   "es": "Rehogar la cebolla, mezclar con harina de maíz, queso, huevos, leche y grasa hasta lograr una masa espesa y hornear en una fuente hasta que cuaje y dore."
+  },
+  "basis": {
+   "en": "One pan (9 pieces): 150 g whole-grain cornmeal, 150 g whole-milk mozzarella, 3 eggs (150 g), 300 g milk, 150 g onion, 15 g oil, 15 g lard, 5 g salt. Baked to the moisture of the catalog's cornbread made from recipe (39.1 %): a weight rule only.",
+   "es": "Una fuente (9 porciones): 150 g de harina de maíz integral, 150 g de muzzarella de leche entera, 3 huevos (150 g), 300 g de leche, 150 g de cebolla, 15 g de aceite, 15 g de grasa de cerdo, 5 g de sal. Horneada hasta la humedad del pan de maíz hecho a partir de receta del catálogo (39,1 %): solo una regla de peso."
+  },
+  "portions": [
+   {
+    "en": "1 piece (1/9)",
+    "es": "1 porción (1/9)",
+    "grams": 61
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169697,
+    "description": "Cornmeal, whole-grain, yellow",
+    "grams": 150,
+    "retention": "0301",
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170845,
+    "description": "Cheese, mozzarella, whole milk",
+    "grams": 150,
+    "retention": "0001",
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171287,
+    "description": "Egg, whole, raw, fresh",
+    "grams": 150,
+    "retention": "0101",
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171265,
+    "description": "Milk, whole, 3.25% milkfat, with added vitamin D",
+    "grams": 300,
+    "retention": "2152",
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170000,
+    "description": "Onions, raw",
+    "grams": 150,
+    "retention": "3780",
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172370,
+    "description": "Oil, vegetable, soybean, refined",
+    "grams": 15,
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171401,
+    "description": "Lard",
+    "grams": 15,
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 5,
+    "group": "all"
+   }
+  ],
+  "moistureGroups": {
+   "all": {
+    "source": "usda_sr_legacy",
+    "sourceId": 174910,
+    "description": "Bread, cornbread, prepared from recipe, made with low fat (2%) milk"
+   }
+  }
+ },
+ {
+  "id": 40,
+  "key": "arepa-queso",
+  "nameEn": "Arepa filled with cheese",
+  "nameEs": "Arepa rellena de queso",
+  "aliasesEn": [
+   "cheese arepa",
+   "stuffed arepa"
+  ],
+  "aliasesEs": [
+   "arepa de queso",
+   "arepa con queso"
+  ],
+  "dishType": "sandwich",
+  "state": "cooked",
+  "preparation": {
+   "en": "Mix pre-cooked corn flour with warm water and salt, shape a thick disc, griddle until it browns on both sides, split and fill with cheese and butter.",
+   "es": "Mezclar harina de maíz precocida con agua tibia y sal, formar un disco grueso, dorar en plancha de ambos lados, abrir y rellenar con queso y manteca."
+  },
+  "basis": {
+   "en": "One arepa: 60 g corn masa flour, 90 g water, 1 g salt, cooked to the moisture of ready-to-bake corn tortillas (45.9 %, catalog value, weight rule only), filled with 40 g whole-milk mozzarella and 5 g butter.",
+   "es": "Una arepa: 60 g de harina de maíz, 90 g de agua, 1 g de sal, cocida hasta la humedad de tortillas de maíz listas para hornear (45,9 %, valor del catálogo, solo regla de peso), rellena con 40 g de muzzarella de leche entera y 5 g de manteca."
+  },
+  "portions": [
+   {
+    "en": "1 arepa",
+    "es": "1 arepa",
+    "grams": 147
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169694,
+    "description": "Corn flour, masa, enriched, white",
+    "grams": 60,
+    "group": "arepa"
+   },
+   {
+    "source": "usda_fndds",
+    "sourceId": 2710707,
+    "description": "Water, tap",
+    "grams": 90,
+    "group": "arepa"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 1,
+    "group": "arepa"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170845,
+    "description": "Cheese, mozzarella, whole milk",
+    "grams": 40,
+    "retention": "0003"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173410,
+    "description": "Butter, salted",
+    "grams": 5
+   }
+  ],
+  "moistureGroups": {
+   "arepa": {
+    "source": "usda_sr_legacy",
+    "sourceId": 175036,
+    "description": "Tortillas, ready-to-bake or -fry, corn"
+   }
+  }
+ },
+ {
+  "id": 41,
+  "key": "tacos-al-pastor",
+  "nameEn": "Tacos al pastor, pork, pineapple and onion on corn tortillas",
+  "nameEs": "Tacos al pastor",
+  "aliasesEn": [
+   "al pastor tacos",
+   "pork tacos"
+  ],
+  "aliasesEs": [
+   "tacos de pastor",
+   "tacos"
+  ],
+  "dishType": "sandwich",
+  "state": "cooked",
+  "preparation": {
+   "en": "Marinate thin pork slices with paprika and vinegar, sear them on a hot plate, and serve on warm corn tortillas with pineapple, onion and cilantro.",
+   "es": "Marinar láminas finas de cerdo con pimentón y vinagre, sellarlas en plancha caliente y servir sobre tortillas de maíz tibias con piña, cebolla y cilantro."
+  },
+  "basis": {
+   "en": "Three tacos (about 270 g): 90 g corn tortillas (3 x 30 g), 100 g raw pork loin with fat (yield 77 %, USDA pork loin chops, boneless, pan-fried), 30 g pineapple, 20 g onion, 5 g cilantro, paprika, vinegar, 5 g oil (an assumption of the project).",
+   "es": "Tres tacos (unos 270 g): 90 g de tortillas de maíz (3 x 30 g), 100 g de lomo de cerdo crudo con grasa (rendimiento 77 %, USDA, chuletas de lomo de cerdo sin hueso salteadas), 30 g de piña, 20 g de cebolla, 5 g de cilantro, pimentón, vinagre, 5 g de aceite (un supuesto del proyecto)."
+  },
+  "portions": [
+   {
+    "en": "1 taco",
+    "es": "1 taco",
+    "grams": 77
+   },
+   {
+    "en": "3 tacos",
+    "es": "3 tacos",
+    "grams": 232
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 175036,
+    "description": "Tortillas, ready-to-bake or -fry, corn",
+    "grams": 90
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 167818,
+    "description": "Pork, fresh, loin, whole, separable lean and fat, raw",
+    "grams": 100,
+    "yield": "10186|Pan-fried",
+    "retention": "1252"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169124,
+    "description": "Pineapple, raw, all varieties",
+    "grams": 30
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170000,
+    "description": "Onions, raw",
+    "grams": 20
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169997,
+    "description": "Coriander (cilantro) leaves, raw",
+    "grams": 5
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171329,
+    "description": "Spices, paprika",
+    "grams": 1
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172237,
+    "description": "Vinegar, distilled",
+    "grams": 3
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172370,
+    "description": "Oil, vegetable, soybean, refined",
+    "grams": 5,
+    "absorbed": true
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 1
+   }
+  ]
+ },
+ {
+  "id": 43,
+  "key": "causa-limena",
+  "nameEn": "Causa limeña, chilled yellow potato terrine with tuna",
+  "nameEs": "Causa limeña",
+  "aliasesEn": [
+   "causa",
+   "peruvian potato terrine"
+  ],
+  "aliasesEs": [
+   "causa",
+   "causa rellena",
+   "causa de atún"
+  ],
+  "dishType": "cold_dish",
+  "state": "cooked",
+  "preparation": {
+   "en": "Mash boiled potato with lime juice, oil and chili, layer it around a filling of tuna mixed with mayonnaise, top with avocado, egg and olive, and chill.",
+   "es": "Pisar papa hervida con jugo de limón, aceite y ají, armar capas con un relleno de atún con mayonesa, cubrir con palta, huevo y aceituna, y enfriar."
+  },
+  "basis": {
+   "en": "One portion (about 370 g): 200 g potato (weighed raw, boiled, no weight change), 8 g lemon juice, 8 g oil, 10 g chili, 70 g canned tuna in water (drained), 25 g mayonnaise, 30 g avocado, 15 g hard-boiled egg, 5 g olive. Nothing in the dish is cooked after boiling the potato.",
+   "es": "Una porción (unos 370 g): 200 g de papa (pesada cruda, hervida, sin cambio de peso), 8 g de jugo de limón, 8 g de aceite, 10 g de ají, 70 g de atún en lata al natural (escurrido), 25 g de mayonesa, 30 g de palta, 15 g de huevo duro, 5 g de aceituna. Nada del plato se cocina después de hervir la papa."
+  },
+  "portions": [
+   {
+    "en": "1 portion",
+    "es": "1 porción",
+    "grams": 370
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170026,
+    "description": "Potatoes, flesh and skin, raw",
+    "grams": 200,
+    "retention": "3308"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 167747,
+    "description": "Lemon juice, raw",
+    "grams": 8
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172370,
+    "description": "Oil, vegetable, soybean, refined",
+    "grams": 8
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170106,
+    "description": "Peppers, hot chili, red, raw",
+    "grams": 10
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173709,
+    "description": "Fish, tuna, light, canned in water, drained solids (Includes foods for USDA's Food Distribution Program)",
+    "grams": 70
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171009,
+    "description": "Salad dressing, mayonnaise, regular",
+    "grams": 25
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171705,
+    "description": "Avocados, raw, all commercial varieties",
+    "grams": 30
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173424,
+    "description": "Egg, whole, cooked, hard-boiled",
+    "grams": 15
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169096,
+    "description": "Olives, pickled, canned or bottled, green",
+    "grams": 5
+   }
+  ]
+ },
+ {
+  "id": 44,
+  "key": "lomo-saltado",
+  "nameEn": "Lomo saltado, stir-fried beef with onion, tomato, fries and rice",
+  "nameEs": "Lomo saltado",
+  "aliasesEn": [
+   "peruvian beef stir-fry"
+  ],
+  "aliasesEs": [
+   "lomo saltado peruano"
+  ],
+  "dishType": "rice_bean_dish",
+  "state": "cooked",
+  "preparation": {
+   "en": "Stir-fry strips of beef over high heat with oil, add onion, tomato and chili, splash with soy sauce and vinegar, and serve over fried potatoes with rice.",
+   "es": "Saltear tiras de carne a fuego fuerte con aceite, agregar cebolla, tomate y ají, rociar con salsa de soja y vinagre, y servir sobre papas fritas con arroz."
+  },
+  "basis": {
+   "en": "One plate (about 570 g): 150 g raw beef tenderloin (yield 80 %, USDA tenderloin steak, broiled), 60 g onion, 60 g tomato, 10 g chili, 15 g soy sauce, 12 g oil, 5 g vinegar, 3 g cilantro, 150 g oven-heated french fries and 150 g cooked rice (catalog cooked values).",
+   "es": "Un plato (unos 570 g): 150 g de lomo crudo (rendimiento 80 %, USDA, bife de lomo a la plancha), 60 g de cebolla, 60 g de tomate, 10 g de ají, 15 g de salsa de soja, 12 g de aceite, 5 g de vinagre, 3 g de cilantro, 150 g de papas fritas calentadas al horno y 150 g de arroz cocido (valores cocidos del catálogo)."
+  },
+  "portions": [
+   {
+    "en": "1 plate",
+    "es": "1 plato",
+    "grams": 570
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169542,
+    "description": "Beef, tenderloin, steak, separable lean and fat, trimmed to 1/8\" fat, all grades, raw",
+    "grams": 150,
+    "yield": "13918|Broiled or Grilled",
+    "retention": "0605"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170000,
+    "description": "Onions, raw",
+    "grams": 60,
+    "retention": "3780"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170457,
+    "description": "Tomatoes, red, ripe, raw, year round average",
+    "grams": 60,
+    "retention": "3751"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170106,
+    "description": "Peppers, hot chili, red, raw",
+    "grams": 10,
+    "retention": "3780"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 174277,
+    "description": "Soy sauce made from soy and wheat (shoyu)",
+    "grams": 15
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172370,
+    "description": "Oil, vegetable, soybean, refined",
+    "grams": 12
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172237,
+    "description": "Vinegar, distilled",
+    "grams": 5
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169997,
+    "description": "Coriander (cilantro) leaves, raw",
+    "grams": 3
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169264,
+    "description": "Potatoes, french fried, all types, salt added in processing, frozen, home-prepared, oven heated",
+    "grams": 150
+   },
+   {
+    "source": "usda_fndds",
+    "sourceId": 2708408,
+    "description": "Rice, white, cooked, no added fat",
+    "grams": 150
+   }
+  ]
+ },
+ {
+  "id": 45,
+  "key": "feijoada",
+  "nameEn": "Feijoada, black beans stewed with sausage, bacon and beef",
+  "nameEs": "Feijoada",
+  "aliasesEn": [
+   "brazilian black bean stew"
+  ],
+  "aliasesEs": [
+   "feijoada brasileña",
+   "feijoada completa"
+  ],
+  "dishType": "stew",
+  "state": "cooked",
+  "preparation": {
+   "en": "Stew cooked black beans with smoked sausage, bacon and beef, onion, garlic and a little broth until thick.",
+   "es": "Estofar porotos negros cocidos con chorizo, panceta y carne, cebolla, ajo y un poco de caldo hasta espesar."
+  },
+  "basis": {
+   "en": "One plate (about 455 g): 200 g cooked black beans, 50 g pork sausage (the catalog's cooked chorizo stands for linguiça), 25 g cooked bacon, 60 g braised beef, 30 g onion, 3 g garlic, 5 g oil, 80 g of broth counted as water. The bacon and beef are taken cooked (catalog values), so no yield is applied to them.",
+   "es": "Un plato (unos 455 g): 200 g de porotos negros cocidos, 62,5 g de chorizo de cerdo crudo (rendimiento 80 %, USDA, chorizo fresco salteado; el chorizo representa a la linguiça), 25 g de panceta cocida, 60 g de carne braseada, 30 g de cebolla, 3 g de ajo, 5 g de aceite, 80 g de caldo contados como agua. La panceta y la carne se toman ya cocidas (valores del catálogo), por lo que no se les aplica rendimiento."
+  },
+  "portions": [
+   {
+    "en": "1 plate",
+    "es": "1 plato",
+    "grams": 455
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173735,
+    "description": "Beans, black, mature seeds, cooked, boiled, without salt",
+    "grams": 200
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173859,
+    "description": "Sausage, pork, chorizo, link or ground, raw",
+    "grams": 62.5,
+    "yield": "7064|Pan-fried",
+    "retention": "1706"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 168322,
+    "description": "Pork, cured, bacon, pre-sliced, cooked, pan-fried",
+    "grams": 25
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 168667,
+    "description": "Beef, chuck, arm pot roast, separable lean and fat, trimmed to 1/8\" fat, all grades, cooked, braised",
+    "grams": 60
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170000,
+    "description": "Onions, raw",
+    "grams": 30,
+    "retention": "3776"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169230,
+    "description": "Garlic, raw",
+    "grams": 3
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172370,
+    "description": "Oil, vegetable, soybean, refined",
+    "grams": 5
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 2
+   },
+   {
+    "source": "usda_fndds",
+    "sourceId": 2710707,
+    "description": "Water, tap",
+    "grams": 80
+   }
+  ]
+ },
+ {
+  "id": 47,
+  "key": "pabellon-criollo",
+  "nameEn": "Pabellón criollo, shredded beef, black beans, rice and fried plantain",
+  "nameEs": "Pabellón criollo",
+  "aliasesEn": [
+   "pabellon",
+   "venezuelan national dish"
+  ],
+  "aliasesEs": [
+   "pabellón",
+   "pabellón con barandas"
+  ],
+  "dishType": "rice_bean_dish",
+  "state": "cooked",
+  "preparation": {
+   "en": "Simmer shredded beef with sautéed onion, tomato and pepper, and serve it with black beans, white rice and slices of fried ripe plantain.",
+   "es": "Cocinar carne mechada con rehogado de cebolla, tomate y pimiento, y servir con caraotas negras, arroz blanco y rodajas de plátano maduro frito."
+  },
+  "basis": {
+   "en": "One plate (about 547 g): 120 g braised beef, 120 g cooked black beans, 150 g cooked rice (catalog cooked values), 100 g ripe plantain fried with 7 g of absorbed oil (an assumption of the project; the plantain is dried to the moisture of the catalog's fried ripe plantain, 49 %, a weight rule only), 25 g onion, 25 g tomato, 15 g pepper, 8 g oil for the sauté. No other weight change is applied.",
+   "es": "Un plato (unos 547 g): 120 g de carne braseada, 120 g de caraotas negras cocidas, 150 g de arroz cocido (valores cocidos del catálogo), 100 g de plátano maduro frito con 7 g de aceite absorbido (un supuesto del proyecto; el plátano se seca hasta la humedad del plátano maduro frito del catálogo, 49 %, solo una regla de peso), 25 g de cebolla, 25 g de tomate, 15 g de pimiento, 8 g de aceite para el rehogado. No se aplica otro cambio de peso."
+  },
+  "portions": [
+   {
+    "en": "1 plate",
+    "es": "1 plato",
+    "grams": 545
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 168667,
+    "description": "Beef, chuck, arm pot roast, separable lean and fat, trimmed to 1/8\" fat, all grades, cooked, braised",
+    "grams": 120
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173735,
+    "description": "Beans, black, mature seeds, cooked, boiled, without salt",
+    "grams": 120
+   },
+   {
+    "source": "usda_fndds",
+    "sourceId": 2708408,
+    "description": "Rice, white, cooked, no added fat",
+    "grams": 150
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169130,
+    "description": "Plantains, yellow, raw",
+    "grams": 100,
+    "group": "plantain"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172370,
+    "description": "Oil, vegetable, soybean, refined",
+    "grams": 7,
+    "group": "plantain",
+    "absorbed": true
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170000,
+    "description": "Onions, raw",
+    "grams": 25,
+    "retention": "3780"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170457,
+    "description": "Tomatoes, red, ripe, raw, year round average",
+    "grams": 25,
+    "retention": "3751"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170427,
+    "description": "Peppers, sweet, green, raw",
+    "grams": 15,
+    "retention": "3780"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172370,
+    "description": "Oil, vegetable, soybean, refined",
+    "grams": 8
+   }
+  ],
+  "moistureGroups": {
+   "plantain": {
+    "source": "usda_sr_legacy",
+    "sourceId": 168200,
+    "description": "Plantains, yellow, fried, Latino restaurant"
+   }
+  }
+ }
+]

@@ -9,6 +9,7 @@
 import { readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { buildCatalog } from './builder';
+import { loadFactors, loadRecipes, resolveRecipes } from './recipes';
 import { loadRegional } from './regionalFoods';
 import { loadPortionGlossary, loadAliasRules, loadGlossary, loadSynonyms, loadTranslations } from './translations';
 import type { SourceFood } from './types';
@@ -59,8 +60,18 @@ async function main(): Promise<void> {
 
   // The reviewed regional selection from Branded Foods: a committed snapshot, so the build never needs the 3 GB file.
   const regional = loadRegional(path.join(DATA_DIR, 'regional-foods.json'));
+  const sourceFoods = [...foods, ...regional.foods];
+
+  // The project's own dishes: calculated from recipes and the ingredient values above (docs/catalog-recipes.md). A recipe whose
+  // ingredient is missing stops the build here, with the recipe and the ingredient named.
+  const recipeSet = loadRecipes(path.join(DATA_DIR, 'recipes'));
+  const recipes = resolveRecipes(recipeSet.recipes, sourceFoods, loadFactors(path.join(DATA_DIR, 'factors')), recipeSet.version);
+  console.log(`recipes: ${recipes.length} dishes calculated (set ${recipeSet.version})`);
+
   const counts = buildCatalog({
-    foods: [...foods, ...regional.foods],
+    foods: sourceFoods,
+    recipes,
+    recipeSetVersion: recipeSet.version,
     translations: [...loadTranslations(TRANSLATIONS_PATH), ...regional.translations],
     glossary: loadGlossary(path.join(DATA_DIR, 'glossary')),
     portionGlossary: loadPortionGlossary(DATA_DIR),

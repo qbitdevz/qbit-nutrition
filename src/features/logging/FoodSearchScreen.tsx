@@ -9,6 +9,7 @@ import { useServices } from '../startup/AppProvider';
 import { useMealDraft } from './draft';
 import { loadFoodView, loadUsage, refKey, rowFromView, searchFoods, type FoodRow, type UsageLists } from './foods';
 import { PortionSheet } from './PortionSheet';
+import { RecipeTag } from './RecipeMethod';
 
 interface FoodSearchScreenProps {
   /** An item was added to the meal: the route moves on to the review screen. */
@@ -243,6 +244,7 @@ function FoodResultRow({ row, favorite, locale, onOpen, onFavorite }: FoodResult
               fat: formatDecimal(locale, row.fat100g, 1),
             })}
           </AppText>
+          {row.recipe ? <RecipeTag /> : null}
           {row.custom || row.barcode ? (
             <View style={[styles.tag, { backgroundColor: colors.surfaceRaised }]}>
               <AppText variant="caption">{row.custom ? t('log.search.custom') : t('log.search.barcodeTag')}</AppText>
