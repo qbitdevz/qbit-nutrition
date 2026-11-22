@@ -1,19 +1,25 @@
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { layout, spacing, typography } from '@/ui/tokens';
-import { useTheme } from '@/ui/useTheme';
+import { AppText, Button, ScreenFrame, TopBar, layout, spacing } from '@/ui';
 
 export default function ScanScreen() {
-  const colors = useTheme();
   const { t } = useTranslation();
+  const router = useRouter();
   return (
-    <View style={styles.root}>
-      <Text style={[typography.body, { color: colors.inkMuted }]}>{t('scan.unavailable')}</Text>
-    </View>
+    <ScreenFrame header={<TopBar title={t('scan.title')} onBack={() => router.back()} backLabel={t('common.back')} />}>
+      <View style={styles.body}>
+        <AppText tone="muted">{t('scan.unavailable')}</AppText>
+        <Button label={t('scan.manual')} icon="pencil" onPress={() => router.push('/log/search')} testID="add-manually" />
+        <AppText variant="bodySm" tone="muted">
+          {t('scan.manualHint')}
+        </AppText>
+      </View>
+    </ScreenFrame>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, paddingHorizontal: layout.screenMargin, paddingTop: spacing.lg },
+  body: { paddingHorizontal: layout.screenMargin + spacing.s2, paddingTop: spacing.s4, gap: spacing.s3 },
 });

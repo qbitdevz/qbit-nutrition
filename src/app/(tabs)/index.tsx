@@ -1,42 +1,29 @@
-import { Link } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useRef, useState } from 'react';
 
-import { Screen } from '@/ui/Screen';
-import { layout, radius, spacing, typography } from '@/ui/tokens';
-import { useTheme } from '@/ui/useTheme';
+import { useDockPulse } from '@/features/navigation/AppDock';
+import { TodayScreen, type TodayScreenHandle } from '@/features/today/TodayScreen';
 
-export default function TodayScreen() {
-  const colors = useTheme();
-  const { t } = useTranslation();
+export default function TodayRoute() {
+  const router = useRouter();
+  const handle = useRef<TodayScreenHandle>(null);
+  const [empty, setEmpty] = useState(false);
+  useDockPulse(empty);
+
+  // Meals can change while Today is not on screen (logging, editing): read the day again on return.
+  useFocusEffect(
+    useCallback(() => {
+      handle.current?.reload();
+    }, []),
+  );
+
   return (
-    <Screen title={t('today.title')}>
-      <Text style={[typography.body, { color: colors.inkMuted }]}>{t('today.empty')}</Text>
-      <View style={styles.actions}>
-        <Link href="/scan" asChild>
-          <Pressable accessibilityRole="button" style={[styles.primary, { backgroundColor: colors.accent }]}>
-            <Text style={[typography.body, styles.primaryLabel, { color: colors.onAccent }]}>{t('today.scan')}</Text>
-          </Pressable>
-        </Link>
-        <Link href="/settings" asChild>
-          <Pressable accessibilityRole="button" style={[styles.secondary, { borderColor: colors.ink }]}>
-            <Text style={[typography.body, styles.primaryLabel, { color: colors.ink }]}>{t('today.settings')}</Text>
-          </Pressable>
-        </Link>
-      </View>
-    </Screen>
+    <TodayScreen
+      handleRef={handle}
+      onEmptyDayChange={setEmpty}
+      onOpenSettings={() => router.push('/settings')}
+      onOpenMeal={(id) => router.push({ pathname: '/meal/[id]', params: { id } })}
+      onSetupTargets={() => router.push('/settings/goal')}
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  actions: { gap: spacing.md, marginTop: spacing.xl },
-  primary: { minHeight: layout.touchTarget, borderRadius: radius.control, alignItems: 'center', justifyContent: 'center' },
-  secondary: {
-    minHeight: layout.touchTarget,
-    borderRadius: radius.control,
-    borderWidth: 1.5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  primaryLabel: { fontWeight: '700' },
-});

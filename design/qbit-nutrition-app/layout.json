@@ -1,0 +1,21 @@
+{
+  "arrangement": "grid",
+  "positions": {
+    "system": {
+      "x": 0,
+      "y": 0
+    },
+    "01-orbit.html": {
+      "x": 1520,
+      "y": 0
+    },
+    "02-ledger.html": {
+      "x": 0,
+      "y": 1350
+    },
+    "03-bento.html": {
+      "x": 1520,
+      "y": 1350
+    }
+  }
+}

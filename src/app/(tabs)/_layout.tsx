@@ -1,24 +1,26 @@
-import { Tabs } from 'expo-router';
-import { useTranslation } from 'react-i18next';
+import { router } from 'expo-router';
+import { Tabs } from 'expo-router/js-tabs';
+import { useState } from 'react';
 
-import { typography } from '@/ui/tokens';
-import { useTheme } from '@/ui/useTheme';
+import { AppDock, DockPulseContext } from '@/features/navigation/AppDock';
 
 export default function TabsLayout() {
-  const colors = useTheme();
-  const { t } = useTranslation();
+  const [pulse, setPulse] = useState(false);
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: colors.ink,
-        tabBarInactiveTintColor: colors.inkMuted,
-        tabBarStyle: { backgroundColor: colors.bg, borderTopColor: colors.rule },
-        tabBarLabelStyle: typography.label,
-        tabBarIconStyle: { display: 'none' },
-      }}>
-      <Tabs.Screen name="index" options={{ title: t('tabs.today') }} />
-      <Tabs.Screen name="progress" options={{ title: t('tabs.progress') }} />
-    </Tabs>
+    <DockPulseContext.Provider value={setPulse}>
+      <Tabs
+        screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: 'transparent' } }}
+        tabBar={({ state }) => (
+          <AppDock
+            activeRoute={state.routes[state.index]?.name ?? 'index'}
+            onNavigate={(route) => router.navigate(route === 'index' ? '/' : '/progress')}
+            onScan={() => router.push('/scan')}
+            pulse={pulse}
+          />
+        )}>
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="progress" />
+      </Tabs>
+    </DockPulseContext.Provider>
   );
 }

@@ -1,5 +1,12 @@
 # 05 — UI/UX Specification and Design System
 
+> **Superseded direction.** On 2026-11-21 the owner asked for a modern design
+> with animations, effects, transitions, rounded buttons, and the qbitdev
+> personal brand (`bcdd/contrato.md`, RN-15). The "nutrition label" direction
+> below no longer applies. New directions live under `design/`; this document
+> is rewritten once the owner chooses one. Sections 8 (voice) and 9
+> (accessibility) still apply.
+
 This document sets direction and tokens. Screen mockups are a separate step
 and should be produced and reviewed before implementing each screen.
 

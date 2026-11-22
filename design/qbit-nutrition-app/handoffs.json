@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "chosen": "01-orbit.html",
+  "handoffs": {
+    "01-orbit.html": {
+      "status": "in_progress",
+      "queued": false,
+      "sentAt": "2026-11-21T14:55:04.474Z",
+      "startedAt": "2026-11-21T14:55:04.793Z",
+      "implementedAt": null,
+      "feature": "odd/tasks/phase-1-manual-tracker.md"
+    }
+  }
+}

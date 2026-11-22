@@ -1,0 +1,28 @@
+{
+  "title": "Qbit Nutrition: daily tracker and scan flow",
+  "brief": "Android app that logs meals from a photo; the user chooses the AI provider and data stays on the phone. Modern look with animation, effects, transitions, rounded buttons and the qbitdev brand (near-black #04070D, blue #2D7FFF, cyan #35E0FF for AI, green #3DFF8B). Audience: adults tracking calories and protein, several short sessions a day, one hand, often in a hurry. Each artboard is a clickable 390 x 844 prototype of Today with data, Today on the first day, Scan review, and a provider-limit scan error.",
+  "feature": "odd/tasks/phase-1-manual-tracker.md",
+  "artboards": [
+    {
+      "file": "01-orbit.html",
+      "title": "Orbit: ring hero, floating dock",
+      "tradeoff": "Dark, one glowing calorie ring is the memorable thing; the scan button is a raised circle in a floating dock, review rises as a sheet over a Today that steps back. Strongest brand glow and the most direct 'scan first' feel, but the ring and macros push the meal list below the fold and the raised button covers the last row until you scroll. Would use Outfit for the wordmark, numerals and buttons and Figtree for body text.",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "02-ledger.html",
+      "title": "Ledger: giant number, light theme",
+      "tradeoff": "Light theme with the darker brand variants; a 96 px 'calories left' number, one meter, ruled macro rows and a meal timeline, with a full-width scan pill above two tabs and review pushing in from the right. Fastest to read in daylight and the calmest, with the least glow and no photo-forward feel, so it is the least 'effects'-heavy of the three; the wide pill needs a thumb stretch to the left tab. Would use Outfit for the number, wordmark and buttons (its geometric digits matter most here) and Figtree for body text.",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "03-bento.html",
+      "title": "Bento: tiles, gauge and capsules",
+      "tradeoff": "Dark tiles with a half-circle gauge, three vertical capsules for protein, carbs and fat, a week strip, photo-led meal cards in a swipe rail, an extended 'Scan meal' button and bottom sheets for review and errors. Richest visually and best for browsing meals, but it is the densest: the first screen shows less of the meals, the rail needs a horizontal swipe, and the sheets sit lower on the screen for one-handed reach at the cost of showing less of each item. Would use Outfit for the wordmark, numerals and buttons and Figtree for body text.",
+      "width": 390,
+      "height": 844
+    }
+  ]
+}
