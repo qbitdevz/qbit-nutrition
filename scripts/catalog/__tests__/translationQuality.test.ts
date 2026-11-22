@@ -111,6 +111,11 @@ const builtLabel = existsSync(BUILT)
   : 'Spanish name quality gates, built catalog (SKIPPED: catalog-build/catalog.db not found; run "npm run catalog:build" to check the real catalog)';
 
 describeBuilt(builtLabel, () => {
+  // A skipped describe still runs its body, and CI has no built catalog to open: leave before touching the file.
+  if (!existsSync(BUILT)) {
+    it.skip('needs the built catalog', () => {});
+    return;
+  }
   const db = new DatabaseSync(BUILT, { readOnly: true });
   afterAll(() => db.close());
 

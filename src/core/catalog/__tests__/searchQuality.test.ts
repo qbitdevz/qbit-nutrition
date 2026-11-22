@@ -36,7 +36,11 @@ const label = existsSync(BUILT)
   : 'search quality, built catalog (SKIPPED: catalog-build/catalog.db not found; run "npm run catalog:build" to measure the real catalog)';
 
 describeBuilt(label, () => {
-  const db = new NodeSqliteCatalogDb(BUILT);
+  // Opened in beforeAll: a skipped describe still runs its body, and CI has no built catalog to open.
+  let db!: NodeSqliteCatalogDb;
+  beforeAll(() => {
+    db = new NodeSqliteCatalogDb(BUILT);
+  });
   afterAll(() => db.close());
 
   it('has at least 150 everyday queries, half English and half Spanish, each satisfiable by some food', async () => {
