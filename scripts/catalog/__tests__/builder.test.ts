@@ -42,7 +42,8 @@ describe('buildCatalog', () => {
       food_name: n('food_name'),
       food_portion: 1,
       food_fts: n('food_name'),
-      catalog_meta: 5,
+      catalog_meta: 8,
+      duplicatesDropped: 0,
       unmatchedTranslations: ['Not in the data set'],
     });
     db.close();

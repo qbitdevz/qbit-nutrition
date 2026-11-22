@@ -9,7 +9,7 @@
 import { readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { buildCatalog } from './builder';
-import { loadTranslations } from './translations';
+import { loadAliasRules, loadGlossary, loadSynonyms, loadTranslations } from './translations';
 import type { SourceFood } from './types';
 import {
   ensureDownloaded,
@@ -24,7 +24,8 @@ const ROOT = path.resolve(__dirname, '../..');
 const BUILD_DIR = path.join(ROOT, 'catalog-build');
 const DOWNLOAD_DIR = path.join(BUILD_DIR, 'downloads');
 const OUT_PATH = path.join(BUILD_DIR, 'catalog.db');
-const TRANSLATIONS_PATH = path.join(__dirname, 'data', 'translations.es.json');
+const DATA_DIR = path.join(__dirname, 'data');
+const TRANSLATIONS_PATH = path.join(DATA_DIR, 'translations.es.json');
 
 async function resolveFiles(): Promise<DatasetFile[]> {
   try {
@@ -37,7 +38,8 @@ async function resolveFiles(): Promise<DatasetFile[]> {
   }
 }
 
-async function main(): Promise<void> {
+/** Downloads (or reads from the cache) and parses every source data set. */
+export async function loadSourceFoods(): Promise<{ foods: SourceFood[]; files: DatasetFile[] }> {
   const files = await resolveFiles();
   const foods: SourceFood[] = [];
   for (const file of files) {
@@ -48,10 +50,18 @@ async function main(): Promise<void> {
     console.log(`  ${parsed.length} foods read`);
     for (const f of parsed) foods.push(f);
   }
+  return { foods, files };
+}
+
+async function main(): Promise<void> {
+  const { foods, files } = await loadSourceFoods();
 
   const counts = buildCatalog({
     foods,
     translations: loadTranslations(TRANSLATIONS_PATH),
+    glossary: loadGlossary(path.join(DATA_DIR, 'glossary')),
+    synonyms: loadSynonyms(path.join(DATA_DIR, 'synonyms.json')),
+    aliasRules: loadAliasRules(path.join(DATA_DIR, 'aliases.json')),
     outPath: OUT_PATH,
     meta: {
       dataVersion: files.map((f) => `${f.source}@${f.version}`).join('+'),

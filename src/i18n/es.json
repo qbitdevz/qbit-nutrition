@@ -893,7 +893,7 @@
       "usda": "Datos de composición de alimentos: U.S. Department of Agriculture, Agricultural Research Service. FoodData Central.",
       "off": "Datos de productos: Open Food Facts, disponibles bajo la Open Database License (ODbL), con contenidos individuales bajo la Database Contents License. Los productos se buscan de a un código y se guardan en este teléfono; la base de datos no viene incluida en la app.",
       "offLink": "Licencia y términos de Open Food Facts",
-      "usdaNote": "Los valores nutricionales de la lista de alimentos incluida provienen de esta fuente.",
+      "usdaNote": "Los valores nutricionales de la lista de alimentos incluida provienen de esta fuente: Foundation Foods, SR Legacy y Survey Foods (FNDDS 2021-2023), todos de dominio público (CC0 1.0). Un alimento publicado por más de uno de ellos aparece una sola vez. Los nombres en español y los sinónimos de búsqueda se escribieron para esta app y no contienen valores nutricionales.",
       "offNote": "No se usan las imágenes de productos de Open Food Facts."
     },
     "appName": "Qbit Nutrition",

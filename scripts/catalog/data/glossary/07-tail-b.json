@@ -1,0 +1,6 @@
+{
+  "terms": {
+    "fortune": "f:fortuna", "fun": "m:fun", "waterchestnuts": "fp:castañas de agua", "aguada": "a:aguad@", "beaked": "a:de pico", "caramels.": "mp:caramelos", "ga": "x:Ga", "medjool": "x:Medjool"
+  },
+  "keep": ["co", "brownberry", "cap'n", "debbie"]
+}

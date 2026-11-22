@@ -1,4 +1,4 @@
-export type CatalogSource = 'usda_foundation' | 'usda_sr_legacy';
+export type CatalogSource = 'usda_foundation' | 'usda_sr_legacy' | 'usda_fndds';
 
 /** One food as read from a USDA bulk file, reduced to what the catalog needs. */
 export interface SourceFood {
@@ -37,6 +37,14 @@ export interface BuildCounts {
   food_portion: number;
   food_fts: number;
   catalog_meta: number;
+  /** Foods left out because another source publishes the same food (see `dedupeFoods`). */
+  duplicatesDropped: number;
+  /** Spanish names by origin: handwritten, composed from the glossary, and how many were given a qualifier to tell them apart. */
+  namesHandwritten: number;
+  namesComposed: number;
+  namesDisambiguated: number;
+  /** English words the glossary lacks, with the number of foods each blocks. A shippable catalog has none. */
+  missingWords: Record<string, number>;
   /** Translation entries that matched no USDA description. */
   unmatchedTranslations: string[];
 }
