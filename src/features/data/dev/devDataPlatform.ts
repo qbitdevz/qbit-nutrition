@@ -82,13 +82,44 @@ function sampleExport(): Uint8Array {
   return strToU8(JSON.stringify(document));
 }
 
+/**
+ * A SYNTHETIC food table for the preview: invented foods and numbers (a Spanish CSV, decimal commas, markers for missing values, one value no food can
+ * have, one heading row, one energy that does not match its macros), so the import screens can be walked through. Not a row of any real table.
+ */
+function sampleTable(): Uint8Array {
+  return strToU8(
+    [
+      'Alimento;Grupo;Energía (kcal);Proteínas (g);Hidratos de carbono (g);Grasa total (g);Fibra (g);Sodio (mg);Vitamina C (mg)',
+      'FRUTAS DE EJEMPLO;;;;;;;;',
+      'Plátano de ejemplo;Frutas;89;1,1;22,8;0,3;2,6;1;8,7',
+      'Manzana inventada;Frutas;52,5;0,3;13,8;0,2;2,4;1;4,6',
+      'Mango ficticio;Frutas;60;0,8;15;0,4;1,6;tr;36,4',
+      'Arroz inventado cocido;Cereales;130;2,7;28,2;0,3;0,4;1;nd',
+      'Pan de ejemplo;Cereales;265;9;49;3,2;2,7;491;0',
+      'Lenteja ficticia;Legumbres;116;9;20,1;0,4;7,9;2;1,5',
+      'Yogur inventado;Lácteos;61;3,5;4,7;3,3;-;46;0,5',
+      'Aceite de prueba;Grasas;5000;0;0;100;0;0;0',
+      'Galleta incoherente;Dulces;600;2;10;1;0,5;300;0',
+      'Queso de ejemplo;Lácteos;402;25;1,3;33;0;621;0',
+    ].join('\n'),
+  );
+}
+
 export function createDevDataPlatform(): DataPlatform {
   const photo = Uint8Array.from([0xff, 0xd8, 0xff, 0xe0, 0, 16, 1, 2, 3, 4]);
-  return createFakeDataPlatform({
+  const platform = createFakeDataPlatform({
     photos: new Map([
       ['photos/sample-1.jpg', photo],
       ['photos/sample-2.jpg', photo],
     ]),
     nextPick: { name: 'qbit-nutrition-export-2026-11-21.json', bytes: sampleExport() },
   });
+  // The import-a-table screens pick a table, the data screen an export: on the table screens the picker hands out the synthetic table.
+  const pick = platform.picker.pick;
+  platform.picker.pick = async () => {
+    const onTableScreen = typeof window !== 'undefined' && /import-table/.test(window.location.pathname);
+    platform.state.nextPick = onTableScreen ? { name: 'Tabla inventada.csv', bytes: sampleTable() } : { name: 'qbit-nutrition-export-2026-11-21.json', bytes: sampleExport() };
+    return pick();
+  };
+  return platform;
 }

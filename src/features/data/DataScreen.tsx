@@ -18,6 +18,8 @@ interface DataScreenProps {
   onBack?: () => void;
   /** Where the result of an import leads when AI providers need their key again. */
   onOpenProviders?: () => void;
+  /** Opens Imported tables (food tables the person loaded from a file). */
+  onOpenImportedTables?: () => void;
   /** The clock; tests pass a fixed one. */
   now?: () => Date;
 }
@@ -44,14 +46,14 @@ const ERROR_KEY: Record<ImportError['code'], string> = {
   write_failed: 'writeFailed',
 };
 
-const COUNT_ROWS = ['meals', 'weights', 'measurements', 'goals', 'customFoods', 'providers', 'photos'] as const;
+const COUNT_ROWS = ['meals', 'weights', 'measurements', 'goals', 'customFoods', 'importedTables', 'providers', 'photos'] as const;
 
 /**
  * Settings → Data (docs/04 flow F, S3): export everything to one file and share it, import a file to replace the
  * data, delete everything. Every destructive step is confirmed first and the safe choice is the primary button.
  * The work is in `dataService.ts`; this file lays out the steps and the messages.
  */
-export function DataScreen({ onBack, onOpenProviders, now }: DataScreenProps) {
+export function DataScreen({ onBack, onOpenProviders, onOpenImportedTables, now }: DataScreenProps) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language as Locale;
   const { colors } = useTheme();
@@ -66,6 +68,7 @@ export function DataScreen({ onBack, onOpenProviders, now }: DataScreenProps) {
 
   // Export.
   const [photoCount, setPhotoCount] = useState(0);
+  const [tableCount, setTableCount] = useState(0);
   const [withPhotos, setWithPhotos] = useState(false);
   const [reminder, setReminder] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -107,6 +110,18 @@ export function DataScreen({ onBack, onOpenProviders, now }: DataScreenProps) {
       active = false;
     };
   }, [service]);
+
+  useEffect(() => {
+    let active = true;
+    // Like the photo count: not worth an error. It tells the person that the export will contain the tables they imported.
+    repos.importedFoods.listCollections().then(
+      (tables) => active && setTableCount(tables.length),
+      () => undefined,
+    );
+    return () => {
+      active = false;
+    };
+  }, [repos]);
 
   const share = async () => {
     setReminder(false);
@@ -243,6 +258,19 @@ export function DataScreen({ onBack, onOpenProviders, now }: DataScreenProps) {
           ) : null}
         </View>
 
+        {onOpenImportedTables ? (
+          <View style={[styles.card, { backgroundColor: colors.surface }]} testID="data-tables">
+            <AppText variant="heading" accessibilityRole="header">
+              {t('import.card.title')}
+            </AppText>
+            <AppText tone="muted">{t('import.card.body')}</AppText>
+            <AppText variant="bodySm" tone="muted">
+              {tableCount > 0 ? t('import.card.count', { count: tableCount }) : t('import.card.none')}
+            </AppText>
+            <Button label={t('import.card.open')} variant="secondary" icon="plate" onPress={onOpenImportedTables} testID="open-imported-tables" />
+          </View>
+        ) : null}
+
         <View style={[styles.card, { backgroundColor: colors.surface }]} testID="data-delete">
           <AppText variant="heading" accessibilityRole="header">
             {t('data.delete.title')}
@@ -257,6 +285,12 @@ export function DataScreen({ onBack, onOpenProviders, now }: DataScreenProps) {
           <Icon name="alert" color={colors.warning} />
           <AppText style={styles.noticeText}>{t('data.export.reminderBody')}</AppText>
         </View>
+        {tableCount > 0 ? (
+          <View style={styles.notice} testID="export-tables-note">
+            <Icon name="alert" color={colors.warning} />
+            <AppText style={styles.noticeText}>{t('data.export.reminderTables', { count: tableCount })}</AppText>
+          </View>
+        ) : null}
         <View style={styles.actions}>
           <Button label={t('data.export.share')} onPress={() => void share()} testID="share-file" />
           <Button label={t('data.export.cancel')} variant="secondary" onPress={() => setReminder(false)} />

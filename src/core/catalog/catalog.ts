@@ -209,8 +209,7 @@ export function createCatalog(options: CatalogOptions): Catalog {
     }));
   }
 
-  return {
-    async search(query, locale, limit) {
+  async function searchScored(query: string, locale: Locale, limit: number): Promise<ScoredFood[]> {
       const all = searchWords(query);
       if (all.length === 0 || limit <= 0) return [];
       // A cooking cue ("steamed broccoli") asks for a state; the name need not contain it.
@@ -226,8 +225,15 @@ export function createCatalog(options: CatalogOptions): Catalog {
         prefixLastToken: true,
       };
       const ranked = await rank(candidates, ctx, locale);
-      return ranked.filter((r) => r.score > 0).slice(0, limit).map((r) => r.food);
+      return ranked.filter((r) => r.score > 0).slice(0, limit).map((r) => ({ food: r.food, score: r.score }));
+  }
+
+  return {
+    async search(query, locale, limit) {
+      return (await searchScored(query, locale, limit)).map((r) => r.food);
     },
+
+    searchScored,
 
     async match(items, locale) {
       const results: MatchResult[] = [];

@@ -103,6 +103,8 @@ export type MatchResult =
 
 export interface Catalog {
   search(query: string, locale: Locale, limit: number): Promise<FoodSummary[]>;
+  /** The same results with the score each got (0..1): what lets other sources of foods (the person's imported tables) be merged on the same scale. */
+  searchScored(query: string, locale: Locale, limit: number): Promise<ScoredFood[]>;
   match(items: readonly MatchInput[], locale: Locale): Promise<MatchResult[]>;
   getFood(ref: FoodRef): Promise<FoodDetail>;
   /** How a recipe-calculated food was made (`isRecipeRef`), in the language asked for; null for any other food. */

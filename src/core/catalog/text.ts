@@ -59,3 +59,13 @@ export function tokenForms(text: string): string[][] {
     .filter((t) => t.length > 0 && !STOPWORDS.has(t))
     .map(stemForms);
 }
+
+/**
+ * The index entries of a food name for a search index kept outside `catalog.db` (the imported tables): every word of the
+ * normalized name without stopwords, each with its singular forms. A query word matches when its own forms share one with a name word.
+ */
+export function nameIndexTokens(name: string): string[] {
+  const out = new Set<string>();
+  for (const word of searchWords(name)) for (const form of stemForms(word)) out.add(form);
+  return [...out];
+}

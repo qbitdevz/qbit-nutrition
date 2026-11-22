@@ -7,6 +7,7 @@ import { createBarcodeProductRepository, type BarcodeProductRepository } from '.
 import { createCustomFoodRepository, type CustomFoodRepository } from './customFoods';
 import { createFoodResolver } from './foodResolver';
 import { createFoodUsageRepository, type FoodUsageRepository } from './foodUsage';
+import { createImportedFoodRepository, type ImportedFoodRepository } from './importedFoods';
 import { createGoalRepository, type GoalRepository } from './goals';
 import { createMatchMemoryRepository, type MatchMemoryRepository } from './matchMemory';
 import { createMealRepository, type MealRepository } from './meals';
@@ -24,6 +25,8 @@ export interface Repositories {
   /** The cache of Open Food Facts lookups (docs/08 `barcode_product`). */
   barcodeProducts: BarcodeProductRepository;
   foodUsage: FoodUsageRepository;
+  /** Food composition tables the person imported from a file: collections, their foods, and the name search over them. */
+  importedFoods: ImportedFoodRepository;
   matchMemory: MatchMemoryRepository;
   settings: SettingsRepository;
   aiProviders: AiProviderRepository;
@@ -54,6 +57,7 @@ export function createRepositories(options: RepositoryOptions): Repositories {
     customFoods: createCustomFoodRepository(context),
     barcodeProducts: createBarcodeProductRepository(context),
     foodUsage: createFoodUsageRepository(context),
+    importedFoods: createImportedFoodRepository(context),
     matchMemory: createMatchMemoryRepository(context),
     settings: createSettingsRepository(context),
     aiProviders: createAiProviderRepository(context),
@@ -79,6 +83,16 @@ export type { Measurement, MeasurementInput, MeasurementRepository } from './mea
 export type { CustomFood, CustomFoodInput, CustomFoodRepository } from './customFoods';
 export type { BarcodeProductRecord, BarcodeProductRepository } from './barcodeProducts';
 export type { FoodUsageEntry, FoodUsageRepository } from './foodUsage';
+export type {
+  CollectionBasis,
+  ImportCollectionInput,
+  ImportedCollection,
+  ImportedCollectionWithFoods,
+  ImportedFood,
+  ImportedFoodHit,
+  ImportedFoodRepository,
+  NewImportedFood,
+} from './importedFoods';
 export type { MatchMemoryEntry, MatchMemoryRepository } from './matchMemory';
 export type { SettingsRepository } from './settings';
 export type { RecordScanInput, Scan, ScanRepository } from './scans';
@@ -87,4 +101,4 @@ export type { AiAdapterId, AiOutputMode, AiProvider, AiProviderInput, AiProvider
 export type { FoodResolver } from './foodResolver';
 export { createMatchMemoryRepository } from './matchMemory';
 export { PHOTO_PATH_PATTERN, TEXT_LIMITS } from './shared';
-export { VALUE_LIMITS } from './limits';
+export { IMPORT_LIMITS, VALUE_LIMITS, importedPer100gMax, requireImportedPer100g } from './limits';

@@ -1,6 +1,8 @@
 export { computeItemNutrients, sumNutrients } from './nutrients';
 export { convert } from './units';
 export { NUTRIENT_CODES } from './types';
+export { KJ_PER_KCAL, NUTRIENT_UNITS, SOURCE_UNITS, VITAMIN_D_IU_PER_UG, parseSourceUnit, toNutrientUnit, unitRule } from './nutrient-units';
+export type { NutrientUnit, SourceUnit, UnitRule } from './nutrient-units';
 export type { FoodNutrition, NutrientAmounts, NutrientCode, Unit } from './types';
 
 export { proposeTargets } from './targets';

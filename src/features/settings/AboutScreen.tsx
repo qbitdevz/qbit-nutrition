@@ -89,6 +89,9 @@ export function AboutScreen({ onBack, onOpenCalculation, onOpenPrivacy, onOpenLi
           <AppText variant="bodySm" tone="muted">
             {t('about.sources.recipesNote')}
           </AppText>
+          <AppText variant="bodySm" tone="muted" testID="about-imported-note">
+            {t('about.sources.importedNote')}
+          </AppText>
           <AppText variant="bodyMd">{t('about.sources.off')}</AppText>
           <AppText variant="bodySm" tone="muted">
             {t('about.sources.offNote')}

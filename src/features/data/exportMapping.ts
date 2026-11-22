@@ -98,6 +98,15 @@ export function documentFromSnapshot(snapshot: BackupSnapshot, { appVersion, exp
       other_nutrients: f.otherNutrients ? ({ ...f.otherNutrients } as Record<string, number>) : null,
       default_portion_g: f.defaultPortionG,
     })),
+    imported_collections: snapshot.importedCollections.map((c) => ({
+      id: c.id,
+      name: c.name,
+      file_name: c.fileName,
+      imported_at: c.importedAt,
+      preset_id: c.presetId,
+      basis: c.basis,
+      foods: c.foods.map((f) => ({ id: f.id, name: f.name, group: f.group, per_100g: { ...f.per100g } as Record<string, number> })),
+    })),
     barcode_products: snapshot.barcodeProducts.map((p) => {
       const other = Object.fromEntries(Object.entries(p.per100g).filter(([code]) => !HEADLINE.has(code)));
       return {
@@ -260,6 +269,16 @@ export function snapshotFromDocument(doc: ExportDocument, { storedPhotos, localP
         per100g: { kcal: f.kcal_100g, protein: f.protein_100g, carbs: f.carbs_100g, fat: f.fat_100g, ...other },
       };
     }),
+    importedCollections: doc.imported_collections.map((c) => ({
+      id: c.id,
+      name: c.name,
+      fileName: c.file_name,
+      importedAt: c.imported_at,
+      foodCount: c.foods.length,
+      presetId: c.preset_id,
+      basis: c.basis,
+      foods: c.foods.map((f) => ({ id: f.id, collectionId: c.id, name: f.name, group: f.group, per100g: { ...f.per_100g } as NutrientAmounts })),
+    })),
     barcodeProducts: doc.barcode_products.map((p) => {
       const per100g: NutrientAmounts = { ...(p.other_nutrients as NutrientAmounts | null) };
       const values = { kcal: p.kcal_100g, protein: p.protein_100g, carbs: p.carbs_100g, fat: p.fat_100g };

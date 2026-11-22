@@ -110,6 +110,20 @@ describe('no unwrapped network access (S10)', () => {
     expect(startup).toMatch(/createBarcodeClient\(/);
   });
 
+  it('the food table import (S6, RN-03) is a third place that must stay offline: its files name no network, no fetch type and no HTTP client', () => {
+    const files = relativeSources().filter(({ relative }) => relative.startsWith('features/foodimport/'));
+    // The guard really looks at the folder: it has the reader, the mapping, the service and the screens.
+    expect(files.map(({ relative }) => relative)).toEqual(expect.arrayContaining(['features/foodimport/readFile.ts', 'features/foodimport/importService.ts', 'features/foodimport/ImportTableScreen.tsx']));
+    const offenders = files.flatMap(({ file, relative }) => {
+      const code = stripComments(readFileSync(file, 'utf8'));
+      const found = fetchViolations(relative, code);
+      if (/https?:\/\/|WebSocket|navigator\.sendBeacon|expo-network/.test(code)) found.push('names a network address or API');
+      if (/\bfrom\s+['"](\.\.\/)+(core\/(ai|barcode)|features\/(barcode|settings\/aiClient))/.test(code)) found.push('imports a network client');
+      return found.map((v) => `${relative}: ${v}`);
+    });
+    expect(offenders).toEqual([]);
+  });
+
   it('nothing under src/ except the wiring point imports the device fetch or calls the global fetch', () => {
     const offenders = relativeSources().flatMap(({ file, relative }) => fetchViolations(relative, readFileSync(file, 'utf8')).map((v) => `${relative}: ${v}`));
     expect(offenders).toEqual([]);

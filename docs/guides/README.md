@@ -10,6 +10,7 @@ que se comprobaron sus pasos y límites en las páginas de los propios proveedor
 | --- | --- | --- |
 | Set up a free AI provider (Google Gemini) / Configurar un proveedor de IA gratuito | [gemini-free-tier.md](gemini-free-tier.md) | [gemini-free-tier.es.md](gemini-free-tier.es.md) |
 | Run a local model (Ollama) / Ejecutar un modelo local | [local-model-ollama.md](local-model-ollama.md) | [local-model-ollama.es.md](local-model-ollama.es.md) |
+| Import a food composition table / Importar una tabla de composición de alimentos | [importing-food-tables.md](importing-food-tables.md) | [importing-food-tables.es.md](importing-food-tables.es.md) |
 | Contribute benchmark meals (weighing protocol) / Aportar comidas al banco de pruebas | [weighing-protocol.md](weighing-protocol.md) | [weighing-protocol.es.md](weighing-protocol.es.md) |
 
 Not a guide for people: [Releasing](../release.md) is for the owner who publishes the app.

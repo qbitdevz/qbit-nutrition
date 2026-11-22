@@ -8,6 +8,9 @@
  * their items and nutrient snapshots, custom foods, recents and favorites, learned matches, settings) and the
  * AI provider profiles WITHOUT keys. It holds the barcode products that something refers to (a saved item, a favorite or
  * recent, a learned match), so those references do not dangle on the new phone; the rest of the lookup cache stays behind.
+ * It also holds the food tables the person imported from a file (`imported_collections`, with all their foods): they are the person's data, so a
+ * personal export carries them and a restore brings them back. The consequence is stated on the screen and in the guide: an export file made after an
+ * import CONTAINS that table, so it is for the person's own backup and must not be shared or published (the table's license applies to the file).
  * It never holds `scan` rows (diagnostic data), an API key (there is no field for one; a stray field is dropped when
  * parsing), or the settings that belong to this installation rather than to the person (see `settingsPolicy.ts`).
  *
@@ -27,7 +30,7 @@ import { z } from 'zod';
 
 import { assertSecureBaseUrl, type ProviderErrorCode } from '@/core/ai';
 import { NUTRIENT_CODES } from '@/core/nutrition';
-import { MAX_TIMEOUT_S, MIN_TIMEOUT_S, PHOTO_PATH_PATTERN as STORED_PHOTO_PATH, TEXT_LIMITS, VALUE_LIMITS, addDays, isLocalDate, schema } from '@/data';
+import { IMPORT_LIMITS, MAX_TIMEOUT_S, importedPer100gMax, MIN_TIMEOUT_S, PHOTO_PATH_PATTERN as STORED_PHOTO_PATH, TEXT_LIMITS, VALUE_LIMITS, addDays, isLocalDate, schema } from '@/data';
 import { TARGET_RANGES } from '../goals/targetsForm';
 import { CUSTOM_FOOD_RANGES, GRAMS_RANGE } from '../logging/limits';
 import { HEIGHT_CM, MIN_BIRTH_AGE_YEARS, WEIGHT_KG } from '../profile/units';
@@ -185,6 +188,34 @@ const customFood = z.object({
   default_portion_g: nullable(within({ min: 0, max: GRAMS_RANGE.max })),
 });
 
+/** Every nutrient code, with the physical ceiling of an imported food (the same numbers the repository enforces). */
+const importedPer100g = z.record(z.string(), z.number().finite().min(0)).superRefine((value, ctx) => {
+  const codes = Object.keys(value);
+  if (codes.length === 0) ctx.addIssue({ code: 'custom', message: 'a food needs at least one value' });
+  for (const code of codes) {
+    if (!(NUTRIENT_CODES as readonly string[]).includes(code)) ctx.addIssue({ code: 'custom', message: `"${code}" is not a nutrient code this app tracks` });
+    else if ((value[code] as number) > importedPer100gMax(code as (typeof NUTRIENT_CODES)[number])) ctx.addIssue({ code: 'custom', message: `"${code}" is above what 100 g can hold` });
+  }
+});
+
+const importedFood = z.object({
+  id,
+  name: z.string().min(1).max(TEXT_LIMITS.name),
+  group: nullable(z.string().max(TEXT_LIMITS.name)),
+  per_100g: importedPer100g,
+});
+
+/** A food composition table the person imported, with its foods. Values are per 100 g, or per 100 ml when `basis` is `ml`; a nutrient the table had no number for has no key (unknown, not zero). */
+const importedCollection = z.object({
+  id,
+  name: z.string().min(1).max(TEXT_LIMITS.label),
+  file_name: nullable(z.string().max(TEXT_LIMITS.name)),
+  imported_at: instant,
+  preset_id: nullable(z.string().max(TEXT_LIMITS.label)),
+  basis: z.enum(schema.COLLECTION_BASES),
+  foods: z.array(importedFood).min(1).max(IMPORT_LIMITS.foodsPerCollection),
+});
+
 const PRODUCT_FIELDS = ['name', 'kcal', 'protein', 'carbs', 'fat'] as const;
 
 /** A cached Open Food Facts product. A headline value the lookup did not have is 0 here and named in `missing` (the column cannot be empty). */
@@ -259,6 +290,8 @@ const documentShape = z
     body_measurements: z.array(bodyMeasurement),
     meals: z.array(meal),
     custom_foods: z.array(customFood),
+    /** Optional: a file written before tables could be imported has none. Added without a version bump, like `barcode_products`. */
+    imported_collections: z.array(importedCollection).max(IMPORT_LIMITS.collections).default([]),
     /** Optional: a file written before barcode products travelled has none. */
     barcode_products: z.array(barcodeProduct).default([]),
     food_usage: z.array(foodUsage),
@@ -295,6 +328,14 @@ export function createExportSchema(clock: () => Date) {
     unique(doc.body_measurements, 'body_measurements', (m) => `${m.measured_on}|${m.kind}|${m.source}`, 'measured_on');
     unique(doc.meals, 'meals', (m) => m.id, 'id');
     unique(doc.custom_foods, 'custom_foods', (f) => f.id, 'id');
+    unique(doc.imported_collections, 'imported_collections', (c) => c.id, 'id');
+    const importedIds = new Set<string>();
+    doc.imported_collections.forEach((c, ci) =>
+      c.foods.forEach((f, fi) => {
+        if (importedIds.has(f.id)) issue(['imported_collections', ci, 'foods', fi, 'id'], 'duplicate id');
+        importedIds.add(f.id);
+      }),
+    );
     unique(doc.barcode_products, 'barcode_products', (p) => p.barcode, 'barcode');
     unique(doc.food_usage, 'food_usage', (u) => `${u.food_source}|${u.food_ref}`, 'food_ref');
     unique(doc.match_memory, 'match_memory', (m) => m.detected_name_normalized, 'detected_name_normalized');
@@ -359,6 +400,7 @@ export function createExportSchema(clock: () => Date) {
       });
     });
     doc.barcode_products.forEach((p, i) => plausible(['barcode_products', i, 'fetched_at'], p.fetched_at.slice(0, 10)));
+    doc.imported_collections.forEach((c, i) => plausible(['imported_collections', i, 'imported_at'], c.imported_at.slice(0, 10)));
     doc.food_usage.forEach((u, i) => plausible(['food_usage', i, 'last_used_at'], u.last_used_at.slice(0, 10)));
     doc.match_memory.forEach((m, i) => plausible(['match_memory', i, 'updated_at'], m.updated_at.slice(0, 10)));
 

@@ -3,6 +3,15 @@ import type { NutrientAmounts } from '@/core/nutrition';
 import i18n from '@/i18n';
 import type { Locale } from '@/i18n/locale';
 import type { AppServices } from '../startup/types';
+import { IMPORTED_RESULT_LIMIT, importedRef, mergeByScore, searchImportedScored } from '../foodimport/importedSearch';
+
+/** Where a food of an imported table came from (S5), and what its values are per. */
+export interface ImportedOrigin {
+  collection: string;
+  basis: 'g' | 'ml';
+}
+
+export type HeadlineCode = 'kcal' | 'protein' | 'carbs' | 'fat';
 
 /** A food in a list: the per-100 g headline values are shown under the name. */
 export interface FoodRow {
@@ -18,6 +27,10 @@ export interface FoodRow {
   barcode?: boolean;
   /** Calculated by the project from a recipe (T4, S8), shown with a "Calculated from a recipe" tag. */
   recipe?: boolean;
+  /** From a table the person imported (S5), shown with a tag naming the table. */
+  imported?: ImportedOrigin;
+  /** Headline values the source does not have: shown as unknown (a dash), never as 0. */
+  missing?: HeadlineCode[];
 }
 
 /** What the portion sheet needs: nutrients per 100 g and the household measures. */
@@ -29,6 +42,7 @@ export interface FoodView {
   portions: { label: string; grams: number }[];
   /** A portion to start from when the person has none of their own: a custom food's usual portion. */
   defaultGrams: number | null;
+  imported?: ImportedOrigin;
 }
 
 export const SEARCH_LIMIT = 40;
@@ -43,6 +57,12 @@ export function pickName(names: readonly FoodNameEntry[], locale: Locale, fallba
     names[0];
   return best?.name ?? fallback;
 }
+
+const HEADLINE: HeadlineCode[] = ['kcal', 'protein', 'carbs', 'fat'];
+const missingOf = (per100g: NutrientAmounts): HeadlineCode[] | undefined => {
+  const missing = HEADLINE.filter((code) => per100g[code] === undefined);
+  return missing.length > 0 ? missing : undefined;
+};
 
 const headline = (per100g: NutrientAmounts) => ({
   kcal100g: per100g.kcal ?? 0,
@@ -80,7 +100,10 @@ export async function loadFoodView(services: AppServices, ref: FoodRef, locale: 
   }
   if (ref.source === 'custom') {
     const food = await services.repos.customFoods.get(ref.id);
-    return food ? { ref, name: food.name, per100g: food.per100g, portions: [], defaultGrams: food.defaultPortionG } : null;
+    if (food) return { ref, name: food.name, per100g: food.per100g, portions: [], defaultGrams: food.defaultPortionG };
+    // A food of a table the person imported is referred to like a custom food; it lives in its own table.
+    const imported = await services.repos.importedFoods.getFood(ref.id);
+    return imported ? { ref, name: imported.name, per100g: imported.per100g, portions: [], defaultGrams: null, imported: { collection: imported.collectionName, basis: imported.basis } } : null;
   }
   try {
     return viewFromCatalog(await services.catalog.getFood(ref), locale);
@@ -94,19 +117,23 @@ export const rowFromView = (view: FoodView): FoodRow => ({
   ref: view.ref,
   name: view.name,
   ...headline(view.per100g),
-  custom: view.ref.source === 'custom',
+  custom: view.ref.source === 'custom' && view.imported === undefined,
+  imported: view.imported,
+  missing: view.imported ? missingOf(view.per100g) : undefined,
   barcode: view.ref.source === 'barcode',
   recipe: isRecipeRef(view.ref),
 });
 
 /**
- * Local, instant search (FR-30): the catalog in the app language with English as fallback, plus the
- * person's custom foods. Custom foods come first: they are what the person made for themselves.
+ * Local, instant search (FR-30): the catalog in the app language with English as fallback, the tables
+ * the person imported (merged with the catalog by score, capped: see `importedSearch.ts`), and the person's custom foods. Custom foods
+ * come first: they are what the person made for themselves.
  */
 export async function searchFoods(services: AppServices, query: string, locale: Locale): Promise<FoodRow[]> {
-  const [catalog, custom] = await Promise.all([
-    services.catalog.search(query, locale, SEARCH_LIMIT),
+  const [catalog, custom, imported] = await Promise.all([
+    services.catalog.searchScored(query, locale, SEARCH_LIMIT),
     services.repos.customFoods.list({ query, limit: CUSTOM_LIMIT }),
+    searchImportedScored(services.repos.importedFoods, query, IMPORTED_RESULT_LIMIT),
   ]);
   return [
     ...custom.map<FoodRow>((food) => ({
@@ -118,16 +145,24 @@ export async function searchFoods(services: AppServices, query: string, locale: 
       fat100g: food.fat100g,
       custom: true,
     })),
-    ...catalog.map<FoodRow>((food) => ({
-      ref: food.ref,
-      name: food.name,
-      kcal100g: food.kcal100g ?? 0,
-      protein100g: food.protein100g ?? 0,
-      carbs100g: food.carbs100g ?? 0,
-      fat100g: food.fat100g ?? 0,
-      custom: false,
-      recipe: isRecipeRef(food.ref),
-    })),
+    // The catalog and the imported tables on one scale (see importedSearch.ts for the rule).
+    ...mergeByScore(catalog, imported).map<FoodRow>((entry) => {
+      if (entry.from === 'imported') {
+        const { hit } = entry;
+        return { ref: importedRef(hit), name: hit.name, ...headline(hit.per100g), custom: false, imported: { collection: hit.collectionName, basis: hit.basis }, missing: missingOf(hit.per100g) };
+      }
+      const food = entry.food;
+      return {
+        ref: food.ref,
+        name: food.name,
+        kcal100g: food.kcal100g ?? 0,
+        protein100g: food.protein100g ?? 0,
+        carbs100g: food.carbs100g ?? 0,
+        fat100g: food.fat100g ?? 0,
+        custom: false,
+        recipe: isRecipeRef(food.ref),
+      };
+    }),
   ];
 }
 

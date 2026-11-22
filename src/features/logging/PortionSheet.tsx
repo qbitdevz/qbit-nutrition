@@ -8,6 +8,7 @@ import { formatDecimal, formatNumber } from '@/i18n/format';
 import type { Locale } from '@/i18n/locale';
 import { AppText, BottomSheet, Button, PressableScale, Skeleton, TextField, radius, spacing, useTheme } from '@/ui';
 import { parseNumber } from '../forms/numbers';
+import { originLabel } from '../foodimport/originLabel';
 import { useServices } from '../startup/AppProvider';
 import type { DraftItem } from './draft';
 import { loadFoodView, refKey, type FoodRow, type FoodView } from './foods';
@@ -102,6 +103,23 @@ function PortionBody({ food, lastGrams, suggestedGrams, onAdd, onClose }: { food
 
   return (
     <View style={styles.body}>
+      {view.imported ? (
+        <View style={styles.recipe} testID="imported-origin">
+          <View style={[styles.origin, { backgroundColor: colors.surfaceRaised }]}>
+            <AppText variant="caption">{originLabel(t, view.imported)}</AppText>
+          </View>
+          {view.imported.basis === 'ml' ? (
+            <AppText variant="bodySm" tone="muted">
+              {t('import.mlNote')}
+            </AppText>
+          ) : null}
+          {(['kcal', 'protein', 'carbs', 'fat'] as const).some((code) => view.per100g[code] === undefined) ? (
+            <AppText variant="bodySm" tone="muted">
+              {t('import.unknownNote')}
+            </AppText>
+          ) : null}
+        </View>
+      ) : null}
       {isRecipeRef(view.ref) ? (
         <View style={styles.recipe}>
           <RecipeTag />
@@ -159,10 +177,11 @@ function PortionBody({ food, lastGrams, suggestedGrams, onAdd, onClose }: { food
         {live ? (
           <AppText variant="bodyMd">
             {t('log.portion.live', {
-              kcal: formatNumber(locale, live.kcal ?? 0),
-              protein: formatDecimal(locale, live.protein ?? 0, 1),
-              carbs: formatDecimal(locale, live.carbs ?? 0, 1),
-              fat: formatDecimal(locale, live.fat ?? 0, 1),
+              // A value the food does not have is a dash, never a zero.
+              kcal: live.kcal === undefined ? '–' : formatNumber(locale, live.kcal),
+              protein: live.protein === undefined ? '–' : formatDecimal(locale, live.protein, 1),
+              carbs: live.carbs === undefined ? '–' : formatDecimal(locale, live.carbs, 1),
+              fat: live.fat === undefined ? '–' : formatDecimal(locale, live.fat, 1),
             })}
           </AppText>
         ) : (
@@ -186,6 +205,7 @@ function formatRange(locale: Locale, params?: Record<string, string | number>): 
 const styles = StyleSheet.create({
   body: { gap: spacing.s3 },
   recipe: { gap: spacing.s2, alignItems: 'flex-start' },
+  origin: { paddingHorizontal: spacing.s2, paddingVertical: 2, borderRadius: radius.pill },
   measures: { gap: spacing.s2 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.s2 },
   chip: { minHeight: 48, paddingHorizontal: spacing.s4, paddingVertical: spacing.s2, borderRadius: radius.lg, justifyContent: 'center', maxWidth: '100%' },

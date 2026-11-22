@@ -110,6 +110,31 @@ license could be found. Nothing below was bundled, scraped, or paraphrased into 
   were not tried); they mostly overlap USDA. Not added, not assessed.
 - **Open Food Facts** (ODbL, share-alike): never bundled, per `docs/12` section 7 (looked up on demand only).
 
+### 2.7 How each table above can be imported personally (food table import)
+
+Spec: `odd/tasks/food-table-import.md` (S1 to S6). None of the tables above is bundled, and none will be: the app lets **each person import the
+file they downloaded themselves**, on their own phone, for their own use. The app never downloads a table, ships no rows of any of them (in code,
+tests, fixtures, documentation or commit messages), and an import makes no network request. A test (`noExcludedData.test.ts`) fails if a file in
+the repository holds a marker of such a table's data (the header row of its published file, never a food or a value). The guide for people is
+`docs/guides/importing-food-tables.md` (and `.es.md`); it links each publisher's own page, not a mirror.
+
+How each one is published, checked on the publishers' own pages on **2026-11-22**, and what the app does with it:
+
+| Table | Published as | Preset | What a person does |
+| --- | --- | --- | --- |
+| ARGENFOODS (2.1) | Twelve Excel files (`.xls`, one per food group, a PDF twin each) on the publisher's index page, plain `http`. Structure of a file: one sheet; title lines; a header row (`Nº`, `Alimento`, a species column, then one column per component with its unit in the header in parentheses); under it a row of INFOODS tagnames and a row of source references; then the foods; `...` and empty cells mean "no value". | Yes (`argenfoods`): header row, tag row, units from the headers, the group from the file's title; each file becomes one table. | Download the `.xls` of the groups wanted and import each. |
+| BEDCA (2.2) | A web query only; no bulk download; all rights reserved. | No | Nothing to download; the generic import only works if AESAN supplies a spreadsheet. |
+| Mexico, INCMNSZ (2.3) | A PDF (listed by INFOODS); its address answered 404 on the check date. | No | Ask INCMNSZ for a spreadsheet; generic import. |
+| LATINFOODS list (2.4) | A directory of other publishers: PDF (most), a web database (Brazil, TBCA), a CD (Cuba), print only (Bolivia); Argentina's entry is ARGENFOODS. | No | Per country: a spreadsheet from its publisher, generic import. |
+| Colombia, TCAC (2.5) | A PDF only (2018 and 2015). | No | Ask ICBF for a spreadsheet; generic import. |
+| Other tables of 2.5 (Brazil TACO and TBCA, Chile, Peru, Costa Rica, Cuba, Ecuador, Bolivia, Uruguay, Central America) | PDF, web database, CD or print, as listed by INFOODS. | No | As above. |
+| CIQUAL (2.6) | An Excel file (`.xls`, French and English) and XML, under the Licence Ouverte (as listed on data.gouv.fr). The publisher's site answered "maintenance" (HTTP 503) on the check date, so the files could not be opened. | Yes (`ciqual`), **not verified against the live file** (it keys on the publisher's identifier columns and the "(unit/100 g)" form of the headers, as in earlier releases). | Download the Excel file; import it. |
+
+PDF-only and web-only tables get no reader, on purpose: it would be fragile and could silently misread a number (S4). The consequence is stated to the
+person: those tables can be imported only through a spreadsheet version, if their publisher provides one. Where a person keeps an imported table,
+**a personal export of their data carries it** (the export file then contains the table): the Data screen says so before sharing, and the guide says
+not to share such a file.
+
 ## 3. How an included set enters the catalog (S5)
 
 - **Provenance.** Every `food` row stores `source` (`usda_foundation`, `usda_sr_legacy`, `usda_fndds`, `usda_branded`, and `qbit_recipe` for the project's own calculated dishes, section 7) and `source_id` (the FDC id, or the recipe key).
