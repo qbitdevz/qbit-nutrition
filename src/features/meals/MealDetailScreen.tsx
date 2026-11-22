@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, StyleSheet, View } from 'react-native';
 
+import { isRecipeRef, type FoodRef } from '@/core/catalog';
 import type { MealSlot } from '@/core/nutrition';
 import type { MealItem, MealWithItems } from '@/data';
 import { formatClock, formatDecimal, formatLongDate, formatNumber } from '@/i18n/format';
@@ -28,6 +29,7 @@ import {
 import { GRAM_STEP, GRAMS_RANGE, validateGrams } from '../logging/limits';
 import { gramsMessage } from '../logging/gramsMessage';
 import { SLOT_ORDER } from '../logging/mealSlot';
+import { RecipeMethodSheet, RecipeTag } from '../logging/RecipeMethod';
 import { useScanPlatform } from '../scan/ScanPlatformContext';
 import { useSession } from '../session/AppSession';
 import { useServices } from '../startup/AppProvider';
@@ -63,6 +65,7 @@ export function MealDetailScreen({ mealId, now = systemNow, onClose, onCopied }:
   const [deleteItem, setDeleteItem] = useState<MealItem | null>(null);
   const [deleteMeal, setDeleteMeal] = useState(false);
   const [actionFailed, setActionFailed] = useState(false);
+  const [method, setMethod] = useState<{ ref: FoodRef; name: string } | null>(null);
 
   const read = useCallback(() => {
     repos.meals.getMeal(mealId).then(
@@ -215,6 +218,7 @@ export function MealDetailScreen({ mealId, now = systemNow, onClose, onCopied }:
               locale={locale}
               onGrams={(grams) => change(async () => void (await repos.meals.updateItemGrams(item.id, grams)))}
               onDelete={() => setDeleteItem(item)}
+              onMethod={(ref) => setMethod({ ref, name: item.displayName })}
             />
           ))}
         </View>
@@ -225,6 +229,7 @@ export function MealDetailScreen({ mealId, now = systemNow, onClose, onCopied }:
         <Button label={t('meal.deleteMeal')} variant="secondary" icon="trash" onPress={() => setDeleteMeal(true)} />
       </View>
 
+      <RecipeMethodSheet food={method} onClose={() => setMethod(null)} />
       <ConfirmSheet
         visible={deleteItem !== null}
         title={t('meal.deleteItemTitle')}
@@ -264,14 +269,19 @@ interface ItemRowProps {
   locale: Locale;
   onGrams: (grams: number) => Promise<void>;
   onDelete: () => void;
+  /** Opens how a recipe-calculated item was made. */
+  onMethod: (ref: FoodRef) => void;
 }
 
-function ItemRow({ item, locale, onGrams, onDelete }: ItemRowProps) {
+function ItemRow({ item, locale, onGrams, onDelete, onMethod }: ItemRowProps) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const [text, setText] = useState(String(Math.round(item.grams * 10) / 10));
   const [touched, setTouched] = useState(false);
   const problem = validateGrams(text).error;
+  // A snapshot keeps only the source and the id: a recipe-calculated dish is told apart by its id (core/catalog/recipes.ts).
+  const catalogRef: FoodRef | null = item.foodSource === 'catalog' && item.foodRef !== null ? { source: 'catalog', id: item.foodRef } : null;
+  const recipeRef = catalogRef !== null && isRecipeRef(catalogRef) ? catalogRef : null;
 
   const commit = (value = text) => {
     setTouched(true);
@@ -291,6 +301,7 @@ function ItemRow({ item, locale, onGrams, onDelete }: ItemRowProps) {
       <View style={styles.itemHead}>
         <View style={styles.itemName}>
           <AppText variant="itemName">{item.displayName}</AppText>
+          {recipeRef ? <RecipeTag onPress={() => onMethod(recipeRef)} /> : null}
           {item.foodSource === 'ai_estimate' ? (
             <View style={[styles.estimate, { backgroundColor: colors.aiSoft }]}>
               <AppText variant="caption" tone="ai">

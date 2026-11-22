@@ -1,4 +1,7 @@
-export type CatalogSource = 'usda_foundation' | 'usda_sr_legacy' | 'usda_fndds' | 'usda_branded';
+import type { FoodState } from '../../src/core/catalog/types';
+
+/** Where a food's values come from. `qbit_recipe` is calculated by the project from recipes (recipes.ts); the others are USDA data sets. */
+export type CatalogSource = 'usda_foundation' | 'usda_sr_legacy' | 'usda_fndds' | 'usda_branded' | 'qbit_recipe';
 
 /** One food as read from a USDA bulk file, reduced to what the catalog needs. */
 export interface SourceFood {
@@ -11,6 +14,12 @@ export interface SourceFood {
   /** All USDA nutrients of the food; the builder keeps only the tracked ones. */
   nutrients: { id: number; unit: string; amount: number }[];
   portions: { label: string; grams: number }[];
+  /** Id within the source when it is not the number (recipe-calculated dishes: their key). */
+  sourceId?: string;
+  /** Set by the source itself when the state cannot be read from the description (recipe-calculated dishes). */
+  state?: FoodState;
+  /** Spanish household measures written with the food; without them the builder composes them from the English labels. */
+  portionsEs?: { label: string; grams: number }[];
 }
 
 /** One row of the Spanish translation table (scripts/catalog/data/translations.es.json). */
@@ -34,6 +43,8 @@ export interface CatalogMeta {
 export interface BuildCounts {
   nutrient: number;
   food: number;
+  /** Recipe-calculated foods among them. */
+  recipes: number;
   food_nutrient: number;
   food_name: number;
   food_portion: number;

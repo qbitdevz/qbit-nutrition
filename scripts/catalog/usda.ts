@@ -9,7 +9,7 @@ export const DOWNLOAD_PAGE = 'https://fdc.nal.usda.gov/download-datasets';
 const SITE = 'https://fdc.nal.usda.gov';
 
 export interface DatasetFile {
-  source: CatalogSource;
+  source: Exclude<CatalogSource, 'qbit_recipe'>;
   /** File name, e.g. FoodData_Central_foundation_food_json_2026-10-29.zip */
   fileName: string;
   url: string;
@@ -17,7 +17,7 @@ export interface DatasetFile {
   version: string;
 }
 
-const DATASETS: { source: CatalogSource; prefix: string }[] = [
+const DATASETS: { source: Exclude<CatalogSource, 'qbit_recipe'>; prefix: string }[] = [
   { source: 'usda_foundation', prefix: 'FoodData_Central_foundation_food_json_' },
   { source: 'usda_sr_legacy', prefix: 'FoodData_Central_sr_legacy_food_json_' },
   { source: 'usda_fndds', prefix: 'FoodData_Central_survey_food_json_' },
@@ -134,7 +134,7 @@ interface UsdaFood {
   }[];
 }
 
-const ROOT_KEY: Record<CatalogSource, string> = {
+const ROOT_KEY: Record<Exclude<CatalogSource, 'qbit_recipe'>, string> = {
   usda_foundation: 'FoundationFoods',
   usda_sr_legacy: 'SRLegacyFoods',
   usda_fndds: 'SurveyFoods',
@@ -162,7 +162,7 @@ function surveyPortionLabel(p: NonNullable<UsdaFood['foodPortions']>[number]): s
 }
 
 /** Parses the JSON text of a Foundation Foods, SR Legacy or Survey Foods (FNDDS) file. */
-export function parseUsdaJson(source: CatalogSource, jsonText: string): SourceFood[] {
+export function parseUsdaJson(source: Exclude<CatalogSource, 'qbit_recipe'>, jsonText: string): SourceFood[] {
   const root = JSON.parse(jsonText) as Record<string, UsdaFood[]>;
   const foods = root[ROOT_KEY[source]];
   if (!Array.isArray(foods)) throw new Error(`Expected "${ROOT_KEY[source]}" in the ${source} file`);

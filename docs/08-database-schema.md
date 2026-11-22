@@ -220,6 +220,7 @@ similar.
 | `food_name` | `food_id`, `locale`, `name`, `is_alias`, `origin` (`source`, `handwritten`, `composed`) | English from USDA; Spanish from the repository's translation table |
 | `food_portion` | `food_id`, `locale`, `label`, `grams` | Household measures such as "1 cup" |
 | `food_fts` | FTS5 virtual table over `food_name.name` | Diacritics removed, so "plátano" matches "platano" |
+| `recipe`, `recipe_ingredient` | Dishes calculated by the project: method, yield, and the exact ingredient foods with grams | Source `qbit_recipe`; see `docs/catalog-recipes.md` |
 | `catalog_meta` | `key`, `value` | Data version, build date, source file names |
 
 ## 6. Indexes

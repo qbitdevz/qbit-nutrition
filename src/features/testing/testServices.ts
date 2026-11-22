@@ -12,7 +12,8 @@ import { createCatalog } from '@/core/catalog';
 import { createSqliteCatalogDb } from '@/data/catalog/sqliteCatalogDb';
 import { nodeCatalogClient, type Harness } from '@/data/testing/harness';
 import { buildCatalog } from '../../../scripts/catalog/builder';
-import { FIXTURE_FOODS, FIXTURE_TRANSLATIONS } from '../../../scripts/catalog/testing/fixture';
+import { resolveRecipes } from '../../../scripts/catalog/recipes';
+import { FIXTURE_FACTORS, FIXTURE_FOODS, FIXTURE_RECIPE, FIXTURE_TRANSLATIONS } from '../../../scripts/catalog/testing/fixture';
 import type { FetchLike } from '@/core/ai/types';
 import { createMemorySecretStore } from '@/platform/memorySecretStore';
 import type { SecretStore } from '@/platform/secretStore';
@@ -23,13 +24,17 @@ import { createInactiveHealthSync } from '../health/healthSync';
 import { createAiServices } from '../startup/aiServices';
 import type { AppServices } from '../startup/types';
 
-let file: string | undefined;
+const files: { plain?: string; recipes?: string } = {};
 
-function catalogFile(): string {
-  if (!file) {
+/** The screen-test catalog; `withRecipes` adds the fixture recipe-calculated dish (see scripts/catalog/testing/fixture.ts). */
+function catalogFile(withRecipes: boolean): string {
+  const kind = withRecipes ? 'recipes' : 'plain';
+  if (!files[kind]) {
     const dir = mkdtempSync(path.join(tmpdir(), 'qn-screens-'));
-    file = path.join(dir, 'catalog.db');
+    const file = path.join(dir, 'catalog.db');
+    files[kind] = file;
     buildCatalog({
+      ...(withRecipes ? { recipes: resolveRecipes([FIXTURE_RECIPE], FIXTURE_FOODS, FIXTURE_FACTORS, 'fixture-recipes@1'), recipeSetVersion: 'fixture-recipes@1' } : {}),
       foods: FIXTURE_FOODS,
       translations: [
         ...FIXTURE_TRANSLATIONS,
@@ -40,7 +45,7 @@ function catalogFile(): string {
       meta: { dataVersion: 'screens@1', buildDate: '2026-01-01T00:00:00.000Z', sourceFiles: ['fixture'] },
     });
   }
-  return file;
+  return files[kind] as string;
 }
 
 /**
@@ -49,9 +54,9 @@ function catalogFile(): string {
  */
 export function createTestServices(
   h: Harness,
-  options: { fetch?: FetchLike; /** What Open Food Facts lookups use; offline unless the test gives one. */ barcodeFetch?: FetchLike } = {},
+  options: { fetch?: FetchLike; /** What Open Food Facts lookups use; offline unless the test gives one. */ barcodeFetch?: FetchLike; /** Add the recipe-calculated fixture dish to the catalog. */ recipes?: boolean } = {},
 ): AppServices & { close(): void; secrets: SecretStore } {
-  const client = nodeCatalogClient(catalogFile());
+  const client = nodeCatalogClient(catalogFile(options.recipes === true));
   const catalog = createCatalog({ db: createSqliteCatalogDb(client), memory: h.repos.matchMemory });
   const secrets = createMemorySecretStore();
   const ai = createAiServices({ repos: h.repos, secrets, fetch: options.fetch ?? offlineFetch, retryDelayMs: 0 });

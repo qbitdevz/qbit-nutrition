@@ -1,7 +1,7 @@
 # Catalog data sources
 
 Which food composition data sets go into the bundled `catalog.db`, which do not, and why. Spec:
-`odd/tasks/catalog-expansion.md` T1 (S1, S3, S4, S5). Rule being applied: `docs/12-legal-and-privacy.md` section 7 —
+`odd/tasks/catalog-expansion.md` T1 (S1, S3, S4, S5); dishes calculated by the project from recipes: T4 (S4, S5, S7, S8), section 7. Rule being applied: `docs/12-legal-and-privacy.md` section 7 —
 "Bundling any other data set (for example a national food table) requires confirming first that its license permits
 redistribution inside an MIT project. Share-alike or non-commercial data must not be merged into the bundled catalog."
 
@@ -112,7 +112,7 @@ license could be found. Nothing below was bundled, scraped, or paraphrased into 
 
 ## 3. How an included set enters the catalog (S5)
 
-- **Provenance.** Every `food` row stores `source` (`usda_foundation`, `usda_sr_legacy`, `usda_fndds`) and `source_id` (the FDC id).
+- **Provenance.** Every `food` row stores `source` (`usda_foundation`, `usda_sr_legacy`, `usda_fndds`, `usda_branded`, and `qbit_recipe` for the project's own calculated dishes, section 7) and `source_id` (the FDC id, or the recipe key).
   `catalog_meta` records the data version (file dates), the build date, and the file names.
 - **Nutrients.** The 18 tracked nutrients are read by FDC nutrient id; the unit USDA publishes must equal the tracked unit
   (kcal, g, mg, µg), otherwise the value is dropped, never converted by guess. FNDDS publishes the same ids and units as
@@ -148,13 +148,13 @@ catalog keeps one:
 
 ## 5. Build report
 
-| | Before (main: Foundation + SR Legacy) | After T1 (+ FNDDS, de-duplicated) | After T1 + T2 (Spanish names) | After the follow-up (reviewed names, Spanish portions, regional foods) |
-| --- | --- | --- | --- | --- |
-| Foods | 8,217 | 13,342 | 13,342 | 13,348 (424 Foundation, 7,676 SR Legacy, 5,242 FNDDS, 6 Branded selection) |
-| Foods with a Spanish name | 124 | 124 | 13,342 | 13,348 (685 handwritten, 233 reviewed, 12,430 composed) |
-| `food_name` rows | 8,341 | 13,444 | 37,144 | 37,189 |
-| `food_portion` rows | 14,572 | 29,384 | 29,384 | 58,780 (29,390 English + 29,390 Spanish) |
-| `catalog.db` | 6.0 MiB (6,258,688 bytes) | 10.1 MiB | 14.0 MiB (14,704,640 bytes) | 15.5 MiB (16,269,312 bytes) |
+| | Before (main: Foundation + SR Legacy) | After T1 (+ FNDDS, de-duplicated) | After T1 + T2 (Spanish names) | After the follow-up (reviewed names, Spanish portions, regional foods) | After T4 (recipe-calculated dishes) |
+| --- | --- | --- | --- | --- | --- |
+| Foods | 8,217 | 13,342 | 13,342 | 13,348 (424 Foundation, 7,676 SR Legacy, 5,242 FNDDS, 6 Branded selection) | 13,393 (+45 `qbit_recipe`) |
+| Foods with a Spanish name | 124 | 124 | 13,342 | 13,348 (685 handwritten, 233 reviewed, 12,430 composed) | 13,393 (730 handwritten, 233 reviewed, 12,430 composed) |
+| `food_name` rows | 8,341 | 13,444 | 37,144 | 37,189 | 37,471 |
+| `food_portion` rows | 14,572 | 29,384 | 29,384 | 58,780 (29,390 English + 29,390 Spanish) | 58,904 |
+| `catalog.db` | 6.0 MiB (6,258,688 bytes) | 10.1 MiB | 14.0 MiB (14,704,640 bytes) | 15.5 MiB (16,269,312 bytes) | 15.7 MiB (16,412,672 bytes; schema version 4, plus the `recipe` and `recipe_ingredient` tables: 45 and 310 rows) |
 
 The size limit proposed by the task is about 25 MB: nothing needs trimming. If a later set pushes it over, the first candidates are the
 1,275 branded and restaurant entries (about 10 % of the foods) and the 429 baby-food entries, which are near-duplicates of generic foods.
@@ -201,3 +201,41 @@ answered 429 (rate limit) during this work, and no personal key was created.
 **Not added: medialuna.** No product in the Branded file has "medialuna", "media luna" or a half-moon pastry that is the Argentine one (searched by
 name; only "Media Crema" and half-moon pasta and shrimp rings match). A croissant is a different food and was not substituted. The owner can add it
 as a custom food, or ask for a regional table (section 2.1).
+
+## 7. Dishes calculated from recipes (T4, S7, S8)
+
+**Question.** Milanesa, empanadas, medialuna, locro, mate, chipá and other dishes people in Argentina and nearby countries log every day have no entry in
+any bundled data set, and the tables that have them are not bundled (section 2). The owner's request to copy the ARGENFOODS table and present it as the
+project's own research was declined on 2026-11-22 (S7, L6); what the project can do is calculate its own entries.
+
+**Answer.** 45 dishes (`source = 'qbit_recipe'`), each calculated from a documented home recipe written by the project, the per-100 g values of its
+ingredients that are already in the catalog (sections 1 and 6), and published USDA cooking yields and nutrient retention factors. The method, the
+formulas, the error, the dishes with their values, the dishes left out and the sanity tests are in **`docs/catalog-recipes.md`**. The recipes are
+`scripts/catalog/data/recipes/*.json`, the factor tables `scripts/catalog/data/factors/*.json`.
+
+**Inputs and license status, read on 2026-11-22.**
+
+| Input | License status |
+| --- | --- |
+| Per-100 g values of the ingredients | Already in the catalog: USDA Foundation, SR Legacy, FNDDS, Branded selection (CC0, sections 1 and 6) |
+| Recipes | Written by the project: original formulations, assumptions stated in each |
+| USDA Table of Nutrient Retention Factors, Release 6 (2007), <https://www.ars.usda.gov/ARSUserFiles/80400535/Data/retn/retn06.txt> | A publication of USDA ARS, a work of the US Government: no copyright in the US (17 U.S.C. section 105(a), read at law.cornell.edu). No license statement on the page or in the file; USDA's own policies page answered 403, so no USDA statement about reuse was read. Used |
+| USDA Table of Cooking Yields for Meat and Poultry, Release 2 (2014), <https://www.ars.usda.gov/ARSUserFiles/80400535/Data/retn/USDA_CookingYields_MeatPoultry02.xlsx> | Same |
+| FAO/INFOODS Food Composition Study Guide, module 8 | Read for method only; no number is taken from it (FAO's own terms for its content are non-commercial, section 2.4) |
+
+**Not used.** ARGENFOODS, BEDCA and every other table of section 2: none was opened, read, downloaded or consulted, for values or for
+cross-checking, and no number of theirs was reproduced from memory. A test (`recipeData.test.ts`) fails if a recipe file names one of them.
+The plausible ranges of the sanity tests come from comparable foods already in the catalog, not from those tables.
+
+**Provenance in the catalog (S5, S8).** Each dish is a `food` row with `source = 'qbit_recipe'`, `source_id` = the recipe key and an id from
+900,000,001 up (FDC ids are far below it, so an id alone says "recipe"). `recipe` holds the method (texts in both languages, weights, weight rule,
+nutrients not reported) and `recipe_ingredient` the ingredients with their yields and factor sources. `catalog_meta` records `recipe_set_version`
+and `recipes`. A nutrient that an ingredient lacks is not reported for the dish, never turned into a zero. Nothing is estimated by a model.
+
+**In the app.** A recipe-calculated food is marked "Calculated from a recipe" (Spanish: "Calculado a partir de una receta"), distinct from "Catalog" and
+from "AI estimate", in the search results, the portion sheet, the review row and the meal detail, each with a way to read the method. The About
+screen's data sources text (`about.sources.recipesNote`) says that some dishes are calculated from recipes and are not laboratory data.
+
+**Limits.** These are typical-preparation estimates, not measurements: the weight of baked and stewed dishes comes from the water of a reference food of the
+catalog (a weight rule only), fat absorbed in frying is an assumption, the USDA yield table covers meat and poultry only, the retention table covers 10 of
+the 18 tracked nutrients, and ingredient values are USDA's, for American products. See `docs/catalog-recipes.md` section 8 before relying on a value.

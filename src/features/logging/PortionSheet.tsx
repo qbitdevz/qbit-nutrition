@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
+import { isRecipeRef } from '@/core/catalog';
 import { computeItemNutrients } from '@/core/nutrition';
 import { formatDecimal, formatNumber } from '@/i18n/format';
 import type { Locale } from '@/i18n/locale';
@@ -11,6 +12,7 @@ import { useServices } from '../startup/AppProvider';
 import type { DraftItem } from './draft';
 import { loadFoodView, refKey, type FoodRow, type FoodView } from './foods';
 import { GRAMS_RANGE, validateGrams } from './limits';
+import { RecipeMethod, RecipeTag } from './RecipeMethod';
 
 interface PortionSheetProps {
   /** The food to portion; null closes the sheet. */
@@ -53,6 +55,7 @@ function PortionBody({ food, lastGrams, suggestedGrams, onAdd, onClose }: { food
   const [attempt, setAttempt] = useState(0);
   const [text, setText] = useState('');
   const [touched, setTouched] = useState(false);
+  const [showMethod, setShowMethod] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -99,6 +102,13 @@ function PortionBody({ food, lastGrams, suggestedGrams, onAdd, onClose }: { food
 
   return (
     <View style={styles.body}>
+      {isRecipeRef(view.ref) ? (
+        <View style={styles.recipe}>
+          <RecipeTag />
+          <Button label={t('recipe.how')} variant="ghost" icon="right" block={false} onPress={() => setShowMethod((v) => !v)} />
+          {showMethod ? <RecipeMethod food={view.ref} /> : null}
+        </View>
+      ) : null}
       <TextField
         label={t('log.portion.amount')}
         value={text}
@@ -175,6 +185,7 @@ function formatRange(locale: Locale, params?: Record<string, string | number>): 
 
 const styles = StyleSheet.create({
   body: { gap: spacing.s3 },
+  recipe: { gap: spacing.s2, alignItems: 'flex-start' },
   measures: { gap: spacing.s2 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.s2 },
   chip: { minHeight: 48, paddingHorizontal: spacing.s4, paddingVertical: spacing.s2, borderRadius: radius.lg, justifyContent: 'center', maxWidth: '100%' },

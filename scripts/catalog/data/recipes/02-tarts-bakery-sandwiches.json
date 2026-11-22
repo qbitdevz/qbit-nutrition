@@ -1,0 +1,737 @@
+[
+ {
+  "id": 10,
+  "key": "tarta-jamon-queso",
+  "nameEn": "Tart, ham and cheese, homemade",
+  "nameEs": "Tarta de jamón y queso",
+  "aliasesEn": [
+   "ham and cheese tart",
+   "ham and cheese pie"
+  ],
+  "aliasesEs": [
+   "tarta de jamón y muzzarella",
+   "tarta de jyq"
+  ],
+  "dishType": "tart",
+  "state": "cooked",
+  "preparation": {
+   "en": "Line a 26 cm tin with butter dough, fill with diced ham, mozzarella, and eggs beaten with milk, and bake until set and golden.",
+   "es": "Forrar una tartera de 26 cm con masa de manteca, rellenar con jamón en cubos, muzzarella y huevos batidos con leche, y hornear hasta que cuaje y dore."
+  },
+  "basis": {
+   "en": "Whole 26 cm tart (8 portions): dough of 180 g flour, 70 g butter, 55 g water; filling of 150 g ham, 200 g whole-milk mozzarella, 3 eggs (150 g), 100 g milk. The tart is baked down to the moisture of FNDDS \"Quiche with meat, poultry or fish\" (39.2 %, catalog value): a weight rule only, no nutrient is taken from that food.",
+   "es": "Tarta entera de 26 cm (8 porciones): masa de 180 g de harina, 70 g de manteca, 55 g de agua; relleno de 150 g de jamón, 200 g de muzzarella de leche entera, 3 huevos (150 g), 100 g de leche. La tarta se hornea hasta la humedad de la «Quiche con carne, ave o pescado» de FNDDS (39,2 %, valor del catálogo): solo una regla de peso, no se toma ningún nutriente de ese alimento."
+  },
+  "portions": [
+   {
+    "en": "1 portion (1/8 of the tart)",
+    "es": "1 porción (1/8 de la tarta)",
+    "grams": 86
+   },
+   {
+    "en": "1 large portion (1/6 of the tart)",
+    "es": "1 porción grande (1/6 de la tarta)",
+    "grams": 115
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 168894,
+    "description": "Wheat flour, white, all-purpose, enriched, bleached",
+    "grams": 180,
+    "retention": "0301",
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173410,
+    "description": "Butter, salted",
+    "grams": 70,
+    "group": "all"
+   },
+   {
+    "source": "usda_fndds",
+    "sourceId": 2710707,
+    "description": "Water, tap",
+    "grams": 55,
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 2,
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173864,
+    "description": "Ham, sliced, regular (approximately 11% fat)",
+    "grams": 150,
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170845,
+    "description": "Cheese, mozzarella, whole milk",
+    "grams": 200,
+    "retention": "0001",
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171287,
+    "description": "Egg, whole, raw, fresh",
+    "grams": 150,
+    "retention": "0101",
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171265,
+    "description": "Milk, whole, 3.25% milkfat, with added vitamin D",
+    "grams": 100,
+    "retention": "2152",
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 1.5,
+    "group": "all"
+   }
+  ],
+  "moistureGroups": {
+   "all": {
+    "source": "usda_fndds",
+    "sourceId": 2708731,
+    "description": "Quiche with meat, poultry or fish"
+   }
+  }
+ },
+ {
+  "id": 11,
+  "key": "tarta-verdura",
+  "nameEn": "Tart, chard, egg and cheese, homemade",
+  "nameEs": "Tarta de verdura (acelga y huevo)",
+  "aliasesEn": [
+   "vegetable tart",
+   "chard tart",
+   "spinach tart"
+  ],
+  "aliasesEs": [
+   "tarta de acelga",
+   "tarta de espinaca",
+   "tarta de verdura"
+  ],
+  "dishType": "tart",
+  "state": "cooked",
+  "preparation": {
+   "en": "Sauté onion in oil, mix with boiled chopped chard, eggs, milk and grated cheese, pour into a butter-dough shell and bake until set.",
+   "es": "Rehogar cebolla en aceite, mezclar con acelga hervida picada, huevos, leche y queso rallado, volcar sobre masa de manteca y hornear hasta que cuaje."
+  },
+  "basis": {
+   "en": "Whole 26 cm tart (8 portions): dough of 180 g flour, 60 g butter, 55 g water; filling of 300 g boiled chard (catalog cooked value), 80 g onion, 3 eggs, 80 g milk, 20 g grated parmesan, 8 g oil. Baked down to the moisture of FNDDS \"Spinach quiche, meatless\" (52.6 %): a weight rule only.",
+   "es": "Tarta entera de 26 cm (8 porciones): masa de 180 g de harina, 60 g de manteca, 55 g de agua; relleno de 300 g de acelga hervida (valor cocido del catálogo), 80 g de cebolla, 3 huevos, 80 g de leche, 20 g de queso rallado, 8 g de aceite. Horneada hasta la humedad de la «Quiche de espinaca sin carne» de FNDDS (52,6 %): solo una regla de peso."
+  },
+  "portions": [
+   {
+    "en": "1 portion (1/8 of the tart)",
+    "es": "1 porción (1/8 de la tarta)",
+    "grams": 82
+   },
+   {
+    "en": "1 large portion (1/6 of the tart)",
+    "es": "1 porción grande (1/6 de la tarta)",
+    "grams": 110
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 168894,
+    "description": "Wheat flour, white, all-purpose, enriched, bleached",
+    "grams": 180,
+    "retention": "0301",
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173410,
+    "description": "Butter, salted",
+    "grams": 60,
+    "group": "all"
+   },
+   {
+    "source": "usda_fndds",
+    "sourceId": 2710707,
+    "description": "Water, tap",
+    "grams": 55,
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 2,
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170401,
+    "description": "Chard, swiss, cooked, boiled, drained, without salt",
+    "grams": 300,
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170000,
+    "description": "Onions, raw",
+    "grams": 80,
+    "retention": "3780",
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171287,
+    "description": "Egg, whole, raw, fresh",
+    "grams": 150,
+    "retention": "0101",
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171265,
+    "description": "Milk, whole, 3.25% milkfat, with added vitamin D",
+    "grams": 80,
+    "retention": "2152",
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171247,
+    "description": "Cheese, parmesan, grated",
+    "grams": 20,
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172370,
+    "description": "Oil, vegetable, soybean, refined",
+    "grams": 8,
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 2,
+    "group": "all"
+   }
+  ],
+  "moistureGroups": {
+   "all": {
+    "source": "usda_fndds",
+    "sourceId": 2708732,
+    "description": "Spinach quiche, meatless"
+   }
+  }
+ },
+ {
+  "id": 12,
+  "key": "medialuna-manteca",
+  "nameEn": "Medialuna, butter crescent roll",
+  "nameEs": "Medialuna de manteca",
+  "aliasesEn": [
+   "medialuna",
+   "argentine croissant",
+   "butter medialuna"
+  ],
+  "aliasesEs": [
+   "medialuna",
+   "medialunas de manteca"
+  ],
+  "dishType": "bread_pastry",
+  "state": "cooked",
+  "preparation": {
+   "en": "Make a yeasted dough with flour, milk, egg, sugar and part of the butter, laminate it with the rest of the butter, cut triangles, roll into crescents, let them rise, bake and brush with sugar syrup.",
+   "es": "Armar una masa de levadura con harina, leche, huevo, azúcar y parte de la manteca, laminarla con el resto de la manteca, cortar triángulos, enrollar en medialunas, dejar levar, hornear y pincelar con almíbar."
+  },
+  "basis": {
+   "en": "Per medialuna (about 52 g baked): 24 g flour, 12 g butter (dough and lamination), 6 g sugar (dough and syrup glaze), 4 g egg, 6 g milk, 0.5 g yeast. Baked to the moisture of a butter croissant (23.2 %, catalog value): a weight rule only. An original proportion of a typical Argentine butter medialuna.",
+   "es": "Por medialuna (unos 52 g horneada): 24 g de harina, 12 g de manteca (masa y laminado), 6 g de azúcar (masa y almíbar), 4 g de huevo, 6 g de leche, 0,5 g de levadura. Horneada hasta la humedad de un croissant de manteca (23,2 %, valor del catálogo): solo una regla de peso. Una proporción original de una medialuna de manteca argentina típica."
+  },
+  "portions": [
+   {
+    "en": "1 medialuna",
+    "es": "1 medialuna",
+    "grams": 52
+   },
+   {
+    "en": "3 medialunas",
+    "es": "3 medialunas",
+    "grams": 156
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 168894,
+    "description": "Wheat flour, white, all-purpose, enriched, bleached",
+    "grams": 24,
+    "retention": "0301",
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173410,
+    "description": "Butter, salted",
+    "grams": 12,
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169655,
+    "description": "Sugars, granulated",
+    "grams": 6,
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171287,
+    "description": "Egg, whole, raw, fresh",
+    "grams": 4,
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171265,
+    "description": "Milk, whole, 3.25% milkfat, with added vitamin D",
+    "grams": 6,
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 175043,
+    "description": "Leavening agents, yeast, baker's, active dry",
+    "grams": 0.5,
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 0.3,
+    "group": "all"
+   }
+  ],
+  "moistureGroups": {
+   "all": {
+    "source": "usda_sr_legacy",
+    "sourceId": 174987,
+    "description": "Croissants, butter"
+   }
+  }
+ },
+ {
+  "id": 13,
+  "key": "medialuna-grasa",
+  "nameEn": "Medialuna, beef-fat crescent roll",
+  "nameEs": "Medialuna de grasa",
+  "aliasesEn": [
+   "salty medialuna"
+  ],
+  "aliasesEs": [
+   "medialunas de grasa",
+   "medialuna salada"
+  ],
+  "dishType": "bread_pastry",
+  "state": "cooked",
+  "preparation": {
+   "en": "Make a yeasted dough with flour, water, salt and a little sugar, laminate it with beef fat and lard, cut triangles, roll into crescents, let them rise and bake.",
+   "es": "Armar una masa de levadura con harina, agua, sal y un poco de azúcar, laminarla con grasa vacuna y de cerdo, cortar triángulos, enrollar en medialunas, dejar levar y hornear."
+  },
+  "basis": {
+   "en": "Per medialuna (about 44 g baked): 26 g flour, 8 g beef tallow and 3 g lard as lamination fat, 3 g sugar, 9 g water, 0.5 g yeast; no milk or egg (the savory bakery version). Baked to the moisture of a butter croissant (23.2 %): a weight rule only.",
+   "es": "Por medialuna (unos 44 g horneada): 26 g de harina, 8 g de grasa vacuna y 3 g de grasa de cerdo para laminar, 3 g de azúcar, 9 g de agua, 0,5 g de levadura; sin leche ni huevo (la versión salada de panadería). Horneada hasta la humedad de un croissant de manteca (23,2 %): solo una regla de peso."
+  },
+  "portions": [
+   {
+    "en": "1 medialuna",
+    "es": "1 medialuna",
+    "grams": 44
+   },
+   {
+    "en": "3 medialunas",
+    "es": "3 medialunas",
+    "grams": 132
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 168894,
+    "description": "Wheat flour, white, all-purpose, enriched, bleached",
+    "grams": 26,
+    "retention": "0301",
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171400,
+    "description": "Fat, beef tallow",
+    "grams": 8,
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171401,
+    "description": "Lard",
+    "grams": 3,
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169655,
+    "description": "Sugars, granulated",
+    "grams": 3,
+    "group": "all"
+   },
+   {
+    "source": "usda_fndds",
+    "sourceId": 2710707,
+    "description": "Water, tap",
+    "grams": 9,
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 175043,
+    "description": "Leavening agents, yeast, baker's, active dry",
+    "grams": 0.5,
+    "group": "all"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173468,
+    "description": "Salt, table",
+    "grams": 0.5,
+    "group": "all"
+   }
+  ],
+  "moistureGroups": {
+   "all": {
+    "source": "usda_sr_legacy",
+    "sourceId": 174987,
+    "description": "Croissants, butter"
+   }
+  }
+ },
+ {
+  "id": 14,
+  "key": "choripan",
+  "nameEn": "Choripán, grilled chorizo in french bread",
+  "nameEs": "Choripán",
+  "aliasesEn": [
+   "choripan",
+   "chorizo sandwich"
+  ],
+  "aliasesEs": [
+   "chori",
+   "choripan",
+   "sándwich de chorizo"
+  ],
+  "dishType": "sandwich",
+  "state": "cooked",
+  "preparation": {
+   "en": "Grill a fresh pork chorizo, split a piece of french bread, fill it and dress with chimichurri (oil, parsley, garlic, oregano).",
+   "es": "Grillar un chorizo fresco de cerdo, abrir un pan francés, rellenarlo y condimentar con chimichurri (aceite, perejil, ajo, orégano)."
+  },
+  "basis": {
+   "en": "One fresh pork chorizo of 112.5 g raw, which cooks to 90 g (80 %, USDA yield for fresh pork sausage, pan-fried; the nearest row to grilling), in 80 g of french bread, with 3 g oil, 1 g parsley, 0.5 g garlic as chimichurri. Retention is the USDA value for broiled raw pork sausage.",
+   "es": "Un chorizo fresco de cerdo de 112,5 g crudo, que se cocina hasta 90 g (80 %, rendimiento de USDA para chorizo fresco de cerdo salteado; la fila más cercana a la parrilla), en 80 g de pan francés, con 3 g de aceite, 1 g de perejil y 0,5 g de ajo como chimichurri. La retención es la de USDA para chorizo crudo de cerdo a la plancha."
+  },
+  "portions": [
+   {
+    "en": "1 choripán sandwich",
+    "es": "1 choripán",
+    "grams": 175
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173859,
+    "description": "Sausage, pork, chorizo, link or ground, raw",
+    "grams": 112.5,
+    "yield": "7064|Pan-fried",
+    "retention": "1707"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172675,
+    "description": "Bread, french or vienna (includes sourdough)",
+    "grams": 80
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172370,
+    "description": "Oil, vegetable, soybean, refined",
+    "grams": 3
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170416,
+    "description": "Parsley, fresh",
+    "grams": 1
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 169230,
+    "description": "Garlic, raw",
+    "grams": 0.5
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171328,
+    "description": "Spices, oregano, dried",
+    "grams": 0.1
+   }
+  ]
+ },
+ {
+  "id": 15,
+  "key": "provoleta",
+  "nameEn": "Provoleta, grilled provolone cheese with oregano",
+  "nameEs": "Provoleta a la parrilla",
+  "aliasesEn": [
+   "grilled provolone"
+  ],
+  "aliasesEs": [
+   "provoleta",
+   "provolone a la parrilla"
+  ],
+  "dishType": "cheese_dish",
+  "state": "cooked",
+  "preparation": {
+   "en": "Grill a thick slice of provolone with a little oil until it melts and browns, sprinkle with oregano.",
+   "es": "Grillar una rodaja gruesa de provolone con un poco de aceite hasta que se derrita y dore, espolvorear con orégano."
+  },
+  "basis": {
+   "en": "One individual provoleta: 150 g provolone, 2 g oil, 0.3 g oregano. No weight change is applied (no published yield for grilled cheese; a real provoleta loses a little fat and water, so per-100 g values are slightly low). Vitamin retention from the USDA table, broiled cheese.",
+   "es": "Una provoleta individual: 150 g de provolone, 2 g de aceite, 0,3 g de orégano. No se aplica cambio de peso (no hay rendimiento publicado para queso a la parrilla; una provoleta real pierde algo de grasa y agua, así que los valores por 100 g quedan algo bajos). Retención de vitaminas de la tabla de USDA, queso a la plancha."
+  },
+  "portions": [
+   {
+    "en": "1 individual provoleta",
+    "es": "1 provoleta individual",
+    "grams": 150
+   },
+   {
+    "en": "half a provoleta",
+    "es": "1/2 provoleta",
+    "grams": 75
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170850,
+    "description": "Cheese, provolone",
+    "grams": 150,
+    "retention": "0003"
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 171328,
+    "description": "Spices, oregano, dried",
+    "grams": 0.3
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172370,
+    "description": "Oil, vegetable, soybean, refined",
+    "grams": 2
+   }
+  ]
+ },
+ {
+  "id": 26,
+  "key": "sandwich-miga-jamon-queso",
+  "nameEn": "Sandwich de miga, ham and cheese on crustless white bread",
+  "nameEs": "Sándwich de miga de jamón y queso",
+  "aliasesEn": [
+   "miga sandwich",
+   "crustless sandwich"
+  ],
+  "aliasesEs": [
+   "sándwich de miga",
+   "sanguchito de miga",
+   "triángulo de miga"
+  ],
+  "dishType": "sandwich",
+  "state": "processed",
+  "preparation": {
+   "en": "Spread two thin slices of crustless white bread with butter, fill with a slice of cooked ham and a slice of cheese, press and cut into a triangle.",
+   "es": "Untar con manteca dos rebanadas finas de pan de miga sin corteza, rellenar con una feta de jamón cocido y una de queso, prensar y cortar en triángulo."
+  },
+  "basis": {
+   "en": "One triangle: two slices of crustless white bread (30 g), 3 g butter, 10 g sliced ham, 10 g part-skim mozzarella. Nothing is cooked, so no weight change or retention applies. The crust is not part of the weight.",
+   "es": "Un triángulo: dos rebanadas de pan de miga sin corteza (30 g), 3 g de manteca, 10 g de jamón cocido, 10 g de muzzarella semidescremada. No se cocina, por lo que no hay cambio de peso ni retención. La corteza no forma parte del peso."
+  },
+  "portions": [
+   {
+    "en": "1 triangle",
+    "es": "1 triángulo",
+    "grams": 53
+   },
+   {
+    "en": "3 triangles",
+    "es": "3 triángulos",
+    "grams": 159
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 174924,
+    "description": "Bread, white, commercially prepared (includes soft bread crumbs)",
+    "grams": 30
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173410,
+    "description": "Butter, salted",
+    "grams": 3
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173864,
+    "description": "Ham, sliced, regular (approximately 11% fat)",
+    "grams": 10
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170847,
+    "description": "Cheese, mozzarella, part skim milk",
+    "grams": 10
+   }
+  ]
+ },
+ {
+  "id": 27,
+  "key": "pebete-jamon-queso",
+  "nameEn": "Pebete, soft roll with ham and cheese",
+  "nameEs": "Pebete de jamón y queso",
+  "aliasesEn": [
+   "soft roll with ham and cheese"
+  ],
+  "aliasesEs": [
+   "pebete",
+   "pebete de jyq"
+  ],
+  "dishType": "sandwich",
+  "state": "processed",
+  "preparation": {
+   "en": "Split a soft white roll, spread with butter and fill with sliced cooked ham and cheese.",
+   "es": "Abrir un pebete, untar con manteca y rellenar con jamón cocido y queso en fetas."
+  },
+  "basis": {
+   "en": "One pebete: 55 g soft roll (catalog hamburger or hot dog roll as the nearest bread), 4 g butter, 25 g sliced ham, 20 g part-skim mozzarella. Nothing is cooked: no weight change or retention.",
+   "es": "Un pebete: 55 g de pan tipo pebete (el pan de hamburguesa o pancho del catálogo como el más cercano), 4 g de manteca, 25 g de jamón cocido, 20 g de muzzarella semidescremada. No se cocina: sin cambio de peso ni retención."
+  },
+  "portions": [
+   {
+    "en": "1 pebete roll",
+    "es": "1 pebete",
+    "grams": 104
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 172796,
+    "description": "Rolls, hamburger or hotdog, plain",
+    "grams": 55
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173410,
+    "description": "Butter, salted",
+    "grams": 4
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173864,
+    "description": "Ham, sliced, regular (approximately 11% fat)",
+    "grams": 25
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170847,
+    "description": "Cheese, mozzarella, part skim milk",
+    "grams": 20
+   }
+  ]
+ },
+ {
+  "id": 28,
+  "key": "tostado-jamon-queso",
+  "nameEn": "Tostado, toasted ham and cheese sandwich",
+  "nameEs": "Tostado de jamón y queso",
+  "aliasesEn": [
+   "toasted ham and cheese",
+   "ham and cheese toastie"
+  ],
+  "aliasesEs": [
+   "tostado",
+   "tostado mixto",
+   "sándwich tostado"
+  ],
+  "dishType": "sandwich",
+  "state": "cooked",
+  "preparation": {
+   "en": "Fill two slices of white bread with ham and cheese, butter the outside and press on a hot plate until toasted and the cheese melts.",
+   "es": "Rellenar dos rebanadas de pan blanco con jamón y queso, untar por fuera con manteca y prensar en plancha caliente hasta tostar y derretir el queso."
+  },
+  "basis": {
+   "en": "One tostado: 50 g sliced white bread, 4 g butter, 25 g sliced ham, 30 g part-skim mozzarella. No weight change is applied for toasting (no published factor), so per-100 g values are slightly low.",
+   "es": "Un tostado: 50 g de pan blanco en rebanadas, 4 g de manteca, 25 g de jamón cocido, 30 g de muzzarella semidescremada. No se aplica cambio de peso por el tostado (no hay factor publicado), por lo que los valores por 100 g quedan algo bajos."
+  },
+  "portions": [
+   {
+    "en": "1 tostado",
+    "es": "1 tostado",
+    "grams": 109
+   }
+  ],
+  "ingredients": [
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 174924,
+    "description": "Bread, white, commercially prepared (includes soft bread crumbs)",
+    "grams": 50
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173410,
+    "description": "Butter, salted",
+    "grams": 4
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 173864,
+    "description": "Ham, sliced, regular (approximately 11% fat)",
+    "grams": 25
+   },
+   {
+    "source": "usda_sr_legacy",
+    "sourceId": 170847,
+    "description": "Cheese, mozzarella, part skim milk",
+    "grams": 30
+   }
+  ]
+ }
+]

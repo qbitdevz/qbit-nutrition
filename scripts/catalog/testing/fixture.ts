@@ -3,6 +3,7 @@ import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { buildCatalog } from '../builder';
+import { resolveRecipes, type FactorTables, type RecipeDef } from '../recipes';
 import type { BuildCounts, SourceFood, TranslationEntry } from '../types';
 
 /** USDA nutrient ids used by the fixture foods. */
@@ -79,13 +80,42 @@ export interface FixtureCatalog {
   counts: BuildCounts;
 }
 
-/** Builds the fixture catalog with the real builder into a fresh temp directory. */
-export function buildFixtureCatalog(): FixtureCatalog {
+/** One published yield, so the fixture recipe can cite it (the real tables are in scripts/catalog/data/factors/). */
+export const FIXTURE_FACTORS: FactorTables = {
+  retention: { source: { title: 'Fixture retention table', url: 'fixture' }, rows: [] },
+  yields: {
+    source: { title: 'Fixture yield table', url: 'fixture' },
+    rows: [{ foodGroup: '5', ndb: '5060', description: 'Chicken, breast', method: 'Baked or Roasted, unspecified', yieldPercent: 72 }],
+  },
+};
+
+/** A recipe-calculated dish over fixture foods: 150 g raw chicken breast (72 % yield) and 200 g cooked rice. */
+export const FIXTURE_RECIPE: RecipeDef = {
+  id: 7,
+  key: 'arroz-con-pollo-fixture',
+  nameEn: 'Chicken with rice, home style',
+  nameEs: 'Arroz con pollo casero',
+  aliasesEn: ['chicken and rice'],
+  aliasesEs: ['arroz con pollo'],
+  dishType: 'rice_bean_dish',
+  state: 'cooked',
+  ingredients: [
+    { source: 'usda_sr_legacy', sourceId: 1006, description: 'Chicken, breast, meat only, raw', grams: 150, yield: '5060|Baked or Roasted, unspecified' },
+    { source: 'usda_sr_legacy', sourceId: 1002, description: 'Rice, white, long-grain, regular, cooked', grams: 200 },
+  ],
+  preparation: { en: 'Roast the chicken and serve it on the rice.', es: 'Asar el pollo y servirlo sobre el arroz.' },
+  basis: { en: 'A home preparation written for the tests.', es: 'Una preparación casera escrita para las pruebas.' },
+  portions: [{ en: '1 plate', es: '1 plato', grams: 300 }],
+};
+
+/** Builds the fixture catalog with the real builder into a fresh temp directory. `recipes: true` adds `FIXTURE_RECIPE`. */
+export function buildFixtureCatalog(options: { recipes?: boolean } = {}): FixtureCatalog {
   const dir = mkdtempSync(path.join(tmpdir(), 'qn-catalog-'));
   const dbPath = path.join(dir, 'catalog.db');
   const counts = buildCatalog({
     foods: FIXTURE_FOODS,
     translations: FIXTURE_TRANSLATIONS,
+    ...(options.recipes ? { recipes: resolveRecipes([FIXTURE_RECIPE], FIXTURE_FOODS, FIXTURE_FACTORS, 'fixture-recipes@1'), recipeSetVersion: 'fixture-recipes@1' } : {}),
     outPath: dbPath,
     meta: {
       dataVersion: 'fixture@1',

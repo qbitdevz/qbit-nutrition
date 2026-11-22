@@ -1,4 +1,4 @@
-import type { CatalogDb, MatchMemory, SqlRow } from './ports';
+import type { CatalogDb, MatchMemory, SqlRow, SqlValue } from './ports';
 import {
   buildVariants,
   cueFree,
@@ -9,6 +9,7 @@ import {
   type MatchedName,
   type RankContext,
 } from './ranking';
+import { isRecipeRef, type RecipeDetail } from './recipes';
 import { normalizeName, searchWords } from './text';
 import type {
   Catalog,
@@ -263,6 +264,51 @@ export function createCatalog(options: CatalogOptions): Catalog {
         isBranded: row.isBranded,
         per100g,
         portions: portionRows.map((p) => ({ locale: String(p.locale), label: String(p.label), grams: Number(p.grams) })),
+      };
+      return detail;
+    },
+
+    async getRecipe(ref, locale) {
+      if (!isRecipeRef(ref)) return null;
+      const id = Number(ref.id);
+      const head = (
+        await db.all(
+          `SELECT version, preparation_en, preparation_es, basis_en, basis_es, raw_grams, final_grams, unknown_nutrients
+             FROM recipe WHERE food_id = ?`,
+          [id],
+        )
+      )[0];
+      if (!head) return null;
+      const lines = await db.all(
+        `SELECT ingredient_food_id, grams, yield_percent, yield_source, retention_source, absorbed
+           FROM recipe_ingredient WHERE food_id = ? ORDER BY position`,
+        [id],
+      );
+      const names = await loadNames([...new Set(lines.map((l) => Number(l.ingredient_food_id)))]);
+      const sources: string[] = [];
+      for (const l of lines) {
+        for (const text of [l.yield_source, l.retention_source]) {
+          if (typeof text === 'string' && !sources.includes(text)) sources.push(text);
+        }
+      }
+      const pick = (en: SqlValue, es: SqlValue): string => String((locale === 'es' ? es : en) ?? en ?? '');
+      const detail: RecipeDetail = {
+        ref,
+        version: String(head.version),
+        preparation: pick(head.preparation_en, head.preparation_es),
+        basis: pick(head.basis_en, head.basis_es),
+        rawGrams: Number(head.raw_grams),
+        finalGrams: Number(head.final_grams),
+        ingredients: lines.map((l) => ({
+          name: pickName(names.get(Number(l.ingredient_food_id)) ?? [], locale),
+          grams: Number(l.grams),
+          yieldPercent: l.yield_percent === null ? null : Number(l.yield_percent),
+          absorbed: Number(l.absorbed) === 1,
+        })),
+        factorSources: sources,
+        unknownNutrients: String(head.unknown_nutrients ?? '')
+          .split(',')
+          .filter((code): code is NutrientCode => NUTRIENT_SET.has(code)),
       };
       return detail;
     },

@@ -1,0 +1,4591 @@
+{
+ "source": {
+  "title": "USDA Table of Nutrient Retention Factors, Release 6",
+  "publisher": "U.S. Department of Agriculture, Agricultural Research Service, Nutrient Data Laboratory",
+  "date": "December 2007",
+  "url": "https://www.ars.usda.gov/ARSUserFiles/80400535/Data/retn/retn06.txt",
+  "page": "https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/methods-and-application-of-food-composition-laboratory/mafcl-site-pages/nutrient-retention-factors/",
+  "note": "Percent of the nutrient retained (true retention, nearest 5 %), for the nutrients the app tracks that the table covers. Vitamin A is the table's \"Vitamin A, RE\". Nutrients the table does not cover (energy, macronutrients, fiber, sugars, saturated fat, vitamin D) have no factor."
+ },
+ "rows": [
+  {
+   "code": "0001",
+   "foodGroup": "01",
+   "description": "CHEESE,BAKED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 65,
+    "folate": 80,
+    "vit_b12": 55,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "0003",
+   "foodGroup": "01",
+   "description": "CHEESE,BROILED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 65,
+    "folate": 80,
+    "vit_b12": 55,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "0005",
+   "foodGroup": "01",
+   "description": "CHEESE,COOKED W/LIQUID",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 65,
+    "folate": 80,
+    "vit_b12": 55,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "0007",
+   "foodGroup": "01",
+   "description": "CHEESE,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 95,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "0101",
+   "foodGroup": "01",
+   "description": "EGGS,BAKED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 75,
+    "vit_b12": 80,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "0103",
+   "foodGroup": "01",
+   "description": "EGGS,FRIED,SCRAMBLED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 75,
+    "vit_b12": 85,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "0105",
+   "foodGroup": "01",
+   "description": "EGGS,HARD COOKED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 75,
+    "vit_b12": 85,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "0107",
+   "foodGroup": "01",
+   "description": "EGGS,POACHED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 75,
+    "vit_b12": 80,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "0109",
+   "foodGroup": "01",
+   "description": "EGGS,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 95,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "0151",
+   "foodGroup": "09",
+   "description": "FRUITS,FRESH(NOT CITRUS),BAKED",
+   "percent": {
+    "calcium": 95,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 90,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 60,
+    "vit_b12": 100,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "0152",
+   "foodGroup": "09",
+   "description": "FRUITS,FRESH(NOT CITRUS),BROILED",
+   "percent": {
+    "calcium": 95,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 90,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 60,
+    "vit_b12": 100,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "0153",
+   "foodGroup": "09",
+   "description": "FRUITS,FRESH(NOT CITRUS),SAUTEED",
+   "percent": {
+    "calcium": 95,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 90,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 70,
+    "folate": 50,
+    "vit_b12": 100,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0154",
+   "foodGroup": "09",
+   "description": "FRUITS,CANNED",
+   "percent": {
+    "calcium": 95,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 90,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 50,
+    "folate": 50,
+    "vit_b12": 100,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0155",
+   "foodGroup": "09",
+   "description": "FRUITS,FRESH(NOT CITRUS),STEWED",
+   "percent": {
+    "calcium": 95,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 90,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 70,
+    "folate": 50,
+    "vit_b12": 100,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0156",
+   "foodGroup": "09",
+   "description": "FRUITS,FROZEN",
+   "percent": {
+    "calcium": 95,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 90,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 70,
+    "folate": 95,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "0157",
+   "foodGroup": "09",
+   "description": "FRUITS,FRESH(NOT CITRUS),REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "0158",
+   "foodGroup": "09",
+   "description": "FRUITS,DRIED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 20,
+    "folate": 50,
+    "vit_b12": 100,
+    "vit_a": 50
+   }
+  },
+  {
+   "code": "0251",
+   "foodGroup": "09",
+   "description": "FRUITS(DRIED),BAKED",
+   "percent": {
+    "calcium": 95,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 90,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 60,
+    "vit_b12": 100,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "0253",
+   "foodGroup": "09",
+   "description": "FRUITS(DRIED),SAUTEED",
+   "percent": {
+    "calcium": 95,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 90,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 70,
+    "folate": 50,
+    "vit_b12": 100,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0255",
+   "foodGroup": "09",
+   "description": "FRUITS(DRIED),STEWED",
+   "percent": {
+    "calcium": 95,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 90,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 70,
+    "folate": 50,
+    "vit_b12": 100,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0257",
+   "foodGroup": "09",
+   "description": "FRUITS(DRIED),REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "0270",
+   "foodGroup": "09",
+   "description": "FRUITS,CITRUS,CKD",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 70,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "0301",
+   "foodGroup": "20",
+   "description": "FLOUR/MEAL,BAKED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "0302",
+   "foodGroup": "20",
+   "description": "FLOUR/MEAL,BOILED,STEAMED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "0304",
+   "foodGroup": "20",
+   "description": "FLOUR/MEAL,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 90,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "0305",
+   "foodGroup": "20",
+   "description": "FLOUR/MEAL,SAUTEED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 65,
+    "vit_b12": 100,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "0306",
+   "foodGroup": "20",
+   "description": "FLOUR/MEAL,TOASTED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 85,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "0351",
+   "foodGroup": "08",
+   "description": "OATMEAL,INST,COOKED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 90,
+    "folate": 100,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "0352",
+   "foodGroup": "08",
+   "description": "OATMEAL,REG/QUICK,COOKED",
+   "percent": {
+    "calcium": 100,
+    "iron": 95,
+    "magnesium": 100,
+    "potassium": 95,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "0357",
+   "foodGroup": "08",
+   "description": "CEREAL,INST,COOKED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 90,
+    "folate": 100,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "0358",
+   "foodGroup": "08",
+   "description": "CEREAL,REG/QUICK,COOKED",
+   "percent": {
+    "calcium": 100,
+    "iron": 95,
+    "magnesium": 100,
+    "potassium": 95,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "0380",
+   "foodGroup": "20",
+   "description": "PASTA,BAKED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "0381",
+   "foodGroup": "20",
+   "description": "PASTA,BOILED,DRAINED",
+   "percent": {
+    "calcium": 95,
+    "iron": 75,
+    "magnesium": 85,
+    "potassium": 30,
+    "sodium": 50,
+    "zinc": 100,
+    "vit_c": 70,
+    "folate": 70,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "0382",
+   "foodGroup": "20",
+   "description": "PASTA,BOILED,DRAINED,BAKED",
+   "percent": {
+    "calcium": 95,
+    "iron": 75,
+    "magnesium": 85,
+    "potassium": 30,
+    "sodium": 50,
+    "zinc": 100,
+    "vit_c": 60,
+    "folate": 50,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "0384",
+   "foodGroup": "20",
+   "description": "PASTA,BOILED,NOT DRAINED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "0385",
+   "foodGroup": "20",
+   "description": "PASTA,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "0431",
+   "foodGroup": "20",
+   "description": "RICE,WHITE/BROWN,COOKED,DRAINED",
+   "percent": {
+    "calcium": 95,
+    "iron": 90,
+    "magnesium": 95,
+    "potassium": 85,
+    "sodium": 95,
+    "zinc": 95,
+    "vit_c": 75,
+    "folate": 60,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "0432",
+   "foodGroup": "20",
+   "description": "RICE,WHITE/BROWN,COOKED,WATER USED",
+   "percent": {
+    "calcium": 100,
+    "iron": 95,
+    "magnesium": 100,
+    "potassium": 95,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "0433",
+   "foodGroup": "20",
+   "description": "RICE,WHITE/BROWN,SAUTEED+SIMMERED",
+   "percent": {
+    "calcium": 100,
+    "iron": 95,
+    "magnesium": 100,
+    "potassium": 95,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 70,
+    "folate": 60,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "0434",
+   "foodGroup": "20",
+   "description": "RICE,WHITE/BROWN,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "0501",
+   "foodGroup": "16",
+   "description": "LEGUMES,CKD 15/20MIN,BOILED,DRAINED",
+   "percent": {
+    "calcium": 85,
+    "iron": 85,
+    "magnesium": 80,
+    "potassium": 75,
+    "sodium": 90,
+    "zinc": 85,
+    "vit_c": 65,
+    "folate": 60,
+    "vit_b12": 100,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "0502",
+   "foodGroup": "16",
+   "description": "LEGUMES,CKD 15/20MIN,BLD,WATER USED",
+   "percent": {
+    "calcium": 90,
+    "iron": 90,
+    "magnesium": 85,
+    "potassium": 80,
+    "sodium": 95,
+    "zinc": 90,
+    "vit_c": 70,
+    "folate": 65,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "0503",
+   "foodGroup": "16",
+   "description": "LEGUMES,CKD 15/20MIN,BLD,DRAIND,BKD",
+   "percent": {
+    "calcium": 85,
+    "iron": 85,
+    "magnesium": 80,
+    "potassium": 75,
+    "sodium": 90,
+    "zinc": 85,
+    "vit_c": 60,
+    "folate": 55,
+    "vit_b12": 100,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "0504",
+   "foodGroup": "16",
+   "description": "LEGUMES,CKD 15/20MIN,BOILED+BAKED",
+   "percent": {
+    "calcium": 90,
+    "iron": 90,
+    "magnesium": 85,
+    "potassium": 80,
+    "sodium": 95,
+    "zinc": 90,
+    "vit_c": 65,
+    "folate": 60,
+    "vit_b12": 100,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "0505",
+   "foodGroup": "16",
+   "description": "LEGUMES,CKD 15/20MIN,BLD,DRND,FRIED",
+   "percent": {
+    "calcium": 85,
+    "iron": 85,
+    "magnesium": 80,
+    "potassium": 75,
+    "sodium": 90,
+    "zinc": 85,
+    "vit_c": 60,
+    "folate": 55,
+    "vit_b12": 100,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "0506",
+   "foodGroup": "16",
+   "description": "LEGUMES,CKD 15/20MIN,BOILED+FRIED",
+   "percent": {
+    "calcium": 90,
+    "iron": 90,
+    "magnesium": 85,
+    "potassium": 80,
+    "sodium": 95,
+    "zinc": 90,
+    "vit_c": 65,
+    "folate": 60,
+    "vit_b12": 100,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "0521",
+   "foodGroup": "16",
+   "description": "LEGUMES,CKD 45/75MIN,BOILED,DRND",
+   "percent": {
+    "calcium": 85,
+    "iron": 80,
+    "magnesium": 75,
+    "potassium": 70,
+    "sodium": 90,
+    "zinc": 85,
+    "vit_c": 65,
+    "folate": 45,
+    "vit_b12": 100,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "0522",
+   "foodGroup": "16",
+   "description": "LEGUMES,CKD 45/75MIN,BLD,WATER USED",
+   "percent": {
+    "calcium": 90,
+    "iron": 85,
+    "magnesium": 80,
+    "potassium": 75,
+    "sodium": 95,
+    "zinc": 90,
+    "vit_c": 70,
+    "folate": 50,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "0523",
+   "foodGroup": "16",
+   "description": "LEGUMES,CKD 45/75MIN,BLD,DRND,BKD",
+   "percent": {
+    "calcium": 85,
+    "iron": 80,
+    "magnesium": 75,
+    "potassium": 70,
+    "sodium": 90,
+    "zinc": 85,
+    "vit_c": 60,
+    "folate": 40,
+    "vit_b12": 100,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "0524",
+   "foodGroup": "16",
+   "description": "LEGUMES,CKD 45/75MIN,BOILED+BAKED",
+   "percent": {
+    "calcium": 90,
+    "iron": 85,
+    "magnesium": 80,
+    "potassium": 75,
+    "sodium": 95,
+    "zinc": 90,
+    "vit_c": 65,
+    "folate": 45,
+    "vit_b12": 100,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "0525",
+   "foodGroup": "16",
+   "description": "LEGUMES,CKD 45/75MIN,BLD,DRND,FRIED",
+   "percent": {
+    "calcium": 85,
+    "iron": 80,
+    "magnesium": 75,
+    "potassium": 70,
+    "sodium": 90,
+    "zinc": 85,
+    "vit_c": 60,
+    "folate": 40,
+    "vit_b12": 100,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "0526",
+   "foodGroup": "16",
+   "description": "LEGUMES,CKD 45/75MIN,BOILED+FRIED",
+   "percent": {
+    "calcium": 90,
+    "iron": 85,
+    "magnesium": 80,
+    "potassium": 75,
+    "sodium": 95,
+    "zinc": 90,
+    "vit_c": 65,
+    "folate": 45,
+    "vit_b12": 100,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "0541",
+   "foodGroup": "16",
+   "description": "LEGUMES,CKD 2/2.5HRS,BOILED,DRAINED",
+   "percent": {
+    "calcium": 85,
+    "iron": 75,
+    "magnesium": 70,
+    "potassium": 65,
+    "sodium": 90,
+    "zinc": 85,
+    "vit_c": 65,
+    "folate": 30,
+    "vit_b12": 100,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "0542",
+   "foodGroup": "16",
+   "description": "LEGUMES,CKD 2/2.5HRS,BLD,WATER USED",
+   "percent": {
+    "calcium": 90,
+    "iron": 80,
+    "magnesium": 75,
+    "potassium": 70,
+    "sodium": 95,
+    "zinc": 90,
+    "vit_c": 70,
+    "folate": 35,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "0543",
+   "foodGroup": "16",
+   "description": "LEGUMES,CKD 2/2.5HRS,BLD,DRND,BKD",
+   "percent": {
+    "calcium": 85,
+    "iron": 75,
+    "magnesium": 70,
+    "potassium": 65,
+    "sodium": 90,
+    "zinc": 85,
+    "vit_c": 60,
+    "folate": 25,
+    "vit_b12": 100,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "0544",
+   "foodGroup": "16",
+   "description": "LEGUMES,CKD 2/2.5HRS,BOILED+BAKED",
+   "percent": {
+    "calcium": 90,
+    "iron": 80,
+    "magnesium": 75,
+    "potassium": 70,
+    "sodium": 95,
+    "zinc": 90,
+    "vit_c": 65,
+    "folate": 30,
+    "vit_b12": 100,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "0545",
+   "foodGroup": "16",
+   "description": "LEGUMES,CKD 2/2.5HRS,BLD,DRND,FRIED",
+   "percent": {
+    "calcium": 85,
+    "iron": 75,
+    "magnesium": 70,
+    "potassium": 65,
+    "sodium": 90,
+    "zinc": 85,
+    "vit_c": 60,
+    "folate": 25,
+    "vit_b12": 100,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "0546",
+   "foodGroup": "16",
+   "description": "LEGUMES,CKD 2/2.5HRS,BOILED+FRIED",
+   "percent": {
+    "calcium": 90,
+    "iron": 80,
+    "magnesium": 75,
+    "potassium": 70,
+    "sodium": 95,
+    "zinc": 90,
+    "vit_c": 65,
+    "folate": 30,
+    "vit_b12": 100,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "0550",
+   "foodGroup": "16",
+   "description": "LEGUMES,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "0601",
+   "foodGroup": "13",
+   "description": "BEEF,ROASTED",
+   "percent": {
+    "calcium": 90,
+    "iron": 100,
+    "magnesium": 85,
+    "potassium": 80,
+    "sodium": 85,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 95,
+    "vit_b12": 70,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0602",
+   "foodGroup": "13",
+   "description": "BEEF,BROILED CUT",
+   "percent": {
+    "calcium": 100,
+    "iron": 95,
+    "magnesium": 85,
+    "potassium": 85,
+    "sodium": 85,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 85,
+    "vit_b12": 80,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0603",
+   "foodGroup": "13",
+   "description": "BEEF,BROILED GROUND",
+   "percent": {
+    "calcium": 100,
+    "iron": 95,
+    "magnesium": 85,
+    "potassium": 85,
+    "sodium": 85,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 85,
+    "vit_b12": 80,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0604",
+   "foodGroup": "13",
+   "description": "BEEF,FRIED,W/O COATING",
+   "percent": {
+    "calcium": 100,
+    "iron": 95,
+    "magnesium": 85,
+    "potassium": 85,
+    "sodium": 85,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 85,
+    "vit_b12": 80,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0605",
+   "foodGroup": "13",
+   "description": "BEEF,FRIED",
+   "percent": {
+    "calcium": 100,
+    "iron": 95,
+    "magnesium": 85,
+    "potassium": 85,
+    "sodium": 85,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 85,
+    "vit_b12": 80,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0651",
+   "foodGroup": "13",
+   "description": "BEEF,ROAST,BRAISED,WO/DRIPPINGS",
+   "percent": {
+    "calcium": 80,
+    "iron": 100,
+    "magnesium": 65,
+    "potassium": 55,
+    "sodium": 55,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 65,
+    "vit_b12": 60,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0652",
+   "foodGroup": "13",
+   "description": "BEEF,ROAST,BRAISED,W/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 70,
+    "vit_b12": 75,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "0653",
+   "foodGroup": "13",
+   "description": "BEEF,ROAST,SIMMERED,WO/DRIPPINGS",
+   "percent": {
+    "calcium": 80,
+    "iron": 100,
+    "magnesium": 65,
+    "potassium": 55,
+    "sodium": 55,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 65,
+    "vit_b12": 60,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0654",
+   "foodGroup": "13",
+   "description": "BEEF,ROAST,SIMMERED,W/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 70,
+    "vit_b12": 75,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "0701",
+   "foodGroup": "13",
+   "description": "BEEF,SLICES,BRWN,SIMMER,WO/DRIPPING",
+   "percent": {
+    "calcium": 80,
+    "iron": 100,
+    "magnesium": 65,
+    "potassium": 55,
+    "sodium": 55,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 65,
+    "vit_b12": 60,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0702",
+   "foodGroup": "13",
+   "description": "BEEF,SLICES,BRWN,SIMMER,W/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 70,
+    "vit_b12": 75,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "0703",
+   "foodGroup": "13",
+   "description": "BEEF,SLICES,SIMMERED,WO/DRIPPINGS",
+   "percent": {
+    "calcium": 80,
+    "iron": 100,
+    "magnesium": 65,
+    "potassium": 55,
+    "sodium": 55,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 65,
+    "vit_b12": 60,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0704",
+   "foodGroup": "13",
+   "description": "BEEF,SLICES,SIMMERED,W/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 70,
+    "vit_b12": 75,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "0749",
+   "foodGroup": "13",
+   "description": "BEEF,GROUND,BAKED,WO/DRIPPINGS",
+   "percent": {
+    "calcium": 80,
+    "iron": 100,
+    "magnesium": 65,
+    "potassium": 55,
+    "sodium": 55,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 65,
+    "vit_b12": 60,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0750",
+   "foodGroup": "13",
+   "description": "BEEF,GROUND,BAKED,W/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 70,
+    "vit_b12": 75,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "0751",
+   "foodGroup": "13",
+   "description": "BEEF,GROUND,BRWN,SIMMER,WO/DRIPPING",
+   "percent": {
+    "calcium": 80,
+    "iron": 100,
+    "magnesium": 65,
+    "potassium": 55,
+    "sodium": 55,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 65,
+    "vit_b12": 60,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0752",
+   "foodGroup": "13",
+   "description": "BEEF,GROUND,BRWN,SIMMER,W/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 70,
+    "vit_b12": 75,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "0753",
+   "foodGroup": "13",
+   "description": "BEEF,GROUND,SIMMERED,WO/DRIPPINGS",
+   "percent": {
+    "calcium": 80,
+    "iron": 100,
+    "magnesium": 65,
+    "potassium": 55,
+    "sodium": 55,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 65,
+    "vit_b12": 60,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0754",
+   "foodGroup": "13",
+   "description": "BEEF,GROUND,SIMMERED,W/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 70,
+    "vit_b12": 75,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "0770",
+   "foodGroup": "13",
+   "description": "BEEF,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 95,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "0801",
+   "foodGroup": "05",
+   "description": "CHICKEN,BROILED",
+   "percent": {
+    "calcium": 95,
+    "iron": 90,
+    "magnesium": 75,
+    "potassium": 80,
+    "sodium": 80,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 60,
+    "vit_b12": 65,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0803",
+   "foodGroup": "05",
+   "description": "CHICKEN,FRIED,WO/COATING",
+   "percent": {
+    "calcium": 95,
+    "iron": 90,
+    "magnesium": 75,
+    "potassium": 80,
+    "sodium": 80,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 60,
+    "vit_b12": 65,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0804",
+   "foodGroup": "05",
+   "description": "CHICKEN,FRIED,W/COATING",
+   "percent": {
+    "calcium": 95,
+    "iron": 90,
+    "magnesium": 75,
+    "potassium": 80,
+    "sodium": 80,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 60,
+    "vit_b12": 65,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0805",
+   "foodGroup": "05",
+   "description": "CHICKEN,ROASTED",
+   "percent": {
+    "calcium": 95,
+    "iron": 90,
+    "magnesium": 75,
+    "potassium": 80,
+    "sodium": 80,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 60,
+    "vit_b12": 65,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0851",
+   "foodGroup": "05",
+   "description": "CHICKEN,BROWN,SIMMER,WO/DRIPPINGS",
+   "percent": {
+    "calcium": 80,
+    "iron": 90,
+    "magnesium": 65,
+    "potassium": 60,
+    "sodium": 70,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 60,
+    "vit_b12": 50,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0852",
+   "foodGroup": "05",
+   "description": "CHICKEN,BROWN,SIMMER,W/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 70,
+    "vit_b12": 65,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "0855",
+   "foodGroup": "05",
+   "description": "CHICKEN,SIMMERED,WO/DRIPPINGS",
+   "percent": {
+    "calcium": 80,
+    "iron": 90,
+    "magnesium": 65,
+    "potassium": 60,
+    "sodium": 70,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 60,
+    "vit_b12": 50,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "0856",
+   "foodGroup": "05",
+   "description": "CHICKEN,SIMMERED,W/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 70,
+    "vit_b12": 65,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "0864",
+   "foodGroup": "05",
+   "description": "CHICKEN,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 95,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "1001",
+   "foodGroup": "17",
+   "description": "LAMB, BROILED",
+   "percent": {
+    "calcium": 100,
+    "iron": 95,
+    "magnesium": 85,
+    "potassium": 85,
+    "sodium": 85,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 80,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1003",
+   "foodGroup": "17",
+   "description": "LAMB,GROUND,BROILED",
+   "percent": {
+    "calcium": 90,
+    "iron": 95,
+    "magnesium": 80,
+    "potassium": 85,
+    "sodium": 80,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 75,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1004",
+   "foodGroup": "17",
+   "description": "LAMB, ROASTED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 80,
+    "potassium": 75,
+    "sodium": 75,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 85,
+    "vit_b12": 75,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1051",
+   "foodGroup": "17",
+   "description": "LAMB,BROWN,SIMMER,WO/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 95,
+    "magnesium": 65,
+    "potassium": 55,
+    "sodium": 65,
+    "zinc": 95,
+    "vit_c": 80,
+    "folate": 55,
+    "vit_b12": 60,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1052",
+   "foodGroup": "17",
+   "description": "LAMB,BROWN,SIMMER,W/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 65,
+    "vit_b12": 75,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "1055",
+   "foodGroup": "17",
+   "description": "LAMB,SIMMERED,WO/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 95,
+    "magnesium": 65,
+    "potassium": 55,
+    "sodium": 65,
+    "zinc": 95,
+    "vit_c": 80,
+    "folate": 55,
+    "vit_b12": 60,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1056",
+   "foodGroup": "17",
+   "description": "LAMB,SIMMERED,W/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 65,
+    "vit_b12": 75,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "1074",
+   "foodGroup": "17",
+   "description": "LAMB,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 95,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "1151",
+   "foodGroup": "17",
+   "description": "LIVER,FRIED",
+   "percent": {
+    "calcium": 100,
+    "iron": 95,
+    "magnesium": 85,
+    "potassium": 85,
+    "sodium": 85,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 85,
+    "vit_b12": 80,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1152",
+   "foodGroup": "13",
+   "description": "LIVER,SIMMERED,WO/DRIPPINGS",
+   "percent": {
+    "calcium": 95,
+    "iron": 60,
+    "magnesium": 60,
+    "potassium": 45,
+    "sodium": 45,
+    "zinc": 90,
+    "vit_c": 75,
+    "folate": 65,
+    "vit_b12": 60,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1153",
+   "foodGroup": "13",
+   "description": "LIVER,SIMMERED,W/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 75,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "1154",
+   "foodGroup": "17",
+   "description": "LIVER,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 95,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "1181",
+   "foodGroup": "13",
+   "description": "ORGAN MEATS(NOTLIVER) FRIED",
+   "percent": {
+    "calcium": 100,
+    "iron": 95,
+    "magnesium": 85,
+    "potassium": 85,
+    "sodium": 85,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 85,
+    "vit_b12": 80,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1182",
+   "foodGroup": "13",
+   "description": "ORGAN MEATS(NOTLIVER)SIMMRD,WO/DRIP",
+   "percent": {
+    "calcium": 95,
+    "iron": 60,
+    "magnesium": 60,
+    "potassium": 45,
+    "sodium": 45,
+    "zinc": 90,
+    "vit_c": 75,
+    "folate": 65,
+    "vit_b12": 60,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1183",
+   "foodGroup": "13",
+   "description": "ORGAN MEATS(NOTLIVER)SIMMRD,W/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 75,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "1184",
+   "foodGroup": "13",
+   "description": "ORGAN MEATS(NOTLIVER) REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 95,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "1251",
+   "foodGroup": "10",
+   "description": "PORK,FRESH,BROILED",
+   "percent": {
+    "calcium": 75,
+    "iron": 80,
+    "magnesium": 95,
+    "potassium": 85,
+    "sodium": 90,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 85,
+    "vit_b12": 90,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1252",
+   "foodGroup": "10",
+   "description": "PORK,FRESH,FRIED,WO/COATING",
+   "percent": {
+    "calcium": 75,
+    "iron": 80,
+    "magnesium": 95,
+    "potassium": 85,
+    "sodium": 90,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 85,
+    "vit_b12": 90,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1253",
+   "foodGroup": "10",
+   "description": "PORK,FRESH,FRIED,W/COATING",
+   "percent": {
+    "calcium": 75,
+    "iron": 80,
+    "magnesium": 95,
+    "potassium": 85,
+    "sodium": 90,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 85,
+    "vit_b12": 90,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1254",
+   "foodGroup": "10",
+   "description": "PORK,FRESH,ROASTED",
+   "percent": {
+    "calcium": 95,
+    "iron": 100,
+    "magnesium": 75,
+    "potassium": 80,
+    "sodium": 80,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 95,
+    "vit_b12": 80,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1301",
+   "foodGroup": "10",
+   "description": "PORK,FRESH,ROAST,SIMMERED WO/DRIP",
+   "percent": {
+    "calcium": 80,
+    "iron": 100,
+    "magnesium": 65,
+    "potassium": 75,
+    "sodium": 70,
+    "zinc": 100,
+    "vit_c": 75,
+    "folate": 65,
+    "vit_b12": 60,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1302",
+   "foodGroup": "10",
+   "description": "PORK,FRESH,ROAST,SIMMERED W/DRIPPNG",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 75,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "1351",
+   "foodGroup": "10",
+   "description": "PORK,FRSH,CHOPS,BRWN,SIMMRD,WO/DRIP",
+   "percent": {
+    "calcium": 80,
+    "iron": 100,
+    "magnesium": 65,
+    "potassium": 75,
+    "sodium": 70,
+    "zinc": 100,
+    "vit_c": 75,
+    "folate": 65,
+    "vit_b12": 60,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1352",
+   "foodGroup": "10",
+   "description": "PORK,FRSH,CHOPS,BRWN,SIMMRD,W/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 75,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "1353",
+   "foodGroup": "10",
+   "description": "PORK,FRSH,CHOPS,SIMMERED,WO/DRIPPNG",
+   "percent": {
+    "calcium": 80,
+    "iron": 100,
+    "magnesium": 65,
+    "potassium": 75,
+    "sodium": 70,
+    "zinc": 100,
+    "vit_c": 75,
+    "folate": 65,
+    "vit_b12": 60,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1354",
+   "foodGroup": "10",
+   "description": "PORK,FRSH,CHOPS,SIMMERED,W/DRIPPNGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 75,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "1401",
+   "foodGroup": "10",
+   "description": "PORK,FRSH,GROUND,BRWN,SIMMR,WO/DRIP",
+   "percent": {
+    "calcium": 80,
+    "iron": 100,
+    "magnesium": 65,
+    "potassium": 75,
+    "sodium": 70,
+    "zinc": 100,
+    "vit_c": 75,
+    "folate": 65,
+    "vit_b12": 60,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1402",
+   "foodGroup": "10",
+   "description": "PORK,FRSH,GROUND,BRWN,SIMMRD,W/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 75,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "1405",
+   "foodGroup": "10",
+   "description": "PORK,FRSH,GROUND,SIMMERED,WO/DRIP",
+   "percent": {
+    "calcium": 80,
+    "iron": 100,
+    "magnesium": 65,
+    "potassium": 75,
+    "sodium": 70,
+    "zinc": 100,
+    "vit_c": 75,
+    "folate": 65,
+    "vit_b12": 60,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1406",
+   "foodGroup": "10",
+   "description": "PORK,FRSH,GROUND,SIMMERED,W/DRIPPNG",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 75,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "1407",
+   "foodGroup": "10",
+   "description": "PORK,FRESH,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 95,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "1451",
+   "foodGroup": "10",
+   "description": "PORK,CURED,BROILED",
+   "percent": {
+    "calcium": 75,
+    "iron": 80,
+    "magnesium": 95,
+    "potassium": 85,
+    "sodium": 90,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 85,
+    "vit_b12": 90,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1456",
+   "foodGroup": "10",
+   "description": "BACON,BROILED/FRIED",
+   "percent": {
+    "calcium": 75,
+    "iron": 80,
+    "magnesium": 95,
+    "potassium": 85,
+    "sodium": 90,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 80,
+    "vit_b12": 90,
+    "vit_a": 65
+   }
+  },
+  {
+   "code": "1459",
+   "foodGroup": "10",
+   "description": "PORK,CURED,ROASTED",
+   "percent": {
+    "calcium": 95,
+    "iron": 100,
+    "magnesium": 75,
+    "potassium": 80,
+    "sodium": 80,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 95,
+    "vit_b12": 80,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1521",
+   "foodGroup": "10",
+   "description": "HAM/PICNIC,CURED,SIMMERED,WO/DRIP",
+   "percent": {
+    "calcium": 80,
+    "iron": 100,
+    "magnesium": 65,
+    "potassium": 75,
+    "sodium": 70,
+    "zinc": 100,
+    "vit_c": 75,
+    "folate": 65,
+    "vit_b12": 60,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1522",
+   "foodGroup": "10",
+   "description": "HAM/PICNIC,CURED,SIMMERED,W/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 75,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "1551",
+   "foodGroup": "10",
+   "description": "PORK,CURED,SLICE,BRWN,SIMMR,WO/DRIP",
+   "percent": {
+    "calcium": 80,
+    "iron": 100,
+    "magnesium": 65,
+    "potassium": 75,
+    "sodium": 70,
+    "zinc": 100,
+    "vit_c": 75,
+    "folate": 65,
+    "vit_b12": 60,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1552",
+   "foodGroup": "10",
+   "description": "PORK,CURED,SLICE,BRWN,SIMMRD,W/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 75,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "1555",
+   "foodGroup": "10",
+   "description": "PORK,CURED,SLICES,SIMMERED,WO/DRIP",
+   "percent": {
+    "calcium": 80,
+    "iron": 100,
+    "magnesium": 65,
+    "potassium": 75,
+    "sodium": 70,
+    "zinc": 100,
+    "vit_c": 75,
+    "folate": 65,
+    "vit_b12": 60,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1556",
+   "foodGroup": "10",
+   "description": "PORK,CURED,SLICES,SIMMERED,W/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 75,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "1602",
+   "foodGroup": "10",
+   "description": "PORK,CURED,GROUND,BRWN,SIMR,WO/DRIP",
+   "percent": {
+    "calcium": 80,
+    "iron": 100,
+    "magnesium": 65,
+    "potassium": 75,
+    "sodium": 70,
+    "zinc": 100,
+    "vit_c": 75,
+    "folate": 65,
+    "vit_b12": 60,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1603",
+   "foodGroup": "10",
+   "description": "PORK,CURED,GROUND,BRWN,SIMR,W/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 75,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "1604",
+   "foodGroup": "10",
+   "description": "PORK,CURED,GROUND,SIMMERED,WO/DRIP",
+   "percent": {
+    "calcium": 80,
+    "iron": 100,
+    "magnesium": 65,
+    "potassium": 75,
+    "sodium": 70,
+    "zinc": 100,
+    "vit_c": 75,
+    "folate": 65,
+    "vit_b12": 60,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1605",
+   "foodGroup": "10",
+   "description": "PORK,CURED,GROUND,SIMMERED,W/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 75,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "1606",
+   "foodGroup": "10",
+   "description": "PORK,CURED,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 95,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "1654",
+   "foodGroup": "10",
+   "description": "SAUSAGE,RTE,FRANKS,ETC,CKD,WO/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 95,
+    "potassium": 95,
+    "sodium": 95,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 85,
+    "vit_b12": 85,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "1655",
+   "foodGroup": "10",
+   "description": "SAUSAGE,RTE,FRANKS,ETC,CKD,W/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 90,
+    "folate": 95,
+    "vit_b12": 95,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "1657",
+   "foodGroup": "10",
+   "description": "SAUSAGE,RTE,FRANKS,ETC,BROILED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 95,
+    "potassium": 95,
+    "sodium": 95,
+    "zinc": 100,
+    "vit_c": 90,
+    "folate": 90,
+    "vit_b12": 95,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "1659",
+   "foodGroup": "10",
+   "description": "SAUSAGE,RTE,FRANKS,ETC,SAUTEED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 95,
+    "potassium": 95,
+    "sodium": 95,
+    "zinc": 100,
+    "vit_c": 90,
+    "folate": 90,
+    "vit_b12": 95,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "1705",
+   "foodGroup": "10",
+   "description": "SAUSAGE,RAW,PORK,OTHER,CKD,WO/DRIP",
+   "percent": {
+    "calcium": 85,
+    "iron": 65,
+    "magnesium": 75,
+    "potassium": 85,
+    "sodium": 75,
+    "zinc": 75,
+    "vit_c": 50,
+    "folate": 30,
+    "vit_b12": 70,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1706",
+   "foodGroup": "10",
+   "description": "SAUSAGE,RAW,PORK,OTHER,CKD,W/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 70,
+    "folate": 50,
+    "vit_b12": 85,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "1707",
+   "foodGroup": "10",
+   "description": "SAUSAGE,RAW,PORK,OTHER,BROILED",
+   "percent": {
+    "calcium": 85,
+    "iron": 65,
+    "magnesium": 75,
+    "potassium": 85,
+    "sodium": 75,
+    "zinc": 75,
+    "vit_c": 50,
+    "folate": 30,
+    "vit_b12": 70,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1709",
+   "foodGroup": "10",
+   "description": "SAUSAGE,RAW,PORK,OTHER,SAUTEED",
+   "percent": {
+    "calcium": 85,
+    "iron": 65,
+    "magnesium": 75,
+    "potassium": 85,
+    "sodium": 75,
+    "zinc": 75,
+    "vit_c": 50,
+    "folate": 30,
+    "vit_b12": 70,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1712",
+   "foodGroup": "10",
+   "description": "SAUSAGE,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 95,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "1805",
+   "foodGroup": "05",
+   "description": "TURKEY,ROASTED",
+   "percent": {
+    "calcium": 100,
+    "iron": 95,
+    "magnesium": 80,
+    "potassium": 75,
+    "sodium": 75,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 60,
+    "vit_b12": 65,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1851",
+   "foodGroup": "05",
+   "description": "TURKEY,SIMMERED,WO/DRIPPINGS",
+   "percent": {
+    "calcium": 85,
+    "iron": 95,
+    "magnesium": 65,
+    "potassium": 55,
+    "sodium": 70,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 60,
+    "vit_b12": 50,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1852",
+   "foodGroup": "05",
+   "description": "TURKEY,SIMMERED,W/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 70,
+    "vit_b12": 70,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "1860",
+   "foodGroup": "05",
+   "description": "TURKEY,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 95,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "1951",
+   "foodGroup": "17",
+   "description": "VEAL, BROILED",
+   "percent": {
+    "calcium": 95,
+    "iron": 90,
+    "magnesium": 85,
+    "potassium": 85,
+    "sodium": 85,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 75,
+    "vit_b12": 80,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1952",
+   "foodGroup": "17",
+   "description": "VEAL, FRIED, WO/COATING",
+   "percent": {
+    "calcium": 95,
+    "iron": 90,
+    "magnesium": 85,
+    "potassium": 85,
+    "sodium": 60,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 85,
+    "vit_b12": 90,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1953",
+   "foodGroup": "17",
+   "description": "VEAL, FRIED, W/COATING",
+   "percent": {
+    "calcium": 95,
+    "iron": 90,
+    "magnesium": 85,
+    "potassium": 85,
+    "sodium": 85,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 75,
+    "vit_b12": 80,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "1954",
+   "foodGroup": "17",
+   "description": "VEAL, ROASTED",
+   "percent": {
+    "calcium": 95,
+    "iron": 85,
+    "magnesium": 80,
+    "potassium": 80,
+    "sodium": 80,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 85,
+    "vit_b12": 85,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "2001",
+   "foodGroup": "17",
+   "description": "VEAL,ROAST,BRAISED,WO/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 95,
+    "magnesium": 65,
+    "potassium": 60,
+    "sodium": 60,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 75,
+    "vit_b12": 65,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "2002",
+   "foodGroup": "17",
+   "description": "VEAL,ROAST,BRAISED,W/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 70,
+    "vit_b12": 70,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "2003",
+   "foodGroup": "17",
+   "description": "VEAL,ROAST,SIMMERED,WO/DRIPPINGS",
+   "percent": {
+    "calcium": 85,
+    "iron": 95,
+    "magnesium": 65,
+    "potassium": 60,
+    "sodium": 65,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 60,
+    "vit_b12": 55,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "2004",
+   "foodGroup": "17",
+   "description": "VEAL,ROAST,SIMMERED,W/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 70,
+    "vit_b12": 70,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "2051",
+   "foodGroup": "17",
+   "description": "VEAL,SLICES,BRWN,SIMMRD,WO/DRIPPING",
+   "percent": {
+    "calcium": 85,
+    "iron": 95,
+    "magnesium": 65,
+    "potassium": 60,
+    "sodium": 65,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 60,
+    "vit_b12": 55,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "2052",
+   "foodGroup": "17",
+   "description": "VEAL,SLICES,BRWN,SIMMRD,W/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 70,
+    "vit_b12": 70,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "2055",
+   "foodGroup": "17",
+   "description": "VEAL.SLICES,SIMMERED,WO/DRIPPINGS",
+   "percent": {
+    "calcium": 85,
+    "iron": 95,
+    "magnesium": 65,
+    "potassium": 60,
+    "sodium": 65,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 60,
+    "vit_b12": 55,
+    "vit_a": 75
+   }
+  },
+  {
+   "code": "2056",
+   "foodGroup": "17",
+   "description": "VEAL,SLICES,SIMMERED,W/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 70,
+    "vit_b12": 70,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "2064",
+   "foodGroup": "17",
+   "description": "VEAL,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 95,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "2151",
+   "foodGroup": "01",
+   "description": "MILK,HEATED APPROX 10MIN",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 85,
+    "vit_b12": 80,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "2152",
+   "foodGroup": "01",
+   "description": "MILK,HEATED APPROX 30MIN",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 65,
+    "folate": 80,
+    "vit_b12": 55,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "2153",
+   "foodGroup": "01",
+   "description": "MILK,HEATED APPROX 1 HOUR",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 45,
+    "folate": 70,
+    "vit_b12": 30,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "2154",
+   "foodGroup": "01",
+   "description": "MILK,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 95,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "2201",
+   "foodGroup": "12",
+   "description": "NUTS,BAKED,W/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 80,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "2202",
+   "foodGroup": "12",
+   "description": "NUTS,BROILED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 80,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "2203",
+   "foodGroup": "12",
+   "description": "NUTS,ROASTED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 95,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 80,
+    "vit_b12": 100,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "2204",
+   "foodGroup": "12",
+   "description": "NUTS,BOILED,W/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 80,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "2301",
+   "foodGroup": "15",
+   "description": "FINFISH,<5%FAT,BAKED,WO/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 90,
+    "vit_b12": 90,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2302",
+   "foodGroup": "15",
+   "description": "FINFISH,<5%FAT,BAKED W/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 95,
+    "vit_b12": 95,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2305",
+   "foodGroup": "15",
+   "description": "FINFISH,<5%FAT,BROILED,WO/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 90,
+    "vit_b12": 90,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2306",
+   "foodGroup": "15",
+   "description": "FINFISH,<5%FAT,BROILED,W/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 90,
+    "vit_b12": 90,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2309",
+   "foodGroup": "15",
+   "description": "FINFISH,<5%FAT,FRIED,WO/COATING",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 90,
+    "vit_b12": 90,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "2310",
+   "foodGroup": "15",
+   "description": "FINFISH,<5%FAT,FRIED,W/COATING",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 90,
+    "vit_b12": 90,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "2401",
+   "foodGroup": "15",
+   "description": "FINFISH,<5%FAT,SIMMERED,WO/DRIPPING",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 90,
+    "potassium": 85,
+    "sodium": 90,
+    "zinc": 100,
+    "vit_c": 75,
+    "folate": 80,
+    "vit_b12": 85,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "2402",
+   "foodGroup": "15",
+   "description": "FINFISH,<5%FAT,SIMMERED,W/DRIPPINGS",
+   "percent": {
+    "calcium": 80,
+    "iron": 80,
+    "magnesium": 80,
+    "potassium": 80,
+    "sodium": 80,
+    "zinc": 80,
+    "vit_c": 80,
+    "folate": 90,
+    "vit_b12": 95,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2451",
+   "foodGroup": "15",
+   "description": "FINFISH,>5%FAT,BAKED,WO/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 90,
+    "vit_b12": 85,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "2452",
+   "foodGroup": "15",
+   "description": "FINFISH,>5%FAT,BAKED,W/DRIPPINGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 95,
+    "vit_b12": 80,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2455",
+   "foodGroup": "15",
+   "description": "FINFISH,>5%FAT,BROILED,WO/DRIPPNG",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 90,
+    "vit_b12": 75,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "2456",
+   "foodGroup": "15",
+   "description": "FINFISH,>5%FAT,BROILED,W/DRIPPNGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 90,
+    "vit_b12": 75,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2459",
+   "foodGroup": "15",
+   "description": "FINFISH,>5%FAT,FRIED,WO/COATING",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 90,
+    "vit_b12": 75,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "2460",
+   "foodGroup": "15",
+   "description": "FINFISH,>5%FAT,FRIED,W/COATING",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 90,
+    "vit_b12": 75,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "2551",
+   "foodGroup": "15",
+   "description": "FINFISH,>5%FAT,SIMMERED,WO/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 90,
+    "potassium": 85,
+    "sodium": 90,
+    "zinc": 100,
+    "vit_c": 75,
+    "folate": 80,
+    "vit_b12": 85,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "2552",
+   "foodGroup": "15",
+   "description": "FINFISH,>5%FAT,SIMMERED,W/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 90,
+    "vit_b12": 95,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "2554",
+   "foodGroup": "15",
+   "description": "FINFISH,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 100,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "2601",
+   "foodGroup": "15",
+   "description": "FINFISH(FROZEN),FRIED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 90,
+    "folate": 95,
+    "vit_b12": 95,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2605",
+   "foodGroup": "15",
+   "description": "FINFISH(FROZEN),HEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 90,
+    "folate": 95,
+    "vit_b12": 95,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2701",
+   "foodGroup": "15",
+   "description": "SHELLFISH,W/SHELL,BOILED",
+   "percent": {
+    "calcium": 100,
+    "iron": 90,
+    "magnesium": 85,
+    "potassium": 70,
+    "sodium": 85,
+    "zinc": 100,
+    "vit_c": 75,
+    "folate": 75,
+    "vit_b12": 60,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2702",
+   "foodGroup": "15",
+   "description": "SHELLFISH,W/SHELL,STEAMED",
+   "percent": {
+    "calcium": 100,
+    "iron": 90,
+    "magnesium": 100,
+    "potassium": 90,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 75,
+    "vit_b12": 90,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2750",
+   "foodGroup": "15",
+   "description": "SHELLFISH,WO/SHELL,BAKED,W/DRIPPNGS",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 90,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "2753",
+   "foodGroup": "15",
+   "description": "SHELLFISH,WO/SHELL,BROILED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 95,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "2755",
+   "foodGroup": "15",
+   "description": "SHELLFISH,WO/SHELL,FRIED,WO/COATING",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 75,
+    "vit_b12": 85,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "2756",
+   "foodGroup": "15",
+   "description": "SHELLFISH,WO/SHELL,FRIED,W/COATING",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 80,
+    "vit_b12": 85,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "2761",
+   "foodGroup": "15",
+   "description": "SHELLFISH,WO/SHELL,SIMMERED,WO/DRIP",
+   "percent": {
+    "calcium": 95,
+    "iron": 90,
+    "magnesium": 85,
+    "potassium": 70,
+    "sodium": 85,
+    "zinc": 100,
+    "vit_c": 75,
+    "folate": 75,
+    "vit_b12": 60,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2762",
+   "foodGroup": "15",
+   "description": "SHELLFISH,WO/SHELL,SIMMERED,W/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 75,
+    "vit_b12": 90,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2770",
+   "foodGroup": "15",
+   "description": "SHELLFISH,WO/SHELL,STEAMED",
+   "percent": {
+    "calcium": 100,
+    "iron": 90,
+    "magnesium": 100,
+    "potassium": 90,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 75,
+    "vit_b12": 90,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2771",
+   "foodGroup": "15",
+   "description": "SHELLFISH,WO/SHELL,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 100,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "2901",
+   "foodGroup": "15",
+   "description": "SEAFOOD,FROG,TURTLE,BKD,WO/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 90,
+    "vit_b12": 90,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2902",
+   "foodGroup": "15",
+   "description": "SEAFOOD,FROG,TURTLE,CKD,W/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 95,
+    "vit_b12": 95,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2905",
+   "foodGroup": "15",
+   "description": "SEAFOOD,FROG,TURTLE,SIMM,WO/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 95,
+    "magnesium": 90,
+    "potassium": 80,
+    "sodium": 90,
+    "zinc": 100,
+    "vit_c": 75,
+    "folate": 80,
+    "vit_b12": 80,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2906",
+   "foodGroup": "15",
+   "description": "SEAFOOD,FROG,TURTLE,SIMRD,W/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 85,
+    "vit_b12": 95,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2907",
+   "foodGroup": "15",
+   "description": "SEAFOOD,FROG,TURTLE,BRSD,WO/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 95,
+    "magnesium": 90,
+    "potassium": 80,
+    "sodium": 90,
+    "zinc": 100,
+    "vit_c": 70,
+    "folate": 75,
+    "vit_b12": 75,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "2908",
+   "foodGroup": "15",
+   "description": "SEAFOOD,FROG,TURTLE,BRAIS,W/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 75,
+    "folate": 80,
+    "vit_b12": 90,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2909",
+   "foodGroup": "15",
+   "description": "SEAFOOD,FROG,TURTLE,BRLD,WO/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 85,
+    "vit_b12": 90,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2910",
+   "foodGroup": "15",
+   "description": "SEAFOOD,FROG,TURTLE,BRLD,W/DRIP",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 85,
+    "vit_b12": 95,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2911",
+   "foodGroup": "15",
+   "description": "SEAFOOD,FROG,TURTLE,FRYD,WO/COAT",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 85,
+    "vit_b12": 85,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "2912",
+   "foodGroup": "15",
+   "description": "SEAFOOD,FROG,TURTLE,FRIED,W/COAT",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 90,
+    "vit_b12": 90,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "2917",
+   "foodGroup": "15",
+   "description": "SEAFOOD,FROG,TURTLE,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 100,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3001",
+   "foodGroup": "11",
+   "description": "VEG,GREENS,BAKED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 70,
+    "folate": 75,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "3004",
+   "foodGroup": "11",
+   "description": "VEG,GREENS,BOILD,LITTLE WATER DRAIN",
+   "percent": {
+    "calcium": 95,
+    "iron": 95,
+    "magnesium": 95,
+    "potassium": 90,
+    "sodium": 95,
+    "zinc": 95,
+    "vit_c": 60,
+    "folate": 65,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "3005",
+   "foodGroup": "11",
+   "description": "VEG,GREENS,BOILED,WATER COVER DRAIN",
+   "percent": {
+    "calcium": 95,
+    "iron": 95,
+    "magnesium": 95,
+    "potassium": 85,
+    "sodium": 95,
+    "zinc": 95,
+    "vit_c": 55,
+    "folate": 60,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "3006",
+   "foodGroup": "11",
+   "description": "VEG,GREENS,BOILED,WATER USED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 70,
+    "folate": 75,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "3015",
+   "foodGroup": "11",
+   "description": "VEG,GREENS,STIR FRY",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 85,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "3018",
+   "foodGroup": "11",
+   "description": "VEG,GREENS,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3019",
+   "foodGroup": "11",
+   "description": "VEG,GREENS,COOKED FROM FROZEN,DRAIN",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 60,
+    "folate": 55,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "3301",
+   "foodGroup": "11",
+   "description": "POTATOES,BAKED IN SKIN",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 90,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3302",
+   "foodGroup": "11",
+   "description": "POTATOES,BAKED IN CASSEROLE",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 75,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3307",
+   "foodGroup": "11",
+   "description": "POTATOES,BOILED IN SKIN",
+   "percent": {
+    "calcium": 95,
+    "iron": 95,
+    "magnesium": 95,
+    "potassium": 90,
+    "sodium": 95,
+    "zinc": 95,
+    "vit_c": 75,
+    "folate": 90,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3308",
+   "foodGroup": "11",
+   "description": "POTATOES,BOILED(PARED)DRAIN",
+   "percent": {
+    "calcium": 95,
+    "iron": 95,
+    "magnesium": 95,
+    "potassium": 90,
+    "sodium": 95,
+    "zinc": 95,
+    "vit_c": 75,
+    "folate": 75,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3309",
+   "foodGroup": "11",
+   "description": "POTATOES,BOILED(PARED) WATER USED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 90,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3310",
+   "foodGroup": "11",
+   "description": "POTATOES,BOILED,BROWNED",
+   "percent": {
+    "calcium": 95,
+    "iron": 95,
+    "magnesium": 95,
+    "potassium": 90,
+    "sodium": 95,
+    "zinc": 95,
+    "vit_c": 60,
+    "folate": 65,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3311",
+   "foodGroup": "11",
+   "description": "POTATOES,BOILED,STORED,BROWNED",
+   "percent": {
+    "calcium": 95,
+    "iron": 95,
+    "magnesium": 95,
+    "potassium": 90,
+    "sodium": 95,
+    "zinc": 95,
+    "vit_c": 25,
+    "folate": 65,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3315",
+   "foodGroup": "11",
+   "description": "POTATOES,FRIED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 75,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3316",
+   "foodGroup": "11",
+   "description": "POTATOES,MASHED",
+   "percent": {
+    "calcium": 95,
+    "iron": 95,
+    "magnesium": 95,
+    "potassium": 90,
+    "sodium": 95,
+    "zinc": 95,
+    "vit_c": 75,
+    "folate": 75,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3371",
+   "foodGroup": "11",
+   "description": "POTATOES,CANNED,BOILED,WATER USED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 95,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3373",
+   "foodGroup": "11",
+   "description": "POTATOES,CANNED,BROILED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 95,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3375",
+   "foodGroup": "11",
+   "description": "POTATOES,CANNED,FRIED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 95,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3379",
+   "foodGroup": "11",
+   "description": "POTATOES,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3380",
+   "foodGroup": "11",
+   "description": "POTATOES,CKD FROM FRZN,HASH BROWN",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 50,
+    "folate": 60,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3381",
+   "foodGroup": "11",
+   "description": "POTATOES,CKD FROM FRZN,FRENCH FRY",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 80,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3382",
+   "foodGroup": "11",
+   "description": "POTATOES,CKD FROM FRZN,BAKED STUFFD",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 80,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3451",
+   "foodGroup": "11",
+   "description": "VEG,ROOTS,ETC,BAKED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 75,
+    "folate": 80,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "3454",
+   "foodGroup": "11",
+   "description": "VEG,ROOTS,ETC,BLD,DRAIND,LITTLE WTR",
+   "percent": {
+    "calcium": 95,
+    "iron": 95,
+    "magnesium": 95,
+    "potassium": 90,
+    "sodium": 95,
+    "zinc": 95,
+    "vit_c": 70,
+    "folate": 70,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "3455",
+   "foodGroup": "11",
+   "description": "VEG,ROOTS,ETC,BLD,DRAIND,WTR COVER",
+   "percent": {
+    "calcium": 95,
+    "iron": 95,
+    "magnesium": 95,
+    "potassium": 90,
+    "sodium": 95,
+    "zinc": 95,
+    "vit_c": 65,
+    "folate": 65,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "3456",
+   "foodGroup": "11",
+   "description": "VEG,ROOTS,ETC,BOILED,WATER USED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 75,
+    "folate": 80,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "3460",
+   "foodGroup": "11",
+   "description": "VEG,ROOTS,ETC,SAUTEED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 75,
+    "folate": 70,
+    "vit_b12": 100,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "3464",
+   "foodGroup": "11",
+   "description": "VEG,ROOTS,ETC,STEAMED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 75,
+    "folate": 80,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "3465",
+   "foodGroup": "11",
+   "description": "VEG,ROOTS,ETC,STIR FRY",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 80,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "3468",
+   "foodGroup": "11",
+   "description": "VEG,ROOTS,ETC,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3469",
+   "foodGroup": "11",
+   "description": "VEG,ROOTS,ETC,CKD FROM FRZN,DRAINED",
+   "percent": {
+    "calcium": 95,
+    "iron": 95,
+    "magnesium": 95,
+    "potassium": 90,
+    "sodium": 95,
+    "zinc": 95,
+    "vit_c": 70,
+    "folate": 70,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "3701",
+   "foodGroup": "11",
+   "description": "SWEETPOTAOTES,BAKED IN SKIN",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 90,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "3702",
+   "foodGroup": "11",
+   "description": "SWEETPOTATOES, BAKED IN CASSEROLE",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 75,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "3707",
+   "foodGroup": "11",
+   "description": "SWEETPOTATOES,BOILED IN SKIN",
+   "percent": {
+    "calcium": 95,
+    "iron": 95,
+    "magnesium": 95,
+    "potassium": 90,
+    "sodium": 95,
+    "zinc": 95,
+    "vit_c": 75,
+    "folate": 90,
+    "vit_b12": 100,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "3708",
+   "foodGroup": "11",
+   "description": "SWEETPOTATOES,BOILED (PARED)DRAINED",
+   "percent": {
+    "calcium": 95,
+    "iron": 95,
+    "magnesium": 95,
+    "potassium": 90,
+    "sodium": 95,
+    "zinc": 95,
+    "vit_c": 75,
+    "folate": 75,
+    "vit_b12": 100,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "3709",
+   "foodGroup": "11",
+   "description": "SWEETPOTATOES,BLD(PARED)WATER USED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 90,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "3710",
+   "foodGroup": "11",
+   "description": "SWEETPOTATOES,FRIED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 75,
+    "vit_b12": 100,
+    "vit_a": 80
+   }
+  },
+  {
+   "code": "3711",
+   "foodGroup": "11",
+   "description": "SWEETPOTATOES,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 95,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3712",
+   "foodGroup": "11",
+   "description": "SWEETPOTATOES,CKD FROM FRN,BAKED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 80,
+    "folate": 80,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "3713",
+   "foodGroup": "11",
+   "description": "SWEETPOTATOES,CKD FROM FRZN,BOILED",
+   "percent": {
+    "calcium": 95,
+    "iron": 95,
+    "magnesium": 95,
+    "potassium": 95,
+    "sodium": 95,
+    "zinc": 95,
+    "vit_c": 75,
+    "folate": 80,
+    "vit_b12": 100,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "3751",
+   "foodGroup": "11",
+   "description": "TOMATOES,BOILED/BAKED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 70,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "3752",
+   "foodGroup": "11",
+   "description": "TOMATOES,FRIED/BROILED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 95,
+    "folate": 70,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "3754",
+   "foodGroup": "11",
+   "description": "TOMATOES,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 100,
+    "folate": 95,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3771",
+   "foodGroup": "11",
+   "description": "VEG,OTHER,BAKED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 85,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "3774",
+   "foodGroup": "11",
+   "description": "VEG,OTHER,BLD,LITTLE WATER,DRAINED",
+   "percent": {
+    "calcium": 95,
+    "iron": 95,
+    "magnesium": 95,
+    "potassium": 90,
+    "sodium": 95,
+    "zinc": 95,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "3775",
+   "foodGroup": "11",
+   "description": "VEG,OTHER,BLD,WATER COVER,DRAINED",
+   "percent": {
+    "calcium": 95,
+    "iron": 95,
+    "magnesium": 95,
+    "potassium": 90,
+    "sodium": 95,
+    "zinc": 95,
+    "vit_c": 75,
+    "folate": 65,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "3776",
+   "foodGroup": "11",
+   "description": "VEG,OTHER,BLD,WATER USED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 85,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "3780",
+   "foodGroup": "11",
+   "description": "VEG,OTHER,FRIED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 70,
+    "vit_b12": 100,
+    "vit_a": 85
+   }
+  },
+  {
+   "code": "3784",
+   "foodGroup": "11",
+   "description": "VEG,OTHER,STEAMED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 85,
+    "vit_b12": 100,
+    "vit_a": 95
+   }
+  },
+  {
+   "code": "3785",
+   "foodGroup": "11",
+   "description": "VEG,OTHER,STIR FRY",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 85,
+    "folate": 80,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "3788",
+   "foodGroup": "11",
+   "description": "VEG,OTHER,REHEATED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 90,
+    "folate": 95,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "3789",
+   "foodGroup": "11",
+   "description": "VEG,OTHER,CKD FROM FRZN(BLD,DRAIND)",
+   "percent": {
+    "calcium": 95,
+    "iron": 95,
+    "magnesium": 95,
+    "potassium": 90,
+    "sodium": 95,
+    "zinc": 95,
+    "vit_c": 80,
+    "folate": 70,
+    "vit_b12": 100,
+    "vit_a": 90
+   }
+  },
+  {
+   "code": "5001",
+   "foodGroup": "14",
+   "description": "ALC BEV,NO HEAT,STORED OVERNIGHT",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 100,
+    "folate": 100,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "5002",
+   "foodGroup": "14",
+   "description": "ALC BEV,STIRRED INTO HOT LIQ",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 100,
+    "folate": 100,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "5003",
+   "foodGroup": "14",
+   "description": "ALC BEV,FLAMED",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 100,
+    "folate": 100,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "5004",
+   "foodGroup": "14",
+   "description": "ALC BEV,STIRRED,BKD/SIMMRD 15 MIN",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 100,
+    "folate": 100,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "5005",
+   "foodGroup": "14",
+   "description": "ALC BEV,STIRRED,BKD/SIMMRD 30 MIN",
+   "percent": {}
+  },
+  {
+   "code": "5006",
+   "foodGroup": "14",
+   "description": "ALC BEV,STIRRED,BKD/SIMMRD 1 HR",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 100,
+    "folate": 100,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "5007",
+   "foodGroup": "14",
+   "description": "ALC BEV,STIRRED,BKD/SIMMRD 1.5 HR",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 100,
+    "folate": 100,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "5008",
+   "foodGroup": "14",
+   "description": "ALC BEV,STIRRED,BKD/SIMMRD 2 HR",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 100,
+    "folate": 100,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "5009",
+   "foodGroup": "14",
+   "description": "ALC BEV,STIRRED,BKD/SIMMRD 2.5 HR",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 100,
+    "folate": 100,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  },
+  {
+   "code": "5010",
+   "foodGroup": "14",
+   "description": "ALC BEV,NOT STIRRED IN,BKD 25 MIN",
+   "percent": {
+    "calcium": 100,
+    "iron": 100,
+    "magnesium": 100,
+    "potassium": 100,
+    "sodium": 100,
+    "zinc": 100,
+    "vit_c": 100,
+    "folate": 100,
+    "vit_b12": 100,
+    "vit_a": 100
+   }
+  }
+ ]
+}

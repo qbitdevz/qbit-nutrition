@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BackHandler, Image, StyleSheet, View } from 'react-native';
 
+import { isRecipeRef, type FoodRef } from '@/core/catalog';
 import { computeItemNutrients, sumNutrients, type MealSlot } from '@/core/nutrition';
 import { formatDecimal, formatNumber } from '@/i18n/format';
 import type { Locale } from '@/i18n/locale';
@@ -34,6 +35,7 @@ import { isEdited, itemState, useMealDraft, type DraftItem } from './draft';
 import { gramsMessage } from './gramsMessage';
 import { GRAM_STEP, GRAMS_RANGE, validateGrams } from './limits';
 import { pickSlot, SLOT_ORDER } from './mealSlot';
+import { RecipeMethodSheet, RecipeTag } from './RecipeMethod';
 import { draftToSaveItems } from './saveDraft';
 
 interface ReviewScreenProps {
@@ -82,6 +84,7 @@ export function ReviewScreen({ now = systemNow, onAddItem, onSwap, onRetake, onS
   const [confirmExit, setConfirmExit] = useState<Exit | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveFailed, setSaveFailed] = useState(false);
+  const [method, setMethod] = useState<{ ref: FoodRef; name: string } | null>(null);
 
   const slot: MealSlot = draft.slot ?? pickSlot(now());
   const textOf = (item: DraftItem) => texts[item.key] ?? String(item.grams);
@@ -293,6 +296,7 @@ export function ReviewScreen({ now = systemNow, onAddItem, onSwap, onRetake, onS
               const problem = problems[index];
               const nutrients = item.per100g ? computeItemNutrients({ per100g: item.per100g }, item.grams) : null;
               const state = itemState(item);
+              const recipe = item.ref !== null && isRecipeRef(item.ref);
               const scan = item.scan;
               const unedited = !isEdited(item);
               const warnings = scan && unedited ? scan.warnings : [];
@@ -313,11 +317,12 @@ export function ReviewScreen({ now = systemNow, onAddItem, onSwap, onRetake, onS
                         <AppText variant="itemName">{item.displayName}</AppText>
                       )}
                       <View style={styles.tags}>
-                        {state ? (
+                        {state && !(state === 'matched' && recipe) ? (
                           <StateTag state={state} label={t(`log.review.state.${state === 'needs_match' ? 'needsMatch' : state}`)} />
-                        ) : (
+                        ) : state ? null : recipe ? null : (
                           <Tag label={item.ref?.source === 'custom' ? t('log.search.custom') : item.ref?.source === 'barcode' ? t('log.review.barcode') : t('log.review.catalog')} />
                         )}
+                        {recipe && item.ref ? <RecipeTag onPress={() => setMethod({ ref: item.ref as FoodRef, name: item.displayName })} /> : null}
                         {scan?.confidenceFood === 'low' ? <Mark label={t('log.review.checkFood')} /> : null}
                         {scan?.confidencePortion === 'low' ? <Mark label={t('log.review.checkPortion')} /> : null}
                       </View>
@@ -375,6 +380,7 @@ export function ReviewScreen({ now = systemNow, onAddItem, onSwap, onRetake, onS
         <Button label={t('log.review.addMore')} variant="secondary" icon="plus" onPress={onAddItem} />
       </View>
 
+      <RecipeMethodSheet food={method} onClose={() => setMethod(null)} />
       <ConfirmSheet
         visible={confirmExit !== null}
         title={t('log.review.discardTitle')}

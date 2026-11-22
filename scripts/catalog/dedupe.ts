@@ -7,7 +7,7 @@ import type { CatalogSource, SourceFood } from './types';
  * Foundation Foods and SR Legacy hold analytical values; FNDDS values are derived from them, so FNDDS loses.
  * Foundation is newer than SR Legacy (which is frozen at 2018).
  */
-export const SOURCE_PRIORITY: readonly CatalogSource[] = ['usda_foundation', 'usda_sr_legacy', 'usda_fndds', 'usda_branded'];
+export const SOURCE_PRIORITY: readonly CatalogSource[] = ['usda_foundation', 'usda_sr_legacy', 'usda_fndds', 'usda_branded', 'qbit_recipe'];
 
 /**
  * Identity of a food across sources: the description's words, lowercased, without accents, singular, sorted.

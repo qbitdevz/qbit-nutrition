@@ -6,7 +6,7 @@
   {"match": "^Egg, whole, cooked, hard-boiled", "en": ["hard boiled egg", "boiled egg"], "es": ["huevo duro", "huevo cocido", "huevo hervido"]},
   {"match": "^Chicken, broilers? or fryers?, breast", "es": ["pechuga de pollo"]},
   {"match": "^Chicken, broilers? or fryers?, thigh", "es": ["muslo de pollo"]},
-  {"match": "^Chicken (fillet|patty), breaded", "en": ["chicken cutlet", "breaded chicken cutlet"], "es": ["milanesa de pollo", "milanesa", "suprema de pollo", "escalope de pollo empanizado"]},
+  {"match": "^Chicken (fillet|patty), breaded", "en": ["chicken cutlet", "breaded chicken cutlet"], "es": ["suprema de pollo", "escalope de pollo empanizado"]},
   {"match": "^Chicken, (broilers? or fryers?|breast).*(coated|breaded|fried)", "es": ["pollo frito", "pollo empanizado"]},
   {"match": "^Veal.*cutlet", "es": ["milanesa de ternera", "escalope de ternera"]}
 ]
