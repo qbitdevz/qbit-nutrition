@@ -2,10 +2,10 @@
 bcdd: 1
 proyecto: Qbit Nutrition
 cliente: Proyecto personal (el dueño del producto)
-version: 5
+version: 6
 estado: aprobado
 actualizado: 2026-11-22
-ultima_fuente: chat con el dueño del 2026-11-22 (mínimo de calorías y titular de la licencia)
+ultima_fuente: chat con el dueño del 2026-11-22 (confirmación del diseño)
 aprobado_equipo: el dueño del producto · 2026-11-22
 aprobado_cliente: el dueño del producto · 2026-11-22 · chat
 ---
@@ -35,7 +35,7 @@ aprobado_cliente: el dueño del producto · 2026-11-22 · chat
 - Publicar en tiendas de aplicaciones — tienen costo.
 
 **Preguntas abiertas:**
-- **P-06:** ¿Confirmás la propuesta de diseño "Orbit" o preferís "Ledger" o "Bento"? El equipo avanza con Orbit de forma provisoria. — responde: el dueño — no frena requisitos; cambiarla después implica rehacer pantallas.
+- Ninguna.
 
 ## 2. Cómo funciona
 
@@ -99,6 +99,9 @@ flowchart TD
 | REQ-18 | Registrar un producto envasado con su código de barras | Acordado | Sin cambios | Al leer el código de barras de un producto conocido aparecen su nombre y sus valores nutricionales, y se puede guardar indicando la cantidad | RN-04, RN-05 | chat con el dueño · 2026-11-21 · «Sí, incluirlo» |
 
 ## 5. Cambios
+
+### v6 — 2026-11-22 — confirmación del diseño
+- **Pregunta cerrada:** P-06, el dueño confirmó la propuesta de diseño "Orbit" («el orbit esta bien»).
 
 ### v5 — 2026-11-22 — decisiones del dueño
 - **Confirmado por el dueño:** RN-14, el mínimo inicial de 1.200 calorías para mujeres y 1.500 para hombres pasa de "A confirmar" a "Acordada". Cierra P-02.
