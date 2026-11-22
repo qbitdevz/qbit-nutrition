@@ -1,0 +1,576 @@
+[
+  {
+    "source": "usda_branded",
+    "fdcId": 1948673,
+    "description": "Alfajor, chocolate",
+    "category": "Cookies & Biscuits",
+    "nutrients": [
+      {
+        "id": 1003,
+        "unit": "g",
+        "amount": 6
+      },
+      {
+        "id": 1004,
+        "unit": "g",
+        "amount": 20
+      },
+      {
+        "id": 1005,
+        "unit": "g",
+        "amount": 54
+      },
+      {
+        "id": 1008,
+        "unit": "kcal",
+        "amount": 420
+      },
+      {
+        "id": 2000,
+        "unit": "g",
+        "amount": 32
+      },
+      {
+        "id": 1079,
+        "unit": "g",
+        "amount": 2
+      },
+      {
+        "id": 1087,
+        "unit": "mg",
+        "amount": 80
+      },
+      {
+        "id": 1089,
+        "unit": "mg",
+        "amount": 1.44
+      },
+      {
+        "id": 1092,
+        "unit": "mg",
+        "amount": 140
+      },
+      {
+        "id": 1093,
+        "unit": "mg",
+        "amount": 70
+      },
+      {
+        "id": 1110,
+        "unit": "IU",
+        "amount": 0
+      },
+      {
+        "id": 1235,
+        "unit": "g",
+        "amount": 8
+      },
+      {
+        "id": 1253,
+        "unit": "mg",
+        "amount": 60
+      },
+      {
+        "id": 1257,
+        "unit": "g",
+        "amount": 0
+      },
+      {
+        "id": 1258,
+        "unit": "g",
+        "amount": 14
+      }
+    ],
+    "portions": [
+      {
+        "label": "1 alfajor",
+        "grams": 50
+      }
+    ],
+    "es": "Alfajor de chocolate",
+    "aliasesEs": [
+      "alfajores",
+      "alfajor"
+    ],
+    "aliasesEn": [
+      "alfajor",
+      "alfajores"
+    ],
+    "dataFile": "FoodData_Central_branded_food_json_2026-10-29.zip"
+  },
+  {
+    "source": "usda_branded",
+    "fdcId": 1147786,
+    "description": "Alfajor, sandwich cookie with filling",
+    "category": "Cookies & Biscuits",
+    "nutrients": [
+      {
+        "id": 1003,
+        "unit": "g",
+        "amount": 3.92
+      },
+      {
+        "id": 1004,
+        "unit": "g",
+        "amount": 21.6
+      },
+      {
+        "id": 1005,
+        "unit": "g",
+        "amount": 72.6
+      },
+      {
+        "id": 1008,
+        "unit": "kcal",
+        "amount": 490
+      },
+      {
+        "id": 2000,
+        "unit": "g",
+        "amount": 33.3
+      },
+      {
+        "id": 1079,
+        "unit": "g",
+        "amount": 2
+      },
+      {
+        "id": 1087,
+        "unit": "mg",
+        "amount": 0
+      },
+      {
+        "id": 1089,
+        "unit": "mg",
+        "amount": 2.12
+      },
+      {
+        "id": 1093,
+        "unit": "mg",
+        "amount": 255
+      },
+      {
+        "id": 1104,
+        "unit": "IU",
+        "amount": 0
+      },
+      {
+        "id": 1162,
+        "unit": "mg",
+        "amount": 0
+      },
+      {
+        "id": 1253,
+        "unit": "mg",
+        "amount": 0
+      },
+      {
+        "id": 1257,
+        "unit": "g",
+        "amount": 0
+      },
+      {
+        "id": 1258,
+        "unit": "g",
+        "amount": 9.8
+      }
+    ],
+    "portions": [
+      {
+        "label": "1 alfajor",
+        "grams": 51
+      }
+    ],
+    "es": "Alfajor, galleta rellena",
+    "aliasesEs": [
+      "alfajores",
+      "alfajor"
+    ],
+    "aliasesEn": [
+      "alfajor",
+      "alfajores"
+    ],
+    "dataFile": "FoodData_Central_branded_food_json_2026-10-29.zip"
+  },
+  {
+    "source": "usda_branded",
+    "fdcId": 2586602,
+    "description": "Alfajor, chocolate coated, individually wrapped",
+    "category": "Crackers & Biscotti",
+    "nutrients": [
+      {
+        "id": 1003,
+        "unit": "g",
+        "amount": 10
+      },
+      {
+        "id": 1004,
+        "unit": "g",
+        "amount": 25
+      },
+      {
+        "id": 1005,
+        "unit": "g",
+        "amount": 60
+      },
+      {
+        "id": 1008,
+        "unit": "kcal",
+        "amount": 500
+      },
+      {
+        "id": 2000,
+        "unit": "g",
+        "amount": 35
+      },
+      {
+        "id": 1079,
+        "unit": "g",
+        "amount": 2.5
+      },
+      {
+        "id": 1087,
+        "unit": "mg",
+        "amount": 112
+      },
+      {
+        "id": 1089,
+        "unit": "mg",
+        "amount": 2.5
+      },
+      {
+        "id": 1092,
+        "unit": "mg",
+        "amount": 212
+      },
+      {
+        "id": 1093,
+        "unit": "mg",
+        "amount": 138
+      },
+      {
+        "id": 1114,
+        "unit": "µg",
+        "amount": 0
+      },
+      {
+        "id": 1235,
+        "unit": "g",
+        "amount": 35
+      },
+      {
+        "id": 1253,
+        "unit": "mg",
+        "amount": 12
+      },
+      {
+        "id": 1257,
+        "unit": "g",
+        "amount": 0
+      },
+      {
+        "id": 1258,
+        "unit": "g",
+        "amount": 10
+      }
+    ],
+    "portions": [
+      {
+        "label": "1 alfajor",
+        "grams": 40
+      }
+    ],
+    "es": "Alfajor bañado en chocolate, individual",
+    "aliasesEs": [
+      "alfajores",
+      "alfajor"
+    ],
+    "aliasesEn": [
+      "alfajor",
+      "alfajores"
+    ],
+    "dataFile": "FoodData_Central_branded_food_json_2026-10-29.zip"
+  },
+  {
+    "source": "usda_branded",
+    "fdcId": 1886962,
+    "description": "Spanish potato omelet (tortilla espanola)",
+    "category": "Frozen Breakfast Sandwiches, Biscuits & Meals",
+    "nutrients": [
+      {
+        "id": 1003,
+        "unit": "g",
+        "amount": 4
+      },
+      {
+        "id": 1004,
+        "unit": "g",
+        "amount": 8
+      },
+      {
+        "id": 1005,
+        "unit": "g",
+        "amount": 8
+      },
+      {
+        "id": 1008,
+        "unit": "kcal",
+        "amount": 120
+      },
+      {
+        "id": 2000,
+        "unit": "g",
+        "amount": 1
+      },
+      {
+        "id": 1079,
+        "unit": "g",
+        "amount": 3
+      },
+      {
+        "id": 1087,
+        "unit": "mg",
+        "amount": 10
+      },
+      {
+        "id": 1089,
+        "unit": "mg",
+        "amount": 1.8
+      },
+      {
+        "id": 1093,
+        "unit": "mg",
+        "amount": 480
+      },
+      {
+        "id": 1104,
+        "unit": "IU",
+        "amount": 400
+      },
+      {
+        "id": 1162,
+        "unit": "mg",
+        "amount": 0.6
+      },
+      {
+        "id": 1253,
+        "unit": "mg",
+        "amount": 75
+      },
+      {
+        "id": 1257,
+        "unit": "g",
+        "amount": 0
+      },
+      {
+        "id": 1258,
+        "unit": "g",
+        "amount": 1
+      }
+    ],
+    "portions": [
+      {
+        "label": "1/2 omelet",
+        "grams": 100
+      }
+    ],
+    "es": "Tortilla española",
+    "aliasesEs": [
+      "tortilla de patatas",
+      "tortilla de papas",
+      "tortilla de patata",
+      "tortilla de papa"
+    ],
+    "aliasesEn": [
+      "spanish omelette",
+      "spanish tortilla",
+      "potato omelette"
+    ],
+    "dataFile": "FoodData_Central_branded_food_json_2026-10-29.zip"
+  },
+  {
+    "source": "usda_branded",
+    "fdcId": 359635,
+    "description": "Yerba mate, dry leaves",
+    "category": "Tea Bags",
+    "nutrients": [
+      {
+        "id": 1004,
+        "unit": "g",
+        "amount": 0
+      },
+      {
+        "id": 1089,
+        "unit": "mg",
+        "amount": 1.2
+      },
+      {
+        "id": 1090,
+        "unit": "mg",
+        "amount": 40
+      },
+      {
+        "id": 1093,
+        "unit": "mg",
+        "amount": 0
+      },
+      {
+        "id": 1162,
+        "unit": "mg",
+        "amount": 6
+      },
+      {
+        "id": 1165,
+        "unit": "mg",
+        "amount": 0
+      },
+      {
+        "id": 1166,
+        "unit": "mg",
+        "amount": 0.17
+      },
+      {
+        "id": 1258,
+        "unit": "g",
+        "amount": 0
+      },
+      {
+        "id": 1003,
+        "unit": "g",
+        "amount": 2
+      },
+      {
+        "id": 1005,
+        "unit": "g",
+        "amount": 3.33
+      },
+      {
+        "id": 1008,
+        "unit": "kcal",
+        "amount": 250
+      },
+      {
+        "id": 1087,
+        "unit": "mg",
+        "amount": 80
+      },
+      {
+        "id": 1257,
+        "unit": "g",
+        "amount": 0
+      }
+    ],
+    "portions": [
+      {
+        "label": "1 serving",
+        "grams": 3
+      }
+    ],
+    "es": "Yerba mate, hierba seca",
+    "aliasesEs": [
+      "yerba",
+      "mate",
+      "hierba mate"
+    ],
+    "aliasesEn": [
+      "mate",
+      "yerba"
+    ],
+    "dataFile": "FoodData_Central_branded_food_json_2026-10-29.zip"
+  },
+  {
+    "source": "usda_branded",
+    "fdcId": 1873079,
+    "description": "Mate cocido, tea bag",
+    "category": "Tea Bags",
+    "nutrients": [
+      {
+        "id": 1003,
+        "unit": "g",
+        "amount": 0
+      },
+      {
+        "id": 1004,
+        "unit": "g",
+        "amount": 0
+      },
+      {
+        "id": 1005,
+        "unit": "g",
+        "amount": 0
+      },
+      {
+        "id": 1008,
+        "unit": "kcal",
+        "amount": 0
+      },
+      {
+        "id": 2000,
+        "unit": "g",
+        "amount": 0
+      },
+      {
+        "id": 1079,
+        "unit": "g",
+        "amount": 0
+      },
+      {
+        "id": 1087,
+        "unit": "mg",
+        "amount": 0
+      },
+      {
+        "id": 1089,
+        "unit": "mg",
+        "amount": 0
+      },
+      {
+        "id": 1093,
+        "unit": "mg",
+        "amount": 0
+      },
+      {
+        "id": 1104,
+        "unit": "IU",
+        "amount": 0
+      },
+      {
+        "id": 1162,
+        "unit": "mg",
+        "amount": 0
+      },
+      {
+        "id": 1253,
+        "unit": "mg",
+        "amount": 0
+      },
+      {
+        "id": 1257,
+        "unit": "g",
+        "amount": 0
+      },
+      {
+        "id": 1258,
+        "unit": "g",
+        "amount": 0
+      }
+    ],
+    "portions": [
+      {
+        "label": "1 tea bag",
+        "grams": 3
+      }
+    ],
+    "es": "Mate cocido, en saquito",
+    "aliasesEs": [
+      "mate",
+      "mate cocido",
+      "yerba mate"
+    ],
+    "aliasesEn": [
+      "mate",
+      "yerba mate tea"
+    ],
+    "dataFile": "FoodData_Central_branded_food_json_2026-10-29.zip"
+  }
+]

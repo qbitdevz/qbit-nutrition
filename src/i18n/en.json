@@ -893,7 +893,7 @@
       "usda": "Food composition data: U.S. Department of Agriculture, Agricultural Research Service. FoodData Central.",
       "off": "Product data: Open Food Facts, made available under the Open Database License (ODbL), with individual contents under the Database Contents License. Products are looked up one barcode at a time and saved on this phone; the database is not included in the app.",
       "offLink": "Open Food Facts license and terms",
-      "usdaNote": "The nutrient values in the bundled food list come from this source.",
+      "usdaNote": "The nutrient values in the bundled food list come from this source: Foundation Foods, SR Legacy and Survey Foods (FNDDS 2021-2023), all in the public domain (CC0 1.0). A food published by more than one of them appears once. Spanish names and search synonyms were written for this app and contain no nutrient values.",
       "offNote": "Product images from Open Food Facts are not used."
     },
     "appName": "Qbit Nutrition",

@@ -1,0 +1,8 @@
+[
+  {"fdcId": 1948673, "en": "Alfajor, chocolate", "es": "Alfajor de chocolate", "aliasesEs": ["alfajores", "alfajor"], "aliasesEn": ["alfajor", "alfajores"], "portionLabel": "1 alfajor"},
+  {"fdcId": 1147786, "en": "Alfajor, sandwich cookie with filling", "es": "Alfajor, galleta rellena", "aliasesEs": ["alfajores", "alfajor"], "aliasesEn": ["alfajor", "alfajores"], "portionLabel": "1 alfajor"},
+  {"fdcId": 2586602, "en": "Alfajor, chocolate coated, individually wrapped", "es": "Alfajor bañado en chocolate, individual", "aliasesEs": ["alfajores", "alfajor"], "aliasesEn": ["alfajor", "alfajores"], "portionLabel": "1 alfajor"},
+  {"fdcId": 1886962, "en": "Spanish potato omelet (tortilla espanola)", "es": "Tortilla española", "aliasesEs": ["tortilla de patatas", "tortilla de papas", "tortilla de patata", "tortilla de papa"], "aliasesEn": ["spanish omelette", "spanish tortilla", "potato omelette"], "portionLabel": "1/2 omelet"},
+  {"fdcId": 359635, "en": "Yerba mate, dry leaves", "es": "Yerba mate, hierba seca", "aliasesEs": ["yerba", "mate", "hierba mate"], "aliasesEn": ["mate", "yerba"], "portionLabel": "1 serving"},
+  {"fdcId": 1873079, "en": "Mate cocido, tea bag", "es": "Mate cocido, en saquito", "aliasesEs": ["mate", "mate cocido", "yerba mate"], "aliasesEn": ["mate", "yerba mate tea"], "portionLabel": "1 tea bag"}
+]

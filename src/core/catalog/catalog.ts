@@ -1,8 +1,12 @@
 import type { CatalogDb, MatchMemory, SqlRow } from './ports';
 import {
   buildVariants,
+  cueFree,
   DEFAULT_MATCH_THRESHOLD,
+  detectPreparation,
   scoreCandidate,
+  wordForms,
+  type MatchedName,
   type RankContext,
 } from './ranking';
 import { normalizeName, searchWords } from './text';
@@ -15,6 +19,7 @@ import type {
   Locale,
   MatchInput,
   MatchResult,
+  Preparation,
   ScoredFood,
 } from './types';
 import { NUTRIENT_CODES, type NutrientAmounts, type NutrientCode } from '../nutrition/types';
@@ -40,7 +45,7 @@ export interface CatalogOptions {
 
 interface Candidate {
   id: number;
-  matchedNames: string[];
+  matchedNames: MatchedName[];
 }
 
 interface FoodRow {
@@ -59,6 +64,11 @@ const ALTERNATIVES = 5;
 const NUTRIENT_SET: ReadonlySet<string> = new Set(NUTRIENT_CODES);
 
 const quote = (w: string) => `"${w}"`;
+/** An FTS term for one word: the word and its other singular forms ("frijoles" or "frijol"), any of which may be indexed. */
+const term = (w: string, prefix = false) => {
+  const forms = wordForms(w).map((f) => quote(f) + (prefix ? '*' : ''));
+  return forms.length > 1 ? `(${forms.join(' OR ')})` : (forms[0] as string);
+};
 const placeholders = (n: number) => Array.from({ length: n }, () => '?').join(',');
 
 function toFoodRow(r: SqlRow): FoodRow {
@@ -93,7 +103,7 @@ export function createCatalog(options: CatalogOptions): Catalog {
     const found = new Map<number, Candidate>();
     for (const q of queries) {
       const rows = await db.all(
-        `SELECT fn.food_id AS food_id, fn.name AS name
+        `SELECT fn.food_id AS food_id, fn.name AS name, fn.is_alias AS is_alias, fn.locale AS locale
            FROM food_fts JOIN food_name fn ON fn.rowid = food_fts.rowid
           WHERE food_fts MATCH ? AND fn.locale IN (?, 'en')
           ORDER BY bm25(food_fts) LIMIT ?`,
@@ -103,7 +113,9 @@ export function createCatalog(options: CatalogOptions): Catalog {
         const id = Number(r.food_id);
         const c = found.get(id) ?? { id, matchedNames: [] };
         const name = String(r.name);
-        if (!c.matchedNames.includes(name)) c.matchedNames.push(name);
+        if (!c.matchedNames.some((m) => m.name === name)) {
+          c.matchedNames.push({ name, isAlias: Number(r.is_alias) === 1, locale: r.locale === 'es' ? 'es' : 'en' });
+        }
         found.set(id, c);
       }
     }
@@ -173,8 +185,8 @@ export function createCatalog(options: CatalogOptions): Catalog {
     for (const c of candidates.values()) {
       const row = rows.get(c.id);
       if (!row) continue;
-      const score = scoreCandidate(ctx, { names: c.matchedNames, state: row.state, isBranded: row.isBranded });
-      const nameLen = Math.min(...c.matchedNames.map((n) => n.length));
+      const score = scoreCandidate(ctx, { names: c.matchedNames, state: row.state, isBranded: row.isBranded, category: row.category });
+      const nameLen = Math.min(...c.matchedNames.map((n) => n.name.length));
       scored.push({ id: c.id, row, score, nameLen });
     }
     // Ties: generic before branded, Foundation before SR Legacy, shorter name, lower id.
@@ -188,24 +200,28 @@ export function createCatalog(options: CatalogOptions): Catalog {
     );
     const top = scored.slice(0, 50);
     const names = await loadNames(top.map((t) => t.id));
+    // Ranking uses the raw score, which may pass 1 (a cooked entry that also names the method); callers see 0..1.
     return top.map((t) => ({
       food: toSummary(t.row, names.get(t.id) ?? [], locale),
-      score: t.score,
+      score: Math.min(1, t.score),
       source: t.row.source,
     }));
   }
 
   return {
     async search(query, locale, limit) {
-      const words = searchWords(query);
-      if (words.length === 0 || limit <= 0) return [];
+      const all = searchWords(query);
+      if (all.length === 0 || limit <= 0) return [];
+      // A cooking cue ("steamed broccoli") asks for a state; the name need not contain it.
+      const preparation = detectPreparation(query);
+      const words = preparation === 'unknown' ? all : cueFree(all);
       const last = words.length - 1;
-      const andQuery = words.map((w, i) => (i === last ? `${quote(w)}*` : quote(w))).join(' ');
-      const orQuery = words.map((w, i) => (i === last ? `${quote(w)}*` : quote(w))).join(' OR ');
+      const andQuery = words.map((w, i) => term(w, i === last)).join(' AND ');
+      const orQuery = words.map((w, i) => term(w, i === last)).join(' OR ');
       const candidates = await ftsCandidates([andQuery, orQuery], locale);
       const ctx: RankContext = {
         variants: buildVariants(query, []),
-        preparation: 'unknown',
+        preparation,
         prefixLastToken: true,
       };
       const ranked = await rank(candidates, ctx, locale);
@@ -274,16 +290,19 @@ export function createCatalog(options: CatalogOptions): Catalog {
     }
 
     // 2. FTS candidates from the canonical name and the search terms.
+    // The model's preparation wins; when it left it unknown, a cue in the detected name ("steamed broccoli") is used.
+    const preparation: Preparation =
+      item.preparation !== 'unknown' ? item.preparation : [item.canonical_name_en, item.name, ...item.search_terms_en].map(detectPreparation).find((p) => p !== 'unknown') ?? 'unknown';
     const variants = buildVariants(item.canonical_name_en, item.search_terms_en);
     const queries: string[] = [];
-    const canonicalWords = searchWords(item.canonical_name_en);
-    if (canonicalWords.length > 0) queries.push(canonicalWords.map(quote).join(' '));
-    const allWords = [...new Set(variants.flatMap((v) => searchWords(v.norm)))];
-    if (allWords.length > 0) queries.push(allWords.map(quote).join(' OR '));
+    const canonicalWords = cueFree(searchWords(item.canonical_name_en));
+    if (canonicalWords.length > 0) queries.push(canonicalWords.map((w) => term(w)).join(' AND '));
+    const allWords = [...new Set(variants.flatMap((v) => cueFree(searchWords(v.norm))))];
+    if (allWords.length > 0) queries.push(allWords.map((w) => term(w)).join(' OR '));
     const candidates = queries.length > 0 ? await ftsCandidates(queries, locale) : new Map<number, Candidate>();
 
     // 3. Re-rank, 4. threshold.
-    const ranked = await rank(candidates, { variants, preparation: item.preparation, prefixLastToken: false }, locale);
+    const ranked = await rank(candidates, { variants, preparation, prefixLastToken: false }, locale);
     const alternatives: ScoredFood[] = ranked.slice(0, ALTERNATIVES).map(({ food, score }) => ({ food, score }));
     const top = ranked[0];
     if (top && top.score >= threshold) {

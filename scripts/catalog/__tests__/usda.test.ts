@@ -12,11 +12,15 @@ const PAGE = `
 <tr><td>SR Legacy</td><td>04/2018</td><td>
   <a href="/fdc-datasets/FoodData_Central_sr_legacy_food_json_2018-04.zip">JSON</a>
   <a href="/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip">CSV</a></td></tr>
+<tr><td>FNDDS</td><td>10/2024</td><td>
+  <a href="/fdc-datasets/FoodData_Central_survey_food_json_2022-10-28.zip">JSON</a>
+  <a href="/fdc-datasets/FoodData_Central_survey_food_json_2024-10-31.zip">JSON</a>
+  <a href="/fdc-datasets/FoodData_Central_survey_food_csv_2024-10-31.zip">CSV</a></td></tr>
 <a href="/fdc-datasets/FoodData_Central_branded_food_json_2026-10-29.zip">Branded: never used</a>
 `;
 
 describe('findDatasetFiles', () => {
-  it('picks the newest JSON zip of Foundation Foods and SR Legacy only', () => {
+  it('picks the newest JSON zip of Foundation Foods, SR Legacy and Survey Foods (FNDDS) only', () => {
     expect(findDatasetFiles(PAGE)).toEqual([
       {
         source: 'usda_foundation',
@@ -29,6 +33,12 @@ describe('findDatasetFiles', () => {
         fileName: 'FoodData_Central_sr_legacy_food_json_2018-04.zip',
         url: 'https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_json_2018-04.zip',
         version: '2018-04',
+      },
+      {
+        source: 'usda_fndds',
+        fileName: 'FoodData_Central_survey_food_json_2024-10-31.zip',
+        url: 'https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_survey_food_json_2024-10-31.zip',
+        version: '2024-10-31',
       },
     ]);
   });
@@ -116,7 +126,51 @@ describe('parseUsdaJson', () => {
     ]);
   });
 
+  // Shape and values copied from FoodData_Central_survey_food_json_2024-10-31.zip, "Empanada, beef" (fdcId 2708711).
+  const survey = JSON.stringify({
+    SurveyFoods: [
+      {
+        fdcId: 2708711,
+        description: 'Empanada, beef',
+        dataType: 'Survey (FNDDS)',
+        wweiaFoodCategory: { wweiaFoodCategoryDescription: 'Turnovers and other grain-based items', wweiaFoodCategoryCode: 3208 },
+        foodNutrients: [
+          { nutrient: { id: 1008, unitName: 'kcal' }, amount: 333 },
+          { nutrient: { id: 1106, unitName: 'µg' }, amount: 12 },
+        ],
+        foodPortions: [
+          { measureUnit: { name: 'undetermined' }, modifier: '90000', gramWeight: 105, portionDescription: 'Quantity not specified' },
+          { measureUnit: { name: 'undetermined' }, modifier: '61109', gramWeight: 130, portionDescription: '1 regular/large' },
+          { measureUnit: { name: 'undetermined' }, modifier: '6477', gramWeight: 35, portionDescription: '1 small/individual' },
+          { measureUnit: { name: 'undetermined' }, modifier: '1', gramWeight: 9, portionDescription: 'Guideline amount per sandwich' },
+          { measureUnit: { name: 'undetermined' }, modifier: '2', gramWeight: 5, portionDescription: '1 cubic inch' },
+          { measureUnit: { name: 'undetermined' }, modifier: '3', gramWeight: 5, portionDescription: 'Juice of 1 lemon (2-1/8" dia)' },
+        ],
+      },
+    ],
+  });
+
+  it('reads Survey Foods: WWEIA category, portion descriptions instead of numeric modifier codes, no placeholder portions', () => {
+    expect(parseUsdaJson('usda_fndds', survey)).toEqual([
+      {
+        source: 'usda_fndds',
+        fdcId: 2708711,
+        description: 'Empanada, beef',
+        category: 'Turnovers and other grain-based items',
+        nutrients: [
+          { id: 1008, unit: 'kcal', amount: 333 },
+          { id: 1106, unit: 'µg', amount: 12 },
+        ],
+        portions: [
+          { label: '1 regular/large', grams: 130 },
+          { label: '1 small/individual', grams: 35 },
+        ],
+      },
+    ]);
+  });
+
   it('refuses a file with the wrong root key', () => {
     expect(() => parseUsdaJson('usda_sr_legacy', foundation)).toThrow(/SRLegacyFoods/);
+    expect(() => parseUsdaJson('usda_fndds', foundation)).toThrow(/SurveyFoods/);
   });
 });

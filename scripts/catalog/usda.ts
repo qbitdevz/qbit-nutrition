@@ -20,6 +20,7 @@ export interface DatasetFile {
 const DATASETS: { source: CatalogSource; prefix: string }[] = [
   { source: 'usda_foundation', prefix: 'FoodData_Central_foundation_food_json_' },
   { source: 'usda_sr_legacy', prefix: 'FoodData_Central_sr_legacy_food_json_' },
+  { source: 'usda_fndds', prefix: 'FoodData_Central_survey_food_json_' },
 ];
 
 /** Picks the newest JSON zip of each data set from the download page HTML. */
@@ -120,6 +121,8 @@ interface UsdaFood {
   fdcId: number;
   description: string;
   foodCategory?: { description?: string };
+  /** Survey Foods (FNDDS) use WWEIA categories instead of `foodCategory`. */
+  wweiaFoodCategory?: { wweiaFoodCategoryDescription?: string };
   foodNutrients?: { nutrient?: { id?: number; unitName?: string }; amount?: number }[];
   foodPortions?: {
     value?: number;
@@ -127,12 +130,15 @@ interface UsdaFood {
     modifier?: string;
     gramWeight?: number;
     measureUnit?: { name?: string };
+    portionDescription?: string;
   }[];
 }
 
 const ROOT_KEY: Record<CatalogSource, string> = {
   usda_foundation: 'FoundationFoods',
   usda_sr_legacy: 'SRLegacyFoods',
+  usda_fndds: 'SurveyFoods',
+  usda_branded: 'BrandedFoods',
 };
 
 function portionLabel(p: NonNullable<UsdaFood['foodPortions']>[number]): string | null {
@@ -144,7 +150,18 @@ function portionLabel(p: NonNullable<UsdaFood['foodPortions']>[number]): string 
   return label === '' ? null : label;
 }
 
-/** Parses the JSON text of a Foundation Foods or SR Legacy file. */
+/**
+ * FNDDS portions carry their label in `portionDescription` ("1 regular/large"); `modifier` is a numeric code there.
+ * Placeholders ("Quantity not specified"), per-ingredient guideline amounts and geometric measures are not household portions.
+ */
+const NOT_A_PORTION = /^(quantity not specified|guideline amount|topping|skin from|juice of)|\b(cubic inch|surface inch|yields)\b/i;
+
+function surveyPortionLabel(p: NonNullable<UsdaFood['foodPortions']>[number]): string | null {
+  const label = p.portionDescription?.trim() ?? '';
+  return label === '' || NOT_A_PORTION.test(label) ? null : label;
+}
+
+/** Parses the JSON text of a Foundation Foods, SR Legacy or Survey Foods (FNDDS) file. */
 export function parseUsdaJson(source: CatalogSource, jsonText: string): SourceFood[] {
   const root = JSON.parse(jsonText) as Record<string, UsdaFood[]>;
   const foods = root[ROOT_KEY[source]];
@@ -153,14 +170,14 @@ export function parseUsdaJson(source: CatalogSource, jsonText: string): SourceFo
     source,
     fdcId: f.fdcId,
     description: f.description,
-    category: f.foodCategory?.description ?? null,
+    category: f.foodCategory?.description ?? f.wweiaFoodCategory?.wweiaFoodCategoryDescription ?? null,
     nutrients: (f.foodNutrients ?? []).flatMap((n) =>
       n.nutrient?.id !== undefined && typeof n.amount === 'number'
         ? [{ id: n.nutrient.id, unit: n.nutrient.unitName ?? '', amount: n.amount }]
         : [],
     ),
     portions: (f.foodPortions ?? []).flatMap((p) => {
-      const label = portionLabel(p);
+      const label = source === 'usda_fndds' ? surveyPortionLabel(p) : portionLabel(p);
       const grams = p.gramWeight;
       return label && typeof grams === 'number' && grams > 0 ? [{ label, grams }] : [];
     }),

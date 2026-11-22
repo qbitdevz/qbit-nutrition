@@ -36,20 +36,39 @@ differs (`expo/appDatabase.ts` vs `testing/nodeDatabase.ts`). Consequence: **tra
 
 ## Shipping `catalog.db`
 
-`catalog.db` is built by `npm run catalog:build` into `catalog-build/` (git-ignored, about 6 MB) and bundled as a Metro
+`catalog.db` is built by `npm run catalog:build` into `catalog-build/` (git-ignored, about 16 MB) and bundled as a Metro
 asset by `expo/catalogAsset.ts` (`require('../../../catalog-build/catalog.db')`; Metro's default `assetExts` already
 include `db`). So:
 
 - **Run `npm run catalog:build` before `expo start`, `expo run:android`, Gradle or `expo export`.** Without the file the
   bundle fails to resolve the require, on purpose.
 - The release workflow (docs/06 section 7) must run the same step before the Gradle build. It only downloads CC0 USDA
-  files, so it costs nothing, and the downloads are cached in `catalog-build/downloads/`.
+  files (Foundation Foods, SR Legacy and Survey Foods/FNDDS), so it costs nothing, and the downloads are cached in
+  `catalog-build/downloads/`. Which data sets are bundled, and why others are not, is in `docs/catalog-sources.md`.
 - At startup, `expo/catalogDatabase.ts` copies the asset into the SQLite directory with `importDatabaseFromAssetAsync`
   (the code path behind `<SQLiteProvider assetSource>`), only when the asset's content hash differs from the one in
   `setting.catalog_asset_hash`, then opens it as a **separate read-only connection** (`PRAGMA query_only = ON`).
   The docs/08 text says "attached to `app.db`"; nothing in phase 1 needs a cross-database join (items store snapshots),
   so a second connection is simpler and keeps the catalog replaceable.
 
-Trade-off: not committing the binary keeps git history small (every catalog version would add 6 MB forever) and
+Trade-off: not committing the binary keeps git history small (every catalog version would add 16 MB forever) and
 keeps the data reproducible from its sources, at the price of one extra build step and a first build that needs
 network access (or a warm `catalog-build/downloads/`).
+
+## What is in `catalog.db`
+
+Built from `scripts/catalog/` (spec `odd/tasks/catalog-expansion.md`):
+
+- **Foods**: USDA Foundation Foods, SR Legacy and Survey Foods (FNDDS, mixed dishes as eaten), de-duplicated across sources
+  (Foundation > SR Legacy > FNDDS, `docs/catalog-sources.md` section 4). `food.source` and `food.source_id` say where each row comes from.
+- **Names**: `food_name.origin` is `source` (English as USDA writes it), `handwritten`, `reviewed` (a composed name a person accepted) or
+  `composed` (the Spanish name) or `synonym` (an alias from the regional-synonym groups). Every food has a Spanish name; no nutrient value depends on a name.
+- **Search**: `core/catalog` ranks FTS candidates (`ranking.ts`): whole words over prefixes, plain staples over specialty variants,
+  cooked or raw by the cue in the query or the model's preparation, and generic over branded entries.
+- Quality gates over the built catalog and the everyday query set run in `npx jest` when `catalog-build/catalog.db` exists
+  (`scripts/catalog/__tests__/translationQuality.test.ts`, `src/core/catalog/__tests__/searchQuality.test.ts`) and are skipped, with the reason in
+  the test name, when it does not.
+- **Portions**: `food_portion` has every household measure in English and in Spanish (`locale = 'es'`, same grams). `features/logging/foods.ts` reads
+  the labels of the app language and falls back to English for a food that has none.
+- **Regional foods**: six foods (alfajor, tortilla española, yerba mate, mate cocido) come from the reviewed selection of Branded Foods in
+  `scripts/catalog/data/regional-foods.json` (`source = usda_branded`); see `docs/catalog-sources.md` section 6.

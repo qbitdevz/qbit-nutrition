@@ -70,6 +70,20 @@ describe('About (S8)', () => {
     expect(within(sources).getByText(/made available under the Open Database License \(ODbL\)/)).toBeOnTheScreen();
   });
 
+  it('names every bundled data set, its license, and that Spanish names carry no nutrient values (S4, S5)', async () => {
+    await renderApp(<AboutScreen />, { services });
+    const sources = await screen.findByTestId('data-sources');
+    expect(within(sources).getByText(/Foundation Foods, SR Legacy and Survey Foods \(FNDDS 2021-2023\), all in the public domain \(CC0 1\.0\)/)).toBeOnTheScreen();
+    expect(within(sources).getByText(/Spanish names and search synonyms were written for this app and contain no nutrient values/)).toBeOnTheScreen();
+  });
+
+  it('says the same in Spanish', async () => {
+    await renderApp(<AboutScreen />, { services, locale: 'es' });
+    const sources = await screen.findByTestId('data-sources');
+    expect(within(sources).getByText(/Foundation Foods, SR Legacy y Survey Foods \(FNDDS 2021-2023\), todos de dominio público \(CC0 1\.0\)/)).toBeOnTheScreen();
+    expect(within(sources).getByText(/Los nombres en español y los sinónimos de búsqueda se escribieron para esta app y no contienen valores nutricionales/)).toBeOnTheScreen();
+  });
+
   it('names providers as compatibility only, with a not-affiliated line, in both languages', async () => {
     await renderApp(<AboutScreen />, { services });
     const names = await screen.findByTestId('about-names');
