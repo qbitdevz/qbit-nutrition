@@ -1,5 +1,6 @@
 import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react-native';
 import { useState } from 'react';
+import { StyleSheet } from 'react-native';
 
 import { hangingResponder, openaiText, res, validScanResult } from '@/core/ai/__fixtures__/fixtures';
 import { createHarness, type Harness } from '@/data/testing/harness';
@@ -411,6 +412,56 @@ describe('review of a scan (S5, S6, S7, S11)', () => {
     await press('Retake');
     expect(await screen.findByRole('button', { name: 'Take photo' })).toBeOnTheScreen();
     expect(kit.platform.state.temp.size).toBe(0);
+  });
+});
+
+describe('the review header of a scan (S5, the Orbit artboard)', () => {
+  const flat = (id: string) => StyleSheet.flatten(screen.getByTestId(id).props.style) as Record<string, unknown>;
+
+  it('puts the photo full-bleed behind the back and Retake controls and the "AI found" chip, with the title in the content', async () => {
+    await open();
+    await reachReview();
+    const hero = screen.getByTestId('review-hero');
+    // The photo, a scrim for the controls, and the three controls are all inside the header.
+    expect(within(hero).getByTestId('scan-photo')).toBeOnTheScreen();
+    expect(within(hero).getByTestId('review-scrim')).toBeOnTheScreen();
+    expect(within(hero).getByRole('button', { name: 'Back' })).toBeOnTheScreen();
+    expect(within(hero).getByRole('button', { name: 'Retake' })).toBeOnTheScreen();
+    expect(within(hero).getByText(/AI found 2 items/)).toBeOnTheScreen();
+    // The photo fills the header edge to edge; the title is the page heading below it, not a bar above it.
+    expect(flat('scan-photo')).toMatchObject({ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 });
+    expect(screen.queryByTestId('top-back')).toBeNull();
+    expect(screen.getByRole('header', { name: 'Review your meal' })).toBeOnTheScreen();
+  });
+
+  it('keeps its controls below the status bar and lets the header grow, so large text is never clipped', async () => {
+    h = await createHarness();
+    kit = await createScanKit(h);
+    await renderApp(<Flow />, { services: kit.services, scanPlatform: kit.platform, insets: { top: 48, bottom: 24 } });
+    await shootAndAnalyze();
+    await screen.findByText(/AI found 2 items/);
+    const hero = flat('review-hero');
+    expect(hero.paddingTop as number).toBeGreaterThanOrEqual(48);
+    expect(hero.height).toBeUndefined(); // content-sized with a minimum, never a fixed height
+    expect(hero.minHeight).toEqual(expect.any(Number));
+    // The chip text can wrap (no line limit), and the controls keep their 48 dp touch size.
+    expect(screen.getByText(/AI found 2 items/).props.numberOfLines).toBeUndefined();
+    expect(flat('review-retake').minHeight).toBeGreaterThanOrEqual(48);
+  });
+
+  it('keeps the plain header (title in the bar, no photo) for a meal with no photo', async () => {
+    await open(undefined, undefined, <Flow start="manual" />);
+    const field = await screen.findByLabelText(/^Search foods$/);
+    await fireEvent.changeText(field, 'lentils');
+    await fireEvent.press((await screen.findAllByRole('button', { name: /^Lentils, raw/ }))[0]!);
+    await fireEvent.changeText(await screen.findByLabelText('Amount in grams'), '100');
+    await press('Add to meal');
+    await screen.findByRole('button', { name: 'Save meal' });
+    expect(screen.queryByTestId('review-hero')).toBeNull();
+    expect(screen.queryByTestId('scan-photo')).toBeNull();
+    expect(screen.getByTestId('top-back')).toBeOnTheScreen();
+    expect(screen.getByRole('header', { name: 'Review your meal' })).toBeOnTheScreen();
+    expect(screen.queryByRole('button', { name: 'Retake' })).toBeNull();
   });
 });
 

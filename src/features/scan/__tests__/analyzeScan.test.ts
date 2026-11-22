@@ -80,6 +80,16 @@ describe('analyzePhoto: success', () => {
     expect((await h.repos.scans.list())[0]).toMatchObject({ status: 'ok', repaired: 1 });
   });
 
+  it.each([
+    ['both calls reported', true, true, 1624, 480],
+    ['only the first reported', true, false, null, null],
+    ['only the second reported', false, true, null, null],
+  ])('records the tokens of a repaired scan only when every call reported (S7): %s', async (_name, first, second, input, output) => {
+    await setup([res(200, openaiText('not json', first)), res(200, openaiText(JSON.stringify(validScanResult), second))]);
+    await run();
+    expect((await h.repos.scans.list())[0]).toMatchObject({ status: 'ok', repaired: 1, inputTokens: input, outputTokens: output });
+  });
+
   it('uses the model fallback values, as an AI estimate, for a food that is not in the catalog', async () => {
     const unknown = { ...validScanResult.items[0]!, name: 'Zorblax stew', canonical_name_en: 'zorblax stew', search_terms_en: ['zorblax'], fallback_per_100g: { kcal: 100, protein_g: 5, carbs_g: 10, fat_g: 4 } };
     await setup([okReply({ ...validScanResult, items: [unknown] })]);

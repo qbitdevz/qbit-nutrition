@@ -33,13 +33,15 @@ export interface RenderAppOptions {
   scheme?: 'dark' | 'light';
   /** The camera, gallery, image and file modules; a fake with nothing in it unless the test gives one. */
   scanPlatform?: ScanPlatform;
+  /** The system bars' safe-area insets; none unless the test gives them (a notch, a status bar). */
+  insets?: { top: number; bottom: number };
 }
 
-export async function renderApp(ui: ReactElement, { services, locale = 'en', reducedMotion = true, scheme = 'dark', scanPlatform }: RenderAppOptions) {
+export async function renderApp(ui: ReactElement, { services, locale = 'en', reducedMotion = true, scheme = 'dark', scanPlatform, insets }: RenderAppOptions) {
   const platform = scanPlatform ?? createFakeScanPlatform();
   await i18n.changeLanguage(locale);
   return render(
-    <SafeAreaProvider initialMetrics={{ frame: { x: 0, y: 0, width: 390, height: 844 }, insets: { top: 0, left: 0, right: 0, bottom: 0 } }}>
+    <SafeAreaProvider initialMetrics={{ frame: { x: 0, y: 0, width: 390, height: 844 }, insets: { top: insets?.top ?? 0, left: 0, right: 0, bottom: insets?.bottom ?? 0 } }}>
       <ThemeProvider scheme={scheme}>
         <MotionProvider reduced={reducedMotion}>
           <AppProvider open={async () => services}>

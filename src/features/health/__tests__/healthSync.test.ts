@@ -209,6 +209,36 @@ describe('writing meals', () => {
     expect(platform.state.records.size).toBe(1); // one record, never duplicated
   });
 
+  it('follows the undo of a removed item: the record loses the item, then gets it back, and stays one record (S4)', async () => {
+    const meal = await saveMeal();
+    const total = 234 + 198;
+    h.setNow('2026-06-15T12:00:10.000Z');
+    await repos.meals.deleteItem(meal.items[1]!.id);
+    await health.idle();
+    expect(platform.state.records.get(meal.id)!.energyKcal).toBeCloseTo(234, 9);
+
+    h.setNow('2026-06-15T12:00:20.000Z');
+    await repos.meals.restoreItem(meal.items[1]!);
+    await health.idle();
+    expect(platform.state.records.get(meal.id)!.energyKcal).toBeCloseTo(total, 9);
+    expect(platform.state.records.size).toBe(1);
+    expect((await health.status()).pending).toBe(0);
+  });
+
+  it('follows the undo of a removed meal: the record is deleted, then written again under the same id', async () => {
+    const meal = await saveMeal();
+    const original = (await repos.meals.getMeal(meal.id))!;
+    await repos.meals.deleteMeal(meal.id);
+    await health.idle();
+    expect(platform.state.records.size).toBe(0);
+
+    h.setNow('2026-06-15T12:00:30.000Z');
+    await repos.meals.restoreMeal(original);
+    await health.idle();
+    expect(platform.state.records.get(meal.id)!.energyKcal).toBeCloseTo(234 + 198, 9);
+    expect(platform.state.records.size).toBe(1);
+  });
+
   it('deletes the record when the meal is deleted', async () => {
     const meal = await saveMeal();
     await repos.meals.deleteMeal(meal.id);

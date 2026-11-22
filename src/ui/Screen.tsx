@@ -18,15 +18,20 @@ interface ScreenFrameProps {
   header?: ReactNode;
   /** Pinned below the scrolling content, above the keyboard (totals and the Save button, form actions). */
   footer?: ReactNode;
+  /**
+   * The header draws under the status bar (a photo header): the frame leaves the top safe area to the header, which must pad its own
+   * controls with `useSafeAreaInsets().top`.
+   */
+  edgeToEdge?: boolean;
 }
 
 /** Screen background with the ambient tint, safe areas, and the shared side padding. */
-export function ScreenFrame({ children, scroll = true, bottomInset = 0, ambient = 'blue', header, footer }: ScreenFrameProps) {
+export function ScreenFrame({ children, scroll = true, bottomInset = 0, ambient = 'blue', header, footer, edgeToEdge = false }: ScreenFrameProps) {
   const { colors } = useTheme();
   return (
     <View style={[styles.root, { backgroundColor: colors.bg }]}>
       <Ambient tone={ambient} />
-      <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
+      <SafeAreaView style={styles.safe} edges={edgeToEdge ? ['left', 'right'] : ['top', 'left', 'right']}>
         <KeyboardAvoidingView style={styles.safe} behavior="padding">
           {header}
           {scroll ? (

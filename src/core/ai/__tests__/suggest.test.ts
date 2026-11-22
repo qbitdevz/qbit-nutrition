@@ -157,6 +157,17 @@ describe('suggestFoods: the result', () => {
     expect(out).toMatchObject({ repaired: false, outputModeUsed: 'schema', promptVersion: 1, usage: { inputTokens: 812, outputTokens: 240 } });
   });
 
+  it('a repaired answer whose calls did not both report tokens carries a partial figure, never a partial total (S7)', async () => {
+    const usage = { prompt_tokens: 812, completion_tokens: 240 };
+    for (const [first, second] of [[usage, false], [false, usage]] as const) {
+      const fake = fakeFetch(res(200, openaiText('not json', first)), res(200, openaiText(JSON.stringify(list()), second)));
+      const out = await suggestFoods(input(openai), deps(fake));
+      expect(out.repaired).toBe(true);
+      expect(out.usage).toBeUndefined();
+      expect(out.usagePartial).toEqual({ inputTokens: 812, outputTokens: 240 });
+    }
+  });
+
   it('asks for the suggestions schema, not the scan schema, in the structured-output modes', async () => {
     const fake = fakeFetch(res(200, openaiText(JSON.stringify(list()))));
     await suggestFoods(input(openai), deps(fake));

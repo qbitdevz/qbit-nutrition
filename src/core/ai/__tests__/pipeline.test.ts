@@ -65,6 +65,40 @@ describe('analyzeMeal', () => {
     expect(out.outputModeUsed).toBe('schema');
   });
 
+  describe('token usage when the repair call ran (S7)', () => {
+    const bad = { ...validScanResult, items: [{ ...validScanResult.items[0], grams: 0 }] };
+    const usage = { prompt_tokens: 812, completion_tokens: 240 };
+
+    it('reports only the tokens of the call that reported, marked as partial, when the second call reports none', async () => {
+      const fake = fakeFetch(res(200, openaiText(JSON.stringify(bad), usage)), res(200, openaiText(JSON_TEXT, false)));
+      const out = await analyzeMeal(input(openai), deps(fake));
+      expect(out.repaired).toBe(true);
+      expect(out.usage).toBeUndefined(); // never a partial sum presented as the total
+      expect(out.usagePartial).toEqual({ inputTokens: 812, outputTokens: 240 });
+    });
+
+    it('does the same when the first call reports none and the second reports', async () => {
+      const fake = fakeFetch(res(200, openaiText(JSON.stringify(bad), false)), res(200, openaiText(JSON_TEXT, usage)));
+      const out = await analyzeMeal(input(openai), deps(fake));
+      expect(out.repaired).toBe(true);
+      expect(out.usage).toBeUndefined();
+      expect(out.usagePartial).toEqual({ inputTokens: 812, outputTokens: 240 });
+    });
+
+    it('reports nothing at all when neither call reports', async () => {
+      const fake = fakeFetch(res(200, openaiText(JSON.stringify(bad), false)), res(200, openaiText(JSON_TEXT, false)));
+      const out = await analyzeMeal(input(openai), deps(fake));
+      expect(out.usage).toBeUndefined();
+      expect(out.usagePartial).toBeUndefined();
+    });
+
+    it('a single call that reports is complete, and has no partial figure', async () => {
+      const out = await analyzeMeal(input(openai), deps(fakeFetch(res(200, openaiText(JSON_TEXT)))));
+      expect(out.usage).toEqual({ inputTokens: 812, outputTokens: 240 });
+      expect(out.usagePartial).toBeUndefined();
+    });
+  });
+
   describe('repair', () => {
     const bad = { ...validScanResult, items: [{ ...validScanResult.items[0], grams: 0 }] };
 

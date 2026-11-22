@@ -116,24 +116,41 @@ describe('meal detail (S7)', () => {
     expect((await h.repos.meals.getDay(YESTERDAY)).totals.kcal).toBeCloseTo(507.5, 6);
   });
 
-  it('deletes one item after confirmation and changes the totals', async () => {
+  it('removes one item at once, with no dialog, and undo puts it back exactly (S4)', async () => {
     const meal = await seedLunch();
+    const before = (await h.repos.meals.getMeal(meal.id))!;
+    await h.repos.foodUsage.setFavorite({ source: 'catalog', id: before.items[0]!.foodRef! }, true);
+    const usage = { recents: await h.repos.foodUsage.recents(20), favorites: await h.repos.foodUsage.favorites() };
     await open(meal.id);
     await screen.findByText(CHICKEN);
 
     await press(`Delete ${CHICKEN}`);
-    expect(await screen.findByText('Delete this item?')).toBeOnTheScreen();
-    // Keeping it changes nothing.
-    await press('Keep it');
-    await waitFor(() => expect(screen.queryByText('Delete this item?')).toBeNull());
-    expect((await h.repos.meals.getDay(YESTERDAY)).meals[0]!.items).toHaveLength(2);
-
-    await press(`Delete ${CHICKEN}`);
-    await press('Delete item');
+    // Straight to the outcome: no confirmation, a message that names it, and the action to take it back.
     await waitFor(async () => expect((await h.repos.meals.getDay(YESTERDAY)).meals[0]!.items).toHaveLength(1));
-    const day = await h.repos.meals.getDay(YESTERDAY);
-    expect(day.totals.kcal).toBeCloseTo(260, 6);
-    await waitFor(() => expect(screen.queryByText(CHICKEN)).toBeNull());
+    expect(screen.queryByText('Delete this item?')).toBeNull();
+    expect((await h.repos.meals.getDay(YESTERDAY)).totals.kcal).toBeCloseTo(260, 6);
+    await waitFor(() => expect(screen.queryByLabelText(`Grams of ${CHICKEN}`)).toBeNull());
+    expect(await screen.findByText(`${CHICKEN} deleted`)).toBeOnTheScreen();
+
+    await press('Undo');
+    await waitFor(async () => expect((await h.repos.meals.getDay(YESTERDAY)).meals[0]!.items).toHaveLength(2));
+    const after = (await h.repos.meals.getMeal(meal.id))!;
+    expect(after.items).toEqual(before.items); // same ids, order, grams, origin, confidences, snapshots
+    expect((await h.repos.meals.getDay(YESTERDAY)).totals.kcal).toBeCloseTo(507.5, 6);
+    expect({ recents: await h.repos.foodUsage.recents(20), favorites: await h.repos.foodUsage.favorites() }).toEqual(usage);
+    expect(await screen.findByLabelText(`Grams of ${CHICKEN}`)).toBeOnTheScreen();
+  });
+
+  it('keeps the removal when the undo is not taken, and says so when the undo can no longer be done', async () => {
+    const meal = await seedLunch();
+    await open(meal.id);
+    await screen.findByText(CHICKEN);
+    await press(`Delete ${CHICKEN}`);
+    await screen.findByText(`${CHICKEN} deleted`);
+    await h.repos.meals.deleteMeal(meal.id); // the meal went away meanwhile
+    await press('Undo');
+    expect(await screen.findByText('Could not undo. Nothing was changed.')).toBeOnTheScreen();
+    expect(await h.repos.meals.getMeal(meal.id)).toBeNull();
   });
 
   it('deletes the whole meal after confirmation, with undo', async () => {
@@ -160,18 +177,27 @@ describe('meal detail (S7)', () => {
     await waitFor(async () => expect((await h.repos.meals.getDay(YESTERDAY)).meals).toHaveLength(1));
     const day = await h.repos.meals.getDay(YESTERDAY);
     expect(day.totals.kcal).toBeCloseTo(507.5, 6);
-    expect(day.meals[0]).toMatchObject({ slot: 'lunch' });
+    expect(day.meals[0]).toMatchObject({ id: meal.id, slot: 'lunch' }); // the same meal, not a copy
     expect(day.meals[0]!.items.map((i) => i.grams)).toEqual([150, 200]);
   });
 
-  it('deleting the only item deletes the meal', async () => {
+  it('removing the only item removes the meal, like deleting it, and undo brings back the same meal and item', async () => {
     const meal = await h.repos.meals.save({ eatenAt: new Date(2026, 10, 20, 8, 0), slot: 'breakfast', source: 'manual', items: [await item('banana', 118)] });
-    await open(meal.id);
+    const before = (await h.repos.meals.getMeal(meal.id))!;
+    const usage = await h.repos.foodUsage.recents(20);
+    const onClose = jest.fn();
+    await open(meal.id, { onClose });
     await screen.findAllByText('Bananas, raw');
     await press('Delete Bananas, raw');
-    expect(await screen.findByText('This is the only item, so the meal is deleted too.')).toBeOnTheScreen();
-    await press('Delete item');
     await waitFor(async () => expect((await h.repos.meals.getDay(YESTERDAY)).meals).toHaveLength(0));
+    expect(screen.queryByText('Delete this item?')).toBeNull();
+    expect(onClose).toHaveBeenCalled();
+    expect(await screen.findByText('Bananas, raw deleted, and so was the meal')).toBeOnTheScreen();
+
+    await press('Undo');
+    await waitFor(async () => expect((await h.repos.meals.getDay(YESTERDAY)).meals).toHaveLength(1));
+    expect(await h.repos.meals.getMeal(meal.id)).toEqual(before);
+    expect(await h.repos.foodUsage.recents(20)).toEqual(usage);
   });
 
   it('changes the meal type', async () => {

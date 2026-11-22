@@ -7,6 +7,7 @@ import { createHttpClient } from './http';
 import { PROMPT_VERSION, USER_INSTRUCTION, buildRepairMessage, buildSystemPrompt } from './prompt';
 import { extractJson } from './jsonText';
 import { ScanResult } from './schema';
+import { createUsageTally } from './usage';
 import { suggestFoods } from './suggest';
 import type { SuggestInput } from './suggest';
 import type {
@@ -15,7 +16,6 @@ import type {
   AnalyzeOutput,
   ProviderProfile,
   TestConnectionResult,
-  Usage,
 } from './types';
 import { assertSecureBaseUrl } from './url';
 
@@ -40,12 +40,6 @@ function parseScanResult(text: string): Parsed {
   return { ok: false, message: issues };
 }
 
-function addUsage(total: Usage | undefined, next: Usage | undefined): Usage | undefined {
-  if (!next) return total;
-  if (!total) return { ...next };
-  return { inputTokens: total.inputTokens + next.inputTokens, outputTokens: total.outputTokens + next.outputTokens };
-}
-
 export async function analyzeMeal(
   input: AnalyzeInput,
   deps: AiDeps,
@@ -65,7 +59,7 @@ export async function analyzeMeal(
   const system = buildSystemPrompt({ locale: input.locale, hint: input.hint });
   const maxRepairs = options.maxRepairs ?? 1;
 
-  let usage: Usage | undefined;
+  const usage = createUsageTally();
   let repair: { previousOutput: string; message: string } | undefined;
   let lastText = '';
 
@@ -81,7 +75,7 @@ export async function analyzeMeal(
       signal: input.signal,
       http,
     });
-    usage = addUsage(usage, response.usage);
+    usage.add(response.usage);
     lastText = response.text;
 
     const parsed = parseScanResult(response.text);
@@ -90,7 +84,8 @@ export async function analyzeMeal(
       if (!result.is_food || result.items.length === 0) throw new NoFoodDetectedError();
       return {
         result,
-        usage,
+        usage: usage.complete,
+        usagePartial: usage.partial,
         latencyMs: now() - started,
         repaired: attempt > 0,
         outputModeUsed: mode,
