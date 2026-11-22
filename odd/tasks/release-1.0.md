@@ -35,6 +35,6 @@ Traceability: internal technical work and fixes inside approved requirements (`b
 
 - **S10** — Independent verification of ad21859 after the 1.0.0 release (Risk: item 1) reproduced two defects in the goal repair (`src/data/repositories/goals.ts`): setting a goal deletes an open goal with a legitimate date when the device clock is behind that date at that moment, and deletes outright an open goal that starts before 2000 instead of closing it, erasing the targets of every day it covered. Neither is reported to the person. A goal left out of an export is reported only by a transient note that does not say targets are lost.
 
-- [ ] T6 — S10 — Goal repair that never deletes a legitimate goal, reports what it did, and an export note that states the consequence; version 1.0.1 — worker — commit:
+- [x] T6 — S10 — Goal repair that never deletes a legitimate goal, reports what it did, and an export note that states the consequence; version 1.0.1 — worker — commit: a8ac195
 
 - **L6** — 2026-11-22 — v1.0.0 published (tag at 22ddbb2; signed APK and checksum attached). First tag run failed in the publish job because GitHub dropped a job output containing a secret value (the key alias is a substring of the APK name); fixed in PR #12 and the tag was moved with the owner's explicit approval. Post-release verification found the goal-repair defects above; patch 1.0.1 opened.
