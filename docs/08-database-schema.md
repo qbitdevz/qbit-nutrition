@@ -195,6 +195,10 @@ Cache of Open Food Facts lookups: `barcode` (PK), `name`, `brand`, per-100 g
 values, `serving_g`, `fetched_at`, and `raw_json`. Entries refresh after a
 set age.
 
+### `food_collection`, `imported_food`, `imported_food_token`
+
+Food tables a person imported from their own file (`odd/tasks/food-table-import.md`). A collection has a name, file name, date, and optional preset; its foods store per-100 g values as JSON where a missing key means unknown; the token table is the name index used by search. Removing a collection cascades to its foods and leaves logged meals untouched.
+
 ### `food_usage`
 
 Recents and favorites: `food_source`, `food_ref` (composite PK),

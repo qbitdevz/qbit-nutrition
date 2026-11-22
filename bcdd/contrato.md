@@ -2,10 +2,10 @@
 bcdd: 1
 proyecto: Qbit Nutrition
 cliente: Proyecto personal (el dueño del producto)
-version: 6
+version: 7
 estado: aprobado
 actualizado: 2026-11-22
-ultima_fuente: chat con el dueño del 2026-11-22 (confirmación del diseño)
+ultima_fuente: chat con el dueño del 2026-11-22 (importar tablas de alimentos)
 aprobado_equipo: el dueño del producto · 2026-11-22
 aprobado_cliente: el dueño del producto · 2026-11-22 · chat
 ---
@@ -74,6 +74,7 @@ flowchart TD
 | RN-13 | Las calorías, proteínas, carbohidratos y demás nutrientes diarios se recomiendan a partir del peso, la altura y los demás datos de la persona que influyen: edad, sexo, nivel de actividad y objetivo. | Acordada | chat con el dueño · 2026-11-21 · «en base al peso, altura y todo lo que influya» |
 | RN-14 | Valor inicial del mínimo diario de calorías, antes de que la persona lo ajuste: 1.200 para mujeres y 1.500 para hombres, según las Guías Alimentarias para Estadounidenses 2015–2020. | Acordada | chat con el dueño · 2026-11-22 · «lo apruebo» |
 | RN-15 | El diseño es moderno, con animaciones, efectos, transiciones y botones redondeados, cuida la experiencia de uso y lleva la identidad de la marca personal qbitdev. | Acordada | chat con el dueño · 2026-11-21 · «moderno con animaciones, efectos, transiciones, botones redondeados» |
+| RN-16 | Las tablas de alimentos cuya licencia no permite redistribuirlas no se incluyen en la aplicación ni en su código: cada persona importa su propio archivo y esos datos quedan solo en su teléfono. | Acordada | chat con el dueño · 2026-11-22 · «me gusta la opción 1» |
 
 ## 4. Requisitos
 
@@ -97,8 +98,12 @@ flowchart TD
 | REQ-16 | Conectar con la aplicación de salud del teléfono Android | Acordado | Sin cambios | Con el permiso de la persona, las comidas guardadas aparecen en la aplicación de salud del teléfono y el peso registrado allí aparece en Qbit Nutrition | RN-04, RN-11 | chat con el dueño · 2026-11-21 · «me gustaria que ya se lo incluya» |
 | REQ-17 | Pedir sugerencias de comidas hechas con IA | Acordado | Sin cambios | La persona pide sugerencias y recibe alimentos que encajan con lo que le queda del día; para eso se envían solo los números del día, nunca fotos ni historial | RN-02, RN-04 | chat con el dueño · 2026-11-21 · «me gustaria que ya se lo incluya» |
 | REQ-18 | Registrar un producto envasado con su código de barras | Acordado | Sin cambios | Al leer el código de barras de un producto conocido aparecen su nombre y sus valores nutricionales, y se puede guardar indicando la cantidad | RN-04, RN-05 | chat con el dueño · 2026-11-21 · «Sí, incluirlo» |
+| REQ-19 | Importar una tabla de alimentos propia desde un archivo | Acordado | Nuevo | Con un archivo de una tabla de alimentos descargado por la persona, la aplicación carga sus alimentos en el teléfono, se los puede buscar y registrar como cualquier otro, y se los puede quitar todos juntos | RN-03, RN-16 | chat con el dueño · 2026-11-22 · «así yo las importo una vez que tenga la app instalada» |
 
 ## 5. Cambios
+
+### v7 — 2026-11-22 — importar tablas de alimentos
+- **Nuevo:** REQ-19 y RN-16. El dueño quiere tener completas las tablas de alimentos que no se pueden incluir en la aplicación por su licencia; las importa cada persona en su propio teléfono.
 
 ### v6 — 2026-11-22 — confirmación del diseño
 - **Pregunta cerrada:** P-06, el dueño confirmó la propuesta de diseño "Orbit" («el orbit esta bien»).

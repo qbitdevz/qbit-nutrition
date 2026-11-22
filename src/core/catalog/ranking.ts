@@ -287,3 +287,18 @@ const asksFor = (prep: Preparation, method: string): boolean => (METHOD_WORDS[pr
 export function wordForms(word: string): string[] {
   return stemForms(word);
 }
+
+/**
+ * Scores names that did not come from the catalog (the person's imported tables) with the catalog's own rules, so the two kinds of
+ * result compare on one scale: the same word matching, plurals, prefix of the word being typed, preparation cues and penalties. The
+ * names are not USDA descriptions, so the rule about the head noun of an English description is switched off (locale `es`).
+ * Returns 0..1 like `search` does.
+ */
+export function createNameScorer(query: string, options: { prefixLastToken?: boolean; searchTerms?: readonly string[] } = {}): (name: string) => number {
+  const ctx: RankContext = {
+    variants: buildVariants(query, options.searchTerms ?? []),
+    preparation: detectPreparation(query),
+    prefixLastToken: options.prefixLastToken ?? true,
+  };
+  return (name) => Math.min(1, scoreCandidate(ctx, { names: [{ name, isAlias: false, locale: 'es' }], state: 'unknown', isBranded: false }));
+}

@@ -5,8 +5,11 @@ import {
   barcodeProduct,
   bodyMeasurement,
   customFood,
+  foodCollection,
   foodUsage,
   goal,
+  importedFood,
+  importedFoodToken,
   matchMemory,
   meal,
   mealItem,
@@ -19,6 +22,7 @@ import type { AiProvider } from './aiProviders';
 import { toBarcodeRecord, toBarcodeRow, type BarcodeProductRecord } from './barcodeProducts';
 import { toCustomFood, type CustomFood } from './customFoods';
 import type { FoodUsageEntry } from './foodUsage';
+import { insertCollection, type ImportedCollectionWithFoods } from './importedFoods';
 import type { Goal } from './goals';
 import type { MatchMemoryEntry } from './matchMemory';
 import { loadMeals, type MealWithItems } from './meals';
@@ -39,6 +43,11 @@ export interface BackupSnapshot {
   /** With their items and nutrient snapshots. `scanId` is ignored when writing: scans are not part of a snapshot. */
   meals: MealWithItems[];
   customFoods: CustomFood[];
+  /**
+   * The food tables the person imported, with all their foods. They are the person's data (they chose the file), so a personal export carries them
+   * and a restore brings them back: the export file then CONTAINS those tables, and must not be shared as if it did not.
+   */
+  importedCollections: ImportedCollectionWithFoods[];
   /** Only the cached products that a meal item, `food_usage` or `match_memory` refers to. */
   barcodeProducts: BarcodeProductRecord[];
   foodUsage: FoodUsageEntry[];
@@ -77,6 +86,9 @@ function wipe(tx: AppTransaction): void {
   tx.delete(foodUsage).run();
   tx.delete(matchMemory).run();
   tx.delete(customFood).run();
+  tx.delete(importedFoodToken).run();
+  tx.delete(importedFood).run();
+  tx.delete(foodCollection).run();
   tx.delete(barcodeProduct).run();
   tx.delete(bodyMeasurement).run();
   tx.delete(goal).run();
@@ -98,6 +110,27 @@ export function createBackupRepository({ db }: RepositoryContext): BackupReposit
         measurements: tx.select().from(bodyMeasurement).orderBy(asc(bodyMeasurement.measuredOn), asc(bodyMeasurement.kind), asc(bodyMeasurement.source)).all(),
         meals: loadMeals(tx, sql`1 = 1`),
         customFoods: tx.select().from(customFood).orderBy(asc(sql`lower(${customFood.name})`), asc(customFood.id)).all().map(toCustomFood),
+        importedCollections: tx
+          .select()
+          .from(foodCollection)
+          .orderBy(asc(foodCollection.importedAt), asc(foodCollection.id))
+          .all()
+          .map((c) => ({
+            id: c.id,
+            name: c.name,
+            fileName: c.fileName,
+            importedAt: c.importedAt,
+            foodCount: c.foodCount,
+            presetId: c.presetId,
+            basis: c.basis,
+            foods: tx
+              .select()
+              .from(importedFood)
+              .where(sql`${importedFood.collectionId} = ${c.id}`)
+              .orderBy(asc(importedFood.seq))
+              .all()
+              .map((f) => ({ id: f.id, collectionId: f.collectionId, name: f.name, group: f.foodGroup, per100g: JSON.parse(f.per100gJson) })),
+          })),
         barcodeProducts: tx
           .select()
           .from(barcodeProduct)
@@ -157,6 +190,8 @@ export function createBackupRepository({ db }: RepositoryContext): BackupReposit
             )
             .run(),
         );
+
+        for (const { foods, ...collection } of snapshot.importedCollections) insertCollection(tx, collection, foods);
 
         insertChunks(snapshot.barcodeProducts, (rows) => tx.insert(barcodeProduct).values(rows.map(toBarcodeRow)).run());
 

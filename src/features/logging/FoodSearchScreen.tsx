@@ -10,6 +10,7 @@ import { useMealDraft } from './draft';
 import { loadFoodView, loadUsage, refKey, rowFromView, searchFoods, type FoodRow, type UsageLists } from './foods';
 import { PortionSheet } from './PortionSheet';
 import { RecipeTag } from './RecipeMethod';
+import { originLabel } from '../foodimport/originLabel';
 
 interface FoodSearchScreenProps {
   /** An item was added to the meal: the route moves on to the review screen. */
@@ -32,6 +33,9 @@ interface FoodSearchScreenProps {
    */
   prefill?: { query: string; grams?: number };
 }
+
+/** What shows where the table has no value: unknown is not zero. */
+const DASH = '–';
 
 const NO_USAGE: UsageLists = { favorites: [], recents: [], lastGrams: new Map() };
 
@@ -227,7 +231,7 @@ function FoodResultRow({ row, favorite, locale, onOpen, onFavorite }: FoodResult
     <View style={[styles.row, { backgroundColor: colors.surface }]}>
       <PressableScale
         accessibilityRole="button"
-        accessibilityLabel={t('log.search.resultLabel', { name: row.name, kcal: formatNumber(locale, row.kcal100g) })}
+        accessibilityLabel={t('log.search.resultLabel', { name: row.name, kcal: row.missing?.includes('kcal') ? DASH : formatNumber(locale, row.kcal100g) })}
         onPress={onOpen}
         scale={pressScale.row}
         pressedStyle={{ backgroundColor: colors.surfaceHigh }}
@@ -238,13 +242,18 @@ function FoodResultRow({ row, favorite, locale, onOpen, onFavorite }: FoodResult
           </AppText>
           <AppText variant="bodySm" tone="muted">
             {t('log.search.per100', {
-              kcal: formatNumber(locale, row.kcal100g),
-              protein: formatDecimal(locale, row.protein100g, 1),
-              carbs: formatDecimal(locale, row.carbs100g, 1),
-              fat: formatDecimal(locale, row.fat100g, 1),
+              kcal: row.missing?.includes('kcal') ? DASH : formatNumber(locale, row.kcal100g),
+              protein: row.missing?.includes('protein') ? DASH : formatDecimal(locale, row.protein100g, 1),
+              carbs: row.missing?.includes('carbs') ? DASH : formatDecimal(locale, row.carbs100g, 1),
+              fat: row.missing?.includes('fat') ? DASH : formatDecimal(locale, row.fat100g, 1),
             })}
           </AppText>
           {row.recipe ? <RecipeTag /> : null}
+          {row.imported ? (
+            <View style={[styles.tag, { backgroundColor: colors.surfaceRaised }]} testID="imported-tag">
+              <AppText variant="caption">{originLabel(t, row.imported)}</AppText>
+            </View>
+          ) : null}
           {row.custom || row.barcode ? (
             <View style={[styles.tag, { backgroundColor: colors.surfaceRaised }]}>
               <AppText variant="caption">{row.custom ? t('log.search.custom') : t('log.search.barcodeTag')}</AppText>

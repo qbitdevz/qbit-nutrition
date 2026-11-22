@@ -98,7 +98,7 @@ describe('BackupRepository.replaceAll', () => {
 
   it('an empty snapshot replaces everything with nothing', async () => {
     await seedEverything(h);
-    await h.repos.backup.replaceAll({ profile: null, goals: [], measurements: [], meals: [], customFoods: [], barcodeProducts: [], foodUsage: [], matchMemory: [], aiProviders: [], settings: {} });
+    await h.repos.backup.replaceAll({ profile: null, goals: [], measurements: [], meals: [], customFoods: [], importedCollections: [], barcodeProducts: [], foodUsage: [], matchMemory: [], aiProviders: [], settings: {} });
     expect((await h.repos.backup.read()).meals).toEqual([]);
     expect(count(h, 'meal_item_nutrient')).toBe(0);
   });
@@ -134,8 +134,11 @@ describe('coverage of the data model', () => {
       'barcode_product',
       'body_measurement',
       'custom_food',
+      'food_collection',
       'food_usage',
       'goal',
+      'imported_food',
+      'imported_food_token',
       'match_memory',
       'meal',
       'meal_item',

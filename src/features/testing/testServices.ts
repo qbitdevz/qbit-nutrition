@@ -18,6 +18,7 @@ import type { FetchLike } from '@/core/ai/types';
 import { createMemorySecretStore } from '@/platform/memorySecretStore';
 import type { SecretStore } from '@/platform/secretStore';
 import { offlineFetch } from './offline';
+import { withImportedMatching } from '../foodimport/importedMatch';
 import { createBarcodeClient } from '../barcode/barcodeClient';
 import { createBarcodeService } from '../barcode/barcodeService';
 import { createInactiveHealthSync } from '../health/healthSync';
@@ -57,7 +58,7 @@ export function createTestServices(
   options: { fetch?: FetchLike; /** What Open Food Facts lookups use; offline unless the test gives one. */ barcodeFetch?: FetchLike; /** Add the recipe-calculated fixture dish to the catalog. */ recipes?: boolean } = {},
 ): AppServices & { close(): void; secrets: SecretStore } {
   const client = nodeCatalogClient(catalogFile(options.recipes === true));
-  const catalog = createCatalog({ db: createSqliteCatalogDb(client), memory: h.repos.matchMemory });
+  const catalog = withImportedMatching(createCatalog({ db: createSqliteCatalogDb(client), memory: h.repos.matchMemory }), h.repos.importedFoods);
   const secrets = createMemorySecretStore();
   const ai = createAiServices({ repos: h.repos, secrets, fetch: options.fetch ?? offlineFetch, retryDelayMs: 0 });
   const barcode = createBarcodeService({

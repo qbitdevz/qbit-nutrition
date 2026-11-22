@@ -13,6 +13,7 @@ import type { SecretStore } from '@/platform/secretStore';
 import { createBarcodeClient } from '../barcode/barcodeClient';
 import { createBarcodeService } from '../barcode/barcodeService';
 import { barcodeUserAgent } from '../barcode/userAgent';
+import { withImportedMatching } from '../foodimport/importedMatch';
 import { createHealthSync } from '../health/healthSync';
 import { withHealthSync } from '../health/syncedRepos';
 import { createAiServices } from './aiServices';
@@ -47,7 +48,8 @@ export async function openServicesOnce(
   const repos = withHealthSync(baseRepos, health);
 
   const catalogDb = await openCatalogDatabase(repos.settings);
-  catalog = createCatalog({ db: wrapCatalogDb(catalogDb), memory: repos.matchMemory });
+  // The AI scan matcher also considers the tables the person imported (never ahead of an equal catalog match).
+  catalog = withImportedMatching(createCatalog({ db: wrapCatalogDb(catalogDb), memory: repos.matchMemory }), repos.importedFoods);
   const ai = createAiServices({ repos, secrets: aiOverride?.secrets ?? createExpoSecretStore(), fetch: aiOverride?.fetch ?? deviceFetch });
   // The second (and last) legitimate destination: Open Food Facts, through its own client over the same redirect-safe wrapper.
   const barcode = createBarcodeService({

@@ -30,6 +30,8 @@ import { useScanPlatform } from '../scan/ScanPlatformContext';
 import { useScanSession } from '../scan/ScanSession';
 import { readKeepPhotos } from '../scan/photoSettings';
 import { useSession } from '../session/AppSession';
+import { originLabel } from '../foodimport/originLabel';
+import { useImportedOrigins } from '../foodimport/useImportedOrigins';
 import { useServices } from '../startup/AppProvider';
 import { isEdited, itemState, useMealDraft, type DraftItem } from './draft';
 import { gramsMessage } from './gramsMessage';
@@ -76,6 +78,8 @@ export function ReviewScreen({ now = systemNow, onAddItem, onSwap, onRetake, onS
   const snackbar = useSnackbar();
   const { notifyChange } = useSession();
   const review = scanSession.review;
+  // Which items come from a table the person imported (S5): they carry the table's name.
+  const origins = useImportedOrigins(draft.items.flatMap((item) => (item.ref?.source === 'custom' ? [item.ref.id] : [])));
 
   // What is typed in each grams field, by item. It follows the draft, except while the text is not yet a valid amount.
   const [texts, setTexts] = useState<Record<string, string>>({});
@@ -300,6 +304,7 @@ export function ReviewScreen({ now = systemNow, onAddItem, onSwap, onRetake, onS
               const scan = item.scan;
               const unedited = !isEdited(item);
               const warnings = scan && unedited ? scan.warnings : [];
+              const origin = item.ref?.source === 'custom' ? origins.get(item.ref.id) : undefined;
               return (
                 <View key={item.key} style={[styles.item, { backgroundColor: colors.surface }]} testID={`review-item-${item.displayName}`}>
                   <View style={styles.itemHead}>
@@ -320,8 +325,9 @@ export function ReviewScreen({ now = systemNow, onAddItem, onSwap, onRetake, onS
                         {state && !(state === 'matched' && recipe) ? (
                           <StateTag state={state} label={t(`log.review.state.${state === 'needs_match' ? 'needsMatch' : state}`)} />
                         ) : state ? null : recipe ? null : (
-                          <Tag label={item.ref?.source === 'custom' ? t('log.search.custom') : item.ref?.source === 'barcode' ? t('log.review.barcode') : t('log.review.catalog')} />
+                          <Tag label={origin ? originLabel(t, origin) : item.ref?.source === 'custom' ? t('log.search.custom') : item.ref?.source === 'barcode' ? t('log.review.barcode') : t('log.review.catalog')} />
                         )}
+                        {origin && state ? <Tag label={originLabel(t, origin)} /> : null}
                         {recipe && item.ref ? <RecipeTag onPress={() => setMethod({ ref: item.ref as FoodRef, name: item.displayName })} /> : null}
                         {scan?.confidenceFood === 'low' ? <Mark label={t('log.review.checkFood')} /> : null}
                         {scan?.confidencePortion === 'low' ? <Mark label={t('log.review.checkPortion')} /> : null}

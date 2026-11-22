@@ -32,7 +32,10 @@ import { SLOT_ORDER } from '../logging/mealSlot';
 import { RecipeMethodSheet, RecipeTag } from '../logging/RecipeMethod';
 import { useScanPlatform } from '../scan/ScanPlatformContext';
 import { useSession } from '../session/AppSession';
+import { originLabel } from '../foodimport/originLabel';
+import { useImportedOrigins } from '../foodimport/useImportedOrigins';
 import { useServices } from '../startup/AppProvider';
+import type { ImportedOrigin } from '../logging/foods';
 import { mealToSaveInput, nutrientLines, NUTRIENT_UNITS } from './mealData';
 
 type State = { status: 'loading' } | { status: 'error' } | { status: 'missing' } | { status: 'ready'; meal: MealWithItems };
@@ -66,6 +69,8 @@ export function MealDetailScreen({ mealId, now = systemNow, onClose, onCopied }:
   const [deleteMeal, setDeleteMeal] = useState(false);
   const [actionFailed, setActionFailed] = useState(false);
   const [method, setMethod] = useState<{ ref: FoodRef; name: string } | null>(null);
+  // Items from a table the person imported say which one (S5); read from the table, since a snapshot keeps only the source and the id.
+  const origins = useImportedOrigins(state.status === 'ready' ? state.meal.items.flatMap((item) => (item.foodSource === 'custom' && item.foodRef !== null ? [item.foodRef] : [])) : []);
 
   const read = useCallback(() => {
     repos.meals.getMeal(mealId).then(
@@ -216,6 +221,7 @@ export function MealDetailScreen({ mealId, now = systemNow, onClose, onCopied }:
               key={`${item.id}-${item.grams}`}
               item={item}
               locale={locale}
+              origin={item.foodRef !== null && item.foodSource === 'custom' ? origins.get(item.foodRef) : undefined}
               onGrams={(grams) => change(async () => void (await repos.meals.updateItemGrams(item.id, grams)))}
               onDelete={() => setDeleteItem(item)}
               onMethod={(ref) => setMethod({ ref, name: item.displayName })}
@@ -265,6 +271,8 @@ export function MealDetailScreen({ mealId, now = systemNow, onClose, onCopied }:
 }
 
 interface ItemRowProps {
+  /** The imported table the food came from, when it did (S5). */
+  origin?: ImportedOrigin;
   item: MealItem;
   locale: Locale;
   onGrams: (grams: number) => Promise<void>;
@@ -273,7 +281,7 @@ interface ItemRowProps {
   onMethod: (ref: FoodRef) => void;
 }
 
-function ItemRow({ item, locale, onGrams, onDelete, onMethod }: ItemRowProps) {
+function ItemRow({ item, locale, origin, onGrams, onDelete, onMethod }: ItemRowProps) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const [text, setText] = useState(String(Math.round(item.grams * 10) / 10));
@@ -302,6 +310,11 @@ function ItemRow({ item, locale, onGrams, onDelete, onMethod }: ItemRowProps) {
         <View style={styles.itemName}>
           <AppText variant="itemName">{item.displayName}</AppText>
           {recipeRef ? <RecipeTag onPress={() => onMethod(recipeRef)} /> : null}
+          {origin ? (
+            <View style={[styles.estimate, { backgroundColor: colors.surfaceRaised }]}>
+              <AppText variant="caption">{originLabel(t, origin)}</AppText>
+            </View>
+          ) : null}
           {item.foodSource === 'ai_estimate' ? (
             <View style={[styles.estimate, { backgroundColor: colors.aiSoft }]}>
               <AppText variant="caption" tone="ai">

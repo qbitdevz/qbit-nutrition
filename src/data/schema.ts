@@ -39,6 +39,8 @@ export const ITEM_ORIGINS = ['ai', 'ai_edited', 'manual'] as const;
 export const SCAN_STATUSES = ['ok', 'no_food', 'error'] as const;
 export const AI_ADAPTERS = ['openai_compatible', 'anthropic', 'gemini'] as const;
 export const OUTPUT_MODES = ['schema', 'tool', 'prompt'] as const;
+/** What an imported table's values are per: 100 g, or 100 ml (flagged; no density is applied). */
+export const COLLECTION_BASES = ['g', 'ml'] as const;
 
 const oneOf = (column: AnySQLiteColumn, values: readonly string[]): SQL =>
   sql`${column} IN (${sql.raw(values.map((v) => `'${v}'`).join(', '))})`;
@@ -242,6 +244,63 @@ export const customFood = sqliteTable('custom_food', {
   otherNutrientsJson: text('other_nutrients_json'),
   defaultPortionG: real('default_portion_g'),
 });
+
+/**
+ * A food composition table the person imported from a file they downloaded (docs/guides). It lives only in this database: nothing
+ * is sent anywhere. Removing the row removes every food of the table at once (the cascade); meals already logged keep their own
+ * snapshot of the values and are not touched.
+ */
+export const foodCollection = sqliteTable(
+  'food_collection',
+  {
+    id: text('id').primaryKey(),
+    name: text('name').notNull(),
+    fileName: text('file_name'),
+    importedAt: text('imported_at').notNull(),
+    foodCount: integer('food_count').notNull(),
+    /** The preset that recognised the file's layout, or null for the generic mapping. */
+    presetId: text('preset_id'),
+    basis: text('basis', { enum: COLLECTION_BASES }).notNull().default('g'),
+  },
+  (t) => [check('food_collection_basis_check', oneOf(t.basis, COLLECTION_BASES)), check('food_collection_count_check', sql`${t.foodCount} >= 0`)],
+);
+
+/**
+ * One food of an imported table. `seq` is the integer key the search index points at (it is the table's rowid, so it is stable);
+ * `id` is the public key that meal items, favorites and learned matches store as the food reference (source `custom`: it is the
+ * person's own data, and a UUID never collides with a custom food's). Values are JSON `{ code: per 100 g }`: a nutrient the table has
+ * no number for has no key, so unknown stays apart from zero.
+ */
+export const importedFood = sqliteTable(
+  'imported_food',
+  {
+    seq: integer('seq').primaryKey(),
+    id: text('id').notNull().unique(),
+    collectionId: text('collection_id')
+      .notNull()
+      .references(() => foodCollection.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    foodGroup: text('food_group'),
+    per100gJson: text('per_100g_json').notNull(),
+  },
+  (t) => [index('imported_food_collection_idx').on(t.collectionId)],
+);
+
+/**
+ * The search index over imported food names: one row per word form of a name (normalized: lowercase, no diacritics, plural and
+ * singular forms, the same rules as the catalog's `core/catalog/text.ts`). A plain indexed table instead of FTS5, so the same
+ * migration and the same queries run where SQLite has no FTS5 (the web preview) and on the device. Deleted with its food.
+ */
+export const importedFoodToken = sqliteTable(
+  'imported_food_token',
+  {
+    term: text('term').notNull(),
+    foodSeq: integer('food_seq')
+      .notNull()
+      .references(() => importedFood.seq, { onDelete: 'cascade' }),
+  },
+  (t) => [primaryKey({ columns: [t.term, t.foodSeq] }), index('imported_food_token_seq_idx').on(t.foodSeq)],
+);
 
 /** Cache of Open Food Facts lookups. */
 export const barcodeProduct = sqliteTable('barcode_product', {

@@ -155,6 +155,8 @@ export interface ImportPreview {
     measurements: number;
     goals: number;
     customFoods: number;
+    /** Food tables the person imported, which the file carries with all their foods. */
+    importedTables: number;
     providers: number;
     photos: number;
   };
@@ -268,6 +270,7 @@ function buildPreview(doc: ExportDocument, photos: number): ImportPreview {
       measurements: doc.body_measurements.length - weights,
       goals: doc.goals.length,
       customFoods: doc.custom_foods.length,
+      importedTables: doc.imported_collections.length,
       providers: doc.ai_providers.length,
       photos,
     },
