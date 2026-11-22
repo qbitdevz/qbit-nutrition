@@ -148,14 +148,56 @@ catalog keeps one:
 
 ## 5. Build report
 
-| | Before (main: Foundation + SR Legacy) | After T1 (+ FNDDS, de-duplicated) | After T1 + T2 (Spanish names for every food, aliases) |
-| --- | --- | --- | --- |
-| Foods | 8,217 | 13,342 (424 Foundation, 7,676 SR Legacy, 5,242 FNDDS) | 13,342 |
-| Duplicates dropped | 0 | 306 (117 SR Legacy entries that Foundation also publishes, 189 FNDDS entries that Foundation or SR Legacy publish; one more FNDDS food has no tracked nutrient and is left out) | 306 |
-| Foods with household portions | 7,616 | 12,787 | 12,787 |
-| Foods with a Spanish name | 124 | 124 | 13,342 |
-| `food_name` rows | 8,341 | 13,444 | 37,144 |
-| `catalog.db` | 6.0 MiB (6,258,688 bytes) | 10.1 MiB | 14.0 MiB (14,704,640 bytes) |
+| | Before (main: Foundation + SR Legacy) | After T1 (+ FNDDS, de-duplicated) | After T1 + T2 (Spanish names) | After the follow-up (reviewed names, Spanish portions, regional foods) |
+| --- | --- | --- | --- | --- |
+| Foods | 8,217 | 13,342 | 13,342 | 13,348 (424 Foundation, 7,676 SR Legacy, 5,242 FNDDS, 6 Branded selection) |
+| Foods with a Spanish name | 124 | 124 | 13,342 | 13,348 (685 handwritten, 233 reviewed, 12,430 composed) |
+| `food_name` rows | 8,341 | 13,444 | 37,144 | 37,189 |
+| `food_portion` rows | 14,572 | 29,384 | 29,384 | 58,780 (29,390 English + 29,390 Spanish) |
+| `catalog.db` | 6.0 MiB (6,258,688 bytes) | 10.1 MiB | 14.0 MiB (14,704,640 bytes) | 15.5 MiB (16,269,312 bytes) |
 
 The size limit proposed by the task is about 25 MB: nothing needs trimming. If a later set pushes it over, the first candidates are the
 1,275 branded and restaurant entries (about 10 % of the foods) and the 429 baby-food entries, which are near-duplicates of generic foods.
+
+## 6. Branded Foods: an optional, reviewed regional selection (follow-up B)
+
+**Question.** Yerba mate, alfajor, medialuna and tortilla española have no entry in Foundation, SR Legacy or FNDDS. FoodData Central's
+*Branded Foods* data set holds products from labels, so it may have them.
+
+**License, read on 2026-11-22.** Same statement as section 1, <https://fdc.nal.usda.gov/api-guide>, "Licensing": "USDA FoodData Central
+data are in the public domain and they are not copyrighted. They are published under CC0 1.0 Universal (CC0 1.0). No permission is
+needed for their use, but we request that users list FoodData Central as the source of the data [...]". The statement is for all of
+FoodData Central and does not exclude Branded Foods. <https://fdc.nal.usda.gov/data-documentation> describes Branded Foods as "Data from
+labels of national and international branded foods collected by a public-private partnership". What CC0 does not give is any right to
+the brands: brand names and logos are trademarks, so no brand appears in a food name (names are generic) and brand and owner are not
+stored.
+
+**Size.** `FoodData_Central_branded_food_json_2026-10-29.zip` is 195,941,393 bytes (about 196 MB), about 3 GB of JSON. Downloading it on every
+build would be wasteful and is not done. The FDC API (`api.nal.usda.gov`) could fetch single foods, but needs an API key; the shared `DEMO_KEY`
+answered 429 (rate limit) during this work, and no personal key was created.
+
+**How it works.**
+
+- `scripts/catalog/regional.ts` streams the zip once without loading it (`jsonStream.ts`: a streaming splitter, no new dependency):
+  `npx tsx scripts/catalog/regional.ts candidates "alfajor" "yerba"` lists matching products; `... snapshot` rewrites
+  `scripts/catalog/data/regional-foods.json` from the reviewed list `scripts/catalog/data/regional-selection.json`. The zip is downloaded by hand into
+  `catalog-build/downloads/` (git-ignored) only when someone refreshes the selection.
+- `regional-foods.json` is committed: six foods with their FDC id, tracked nutrient values per 100 g exactly as in the file, the data file name and
+  generic names. `npm run catalog:build` reads only this small file. The foods are stored with `source = usda_branded` and the FDC id as
+  `source_id`, `is_branded = 0` (they are generic by name). Nothing is estimated: a value the product's label does not give stays missing.
+- Priority in de-duplication: below FNDDS.
+
+**Added** (all from the 2026-10-29 Branded file; the label serving gives the grams of the portion):
+
+| Food in the app | FDC id | kcal / 100 g (as in the file) | Portion |
+| --- | --- | --- | --- |
+| Alfajor de chocolate | 1948673 | 420 | 1 alfajor = 50 g |
+| Alfajor, galleta rellena | 1147786 | 490 | 1 alfajor = 51 g |
+| Alfajor bañado en chocolate, individual | 2586602 | 500 | 1 alfajor = 40 g |
+| Tortilla española | 1886962 | 120 | 1/2 omelet = 100 g |
+| Yerba mate, hierba seca | 359635 | 250 | 1 serving = 3 g (dry leaves; the infusion is not this) |
+| Mate cocido, en saquito | 1873079 | 0 | 1 tea bag = 3 g (the label reports 0 for every tracked nutrient) |
+
+**Not added: medialuna.** No product in the Branded file has "medialuna", "media luna" or a half-moon pastry that is the Argentine one (searched by
+name; only "Media Crema" and half-moon pasta and shrimp rings match). A croissant is a different food and was not substituted. The owner can add it
+as a custom food, or ask for a regional table (section 2.1).

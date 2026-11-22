@@ -140,6 +140,18 @@ export const SEARCH_CASES: SearchCase[] = [
   en('baked salmon', { en: /^Fish, salmon\b/i, not: /salad|cake|sandwich|nugget|babyfood|canned|smoked|kippered|dried|patty|croquette|raw|loaf/i, state: COOKED, generic: true }, 'cooked preference'),
   en('dulce de leche', { en: /dulce de leche/i }),
   en('arepa', { en: /arepa/i }),
+  // --- Regional foods from the Branded Foods selection (scripts/catalog/regional.ts) -----------------------------------
+  en('alfajor', { en: /^Alfajor/i }, 'regional'),
+  en('spanish omelette', { en: /tortilla espanola/i }, 'regional'),
+  en('yerba mate', { en: /^(Yerba mate|Mate cocido)/i }, 'regional'),
+  en('mate tea', { en: /^(Yerba mate|Mate cocido)/i }, 'regional'),
+  es('alfajor', { en: /^Alfajor/i }, 'regional'),
+  es('alfajores', { en: /^Alfajor/i }, 'regional'),
+  es('yerba mate', { en: /^(Yerba mate|Mate cocido)/i }, 'regional'),
+  es('mate cocido', { en: /^Mate cocido/i }, 'regional'),
+  es('tortilla española', { en: /tortilla espanola/i }, 'regional'),
+  es('tortilla de patatas', { en: /tortilla espanola/i }, 'regional'),
+  es('tortilla de papas', { en: /tortilla espanola/i }, 'regional'),
   // --- Plain staples, Spanish --------------------------------------------------------------------------------------
   es('huevo', { en: /^Egg(s)?, (whole|Grade A, Large, egg whole)/i, not: /dried|pickled|substitute|salad|sandwich|roll|yolk|white\b/i, generic: true }),
   es('huevos revueltos', { en: /scrambled|omelet|^Egg, whole, cooked, scrambled/i, not: /substitute|sandwich|salad|frozen|pizza|roll|burrito|bagel|croissant/i, state: COOKED, generic: true }),

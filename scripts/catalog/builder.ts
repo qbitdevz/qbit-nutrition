@@ -6,11 +6,12 @@ import { NUTRIENT_CODES, type NutrientCode } from '../../src/core/nutrition/type
 import { deriveState, isBranded } from './classify';
 import type { Glossary } from './compose';
 import { dedupeFoods } from './dedupe';
+import { portionLabelEs } from './portions';
 import { buildNames, type AliasRule, type SynonymFile } from './names';
 import { normalizeUsdaUnit, TRACKED_NUTRIENTS } from './trackedNutrients';
 import type { BuildCounts, CatalogMeta, SourceFood, TranslationEntry } from './types';
 
-export const SCHEMA_VERSION = '2';
+export const SCHEMA_VERSION = '3';
 
 /** docs/08-database-schema.md section 5, plus `food.is_branded` and the lookup indexes. */
 const DDL = `
@@ -23,7 +24,7 @@ CREATE TABLE nutrient (
 );
 CREATE TABLE food (
   id INTEGER PRIMARY KEY,
-  source TEXT NOT NULL CHECK (source IN ('usda_foundation', 'usda_sr_legacy', 'usda_fndds')),
+  source TEXT NOT NULL CHECK (source IN ('usda_foundation', 'usda_sr_legacy', 'usda_fndds', 'usda_branded')),
   source_id TEXT NOT NULL,
   category TEXT,
   state TEXT NOT NULL CHECK (state IN ('raw', 'cooked', 'processed', 'unknown')),
@@ -44,7 +45,7 @@ CREATE TABLE food_name (
   locale TEXT NOT NULL,
   name TEXT NOT NULL,
   is_alias INTEGER NOT NULL DEFAULT 0,
-  -- How the name was produced: 'source' (as published), 'handwritten', 'composed' (glossary composer), 'synonym' (regional or common alias).
+  -- How the name was produced: 'source' (as published), 'handwritten', 'reviewed' (composed, read and accepted by a person), 'composed' (glossary composer), 'synonym' (regional or common alias).
   origin TEXT NOT NULL DEFAULT 'source'
 );
 CREATE INDEX food_name_food ON food_name(food_id);
@@ -73,6 +74,8 @@ export interface BuildOptions {
   translations: readonly TranslationEntry[];
   /** Glossary that composes a Spanish name for every food without a handwritten one. Without it only handwritten names exist. */
   glossary?: Glossary;
+  /** Food glossary plus household-measure units: portion labels get a Spanish row (`food_portion.locale = 'es'`). */
+  portionGlossary?: Glossary;
   /** Regional and common synonyms, added as aliases (docs/catalog-sources.md is not about names; see names.ts). */
   synonyms?: SynonymFile;
   aliasRules?: readonly AliasRule[];
@@ -94,6 +97,22 @@ export function buildCatalog(options: BuildOptions): BuildCounts {
     // A Spanish name must never contain English words: add them to scripts/catalog/data/glossary/ (glossaryReport.ts lists them).
     const list = [...names.stats.missingWords].map(([w, n]) => `${w} (${n})`).join(', ');
     throw new Error(`Spanish glossary lacks ${names.stats.missingWords.size} word(s): ${list}`);
+  }
+  // Spanish household measures, composed once per distinct label; an English word left over stops the build like a name would.
+  const portionEs = new Map<string, string>();
+  const portionMissing = new Map<string, number>();
+  if (options.portionGlossary) {
+    for (const f of foods) {
+      for (const p of f.portions) {
+        if (portionEs.has(p.label)) continue;
+        const r = portionLabelEs(p.label, options.portionGlossary);
+        portionEs.set(p.label, r.text);
+        for (const w of r.missing) portionMissing.set(w, (portionMissing.get(w) ?? 0) + 1);
+      }
+    }
+    if (portionMissing.size > 0) {
+      throw new Error(`Spanish portion glossary lacks ${portionMissing.size} word(s): ${[...portionMissing].map(([w, n]) => `${w} (${n})`).join(', ')}`);
+    }
   }
   mkdirSync(path.dirname(outPath), { recursive: true });
   const tmp = `${outPath}.building`;
@@ -137,6 +156,10 @@ export function buildCatalog(options: BuildOptions): BuildCounts {
       }
       for (const n of names.rows.get(food.fdcId) ?? []) insName.run(food.fdcId, n.locale, n.name, n.isAlias ? 1 : 0, n.origin);
       for (const p of food.portions) insPortion.run(food.fdcId, 'en', p.label, p.grams);
+      for (const p of food.portions) {
+        const text = portionEs.get(p.label);
+        if (text !== undefined) insPortion.run(food.fdcId, 'es', text, p.grams);
+      }
     }
 
     db.exec(`INSERT INTO food_fts(food_fts) VALUES ('rebuild')`);
@@ -149,6 +172,7 @@ export function buildCatalog(options: BuildOptions): BuildCounts {
     insMeta.run('translations_es_entries', String(translations.length));
     insMeta.run('duplicates_dropped', String(dropped.length));
     insMeta.run('names_handwritten', String(names.stats.handwritten));
+    insMeta.run('names_reviewed', String(names.stats.reviewed));
     insMeta.run('names_composed', String(names.stats.composed));
     db.exec('COMMIT');
 
@@ -163,6 +187,7 @@ export function buildCatalog(options: BuildOptions): BuildCounts {
       catalog_meta: count(db, 'catalog_meta'),
       duplicatesDropped: dropped.length,
       namesHandwritten: names.stats.handwritten,
+      namesReviewed: names.stats.reviewed,
       namesComposed: names.stats.composed,
       namesDisambiguated: names.stats.disambiguated,
       missingWords: Object.fromEntries(names.stats.missingWords),

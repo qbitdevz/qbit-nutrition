@@ -1,4 +1,4 @@
-export type CatalogSource = 'usda_foundation' | 'usda_sr_legacy' | 'usda_fndds';
+export type CatalogSource = 'usda_foundation' | 'usda_sr_legacy' | 'usda_fndds' | 'usda_branded';
 
 /** One food as read from a USDA bulk file, reduced to what the catalog needs. */
 export interface SourceFood {
@@ -21,6 +21,8 @@ export interface TranslationEntry {
   es: string;
   /** Other Spanish names people use ("banano", "guineo"). */
   aliases?: string[];
+  /** The Spanish name is the composer's own, read and accepted by a person (not rewritten). */
+  reviewed?: boolean;
 }
 
 export interface CatalogMeta {
@@ -41,6 +43,7 @@ export interface BuildCounts {
   duplicatesDropped: number;
   /** Spanish names by origin: handwritten, composed from the glossary, and how many were given a qualifier to tell them apart. */
   namesHandwritten: number;
+  namesReviewed: number;
   namesComposed: number;
   namesDisambiguated: number;
   /** English words the glossary lacks, with the number of foods each blocks. A shippable catalog has none. */

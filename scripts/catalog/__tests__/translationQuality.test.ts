@@ -5,9 +5,10 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { buildCatalog } from '../builder';
+import { selectCandidates } from '../handwrittenSelection';
 import { duplicateDisplayNames, englishLeftovers, englishVocabulary, markupLeftovers, sameAsEnglish, spanishVocabulary, strip, type NameRowPair } from '../nameQuality';
 import { FIXTURE_FOODS, FIXTURE_TRANSLATIONS } from '../testing/fixture';
-import { loadAliasRules, loadGlossary, loadSynonyms, loadTranslations } from '../translations';
+import { loadAliasRules, loadGlossary, loadPortionGlossary, loadSynonyms, loadTranslations } from '../translations';
 
 /**
  * Quality gates of the Spanish names (odd/tasks/catalog-expansion.md T2, S2). They run over the real built catalog
@@ -19,6 +20,7 @@ const BUILT = path.join(__dirname, '..', '..', '..', 'catalog-build', 'catalog.d
 const allow = JSON.parse(readFileSync(path.join(DATA, 'translation-allowlist.json'), 'utf8')) as { sameAsEnglish: string[]; englishWords: string[] };
 const glossary = loadGlossary(path.join(DATA, 'glossary'));
 const handwritten = loadTranslations(path.join(DATA, 'translations.es.json'));
+const portionVocab = spanishVocabulary(loadPortionGlossary(DATA), []);
 const vocab = spanishVocabulary(glossary, handwritten.flatMap((t) => [t.es, ...(t.aliases ?? [])]));
 
 function readNames(db: DatabaseSync): NameRowPair[] {
@@ -45,7 +47,7 @@ function gates(db: DatabaseSync, label: string, expectCoverage: number) {
   it(`${label}: each Spanish name says how it was produced (handwritten or composed), and aliases are marked`, () => {
     const origins = db.prepare(`SELECT origin, is_alias, count(*) AS n FROM food_name WHERE locale = 'es' GROUP BY origin, is_alias`).all() as unknown as { origin: string; is_alias: number }[];
     for (const o of origins) {
-      expect(o.is_alias === 0 ? ['handwritten', 'composed'] : ['handwritten', 'synonym']).toContain(o.origin);
+      expect(o.is_alias === 0 ? ['handwritten', 'reviewed', 'composed'] : ['handwritten', 'synonym']).toContain(o.origin);
     }
   });
 
@@ -56,7 +58,7 @@ function gates(db: DatabaseSync, label: string, expectCoverage: number) {
 
   it(`${label}: no untranslated English word is left in a Spanish name beyond the explicit allow-list`, () => {
     const names = db.prepare(`SELECT food_id AS id, name AS es FROM food_name WHERE locale = 'es'`).all().map((r) => ({ ...r })) as unknown as { id: number; es: string }[];
-    const left = englishLeftovers(names, englishVocabulary(rows), vocab, new Set(allow.englishWords));
+    const left = englishLeftovers(names, englishVocabulary(rows), vocab, new Set(allow.englishWords), glossary.keep);
     expect([...left.keys()]).toEqual([]);
   });
 
@@ -114,11 +116,35 @@ describeBuilt(builtLabel, () => {
 
   gates(db, 'built', 1);
 
-  it('composes most names and hand-writes the most common foods', () => {
+  it('hand-writes or reviews at least 800 of the most common foods, and composes the rest', () => {
     const c = db.prepare(`SELECT origin, count(*) AS n FROM food_name WHERE locale = 'es' AND is_alias = 0 GROUP BY origin`).all() as unknown as { origin: string; n: number }[];
     const n = Object.fromEntries(c.map((r) => [r.origin, r.n]));
-    expect(n.handwritten).toBeGreaterThanOrEqual(100);
+    expect(n.handwritten).toBeGreaterThanOrEqual(600);
+    expect((n.handwritten ?? 0) + (n.reviewed ?? 0)).toBeGreaterThanOrEqual(800);
     expect(n.composed).toBeGreaterThan(10_000);
+  });
+
+  it('has a handwritten or reviewed name for every food the selection criterion picks (query-set foods and plain staples of each group)', async () => {
+    const picked = await selectCandidates(BUILT);
+    const origin = new Map((db.prepare(`SELECT food_id AS id, origin FROM food_name WHERE locale = 'es' AND is_alias = 0`).all() as unknown as { id: number; origin: string }[]).map((r) => [String(r.id), r.origin]));
+    const without = picked.filter((c) => !['handwritten', 'reviewed'].includes(origin.get(c.id) ?? '')).map((c) => `${c.id} ${c.en}`);
+    // The ranking may move a food in or out of a query's top 3 after the list was reviewed; a handful of such drifts is not a failure.
+    expect(without.length).toBeLessThanOrEqual(Math.ceil(picked.length * 0.02));
+  });
+
+  it('has Spanish household-measure labels for every English one, same grams, none left in English', () => {
+    const rows = db.prepare(`SELECT e.label AS en, s.label AS es, e.grams AS g1, s.grams AS g2 FROM food_portion e
+      JOIN food_portion s ON s.food_id = e.food_id AND s.locale = 'es' AND s.grams = e.grams WHERE e.locale = 'en'`).all() as unknown as { en: string; es: string }[];
+    const counts = db.prepare(`SELECT locale, count(*) AS n FROM food_portion GROUP BY locale`).all() as unknown as { locale: string; n: number }[];
+    const n = Object.fromEntries(counts.map((c) => [c.locale, c.n]));
+    expect(n.es).toBe(n.en);
+    expect(rows.length).toBeGreaterThanOrEqual(n.en as number);
+    // Identical labels are only numbers and units ("3 oz") or capitalized product names.
+    const UNITS = new Set(['oz', 'lb', 'g', 'kg', 'ml', 'tbsp', 'tsp', 'fl']);
+    const english = rows.filter(
+      (r) => r.en === r.es && r.en.split(/[^a-zA-Z'’-]+/).filter(Boolean).some((w) => !UNITS.has(w) && !/^[A-Z]/.test(w) && !portionVocab.has(strip(w))),
+    );
+    expect(english.map((r) => r.en)).toEqual([]);
   });
 
   it('finds a food by every regional name of the task list (S2)', () => {

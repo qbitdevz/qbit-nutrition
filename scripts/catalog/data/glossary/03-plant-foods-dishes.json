@@ -125,7 +125,6 @@
     "bran": "m:salvado",
     "chili": "m:chile",
     "hydrogenated": "q:hidrogenad@",
-    "summer": "m:verano",
     "stew": "m:estofado",
     "greek": "grieg@",
     "table": "f:mesa",
@@ -161,7 +160,6 @@
     "frosting": "m:glaseado",
     "hash": "m:hash",
     "soymilk": "f:leche de soya",
-    "winter": "m:invierno",
     "smoothie": "m:licuado",
     "bagel": "m:bagel",
     "lunch": "m:almuerzo",
@@ -435,7 +433,6 @@
     "corn oil": "m:aceite de maíz",
     "hot dog bun": "m:pan para hot dog",
     "hamburger bun": "m:pan para hamburguesa",
-    "chicken noodle": "x:con fideos y pollo",
     "bell pepper": "m:pimiento morrón",
     "bell": "m:morrón",
     "sweet corn": "m:maíz dulce",
@@ -564,5 +561,6 @@
     "parmigiana": "x:a la parmesana",
     "carbonara": "x:carbonara"
   },
-  "keep": []
+  "keep": [],
+  "proper": []
 }

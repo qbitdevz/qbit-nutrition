@@ -8,7 +8,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 
-const SEED = 20261121;
+const SEED = 20261123;
 const SIZE = 200;
 const ROOT = path.resolve(__dirname, '../..');
 const OUT = path.join(ROOT, 'docs', 'catalog-translation-sample.md');

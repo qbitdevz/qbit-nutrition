@@ -138,6 +138,7 @@ const ROOT_KEY: Record<CatalogSource, string> = {
   usda_foundation: 'FoundationFoods',
   usda_sr_legacy: 'SRLegacyFoods',
   usda_fndds: 'SurveyFoods',
+  usda_branded: 'BrandedFoods',
 };
 
 function portionLabel(p: NonNullable<UsdaFood['foodPortions']>[number]): string | null {

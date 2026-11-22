@@ -291,5 +291,6 @@
     "persimmon": "m:caqui",
     "rutabaga": "f:rutabaga"
   },
-  "keep": ["mcdonald's", "mcdonalds", "enfamil", "similac", "archway", "vitasoy", "wagyu", "america's", "gerber", "denver", "vienna", "nasoya", "m's", "mayer", "oscar", "pillsbury", "mills", "general", "muscle", "slim", "florida", "goldfish", "hopi", "oogruk", "steller", "gentlease", "manhattan", "o's", "pao", "pepperidge", "quaker", "spam", "shoshone", "boost", "carnation", "nutri-grain", "nutramigen", "pregestimil", "prosobee", "alimentum", "advance", "powerade", "frito", "mcgriddles", "mcmuffin", "gatorade", "glutino", "isomil", "kellogg's", "nabisco", "udi's", "ritz", "doritos", "clif", "monster", "van's", "catalina", "azumaya", "agutuk", "bowhead", "pekin", "tahitian", "apache", "navajo", "kind", "kashi", "sensitive"]
+  "keep": ["mcdonald's", "mcdonalds", "enfamil", "similac", "archway", "vitasoy", "wagyu", "gerber", "nasoya", "m's", "mayer", "oscar", "pillsbury", "mills", "general", "muscle", "slim", "goldfish", "gentlease", "o's", "pepperidge", "quaker", "spam", "boost", "carnation", "nutri-grain", "nutramigen", "pregestimil", "prosobee", "alimentum", "advance", "powerade", "frito", "mcgriddles", "mcmuffin", "gatorade", "glutino", "isomil", "kellogg's", "nabisco", "udi's", "ritz", "doritos", "clif", "monster", "van's", "catalina", "azumaya", "kind", "kashi", "sensitive"],
+  "proper": ["america's", "denver", "vienna", "florida", "hopi", "oogruk", "steller", "manhattan", "shoshone", "agutuk", "bowhead", "pekin", "tahitian", "apache", "navajo", "pao"]
 }

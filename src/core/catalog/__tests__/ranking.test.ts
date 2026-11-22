@@ -47,6 +47,9 @@ const FOODS: SourceFood[] = [
   food('Beef, loin, top loin steak, boneless, separable lean only, cooked, grilled'),
   food('Chicken, broilers or fryers, breast, meat only, raw', { category: 'Poultry Products' }),
   food('Chicken, broilers or fryers, breast, meat only, cooked, roasted', { category: 'Poultry Products' }),
+  food('Fat, chicken'),
+  food('Chicken skin'),
+  food('Chicken, broilers or fryers, meat only, cooked, fried', { category: 'Poultry Products' }),
   food('Broccoli, raw', { category: 'Vegetables and Vegetable Products' }),
   food('Broccoli, cooked, boiled, drained, without salt', { category: 'Vegetables and Vegetable Products' }),
   food('Bananas, raw', { category: 'Fruits and Fruit Juices' }),
@@ -145,6 +148,10 @@ describe('search ranking', () => {
   it('without a cue, prefers cooked to raw for foods people eat cooked (meat, rice), but not for fruit', async () => {
     expect((await top('chicken breast'))[0]).toBe('Chicken, broilers or fryers, breast, meat only, cooked, roasted');
     expect((await top('banana'))[0]).toBe('Bananas, raw');
+  });
+
+  it('a body part or by-product is not the dish: "fried chicken" is not chicken fat or skin', async () => {
+    expect((await top('fried chicken'))[0]).toBe('Chicken, broilers or fryers, meat only, cooked, fried');
   });
 
   it('prefers a plain fruit to a processed form of it', async () => {

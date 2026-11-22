@@ -4,7 +4,7 @@ import { SOURCE_PRIORITY } from './dedupe';
 import type { SourceFood, TranslationEntry } from './types';
 
 /** How a food name was produced; stored in `food_name.origin`. */
-export type NameOrigin = 'source' | 'handwritten' | 'composed' | 'synonym';
+export type NameOrigin = 'source' | 'handwritten' | 'reviewed' | 'composed' | 'synonym';
 
 export interface NameRow {
   locale: 'en' | 'es';
@@ -41,6 +41,8 @@ export interface NameOptions {
 
 export interface NameStats {
   handwritten: number;
+  /** Composed names a person read and accepted; they are stored with origin `reviewed`. */
+  reviewed: number;
   composed: number;
   /** English words with no glossary entry, with how many foods need them. Must be empty for a shippable catalog. */
   missingWords: Map<string, number>;
@@ -118,7 +120,7 @@ export function buildNames(foods: readonly SourceFood[], options: NameOptions): 
   }
   const unmatched = new Set(options.handwritten.map((t) => t.en.toLowerCase()));
   const rules = (options.aliasRules ?? []).map((r) => ({ re: new RegExp(r.match, 'i'), en: r.en ?? [], es: r.es ?? [] }));
-  const stats: NameStats = { handwritten: 0, composed: 0, missingWords: new Map(), disambiguated: 0, unmatchedHandwritten: [] };
+  const stats: NameStats = { handwritten: 0, reviewed: 0, composed: 0, missingWords: new Map(), disambiguated: 0, unmatchedHandwritten: [] };
   const rows = new Map<number, NameRow[]>();
   const primaryEs = new Map<number, { name: string; origin: NameOrigin }>();
 
@@ -130,10 +132,13 @@ export function buildNames(foods: readonly SourceFood[], options: NameOptions): 
     const aliasEs: NameRow[] = [];
     for (const t of matches) {
       unmatched.delete(en.toLowerCase());
-      es = { name: t.es, origin: 'handwritten' };
+      es = { name: t.es, origin: t.reviewed ? 'reviewed' : 'handwritten' };
       for (const alias of t.aliases ?? []) aliasEs.push({ locale: 'es', name: alias, isAlias: true, origin: 'handwritten' });
     }
-    if (es) stats.handwritten++;
+    if (es) {
+      if (es.origin === 'reviewed') stats.reviewed++;
+      else stats.handwritten++;
+    }
     else if (options.glossary) {
       const composed = composeSpanish(en, options.glossary);
       for (const w of composed.missing) stats.missingWords.set(w, (stats.missingWords.get(w) ?? 0) + 1);
@@ -200,7 +205,7 @@ export function buildNames(foods: readonly SourceFood[], options: NameOptions): 
   return { rows, stats };
 }
 
-const sourceLabel = (food: SourceFood): string => (food.source === 'usda_foundation' ? 'Foundation' : food.source === 'usda_sr_legacy' ? 'SR Legacy' : 'FNDDS');
+const sourceLabel = (food: SourceFood): string => (food.source === 'usda_foundation' ? 'Foundation' : food.source === 'usda_sr_legacy' ? 'SR Legacy' : food.source === 'usda_branded' ? 'Branded' : 'FNDDS');
 
 /** What tells a food apart from the others that compose to the same Spanish name: the English words only it has, else its source. */
 function qualifierOf(food: SourceFood, group: readonly SourceFood[], glossary?: Glossary): string {

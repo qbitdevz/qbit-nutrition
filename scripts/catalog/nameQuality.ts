@@ -24,6 +24,7 @@ export function spanishVocabulary(glossary: Glossary, extraTexts: readonly strin
     for (const suffix of ['o', 'a', 'os', 'as']) add(t.es.replace(/=/g, '').replace(/@/g, suffix));
   }
   for (const k of glossary.keep) add(k);
+  for (const k of glossary.proper) add(k);
   for (const t of extraTexts) add(t);
   return vocab;
 }
@@ -42,10 +43,13 @@ export function englishLeftovers(
   englishVocab: ReadonlySet<string>,
   spanishVocab: ReadonlySet<string>,
   allowed: ReadonlySet<string>,
+  brandWords: ReadonlySet<string> = new Set(),
 ): Map<string, number[]> {
   const out = new Map<string, number[]>();
   for (const n of names) {
-    for (const raw of n.es.split(/[^\p{L}\p{N}'’]+/u).filter(Boolean)) {
+    // In a segment with a brand or product title the capitalized words are the title (compose.ts); the lowercase ones are generic words and must be Spanish.
+    const segments = n.es.split(/[,()]/).map((seg) => (hasBrandWord(seg, brandWords) ? seg.split(/\s+/).filter((w) => !/^[\p{Lu}\d]/u.test(w) && !brandWords.has(w.toLowerCase())).join(' ') : seg));
+    for (const raw of segments.join(' ').split(/[^\p{L}\p{N}'’]+/u).filter(Boolean)) {
       if (/^[A-Z0-9'’&.-]+$/.test(raw) && raw.length > 1) continue; // brand and restaurant names
       const t = strip(raw);
       if (/^\d/.test(t) || !englishVocab.has(t) || spanishVocab.has(t) || allowed.has(t)) continue;
@@ -53,6 +57,11 @@ export function englishLeftovers(
     }
   }
   return out;
+}
+
+const NOT_BRAND = new Set(['NFS', 'NS', 'ARA', 'DHA', 'USDA', 'BBQ', 'RTE', 'MSG', 'UPC', 'PH', 'US', 'USA']);
+function hasBrandWord(segment: string, brandWords: ReadonlySet<string>): boolean {
+  return segment.split(/[^\p{L}\p{N}'’&.-]+/u).some((w) => (w.length >= 2 && /^[A-Z0-9'’&.-]+$/.test(w) && /[A-Z]{2}/.test(w) && !NOT_BRAND.has(w)) || brandWords.has(w.toLowerCase().replace(/\.$/, '')));
 }
 
 export function englishVocabulary(rows: readonly { en: string }[]): Set<string> {

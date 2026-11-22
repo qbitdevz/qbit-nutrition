@@ -9,7 +9,8 @@
 import { readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { buildCatalog } from './builder';
-import { loadAliasRules, loadGlossary, loadSynonyms, loadTranslations } from './translations';
+import { loadRegional } from './regionalFoods';
+import { loadPortionGlossary, loadAliasRules, loadGlossary, loadSynonyms, loadTranslations } from './translations';
 import type { SourceFood } from './types';
 import {
   ensureDownloaded,
@@ -56,12 +57,15 @@ export async function loadSourceFoods(): Promise<{ foods: SourceFood[]; files: D
 async function main(): Promise<void> {
   const { foods, files } = await loadSourceFoods();
 
+  // The reviewed regional selection from Branded Foods: a committed snapshot, so the build never needs the 3 GB file.
+  const regional = loadRegional(path.join(DATA_DIR, 'regional-foods.json'));
   const counts = buildCatalog({
-    foods,
-    translations: loadTranslations(TRANSLATIONS_PATH),
+    foods: [...foods, ...regional.foods],
+    translations: [...loadTranslations(TRANSLATIONS_PATH), ...regional.translations],
     glossary: loadGlossary(path.join(DATA_DIR, 'glossary')),
+    portionGlossary: loadPortionGlossary(DATA_DIR),
     synonyms: loadSynonyms(path.join(DATA_DIR, 'synonyms.json')),
-    aliasRules: loadAliasRules(path.join(DATA_DIR, 'aliases.json')),
+    aliasRules: [...loadAliasRules(path.join(DATA_DIR, 'aliases.json')), ...regional.aliasRules],
     outPath: OUT_PATH,
     meta: {
       dataVersion: files.map((f) => `${f.source}@${f.version}`).join('+'),

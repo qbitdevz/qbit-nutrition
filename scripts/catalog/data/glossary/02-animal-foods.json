@@ -73,7 +73,6 @@
     "neck": "m:cuello",
     "back": "f:espalda",
     "belly": "f:panceta",
-    "leg": "f:pierna",
     "foreleg": "f:pata delantera",
     "hindshank": "m:jarrete trasero",
     "foreshank": "m:jarrete delantero",
@@ -105,7 +104,6 @@
     "fingers": "mp:deditos",
     "breast": "f:pechuga",
     "thigh": "m:muslo",
-    "drumstick": "f:pierna",
     "wing": "f:ala",
     "giblets": "fp:menudencias",
     "gizzard": "f:molleja",
@@ -321,5 +319,6 @@
     "lassi": "f:lassi",
     "paneer": "m:paneer"
   },
-  "keep": []
+  "keep": [],
+  "proper": []
 }

@@ -14,7 +14,7 @@ export function loadTranslations(file: string): TranslationEntry[] {
     if (typeof entry.en !== 'string' || typeof entry.es !== 'string' || entry.en === '' || entry.es === '') {
       throw new Error(`${file}: entry ${i} needs non-empty "en" and "es"`);
     }
-    return { en: entry.en, es: entry.es, aliases: entry.aliases ?? [] };
+    return { en: entry.en, es: entry.es, aliases: entry.aliases ?? [], ...(entry.reviewed === true ? { reviewed: true } : {}) };
   });
 }
 
@@ -48,4 +48,16 @@ export function loadAliasRules(file: string): AliasRule[] {
   if (!Array.isArray(parsed)) throw new Error(`${file}: expected an array of {match, en?, es?}`);
   for (const r of parsed as AliasRule[]) new RegExp(r.match, 'i'); // throws on an invalid pattern
   return parsed as AliasRule[];
+}
+
+/** The food glossary plus the household-measure units of `data/portions/` (which win), for Spanish portion labels. */
+export function loadPortionGlossary(dataDir: string): Glossary {
+  const read = (dir: string): GlossaryFile[] =>
+    existsSync(dir)
+      ? readdirSync(dir)
+          .filter((f) => f.endsWith('.json'))
+          .sort()
+          .map((f) => JSON.parse(readFileSync(path.join(dir, f), 'utf8')) as GlossaryFile)
+      : [];
+  return buildGlossary([...read(path.join(dataDir, 'glossary')), ...read(path.join(dataDir, 'portions'))]);
 }

@@ -113,12 +113,15 @@ const SPECIALTY = new Set([
   'glutinoso', 'glutinosa', 'germinado', 'germinada', 'inflado', 'inflada', 'imitacion', 'sustituto', 'bebes', 'infantil',
 ]);
 
+/** A part or by-product of an animal: "Chicken skin" is not chicken. */
+const BODY_PARTS = new Set(['skin', 'fat', 'bone', 'bones', 'feet', 'piel', 'hueso', 'huesos', 'patas']);
+
 /** A preparation that makes an entry a variant of the plain food ("Rice, fried", "Zucchini, pickled"), unless the query asks for it. */
 const VARIANT_PREPARATION = new Set(['fried', 'pickled', 'candied', 'creamed', 'battered', 'breaded', 'smoked', 'stuffed', 'frito', 'frita', 'encurtido', 'encurtida', 'empanizado', 'empanizada']);
 
 /** Products made from a food (not the food): "Oil, avocado", "Muffin, zucchini", "Icing, chocolate". */
 const DERIVED_PRODUCTS = new Set([
-  'oil', 'icing', 'frosting', 'doughnut', 'muffin', 'bread', 'cake', 'cookie', 'cookies', 'pie', 'sauce', 'syrup', 'dressing', 'dip', 'soup', 'salad', 'juice', 'candy',
+  'fat', 'grasa', 'oil', 'icing', 'frosting', 'doughnut', 'muffin', 'bread', 'cake', 'cookie', 'cookies', 'pie', 'sauce', 'syrup', 'dressing', 'dip', 'soup', 'salad', 'juice', 'candy',
   'pudding', 'jam', 'jelly', 'butter', 'milk', 'flour', 'chips', 'cracker', 'crackers', 'beverage', 'drink', 'mix', 'bar', 'bars', 'snack', 'snacks', 'candies',
   'aceite', 'glaseado', 'dona', 'galleta', 'galletas', 'tarta', 'pastel', 'salsa', 'jarabe', 'aderezo', 'sopa', 'ensalada', 'jugo', 'dulce', 'budin', 'mermelada', 'harina', 'bebida', 'barra',
 ]);
@@ -215,7 +218,7 @@ function nameScore(variant: QueryVariant, name: string, locale: Locale, prefixLa
     const headMatched = head !== undefined && v.tokens.some((q) => same(q, head));
     const touchesFirst = firstTokens.some((n) => v.tokens.some((q) => same(q, n)));
     const raw = first;
-    if (firstTokens.length > 1 && touchesFirst && !headMatched && head !== undefined && !isNeutral(head) && !/[()]/.test(raw)) {
+    if (firstTokens.length > 1 && touchesFirst && !headMatched && head !== undefined && (!isNeutral(head) || head.some((f) => BODY_PARTS.has(f))) && !/[()]/.test(raw)) {
       score -= 0.25; // the entry is about another noun: a sauce, a cake, a salad
     } else if (coverage === 1 && firstTokens.length > 1 && !isNeutral(firstTokens[0] as string[]) && !v.tokens.some((q) => same(q, firstTokens[0] as string[])) && !/[()]/.test(raw)) {
       score -= 0.06; // "Beans and white rice" for "white rice": the entry leads with another food

@@ -335,5 +335,6 @@
     "cordon": "m:cordón",
     "bleu": "a:azul"
   },
-  "keep": ["blanc", "chenin", "pinot", "noir", "cabernet", "sauvignon", "merlot", "burgundy", "chardonnay", "riesling", "gewurztraminer", "syrah", "zinfandel", "sangiovese", "barbera", "carignane", "gamay", "lemberger", "mouvedre", "muscat", "semillon", "sirah", "thurgau", "grigio", "gris", "claret", "bolar", "advantage", "anjou", "fordhook", "fritos", "fear", "hawaii", "mac", "mayo", "o'brien", "royal", "tendergreen", "thompson", "virginia", "valencia", "whopper", "delicious", "puppy", "beach", "bull", "hush", "sage valley", "nature"]
+  "keep": ["blanc", "chenin", "pinot", "noir", "cabernet", "sauvignon", "merlot", "chardonnay", "riesling", "gewurztraminer", "syrah", "zinfandel", "sangiovese", "barbera", "carignane", "gamay", "lemberger", "mouvedre", "muscat", "semillon", "sirah", "thurgau", "grigio", "gris", "claret", "bolar", "advantage", "fritos", "fear", "mac", "o'brien", "whopper", "puppy", "beach", "bull", "hush", "sage valley", "nature"],
+  "proper": ["anjou", "fordhook", "hawaii", "mayo", "royal", "tendergreen", "thompson", "virginia", "valencia", "delicious", "burgundy"]
 }

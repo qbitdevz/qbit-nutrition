@@ -36,7 +36,7 @@ differs (`expo/appDatabase.ts` vs `testing/nodeDatabase.ts`). Consequence: **tra
 
 ## Shipping `catalog.db`
 
-`catalog.db` is built by `npm run catalog:build` into `catalog-build/` (git-ignored, about 14 MB) and bundled as a Metro
+`catalog.db` is built by `npm run catalog:build` into `catalog-build/` (git-ignored, about 16 MB) and bundled as a Metro
 asset by `expo/catalogAsset.ts` (`require('../../../catalog-build/catalog.db')`; Metro's default `assetExts` already
 include `db`). So:
 
@@ -51,7 +51,7 @@ include `db`). So:
   The docs/08 text says "attached to `app.db`"; nothing in phase 1 needs a cross-database join (items store snapshots),
   so a second connection is simpler and keeps the catalog replaceable.
 
-Trade-off: not committing the binary keeps git history small (every catalog version would add 14 MB forever) and
+Trade-off: not committing the binary keeps git history small (every catalog version would add 16 MB forever) and
 keeps the data reproducible from its sources, at the price of one extra build step and a first build that needs
 network access (or a warm `catalog-build/downloads/`).
 
@@ -61,10 +61,14 @@ Built from `scripts/catalog/` (spec `odd/tasks/catalog-expansion.md`):
 
 - **Foods**: USDA Foundation Foods, SR Legacy and Survey Foods (FNDDS, mixed dishes as eaten), de-duplicated across sources
   (Foundation > SR Legacy > FNDDS, `docs/catalog-sources.md` section 4). `food.source` and `food.source_id` say where each row comes from.
-- **Names**: `food_name.origin` is `source` (English as USDA writes it), `handwritten` or `composed` (the Spanish name) or `synonym` (an alias
-  from the regional-synonym groups). Every food has a Spanish name; no nutrient value depends on a name.
+- **Names**: `food_name.origin` is `source` (English as USDA writes it), `handwritten`, `reviewed` (a composed name a person accepted) or
+  `composed` (the Spanish name) or `synonym` (an alias from the regional-synonym groups). Every food has a Spanish name; no nutrient value depends on a name.
 - **Search**: `core/catalog` ranks FTS candidates (`ranking.ts`): whole words over prefixes, plain staples over specialty variants,
   cooked or raw by the cue in the query or the model's preparation, and generic over branded entries.
 - Quality gates over the built catalog and the everyday query set run in `npx jest` when `catalog-build/catalog.db` exists
   (`scripts/catalog/__tests__/translationQuality.test.ts`, `src/core/catalog/__tests__/searchQuality.test.ts`) and are skipped, with the reason in
   the test name, when it does not.
+- **Portions**: `food_portion` has every household measure in English and in Spanish (`locale = 'es'`, same grams). `features/logging/foods.ts` reads
+  the labels of the app language and falls back to English for a food that has none.
+- **Regional foods**: six foods (alfajor, tortilla española, yerba mate, mate cocido) come from the reviewed selection of Branded Foods in
+  `scripts/catalog/data/regional-foods.json` (`source = usda_branded`); see `docs/catalog-sources.md` section 6.

@@ -1021,5 +1021,6 @@
     "x": "x:x",
     "x6": "x:x6"
   },
-  "keep": ["co.", "decker", "dew", "enfagrow", "ensure", "dungeness", "frosty", "fuyu", "george", "gerolsteiner", "gmbh", "hormel", "k's", "klamath", "kraft", "marie", "martha", "mcchicken", "mcflurry", "mcdouble", "mcnuggets", "moo", "nesquik", "nutella", "oregon", "puramino", "rockstar", "salut", "schar", "triscuit", "tutti", "vault", "weston", "white's", "alexander", "andrea's", "arizona", "ataulfo", "atkins", "badufsuki", "balance", "bartlett", "andrea's", "ca", "mckee", "sunny", "keebler", "snickers", "oreo", "cheetos", "cheez-it", "goya", "heinz", "gamesa", "glucerna", "glaceau", "hain", "hass", "pediasure", "powerbar", "reese's", "sobe", "tiger's"]
+  "keep": ["co.", "decker", "dew", "enfagrow", "ensure", "dungeness", "frosty", "fuyu", "gerolsteiner", "gmbh", "hormel", "k's", "kraft", "marie", "martha", "mcchicken", "mcflurry", "mcdouble", "mcnuggets", "nesquik", "nutella", "puramino", "rockstar", "salut", "schar", "triscuit", "tutti", "vault", "white's", "alexander", "andrea's", "arizona", "ataulfo", "atkins", "badufsuki", "balance", "bartlett", "andrea's", "ca", "mckee", "sunny", "keebler", "snickers", "oreo", "cheetos", "cheez-it", "goya", "heinz", "gamesa", "glucerna", "glaceau", "hain", "hass", "pediasure", "powerbar", "reese's", "sobe", "tiger's"],
+  "proper": ["george", "klamath", "oregon", "weston", "moo"]
 }

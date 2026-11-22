@@ -25,6 +25,8 @@ export interface Term {
   gender: Gender;
   /** A noun that is plural whatever the English form ("fp:papas fritas"). */
   fixedPlural: boolean;
+  /** Alternative text in a context, from `|poultry=pierna entera` after the value: used when the description is about poultry. */
+  alt?: { poultry?: string };
 }
 
 export interface GlossaryFile {
@@ -32,12 +34,15 @@ export interface GlossaryFile {
   phrases?: Record<string, string>;
   /** Proper nouns and brand names kept exactly as USDA writes them (case-insensitive match). */
   keep?: string[];
+  /** Place and variety names ("Vienna", "Hopi") that stay as written but do not make their segment a brand title. */
+  proper?: string[];
 }
 
 export interface Glossary {
   terms: Map<string, Term>;
   phrases: Map<string, Term>;
   keep: Set<string>;
+  proper: Set<string>;
   maxPhraseWords: number;
 }
 
@@ -68,6 +73,12 @@ export function inferGender(es: string): Gender {
 }
 
 export function parseTerm(value: string): Term {
+  const bar = value.indexOf('|');
+  if (bar >= 0) {
+    const base = parseTerm(value.slice(0, bar));
+    const m = /^poultry=(.*)$/.exec(value.slice(bar + 1));
+    return m ? { ...base, alt: { poultry: m[1] as string } } : base;
+  }
   const m = /^(mp|fp|m|f|a|q|x|p):([\s\S]*)$/.exec(value);
   const tag = m?.[1];
   const es = (m ? m[2] : value) as string;
@@ -86,6 +97,7 @@ export function buildGlossary(files: readonly GlossaryFile[]): Glossary {
   const terms = new Map<string, Term>();
   const phrases = new Map<string, Term>();
   const keep = new Set<string>();
+  const proper = new Set<string>();
   let maxPhraseWords = 1;
   for (const file of files) {
     for (const [k, v] of Object.entries(file.terms)) {
@@ -102,8 +114,9 @@ export function buildGlossary(files: readonly GlossaryFile[]): Glossary {
       maxPhraseWords = Math.max(maxPhraseWords, key.split(/[\s,]+/).length);
     }
     for (const k of file.keep ?? []) keep.add(k.toLowerCase());
+    for (const k of file.proper ?? []) proper.add(k.toLowerCase());
   }
-  return { terms, phrases, keep, maxPhraseWords };
+  return { terms, phrases, keep, proper, maxPhraseWords };
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -138,12 +151,19 @@ function flex(word: string, g: Gender, plural: boolean): string {
 /** An adjective or qualifier in agreement with a noun of the given gender and number. */
 const INVARIABLE_O = new Set(['como', 'poco', 'luego', 'pronto', 'cuando', 'tanto', 'mucho', 'solo', 'cero', 'ultra', 'macho']);
 
+/** Adjectives in -és/-án ("japonés", "alemán"): feminine in -esa/-ana, plural in -es/-as. */
+function flexAccented(w: string, g: Gender, plural: boolean): string {
+  const stem = w.replace(/és$/, 'es').replace(/án$/, 'an');
+  if (g === 'f') return plural ? `${stem}as` : `${stem}a`.replace(/esa$/, 'esa');
+  return plural ? `${stem}es`.replace(/anes$/, 'anes') : w;
+}
+
 export function agree(es: string, g: Gender, plural: boolean): string {
   if (es.includes('@')) return es.split(' ').map((w) => flex(w, g, plural)).join(' ');
   // No '@': a word in -o is an ordinary adjective ("alcohólico") and agrees; others ("natural") only take the plural.
   return es
     .split(' ')
-    .map((w) => (/^[a-záéíóúñ]+o$/.test(w) && !INVARIABLE_O.has(w) ? flex(`${w.slice(0, -1)}@`, g, plural) : plural && !/\s/.test(es) ? pluralizeWord(w) : w))
+    .map((w) => (/^[a-z]+(és|án)$/.test(w) ? flexAccented(w, g, plural) : /^[a-záéíóúñ]+o$/.test(w) && !INVARIABLE_O.has(w) ? flex(`${w.slice(0, -1)}@`, g, plural) : plural && !/\s/.test(es) ? pluralizeWord(w) : w))
     .join(' ');
 }
 
@@ -274,8 +294,12 @@ class Composer {
   readonly missing = new Set<string>();
   constructor(private readonly g: Glossary) {}
 
+  /** The description is about poultry: "leg" then means the whole leg ("pierna entera"), distinct from drumstick and thigh. */
+  poultry = false;
+
   private itemOf(term: Term, plural: boolean): Item {
-    return { kind: term.kind, text: term.es, gender: term.gender, plural: term.fixedPlural || plural };
+    const text = this.poultry && term.alt?.poultry ? term.alt.poultry : term.es;
+    return { kind: term.kind, text, gender: term.gender, plural: term.fixedPlural || plural };
   }
 
   /** One word token -> item, or null when the glossary has nothing for it. */
@@ -290,13 +314,73 @@ class Composer {
       if (hit && (hit.kind === 'N' || hit.kind === 'A' || hit.kind === 'Q')) return this.itemOf(hit, hit.kind === 'N');
     }
     if (this.g.keep.has(w.replace(/\.$/, ''))) return lit(raw, true);
+    if (this.g.proper.has(w.replace(/\.$/, ''))) return lit(raw, false);
     if (ALLCAPS.test(raw)) return lit(raw, true);
+    // "fruit-flavored" -> "sabor a fruta", after the noun.
+    const flavored = /^(\p{L}+)-flavou?red$/iu.exec(raw);
+    if (flavored) {
+      const base = this.lookupWord(flavored[1] as string);
+      if (base && (base.kind === 'N' || base.kind === 'LIT')) return { kind: 'X', text: `sabor a ${base.text}`, gender: 'm', plural: false };
+    }
     // A hyphenated word nobody listed: translate its parts, in order, as separate words.
     if (/^\p{L}+(?:-\p{L}+)+$/u.test(raw)) {
       const parts = raw.split('-').map((p) => this.lookupWord(p));
       if (parts.every((p): p is Item => p !== null)) return lit(parts.map((p) => p.text.replace('@', 'o')).join(' '));
     }
     return null;
+  }
+
+  /**
+   * A segment with a brand or product title ("Udi's plain bread roll", "3 MUSKETEERS Bar (without salt)"): capitalized and
+   * ALL-CAPS words, numbers and punctuation stay as written, and each run of lowercase generic words is translated.
+   */
+  brandSegment(text: string, groups: string[], ctx: Ctx): string {
+    const out: string[] = [];
+    let run: Tok[] = [];
+    const flush = () => {
+      if (run.length === 0) return;
+      out.push(this.renderSegment(this.resolve(run, groups, ctx), ctx).text);
+      run = [];
+    };
+    for (const t of tokenize(text)) {
+      if (t.kind === 'word' && /^[\p{Ll}]/u.test(t.text) && !this.g.keep.has(t.text.toLowerCase())) run.push(t);
+      else {
+        flush();
+        if (t.kind === 'group') {
+          const idx = Number(/\d+/.exec(t.text)?.[0]);
+          out.push(`(${this.brandSegment(groups[idx] ?? '', [], ctx)})`);
+        } else out.push(t.text);
+      }
+    }
+    flush();
+    return out.join(' ').replace(/\s+([,;)])/g, '$1').replace(/\(\s+/g, '(');
+  }
+
+  /** True when a text holds a brand or restaurant name: an ALL-CAPS word (not an abbreviation) or a listed brand. */
+  hasBrand(text: string): boolean {
+    return tokenize(text).some((t) => {
+      if (t.kind !== 'word') return false;
+      const w = t.text.toLowerCase().replace(/\.$/, '');
+      return this.g.keep.has(w) || (ALLCAPS.test(t.text) && t.text.length >= 2 && !NOT_BRAND_CAPS.has(w));
+    });
+  }
+
+  /**
+   * "Squash, summer, zucchini, includes skin": when the first segment is a USDA group word, the specific food leads
+   * ("zucchini, includes skin") and the group and its modifiers are dropped. Brand segments are never dropped.
+   */
+  promoteSpecific(segments: string[], groups: string[], ctx: Ctx): string[] {
+    if (segments.length < 2 || !GROUP_HEADS.has((segments[0] as string).toLowerCase())) return segments;
+    // A glossary phrase that names the whole chain ("squash, spaghetti") wins over promotion.
+    for (let k = Math.min(3, segments.length); k >= 2; k--) if (this.g.phrases.has(segments.slice(0, k).join(', ').toLowerCase())) return segments;
+    for (let j = 1; j <= Math.min(3, segments.length - 1); j++) {
+      const seg = segments[j] as string;
+      if (this.hasBrand(seg)) return segments;
+      const kinds = new Set(this.resolve(tokenize(seg), groups, ctx).map((i) => i.kind));
+      if (kinds.has('N')) return segments.slice(j);
+      if (!(kinds.size > 0 && [...kinds].every((k) => k === 'X' || k === 'A'))) return segments;
+    }
+    return segments; // no specific food follows: the group word stays ("Calabaza de verano, amarilla")
   }
 
   /** Tokens of one segment -> items, matching the longest glossary phrase first. */
@@ -307,7 +391,9 @@ class Composer {
       if (t.kind === 'group') {
         const idx = Number(/\d+/.exec(t.text)?.[0]);
         const inner = splitDescription(groups[idx] ?? '');
-        items.push(lit(`(${this.composeList(inner.segments, inner.groups, ctx)})`));
+        // A parenthesized brand or product title ("(Clif Bar)") stays as written.
+        const brand = this.hasBrand(groups[idx] ?? '');
+        items.push(lit(brand ? `(${this.brandSegment(groups[idx] ?? '', [], ctx)})` : `(${this.composeList(inner.segments, inner.groups, ctx)})`, brand));
         i++;
         continue;
       }
@@ -386,9 +472,14 @@ class Composer {
     const modifiers = items.slice(lead, adjStart);
     const parts: string[] = items.slice(0, lead).map((it) => it.text);
     parts.push(this.inflectNoun(head));
-    for (const adj of items.slice(adjStart, h)) parts.push(agree(adj.text, head.gender, head.plural));
+    for (const adj of items.slice(adjStart, h)) parts.push(adj.kind === 'X' ? adj.text : agree(adj.text, head.gender, head.plural));
     for (const tail of items.slice(h + 1)) parts.push(tail.kind === 'A' || tail.kind === 'Q' ? agree(tail.text, head.gender, head.plural) : tail.text);
-    if (modifiers.length > 0) parts.push('de', this.renderChunk(modifiers, { gender: head.gender, plural: false }).text);
+    if (modifiers.length > 0) {
+      const mod = this.renderChunk(modifiers, { gender: head.gender, plural: false }).text;
+      // "ensalada" + "ensalada de col de brócoli": the modifier already names the head.
+      if (foldText(mod).startsWith(`${foldText(this.inflectNoun(head))} `)) return { text: [...parts.slice(0, lead), mod].join(' '), head };
+      parts.push('de', mod);
+    }
     return { text: parts.join(' ').replace(/\bde el\b/g, 'del'), head };
   }
 
@@ -420,6 +511,8 @@ class Composer {
     let context = ctx;
     let chainOpen = true;
     let headWord = '';
+    let ctxSet = false;
+    let headIsBrand = false;
     for (let i = 0; i < segments.length; ) {
       // Longest run of whole segments that is a glossary phrase ("cheese, cottage").
       let consumed = 0;
@@ -436,10 +529,12 @@ class Composer {
       if (phraseItem) items = [phraseItem];
       else {
         consumed = 1;
+        const restored = (segments[i] as string).replace(/\u0001(\d+)\u0001/g, (_m, n: string) => `(${groups[Number(n)] ?? ''})`);
         const pattern = matchPattern(segments[i] as string);
         const side = /^(.+) (off|on)$/i.exec(segments[i] as string);
         const notSpecified = /^NS as to (.+)$/i.exec(segments[i] as string);
         if (pattern) items = [pattern];
+        else if (this.hasBrand(segments[i] as string)) items = [lit(this.brandSegment(segments[i] as string, groups, context), true)]; // brand and product title: as written
         else if (notSpecified) {
           // FNDDS "NS as to fat type" = not specified as to ...: "tipo de grasa sin especificar"
           items = [{ kind: 'X', text: 'sin especificar', gender: 'm', plural: false }, ...this.resolve(tokenize(notSpecified[1] as string), groups, context)];
@@ -452,18 +547,28 @@ class Composer {
       }
       const seg = this.renderSegment(items, context);
       if (i === 0) headWord = seg.text.toLowerCase();
-      if (i === 0 && seg.head) context = { gender: seg.head.gender, plural: seg.head.plural };
-      const chain = fragments.length === 1 && chainOpen;
+      // The number and gender of the first head noun: the description's own, or the first one after a brand title.
+      if (!ctxSet && seg.head) {
+        context = { gender: seg.head.gender, plural: seg.head.plural };
+        ctxSet = true;
+      }
+      if (i === 0) headIsBrand = items.length === 1 && items[0]?.brand === true;
+      const chain = fragments.length === 1 && chainOpen && !headIsBrand;
       const onlyAdjectives = seg.kinds.size > 0 && [...seg.kinds].every((k) => k === 'A');
       // A fixed prepositional phrase right after the head ("Arroz de grano largo", "Sopa con fideos").
-      const preposition = seg.kinds.size === 1 && seg.kinds.has('X') && /^(de|del|con|a base) /.test(seg.text);
+      const preposition = seg.kinds.size === 1 && seg.kinds.has('X') && /^(de|del|a base) /.test(seg.text);
       const headText = headWord;
       // A noun segment after a head that takes "de" ("Sopa de carne de res y verduras") or an apposition ("Queso cheddar").
       const nounSegment = i === 0 || fragments.length !== 1 ? false : seg.kinds.has('N') && !seg.kinds.has('P') && !seg.kinds.has('LIT');
       const joiner = nounSegment ? (DE_HEADS.has(headText) ? 'de ' : APPOSITION_HEADS.has(headText) ? '' : null) : '';
+      if (nounSegment && fragments.length === 1 && foldText(seg.text) === foldText(fragments[0]?.text ?? '')) {
+        i += consumed; // "Sauce, salsa": the segment only repeats the head
+        continue;
+      }
       if (chain && (onlyAdjectives || preposition || (nounSegment && joiner !== null))) {
         const last = fragments[fragments.length - 1] as { text: string; attachable: boolean };
-        last.text += ` ${nounSegment ? joiner : ''}${seg.text}`;
+        const same = nounSegment && foldText(seg.text).startsWith(`${foldText(last.text)} `); // "Pan" + "pan naan"
+        last.text = same ? seg.text : `${last.text} ${nounSegment ? joiner : ''}${seg.text}`;
         chainOpen = onlyAdjectives;
         void last;
       } else {
@@ -472,9 +577,29 @@ class Composer {
       }
       i += consumed;
     }
-    return fragments.map((f) => f.text).join(', ');
+    // A fragment that only repeats what an earlier one already says ("Queso fresco" + "queso fresco") is left out.
+    const seen: string[] = [];
+    const kept = fragments.filter((f, idx) => {
+      const key = foldText(f.text);
+      const dup = idx > 0 && key !== '' && seen.some((s) => s.includes(key));
+      seen.push(key);
+      return !dup;
+    });
+    return kept.map((f) => f.text).join(', ');
   }
 }
+
+const foldText = (s: string): string => s.normalize('NFD').replace(/\p{M}+/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+
+/** USDA group words: "Fish, salmon", "Nuts, almonds", "Squash, summer, zucchini" are about the second word, not the group. */
+const GROUP_HEADS = new Set(['squash', 'nuts', 'seeds', 'fish', 'mollusks', 'crustaceans', 'spices', 'beverages', 'game meat', 'alcoholic beverage']);
+
+/** Abbreviations in ALL CAPS that are not brand names. */
+const NOT_BRAND_CAPS = new Set(['nfs', 'ns', 'ara', 'dha', 'usda', 'bbq', 'rte', 'msg', 'upc', 'ph', 'us', 'usa']);
+
+/** Animals and animal products that a meatless product imitates. */
+const ANIMAL_HEAD = /^(chicken|beef|pork|turkey|bacon|sausage|frankfurter|hot dog|ham|bologna|burger|hamburger|meatball|fish|tuna|shrimp|lamb|veal|steak|nuggets?|patty|jerky|pepperoni|salami|ribs|crab|lobster|duck|bacon bits)\b/i;
+const SUBSTITUTE_WORD = /^(meatless|vegetarian|vegan)$/i;
 
 interface Ctx {
   gender: Gender;
@@ -485,9 +610,18 @@ const capitalize = (s: string): string => (s === '' ? s : s[0]!.toUpperCase() + 
 
 /** Composes the Spanish name of one USDA description. */
 export function composeSpanish(description: string, glossary: Glossary): ComposeResult {
-  const { segments, groups } = splitDescription(description.replace(/\band\/or\b/gi, 'andor').replace(/ -(?=[a-z])/g, ' ').replace(/(?<![\d])"/g, ''));
+  const { segments, groups } = splitDescription(description.replace(/\band\/or\b/gi, 'andor').replace(/ -- /g, ', ').replace(/ -(?=[a-z])/g, ' ').replace(/(?<![\d])"/g, ''));
   const composer = new Composer(glossary);
-  const text = composer.composeList(segments, groups, { gender: 'm', plural: false });
+  composer.poultry = /\b(chicken|turkey|duck|goose|hen|hens|capon|capons|poultry|quail|pheasant|broilers?|fryers?)\b/i.test(segments[0] ?? '');
+  const ctx0 = { gender: 'm' as Gender, plural: false };
+  // "Chicken, meatless": a substitute for the animal product, not the animal.
+  const subIdx = segments.findIndex((s, i) => i > 0 && SUBSTITUTE_WORD.test(s.trim()));
+  const substitute = subIdx > 0 && ANIMAL_HEAD.test((segments[0] as string).trim());
+  const parts = substitute ? segments.filter((_s, i) => i !== subIdx) : segments;
+  // A trailing "NFS" (not further specified) says nothing about the food: "Cheese, NFS" is just cheese.
+  const trimmed = parts.length > 1 && /^NFS$/.test((parts[parts.length - 1] as string).trim()) ? parts.slice(0, -1) : parts;
+  let text = composer.composeList(composer.promoteSpecific(trimmed, groups, ctx0), groups, ctx0);
+  if (substitute) text = `Sustituto vegetal de ${text[0]?.toLowerCase() ?? ''}${text.slice(1)}`;
   return {
     name: capitalize(text.replace(/=/g, '').replace(/\s+/g, ' ').replace(/\s+([,;)])/g, '$1').trim()),
     missing: [...composer.missing].sort(),
