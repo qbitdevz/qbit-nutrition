@@ -70,7 +70,7 @@ notes="$(mktemp)"
 cat > "$notes" <<'NOTES'
 **Not medical advice.** Values estimated from a photo are approximate and can be wrong. See the health notice in the app (Settings -> About).
 
-Status of this build: it has not been verified by the maintainers on an Android device, and the accuracy of the photo analysis has not been measured. The privacy policy (PRIVACY.md) is a draft pending legal review.
+Status of this build: an earlier build was installed and used on one Android phone by the maintainer, and the accuracy of the photo analysis has not been measured. The privacy policy (PRIVACY.md) is a draft pending legal review.
 
 Install: download the APK below, allow installs from your browser or file manager when Android asks, and open it. Check the download against the `.sha256` file if you like.
 NOTES

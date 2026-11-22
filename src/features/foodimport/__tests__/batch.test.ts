@@ -296,6 +296,33 @@ describe('the same content twice in one batch (final verification, item 1)', () 
     expect(plan.units).toHaveLength(2);
   });
 
+  it('F4 — when the person deselects the first of two identical files, the copy is selected instead: the content is not silently dropped', async () => {
+    const a = await analyse(CLEAN, 'a.csv');
+    const b = await analyse(CLEAN, 'b.csv');
+    const plan = await planOf([a, b], { selected: { [a.id]: false } });
+    expect(plan.selected).toEqual({ [a.id]: false, [b.id]: true });
+    expect(plan.units.map((u) => u.files.map((f) => f.fileName))).toEqual([['b.csv']]);
+    expect(plan.notImported).toEqual([expect.objectContaining({ reason: 'deselected' })]);
+    expect(plan.canImport).toBe(true);
+    const report = await runPlan(h.repos, plan);
+    expect(report.imported).toHaveLength(1);
+    expect(await h.repos.importedFoods.listCollections()).toHaveLength(1);
+  });
+
+  it('F4 — ticking the first again hands the import back to it; one explicit choice on the copy is always honoured', async () => {
+    const a = await analyse(CLEAN, 'a.csv');
+    const b = await analyse(CLEAN, 'b.csv');
+    expect((await planOf([a, b], { selected: { [a.id]: true } })).selected).toEqual({ [a.id]: true, [b.id]: false });
+    expect((await planOf([a, b], { selected: { [a.id]: false, [b.id]: false } })).units).toEqual([]);
+    expect((await planOf([a, b], { selected: { [a.id]: false, [b.id]: false } })).canImport).toBe(false);
+  });
+
+  it('F4 — three identical files: leaving the first two out selects the third; leaving only the first out selects the second only', async () => {
+    const files = [await analyse(CLEAN, 'a.csv'), await analyse(CLEAN, 'b.csv'), await analyse(CLEAN, 'c.csv')];
+    expect((await planOf(files, { selected: { [files[0]!.id]: false, [files[1]!.id]: false } })).units.map((u) => u.files[0]!.fileName)).toEqual(['c.csv']);
+    expect((await planOf(files, { selected: { [files[0]!.id]: false } })).units.map((u) => u.files[0]!.fileName)).toEqual(['b.csv']);
+  });
+
   it('in a combined collection the foods of an identical file are never added twice, even when ticked', async () => {
     const files = [await analyse(CEREALES, 'cereales.csv'), await analyse(CEREALES, 'cereales otra vez.csv'), await analyse(FRUTAS, 'frutas.csv')];
     for (const choices of [{}, { selected: { [files[1]!.id]: true } }]) {

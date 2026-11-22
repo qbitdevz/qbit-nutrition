@@ -47,19 +47,22 @@ describe('item 3 — a damaged row or a non-JPEG photo never makes a backup the 
 });
 
 describe('item 4 — a goal set while the clock was wrong can be repaired and never blocks an export', () => {
-  it('setting a goal today replaces an open goal that starts in the future', async () => {
+  it('setting a goal today refuses an open goal that starts in the future, and replaces it only when the person confirms', async () => {
     a.client.exec(`DELETE FROM goal`);
     insertGoal(a, 'bad-open', '2031-01-01', null);
-    const set = await a.repos.goals.set({ type: 'maintain', startDate: today(), kcalTarget: 1900, proteinGTarget: 100, carbsGTarget: 200, fatGTarget: 60 });
+    const input = { type: 'maintain', startDate: today(), kcalTarget: 1900, proteinGTarget: 100, carbsGTarget: 200, fatGTarget: 60 } as const;
+    await expect(a.repos.goals.set(input)).rejects.toMatchObject({ code: 'goal_date_conflict', canReplace: true });
+    expect((await a.repos.goals.history()).map((g) => g.id)).toEqual(['bad-open']);
+    const set = await a.repos.goals.set(input, { replaceGoalId: 'bad-open' });
     expect((await a.repos.goals.history()).map((g) => [g.id === 'bad-open', g.startDate, g.endDate])).toEqual([[false, today(), null]]);
-    expect(set).toMatchObject({ kcalTarget: 1900 });
+    expect(set).toMatchObject({ kcalTarget: 1900, replaced: { id: 'bad-open', startDate: '2031-01-01' } });
   });
 
-  it('setting a goal today replaces an open goal that starts before 2000', async () => {
+  it('setting a goal today closes an open goal that starts before 2000 the day before; it is not deleted', async () => {
     a.client.exec(`DELETE FROM goal`);
-    insertGoal(a, 'bad-open', '1970-01-01', null);
+    insertGoal(a, 'old-open', '1970-01-01', null);
     await a.repos.goals.set({ type: 'maintain', startDate: today(), kcalTarget: 1900 });
-    expect((await a.repos.goals.history()).map((g) => g.id)).not.toContain('bad-open');
+    expect((await a.repos.goals.history()).map((g) => [g.id, g.startDate, g.endDate]).slice(0, 1)).toEqual([['old-open', '1970-01-01', addDay(today(), -1)]]);
   });
 
   it('a normal open goal is still closed the day before, not replaced', async () => {
@@ -71,7 +74,7 @@ describe('item 4 — a goal set while the clock was wrong can be repaired and ne
   it('the export leaves out a goal period whose dates are out of range, and says which', async () => {
     insertGoal(a, 'old-closed', '1999-01-01', '1999-12-31');
     const result = await exportIt();
-    expect(result.skippedRows).toEqual([{ collection: 'goals', id: 'old-closed', detail: 'goal 1999-01-01 to 1999-12-31' }]);
+    expect(result.skippedRows).toEqual([{ collection: 'goals', id: 'old-closed', detail: 'goal 1999-01-01 to 1999-12-31', goal: { from: '1999-01-01', to: '1999-12-31' } }]);
     expect(docOf().goals.map((g: { id: string }) => g.id)).not.toContain('old-closed');
     await expect(pickAndPrepare(to, lastShared(from).name, lastShared(from).bytes)).resolves.toBeDefined();
   });

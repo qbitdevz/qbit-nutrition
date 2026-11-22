@@ -83,6 +83,11 @@ export interface BackupRepository {
   /** All of it, read in one transaction so the pieces belong together. */
   read(): Promise<BackupSnapshot>;
   /**
+   * Cached barcode products that `read` leaves out because their stored notes (`raw_json`) are damaged, so it cannot be told whether the person completed
+   * them by hand, and nothing refers to them. An export reports them as skipped rows.
+   */
+  unreadableBarcodeProducts(): Promise<string[]>;
+  /**
    * Makes the database hold exactly `snapshot`: everything that was there is removed (scans and the barcode cache
    * too; the cache then holds only the products of the snapshot) and the snapshot is written, in ONE transaction. If anything fails the transaction rolls back and the
    * previous data is untouched.
@@ -138,6 +143,19 @@ export function createBackupRepository({ db }: RepositoryContext): BackupReposit
         barcodeProducts: rows('barcode_product'),
         providers: rows('ai_provider'),
       };
+    },
+
+    async unreadableBarcodeProducts() {
+      return db
+        .all<{ barcode: string }>(
+          sql`SELECT ${barcodeProduct.barcode} AS barcode FROM ${barcodeProduct}
+            WHERE NOT json_valid(${barcodeProduct.rawJson}) AND ${barcodeProduct.barcode} NOT IN (
+              SELECT ${mealItem.foodRef} FROM ${mealItem} WHERE ${mealItem.foodSource} = 'barcode' AND ${mealItem.foodRef} IS NOT NULL
+              UNION SELECT ${foodUsage.foodRef} FROM ${foodUsage} WHERE ${foodUsage.foodSource} = 'barcode'
+              UNION SELECT ${matchMemory.foodRef} FROM ${matchMemory} WHERE ${matchMemory.foodSource} = 'barcode')
+            ORDER BY ${barcodeProduct.barcode}`,
+        )
+        .map((row) => row.barcode);
     },
 
     async read() {

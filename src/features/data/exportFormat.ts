@@ -372,7 +372,7 @@ export function createExportSchema(clock: () => Date) {
     const { latest } = dayBounds(clock());
     if (doc.exported_at.slice(0, 10) > latest) issue(['exported_at'], `a file cannot be exported after ${latest} on this device's clock`);
     const plausible = (path: (string | number)[], day: string) => {
-      if (day < EARLIEST_DAY || day > latest) issue(path, `must be between ${EARLIEST_DAY} and ${latest}`);
+      if (day < EARLIEST_DAY || day > latest) ctx.addIssue({ code: 'custom', path, message: `must be between ${EARLIEST_DAY} and ${latest}`, params: { [OUT_OF_RANGE_DAY]: true } });
     };
     if (doc.profile?.birth_date) {
       const oldest = `${Number(today.slice(0, 4)) - MIN_BIRTH_AGE_YEARS}-01-01`;
@@ -427,6 +427,13 @@ export type ParseResult =
   | { ok: false; code: 'newer_version'; fileVersion: number; supportedVersion: number }
   /** `where` is the first place that is wrong, e.g. `meals[3].items[0].grams`. */
   | { ok: false; code: 'invalid'; where: string };
+
+/** Marks an issue that says only "this day is outside the days a record may have" (`dayBounds`), so a caller can tell it from every other problem. */
+export const OUT_OF_RANGE_DAY = 'outOfRangeDay';
+
+/** True for an issue that is only about a day outside the accepted days. */
+export const isOutOfRangeDayIssue = (issue: { code: string; params?: unknown }): boolean =>
+  issue.code === 'custom' && typeof issue.params === 'object' && issue.params !== null && (issue.params as Record<string, unknown>)[OUT_OF_RANGE_DAY] === true;
 
 /** `meals[3].items[0].grams` from a Zod issue path. */
 export function describePath(path: readonly PropertyKey[]): string {
