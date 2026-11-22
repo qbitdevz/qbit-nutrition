@@ -100,9 +100,123 @@
   },
   "scan": {
     "title": "Scan",
-    "unavailable": "Photo analysis is not available yet.",
     "manual": "Add manually",
-    "manualHint": "Search a food and enter the amount"
+    "manualHint": "Search a food and enter the amount",
+    "photoLabel": "Your meal photo",
+    "capture": {
+      "tip": "Whole plate in frame, from above",
+      "shutter": "Take photo",
+      "gallery": "Choose from gallery",
+      "flash": "Flash",
+      "flashOn": "Flash on",
+      "flashOff": "Flash off",
+      "error": "The photo could not be taken. Try again.",
+      "galleryError": "The gallery could not be opened. Try again."
+    },
+    "permission": {
+      "title": "Allow camera access",
+      "body": "Qbit Nutrition uses the camera only to photograph your meal. The photo stays on your phone until you choose to analyze it.",
+      "allow": "Allow camera",
+      "deniedTitle": "The camera is off for this app",
+      "deniedBody": "You can turn it on in your phone's settings, choose a photo from your gallery, or add the meal manually.",
+      "openSettings": "Open settings"
+    },
+    "preview": {
+      "title": "Your photo",
+      "hintLabel": "Hint (optional)",
+      "hintPlaceholder": "For example: the rice is about 200 g",
+      "hintHelp": "Tell the AI what it cannot see. It is sent with the photo.",
+      "retake": "Retake",
+      "analyze": "Analyze"
+    },
+    "notice": {
+      "title": "This photo will be sent to {{provider}}",
+      "body": "Only the photo, your hint and the language of the app leave your phone. Your profile and your history stay here. {{provider}} handles the photo under its own terms.",
+      "continue": "Send photo",
+      "decline": "Not now"
+    },
+    "analyzing": {
+      "title": "Analyzing your meal",
+      "provider": "AI provider: {{provider}}",
+      "privacy": "Only this photo goes to the provider you chose.",
+      "progress": "Analyzing",
+      "slow": "This is taking longer than usual. The provider may be busy. You can keep waiting or cancel."
+    },
+    "failure": {
+      "header": "Scan problem",
+      "kept": "Your photo is still here",
+      "keptBody": "Nothing was added to your log.",
+      "copied": "Detail copied",
+      "action": {
+        "providerSettings": "Open provider settings",
+        "setupProvider": "Set up provider",
+        "switchProvider": "Switch provider",
+        "copyDetail": "Copy detail",
+        "retryLater": "Retry later"
+      },
+      "wait": {
+        "hm": "about {{hours}} h {{minutes}} min",
+        "h": "about {{hours}} h",
+        "m": "about {{minutes}} min"
+      },
+      "no_provider": {
+        "title": "Photo analysis needs an AI provider",
+        "message": "Connect a provider with your own account to analyze photos. You can still add this meal by hand."
+      },
+      "no_network": {
+        "title": "No connection",
+        "message": "The app cannot reach your AI provider. Check your connection and try again."
+      },
+      "auth_invalid": {
+        "title": "Your key was rejected",
+        "message": "The provider did not accept the key. Check it in the provider settings, then try again."
+      },
+      "quota": {
+        "title": "Provider limit reached",
+        "message": "Your AI provider has no requests left for now.",
+        "messageWait": "Your AI provider has no requests left for now. The limit resets in {{time}}."
+      },
+      "no_vision": {
+        "title": "This model can't read photos",
+        "message": "The model you chose does not accept images. Pick a model that can see photos in the provider settings."
+      },
+      "model_not_found": {
+        "title": "Model not found",
+        "message": "The provider does not know the model name you set. Check it in the provider settings."
+      },
+      "invalid_output": {
+        "title": "The answer could not be read",
+        "message": "The model's answer was not in the expected format, even after trying again. Try again, or add the meal manually."
+      },
+      "no_food": {
+        "title": "No food found",
+        "message": "The AI did not see any food in this photo. Retake it with the whole plate in frame, from above."
+      },
+      "provider_changed": {
+        "title": "The provider changed",
+        "message": "Your AI provider was edited while the photo was being sent, so nothing was sent. Try again."
+      },
+      "insecure_url": {
+        "title": "The connection is not secure",
+        "message": "The provider address does not use HTTPS, so the photo and your key were not sent. Fix the address in the provider settings."
+      },
+      "timeout": {
+        "title": "The provider took too long",
+        "message": "The provider did not answer in time. Try again, or raise the time limit in the provider settings."
+      },
+      "provider_unavailable": {
+        "title": "The provider is having trouble",
+        "message": "The provider reported a problem on its side. Try again in a moment."
+      },
+      "photo_unreadable": {
+        "title": "The photo could not be read",
+        "message": "The photo could not be prepared for sending. Take another one."
+      },
+      "unknown": {
+        "title": "Something went wrong",
+        "message": "The scan failed for a reason the app does not recognize. The detail below has no key or photo in it; you can copy it to report the problem."
+      }
+    }
   },
   "settings": {
     "title": "Settings",
@@ -112,7 +226,13 @@
     "minimum": "Minimum daily energy",
     "about": "About and health notice",
     "languageSaved": "Language saved",
-    "languageNotSaved": "The language changed, but the choice could not be saved for the next start."
+    "languageNotSaved": "The language changed, but the choice could not be saved for the next start.",
+    "providers": "AI providers",
+    "providersNone": "Not set up yet",
+    "keepPhotos": "Keep meal photos",
+    "keepPhotosHint": "A compressed copy of each scanned meal stays on this phone. Deleting a meal deletes its photo.",
+    "keepPhotosOn": "Keep",
+    "keepPhotosOff": "Don't keep"
   },
   "legal": {
     "disclaimer": {
@@ -431,7 +551,29 @@
       "back": "Back",
       "gramsError": "Enter grams from {{min}} to {{max}}.",
       "catalog": "Catalog",
-      "emptyTitle": "No items yet"
+      "emptyTitle": "No items yet",
+      "aiFound_one": "AI found {{count}} item",
+      "aiFound_other": "AI found {{count}} items",
+      "retake": "Retake",
+      "photoLabel": "Your meal photo",
+      "state": {
+        "matched": "Catalog",
+        "estimate": "AI estimate",
+        "confirmed": "Confirmed",
+        "needsMatch": "Needs a match"
+      },
+      "checkPortion": "Check portion",
+      "checkFood": "Check food",
+      "weightHigh": "Very large amount. Check the weight.",
+      "weightLow": "Very small amount. Check the weight.",
+      "mealWeightHigh": "The total weight is very high. Check the portions.",
+      "matchedAs": "Matched to {{name}}",
+      "estimateNote": "Estimated by the AI, not from the food database",
+      "needsMatchNote": "No match and no usable estimate. Pick a food, or remove it.",
+      "needMatch": "Pick a food for each item that needs a match, or remove it.",
+      "swap": "Change food for {{name}}",
+      "noNumbers": "No numbers yet",
+      "photoKept": "The photo could not be kept. The meal was saved without it."
     },
     "custom": {
       "title": "Create custom food",
@@ -478,7 +620,9 @@
     "copied": "Copied to Today · {{kcal}} kcal added",
     "notFound": "This meal no longer exists.",
     "loadError": "The meal could not be loaded. Your data is still on this phone. Try again.",
-    "actionError": "That change could not be saved. Try again."
+    "actionError": "That change could not be saved. Try again.",
+    "photoLabel": "Photo of this meal",
+    "aiEstimate": "AI estimate"
   },
   "nutrient": {
     "kcal": "Energy",
@@ -514,5 +658,120 @@
     "version": "Version {{version}}",
     "privacy": "Everything stays on this phone. There is no account and no analytics.",
     "how": "How targets are calculated"
+  },
+  "providers": {
+    "title": "AI providers",
+    "add": "Add a provider",
+    "active": "Active",
+    "keySaved": "Key saved",
+    "noKey": "No key",
+    "notAffiliated": "Provider names appear only to say which services this app works with. Qbit Nutrition is not affiliated with, endorsed by, or sponsored by any of them.",
+    "privacy": "Your meal photos go only to the provider you choose, with your own account. Nothing is sent anywhere else.",
+    "list": {
+      "empty": {
+        "title": "No AI provider yet",
+        "body": "Connect a service you have an account with so the app can read photos of your meals. You choose the service and the model."
+      },
+      "error": "The providers could not be loaded."
+    },
+    "presets": {
+      "title": "Choose a service",
+      "intro": "Pick the service you have, or want to open, an account with. Nothing is selected for you.",
+      "free": "Offers a free tier",
+      "freeNote": "As of each provider's last-verified date, these offer a free tier or run on your own computer. Limits and terms are the provider's, can change, and are not guaranteed: check the provider's page before relying on it. Free tiers often let the provider use what you send, so read each data note.",
+      "paid": "Pay as you go",
+      "paidNote": "These bill you for the photos you analyze.",
+      "custom": "Another service"
+    },
+    "form": {
+      "titleNew": "New provider",
+      "titleEdit": "Edit provider",
+      "name": "Name",
+      "baseUrl": "Base URL",
+      "apiKey": "API key",
+      "model": "Model",
+      "timeout": "Timeout",
+      "timeoutSuffix": "s",
+      "timeoutHint": "Seconds to wait for an answer, from 5 to 300.",
+      "modelHint": "Type any model that can read images, or pick a suggestion.",
+      "costTitle": "Cost",
+      "dataTitle": "Your photo and your data",
+      "verified": "Last verified {{date}}",
+      "terms": "Read the provider's terms",
+      "getKey": "Create a key at the provider",
+      "test": "Test connection",
+      "testing": "Testing…",
+      "save": "Save provider",
+      "setActive": "Use this provider",
+      "isActive": "This is the active provider.",
+      "delete": "Delete provider",
+      "removeKey": "Remove saved key",
+      "findModels": "Find models",
+      "suggestions": "Models this provider offers",
+      "presetSuggestions": "Suggested models (from the preset, may be out of date)",
+      "noModelList": "This provider did not give a model list. Type the model name yourself.",
+      "saved": "Provider saved",
+      "saveFailed": "The provider could not be saved. Your entries are kept; try again.",
+      "fixErrors": "Fix the highlighted fields first.",
+      "loadError": "This provider could not be loaded.",
+      "activateFailed": "The provider could not be set as active. Try again.",
+      "deleteFailed": "The provider could not be deleted. Try again.",
+      "moreModels": "Showing the first {{count}} of {{total}}. You can type any other model name.",
+      "firstActive": "This is your first provider, so it will become the active one: photos you scan will be sent to it.",
+      "savedNoTest": "Provider saved, but the test result could not be kept."
+    },
+    "url": {
+      "required": "Enter the provider's address.",
+      "insecure": "Plain http:// is only allowed for a computer on your own network. Use https:// for anything on the internet.",
+      "invalid": "Enter a full address that starts with https:// (or http:// for your own network), without spaces.",
+      "credentials": "Do not put a user name or password in the address. Use the API key field."
+    },
+    "name": {
+      "required": "Enter a name."
+    },
+    "model": {
+      "required": "Enter a model name."
+    },
+    "timeout": {
+      "invalid": "Enter whole seconds between 5 and 300."
+    },
+    "key": {
+      "saved": "A key is saved on this device. It cannot be shown again; type a new one to replace it.",
+      "none": "No key saved.",
+      "hint": "Paste your key. It stays in this device's secure storage and is never shown again. A local server may not need one.",
+      "willClear": "Changing the base URL removes the saved key, so it is never sent to a new address. Enter the key again to keep using this provider.",
+      "removeTitle": "Remove the saved key?",
+      "removeBody": "Scans will not work with this provider until you add a key again.",
+      "removeConfirm": "Remove key",
+      "keep": "Keep it",
+      "storeFailed": "The key could not be saved in this device's secure storage, so nothing was saved. Try again.",
+      "unavailable": "Secure storage is not available here, so keys cannot be saved.",
+      "removed": "Key removed",
+      "removeFailed": "The key could not be removed. Try again.",
+      "storeFailedSaved": "The provider's other changes were saved, but the key could not be stored in this device's secure storage. Enter the key again and save to retry."
+    },
+    "test": {
+      "result": {
+        "ok": "Works. The model read the sample photo and answered in a way the app can use.",
+        "auth_invalid": "The provider rejected the key. Check that it is correct, active, and allowed to use this service.",
+        "model_not_found": "The provider does not know this model name. Check the spelling, or pick one from the list.",
+        "no_vision": "This model cannot read images. Choose a model that accepts photos.",
+        "invalid_output": "The model answered, but not in a form the app can use. Try another model.",
+        "no_network": "Could not reach the provider. Check your internet connection and the address.",
+        "insecure_url": "This address is not allowed: plain http:// works only on your own network, and redirects to another address are refused.",
+        "quota_exceeded": "The provider says a usage limit was reached. Wait a while or check your plan, then try again.",
+        "timeout": "The provider did not answer in time. Try again, or raise the timeout.",
+        "provider_unavailable": "The provider's service is having trouble right now. Try again in a few minutes.",
+        "content_refused": "The provider refused the sample photo. Try again or choose another model.",
+        "unknown": "The test failed for a reason the app does not recognize. Check the address, the key, and the model.",
+        "key_storage": "The key could not be read from this device's secure storage, so the test was not run. Try again, or enter the key again."
+      }
+    },
+    "delete": {
+      "title": "Delete this provider?",
+      "body": "The provider and its saved key are removed from this phone. Meals you already saved are not affected.",
+      "confirm": "Delete it",
+      "keep": "Keep it"
+    }
   }
 }

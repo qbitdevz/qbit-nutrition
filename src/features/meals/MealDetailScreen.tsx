@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
 import type { MealSlot } from '@/core/nutrition';
 import type { MealItem, MealWithItems } from '@/data';
@@ -28,6 +28,7 @@ import {
 import { GRAM_STEP, GRAMS_RANGE, validateGrams } from '../logging/limits';
 import { gramsMessage } from '../logging/gramsMessage';
 import { SLOT_ORDER } from '../logging/mealSlot';
+import { useScanPlatform } from '../scan/ScanPlatformContext';
 import { useSession } from '../session/AppSession';
 import { useServices } from '../startup/AppProvider';
 import { mealToSaveInput, nutrientLines, NUTRIENT_UNITS } from './mealData';
@@ -54,6 +55,8 @@ export function MealDetailScreen({ mealId, now = systemNow, onClose, onCopied }:
   const { t, i18n } = useTranslation();
   const locale = i18n.language as Locale;
   const { repos } = useServices();
+  const platform = useScanPlatform();
+  const { colors } = useTheme();
   const snackbar = useSnackbar();
   const { notifyChange } = useSession();
   const [state, setState] = useState<State>({ status: 'loading' });
@@ -96,6 +99,8 @@ export function MealDetailScreen({ mealId, now = systemNow, onClose, onCopied }:
       setActionFailed(true);
       return;
     }
+    // Deleting a meal deletes its photo (S9). Undo brings the meal back without it: the file is gone.
+    if (meal.photoPath) await platform.files.remove(meal.photoPath).catch(() => undefined);
     notifyChange();
     setState({ status: 'missing' });
     snackbar.show({
@@ -177,6 +182,16 @@ export function MealDetailScreen({ mealId, now = systemNow, onClose, onCopied }:
             {formatLongDate(locale, meal.localDate)}
           </AppText>
         </View>
+
+        {meal.photoPath ? (
+          <Image
+            source={{ uri: platform.files.uriOf(meal.photoPath) }}
+            style={[styles.photo, { backgroundColor: colors.surface }]}
+            resizeMode="cover"
+            accessibilityLabel={t('meal.photoLabel')}
+            testID="meal-photo"
+          />
+        ) : null}
 
         {actionFailed ? <FieldMessage message={t('meal.actionError')} /> : null}
 
@@ -274,9 +289,16 @@ function ItemRow({ item, locale, onGrams, onDelete }: ItemRowProps) {
   return (
     <View style={[styles.item, { backgroundColor: colors.surface }]}>
       <View style={styles.itemHead}>
-        <AppText variant="itemName" style={styles.itemName}>
-          {item.displayName}
-        </AppText>
+        <View style={styles.itemName}>
+          <AppText variant="itemName">{item.displayName}</AppText>
+          {item.foodSource === 'ai_estimate' ? (
+            <View style={[styles.estimate, { backgroundColor: colors.aiSoft }]}>
+              <AppText variant="caption" tone="ai">
+                {t('meal.aiEstimate')}
+              </AppText>
+            </View>
+          ) : null}
+        </View>
         <IconButton icon="trash" label={t('meal.deleteItem', { name: item.displayName })} onPress={onDelete} />
       </View>
       <View style={styles.itemControls}>
@@ -344,10 +366,12 @@ function NutrientDetail({ meal, locale }: { meal: MealWithItems; locale: Locale 
 const styles = StyleSheet.create({
   body: { paddingHorizontal: layout.screenMargin, paddingTop: spacing.s1, paddingBottom: spacing.s10, gap: spacing.s4 },
   head: { gap: 2, paddingHorizontal: spacing.s2 },
+  photo: { width: '100%', height: 176, borderRadius: radius.lg },
+  estimate: { alignSelf: 'flex-start', marginTop: spacing.s1, paddingHorizontal: spacing.s2, paddingVertical: 2, borderRadius: radius.pill },
   section: { gap: spacing.s2 },
   item: { borderRadius: radius.lg, padding: spacing.s3, paddingLeft: spacing.s4, gap: spacing.s2 },
   itemHead: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.s2 },
-  itemName: { flex: 1, paddingTop: spacing.s2 },
+  itemName: { flex: 1, paddingTop: spacing.s2, alignItems: 'flex-start' },
   itemControls: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.s2 },
   table: { borderRadius: radius.lg, paddingVertical: spacing.s2, paddingHorizontal: spacing.s4 },
   line: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 40, gap: spacing.s3 },

@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "presets": [
+    {
+      "id": "gemini",
+      "name": "Google Gemini API",
+      "adapter": "gemini",
+      "baseUrl": "https://generativelanguage.googleapis.com",
+      "keyUrl": "https://aistudio.google.com/apikey",
+      "keyRequired": true,
+      "termsUrl": "https://ai.google.dev/gemini-api/terms",
+      "local": false,
+      "zeroCostPath": true,
+      "models": ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.8-flash"],
+      "cost": {
+        "en": "As of the last-verified date (shown when you add it), Google offers a free tier of the Gemini API: limited access to some models, with rate limits that depend on the model (shown in Google AI Studio). Limits and terms are Google's and can change, so check Google's pricing page before relying on it. The paid tier bills per token; for example gemini-3.5-flash-lite is $0.30 per million input tokens and $2.50 per million output tokens.",
+        "es": "En la fecha de la última verificación (se muestra al agregarlo), Google ofrece un nivel gratuito de la API de Gemini: acceso limitado a algunos modelos, con límites de uso que dependen del modelo (se ven en Google AI Studio). Los límites y términos son de Google y pueden cambiar, así que revisa la página de precios de Google antes de depender de ello. El nivel de pago cobra por token; por ejemplo, gemini-3.5-flash-lite cuesta US$0,30 por millón de tokens de entrada y US$2,50 por millón de salida."
+      },
+      "dataUse": {
+        "en": "On the free tier, Google says the content you send is used to improve its products. On the paid tier it is not. Your meal photo goes to Google either way.",
+        "es": "En el nivel gratuito, Google indica que el contenido que envías se usa para mejorar sus productos. En el nivel de pago no. La foto de tu comida llega a Google en ambos casos."
+      },
+      "lastVerified": "2026-11-21",
+      "sources": [
+        "https://ai.google.dev/gemini-api/docs/pricing (free and paid tier, data use per tier, model prices)",
+        "https://ai.google.dev/gemini-api/docs/billing (paid-tier data use)",
+        "https://ai.google.dev/gemini-api/docs/models (model identifiers; image input per model page)",
+        "https://ai.google.dev/gemini-api/docs/api-key (key creation page)",
+        "https://aistudio.google.com/docs/get-started.md?generate-content=true (base URL and generateContent endpoint)"
+      ],
+      "notes": "Google labels generateContent a legacy API (Interactions API is the new default) but still supported; the app's Gemini adapter uses generateContent."
+    },
+    {
+      "id": "openrouter",
+      "name": "OpenRouter",
+      "adapter": "openai_compatible",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "keyUrl": "https://openrouter.ai/settings/keys",
+      "keyRequired": true,
+      "termsUrl": "https://openrouter.ai/terms",
+      "local": false,
+      "zeroCostPath": true,
+      "models": ["google/gemma-4-31b-it:free", "google/gemma-4-26b-a4b-it:free", "openrouter/free"],
+      "cost": {
+        "en": "As of the last-verified date (shown when you add it), OpenRouter lists free models (identifiers ending in :free) with limits of 20 requests per minute and 50 per day, or 1,000 per day after buying at least 10 credits. Limits and terms are OpenRouter's and can change, so check its pages before relying on it. Other models bill per token from your credits.",
+        "es": "En la fecha de la última verificación (se muestra al agregarlo), OpenRouter lista modelos gratuitos (identificadores que terminan en :free) con límites de 20 solicitudes por minuto y 50 por día, o 1.000 por día tras comprar al menos 10 créditos. Los límites y términos son de OpenRouter y pueden cambiar, así que revisa sus páginas antes de depender de ello. Los demás modelos cobran por token de tus créditos."
+      },
+      "dataUse": {
+        "en": "OpenRouter stores prompts only if you opt in. Some companies that run models behind OpenRouter may train on what you send, under their own policies; OpenRouter lets you allow or block that in your privacy settings, with separate options for free and paid models. Check them before sending photos.",
+        "es": "OpenRouter solo guarda los prompts si lo activas. Algunas empresas que ejecutan modelos detrás de OpenRouter podrían entrenar con lo que envías, según sus propias políticas; OpenRouter te deja permitirlo o bloquearlo en tus ajustes de privacidad, con opciones separadas para modelos gratuitos y de pago. Revísalas antes de enviar fotos."
+      },
+      "lastVerified": "2026-11-21",
+      "sources": [
+        "https://openrouter.ai/docs/faq (free tier options, free-model limits)",
+        "https://openrouter.ai/docs/api-reference/limits (free usage limits table)",
+        "https://openrouter.ai/docs/guides/privacy/data-collection (what OpenRouter stores)",
+        "https://openrouter.ai/docs/guides/privacy/logging (training setting, separate for paid and free models)",
+        "https://openrouter.ai/api/v1/models?input_modalities=image (identifiers that list image input; free ones have zero price)",
+        "https://openrouter.ai/docs/quickstart (base URL)"
+      ],
+      "notes": "openrouter/free is a router that picks a free model; the model it picks may change between requests."
+    },
+    {
+      "id": "ollama",
+      "name": "Ollama (local server)",
+      "adapter": "openai_compatible",
+      "baseUrl": "http://localhost:11434/v1",
+      "baseUrlNote": {
+        "en": "On a phone, \"localhost\" is the phone itself. Replace it with your computer's address on the same network, for example http://192.168.1.20:11434/v1. Ollama listens only on the computer itself unless you change its OLLAMA_HOST setting.",
+        "es": "En un teléfono, «localhost» es el propio teléfono. Reemplázalo por la dirección de tu computadora en la misma red, por ejemplo http://192.168.1.20:11434/v1. Ollama solo escucha en la propia computadora salvo que cambies su ajuste OLLAMA_HOST."
+      },
+      "keyUrl": "",
+      "keyRequired": false,
+      "termsUrl": "",
+      "local": true,
+      "zeroCostPath": true,
+      "models": ["gemma4:e2b", "gemma4:e4b", "gemma4:12b"],
+      "cost": {
+        "en": "As of the last-verified date (shown when you add it), Ollama's documentation describes running models on your own computer, so no company bills you per photo; you pay for your own hardware and electricity. Terms can change, so check Ollama's page. You need a computer that can run a model that accepts images.",
+        "es": "En la fecha de la última verificación (se muestra al agregarlo), la documentación de Ollama describe ejecutar modelos en tu propia computadora, así que ninguna empresa te cobra por foto; tú pagas tu equipo y la electricidad. Los términos pueden cambiar, así que revisa la página de Ollama. Necesitas una computadora que pueda ejecutar un modelo que acepte imágenes."
+      },
+      "dataUse": {
+        "en": "The photo goes to your own computer and stays on your network. Ollama says it does not see your prompts or data when it runs locally. No key is needed.",
+        "es": "La foto va a tu propia computadora y se queda en tu red. Ollama indica que no ve tus prompts ni tus datos cuando corre en local. No hace falta clave."
+      },
+      "lastVerified": "2026-11-21",
+      "sources": [
+        "https://docs.ollama.com/api/openai-compatibility (base URL http://localhost:11434/v1, image input as base64, /v1/models)",
+        "https://docs.ollama.com/faq (binds 127.0.0.1 by default; OLLAMA_HOST; local privacy statement)",
+        "https://ollama.com/library/gemma4 (gemma4 tags e2b, e4b, 12b list Text, Image input)"
+      ],
+      "notes": "keyUrl and termsUrl are empty on purpose: no key exists for a local server, and no company terms apply to data that stays on your network."
+    },
+    {
+      "id": "openai",
+      "name": "OpenAI",
+      "adapter": "openai_compatible",
+      "baseUrl": "https://api.openai.com/v1",
+      "keyUrl": "https://platform.openai.com/api-keys",
+      "keyRequired": true,
+      "termsUrl": "https://openai.com/policies/services-agreement/",
+      "local": false,
+      "zeroCostPath": false,
+      "models": ["gpt-6-luna", "gpt-6.1-terra", "gpt-6.2-sol"],
+      "cost": {
+        "en": "Pay as you go, billed per token; for example gpt-6-luna is $0.10 per million input tokens and $0.50 per million output tokens. OpenAI's rate-limit page lists a \"Free\" usage tier for supported countries but does not say which models it covers, so no free option is promised here.",
+        "es": "Pago por uso, cobrado por token; por ejemplo, gpt-6-luna cuesta US$0,10 por millón de tokens de entrada y US$0,50 por millón de salida. La página de límites de OpenAI menciona un nivel de uso «Free» para países admitidos, pero no dice qué modelos incluye, así que aquí no se promete ninguna opción gratuita."
+      },
+      "dataUse": {
+        "en": "OpenAI says data sent to its API is not used to train its models unless you opt in. Abuse-monitoring logs, which can contain prompts and responses, are kept for up to 30 days by default.",
+        "es": "OpenAI indica que los datos enviados a su API no se usan para entrenar sus modelos salvo que lo aceptes. Los registros de monitoreo de abuso, que pueden contener prompts y respuestas, se conservan hasta 30 días por defecto."
+      },
+      "lastVerified": "2026-11-21",
+      "sources": [
+        "https://developers.openai.com/api/docs/models (model list; text and image input)",
+        "https://developers.openai.com/api/docs/models/gpt-6-luna (identifier, image input, Chat Completions supported, price)",
+        "https://developers.openai.com/api/docs/models/gpt-6.1-terra (identifier, image input, Chat Completions supported)",
+        "https://developers.openai.com/api/docs/models/gpt-6.2-sol (identifier, image input, Chat Completions supported)",
+        "https://developers.openai.com/api/docs/guides/your-data (training and retention)",
+        "https://developers.openai.com/api/docs/guides/rate-limits (usage tiers, including the Free tier row)",
+        "https://developers.openai.com/api/docs/quickstart (key page, https://api.openai.com/v1)"
+      ],
+      "notes": "Free-tier model coverage is not stated by OpenAI's pages, so zeroCostPath is false and the cost note says so."
+    },
+    {
+      "id": "anthropic",
+      "name": "Anthropic",
+      "adapter": "anthropic",
+      "baseUrl": "https://api.anthropic.com",
+      "keyUrl": "https://platform.claude.com/settings/keys",
+      "keyRequired": true,
+      "termsUrl": "https://www.anthropic.com/legal/commercial-terms",
+      "local": false,
+      "zeroCostPath": false,
+      "models": ["claude-haiku-5-5", "claude-sonnet-5-5", "claude-opus-5-5"],
+      "cost": {
+        "en": "Pay as you go, billed per token; claude-haiku-5-5 starts at $0.10 per million input tokens and $0.50 per million output tokens. Anthropic says new users receive free credits to test the API; there is no ongoing free tier.",
+        "es": "Pago por uso, cobrado por token; claude-haiku-5-5 parte de US$0,10 por millón de tokens de entrada y US$0,50 por millón de salida. Anthropic indica que los usuarios nuevos reciben créditos gratis para probar la API; no hay un nivel gratuito permanente."
+      },
+      "dataUse": {
+        "en": "Anthropic says it does not use inputs or outputs from its API to train its models by default, unless you report feedback or choose to allow it.",
+        "es": "Anthropic indica que por defecto no usa las entradas ni las salidas de su API para entrenar sus modelos, salvo que reportes comentarios o decidas permitirlo."
+      },
+      "lastVerified": "2026-11-21",
+      "sources": [
+        "https://platform.claude.com/docs/en/models/overview (model identifiers, image input, prices)",
+        "https://platform.claude.com/docs/en/about-claude/pricing (free credits for new users, no free tier)",
+        "https://platform.claude.com/docs/en/get-started (key page, https://api.anthropic.com)",
+        "https://privacy.claude.com/en/articles/7996868-is-my-data-used-for-model-training (training policy for the API)"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "custom",
+      "name": "Custom (OpenAI-compatible)",
+      "adapter": "openai_compatible",
+      "baseUrl": "",
+      "keyUrl": "",
+      "keyRequired": false,
+      "termsUrl": "",
+      "local": false,
+      "zeroCostPath": false,
+      "models": [],
+      "cost": {
+        "en": "Depends on the service you enter. Check its pricing page before you send a photo.",
+        "es": "Depende del servicio que ingreses. Revisa su página de precios antes de enviar una foto."
+      },
+      "dataUse": {
+        "en": "Your photo goes to the address you enter, and what that service does with it depends on its own terms. Read them first. Plain http:// is accepted only for addresses on your own network.",
+        "es": "Tu foto va a la dirección que ingreses, y lo que ese servicio haga con ella depende de sus propios términos. Léelos antes. El http:// simple solo se acepta para direcciones de tu propia red."
+      },
+      "lastVerified": "2026-11-21",
+      "sources": [],
+      "notes": "Fields left empty on purpose: the base URL, key page, terms page, and model list belong to whatever service the person enters."
+    }
+  ]
+}

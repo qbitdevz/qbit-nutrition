@@ -43,7 +43,8 @@ export function mealToSaveInput(meal: MealWithItems, overrides: Partial<Pick<Sav
     name: meal.name,
     source: overrides.source ?? meal.source,
     scanId: meal.scanId,
-    photoPath: meal.photoPath,
+    // A copy or a restored meal never shares the photo file: deleting either meal would delete it for the other.
+    photoPath: null,
     note: meal.note,
     items: meal.items.map(toInput),
   };

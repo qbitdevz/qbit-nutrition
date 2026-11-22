@@ -26,6 +26,13 @@ export interface TextFieldProps {
   maxLength?: number;
   placeholder?: string;
   autoFocus?: boolean;
+  /** Turns off automatic capitalization (addresses, identifiers, keys). */
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
+  /**
+   * A write-only secret (an API key): masked while typed, never offered to autofill or the keyboard's
+   * dictionary, and no spell-check. The caller keeps the value out of anything it shows afterwards.
+   */
+  secret?: boolean;
   /** Hides the visible label (the accessible name stays); for fields whose context is already visible. */
   labelHidden?: boolean;
   testID?: string;
@@ -52,6 +59,8 @@ export function TextField({
   maxLength,
   placeholder,
   autoFocus,
+  autoCapitalize,
+  secret = false,
   labelHidden = false,
   testID,
 }: TextFieldProps) {
@@ -85,6 +94,11 @@ export function TextField({
           placeholderTextColor={colors.textMuted}
           autoFocus={autoFocus}
           autoCorrect={false}
+          autoCapitalize={autoCapitalize ?? (secret ? 'none' : undefined)}
+          secureTextEntry={secret || undefined}
+          autoComplete={secret ? 'off' : undefined}
+          importantForAutofill={secret ? 'no' : undefined}
+          spellCheck={secret ? false : undefined}
           selectionColor={colors.primary}
           cursorColor={colors.primary}
           testID={testID}

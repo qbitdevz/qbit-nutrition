@@ -13,6 +13,11 @@ import { createSqliteCatalogDb } from '@/data/catalog/sqliteCatalogDb';
 import { nodeCatalogClient, type Harness } from '@/data/testing/harness';
 import { buildCatalog } from '../../../scripts/catalog/builder';
 import { FIXTURE_FOODS, FIXTURE_TRANSLATIONS } from '../../../scripts/catalog/testing/fixture';
+import type { FetchLike } from '@/core/ai/types';
+import { createMemorySecretStore } from '@/platform/memorySecretStore';
+import type { SecretStore } from '@/platform/secretStore';
+import { offlineFetch } from './offline';
+import { createAiServices } from '../startup/aiServices';
 import type { AppServices } from '../startup/types';
 
 let file: string | undefined;
@@ -35,9 +40,17 @@ function catalogFile(): string {
   return file;
 }
 
-/** The harness repositories with the screen-test catalog. Call `close()` on the returned handle after the test. */
-export function createTestServices(h: Harness): AppServices & { close(): void } {
+/**
+ * The harness repositories with the screen-test catalog, an in-memory secret store, and a fake fetch
+ * (offline unless the test passes one; never a real provider). Call `close()` after the test.
+ */
+export function createTestServices(
+  h: Harness,
+  options: { fetch?: FetchLike } = {},
+): AppServices & { close(): void; secrets: SecretStore } {
   const client = nodeCatalogClient(catalogFile());
   const catalog = createCatalog({ db: createSqliteCatalogDb(client), memory: h.repos.matchMemory });
-  return { repos: h.repos, catalog, close: () => client.close() };
+  const secrets = createMemorySecretStore();
+  const ai = createAiServices({ repos: h.repos, secrets, fetch: options.fetch ?? offlineFetch, retryDelayMs: 0 });
+  return { repos: h.repos, catalog, ...ai, secrets, close: () => client.close() };
 }

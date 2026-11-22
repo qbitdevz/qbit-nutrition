@@ -8,12 +8,18 @@
     "scheme": "qbitnutrition",
     "userInterfaceStyle": "automatic",
     "android": {
+      "allowBackup": false,
       "package": "dev.qbitdev.nutrition",
       "adaptiveIcon": {
         "backgroundColor": "#04070D",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
-      }
+      },
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "plugins": [
       "expo-router",
@@ -28,7 +34,25 @@
       "expo-localization",
       "expo-sqlite",
       "expo-asset",
-      "expo-font"
+      "expo-font",
+      "expo-secure-store",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Qbit Nutrition uses the camera only to photograph your meals. A photo leaves your phone only when you choose to analyze it.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "barcodeScannerEnabled": false
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": false,
+          "cameraPermission": "Qbit Nutrition uses the camera only to photograph your meals. A photo leaves your phone only when you choose to analyze it.",
+          "microphonePermission": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
