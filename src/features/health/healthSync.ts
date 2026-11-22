@@ -1,4 +1,4 @@
-import { deriveMealTime, type Repositories } from '@/data';
+import { VALUE_LIMITS, deriveMealTime, type Repositories } from '@/data';
 import type { HealthAvailability, HealthGrant, HealthGrants, HealthPlatform } from '@/platform/healthPlatform';
 import { nutritionRecordForMeal } from './record';
 
@@ -28,6 +28,29 @@ export interface HealthStatus {
   failing: boolean;
   /** ISO time of the last weight import, if any. */
   lastWeightSyncAt: string | null;
+  /** Readings of the last weight import that were outside the weight range the app accepts (a bad reading, a wrong unit) and were left out. */
+  weightsIgnored: number;
+}
+
+/** Health Connect refused to remove the records this app wrote: nothing else was done. */
+export class HealthRecordsNotRemovedError extends Error {
+  readonly code = 'records_not_removed' as const;
+  constructor(options?: { cause?: unknown }) {
+    super('Health Connect could not remove the records.', options);
+    this.name = 'HealthRecordsNotRemovedError';
+  }
+}
+
+/** The records were removed (or were not asked for) and the wipe itself then failed; `recordsRemoved` says which. */
+export class WipeFailedError extends Error {
+  readonly code = 'wipe_failed' as const;
+  constructor(
+    readonly recordsRemoved: boolean,
+    options?: { cause?: unknown },
+  ) {
+    super('The wipe did not finish.', options);
+    this.name = 'WipeFailedError';
+  }
 }
 
 export type TurnOnOutcome = 'on' | 'declined' | 'unavailable';
@@ -57,6 +80,13 @@ export interface HealthSync {
   sendExistingMeals(): Promise<number>;
   /** Deletes the records this app wrote and forgets the queue. Rejects when Health Connect refuses. */
   removeWrittenRecords(): Promise<void>;
+  /**
+   * Runs `task` (a wipe of all data) exclusively: after every sync already under way has finished and before any other starts, so no
+   * reading can be added after the wipe. With `removeRecords` the records this app wrote to Health Connect are removed first, and if
+   * Health Connect refuses nothing else happens (`HealthRecordsNotRemovedError`). If the task then fails, `WipeFailedError` says whether
+   * the records were already removed.
+   */
+  wipe(removeRecords: boolean, task: () => Promise<void>): Promise<void>;
   /** Resolves when everything queued so far has been tried. For tests and for the screen. */
   idle(): Promise<void>;
   openSettings(): void;
@@ -75,7 +105,7 @@ interface Deps {
 }
 
 const NONE: HealthGrants = { writeNutrition: false, readWeight: false };
-const OFF: HealthStatus = { enabled: false, availability: null, grants: null, pending: 0, failing: false, lastWeightSyncAt: null };
+const OFF: HealthStatus = { enabled: false, availability: null, grants: null, pending: 0, failing: false, lastWeightSyncAt: null, weightsIgnored: 0 };
 
 function parseJson<T>(text: string | null): T | null {
   if (!text) return null;
@@ -99,6 +129,7 @@ export function createHealthSync({ repos, platform, now = () => new Date() }: De
   const { settings } = repos;
   let chain: Promise<unknown> = Promise.resolve();
   let failing = false;
+  let weightsIgnored = 0;
 
   const enqueue = <T>(task: () => Promise<T>): Promise<T> => {
     const run = chain.then(task, task);
@@ -204,11 +235,18 @@ export function createHealthSync({ repos, platform, now = () => new Date() }: De
       failing = true;
       return 0;
     }
-    // One entry per local day: the latest reading of the day.
+    // One entry per local day: the latest reading of the day. A reading outside the weight range the forms and the repository accept
+    // (12.5 kg, a wrong unit) is left out and counted: it would be refused when stored, and a stored one could not be exported.
     const byDay = new Map<string, { at: number; kg: number }>();
+    let ignored = 0;
+    const range = VALUE_LIMITS.measurement.weight;
     for (const { time, kg } of readings) {
       const at = Date.parse(time);
       if (!Number.isFinite(at) || !Number.isFinite(kg) || kg <= 0) continue;
+      if (kg < range.min || kg > range.max) {
+        ignored += 1;
+        continue;
+      }
       const day = deriveMealTime(new Date(at)).localDate;
       const prior = byDay.get(day);
       if (!prior || at > prior.at) byDay.set(day, { at, kg: round2(kg) });
@@ -218,6 +256,17 @@ export function createHealthSync({ repos, platform, now = () => new Date() }: De
     const mine = (await repos.measurements.list('weight', { from: windowStart })).filter((m) => m.source === 'health_connect');
     const existing = new Map(mine.map((m) => [m.measuredOn, m]));
     let changed = 0;
+    weightsIgnored = ignored;
+    // A Health Connect row stored before the bound existed, outside the range: removed wherever it is dated (it could not be exported).
+    const removed = new Set<string>();
+    for (const row of await repos.measurements.list('weight')) {
+      if (row.source === 'health_connect' && (row.value < range.min || row.value > range.max)) {
+        await repos.measurements.delete(row.id);
+        existing.delete(row.measuredOn);
+        removed.add(row.id);
+        changed += 1;
+      }
+    }
     for (const [day, { kg }] of byDay) {
       if (existing.get(day)?.value === kg) continue;
       await repos.measurements.record({ measuredOn: day, kind: 'weight', value: kg, source: 'health_connect' });
@@ -225,7 +274,7 @@ export function createHealthSync({ repos, platform, now = () => new Date() }: De
     }
     // A day inside the window that Health Connect no longer has (the person deleted it there). The first, partial day is left alone.
     for (const row of mine) {
-      if (row.measuredOn > windowStart && !byDay.has(row.measuredOn)) {
+      if (!removed.has(row.id) && row.measuredOn > windowStart && !byDay.has(row.measuredOn)) {
         await repos.measurements.delete(row.id);
         changed += 1;
       }
@@ -258,6 +307,7 @@ export function createHealthSync({ repos, platform, now = () => new Date() }: De
       pending: pending.upsert.length + pending.remove.length,
       failing,
       lastWeightSyncAt: await settings.get(HEALTH_WEIGHT_SYNCED_KEY),
+      weightsIgnored,
     };
   };
 
@@ -342,6 +392,25 @@ export function createHealthSync({ repos, platform, now = () => new Date() }: De
         failing = false;
       }),
 
+    wipe: (removeRecords, task) =>
+      enqueue(async () => {
+        let recordsRemoved = false;
+        if (removeRecords) {
+          try {
+            await platform.deleteAllNutritionWritten();
+          } catch (cause) {
+            throw new HealthRecordsNotRemovedError({ cause });
+          }
+          await settings.remove(HEALTH_PENDING_KEY).catch(() => undefined);
+          recordsRemoved = true;
+        }
+        try {
+          await task();
+        } catch (cause) {
+          throw new WipeFailedError(recordsRemoved, { cause });
+        }
+      }),
+
     idle: async () => {
       await chain;
     },
@@ -364,6 +433,7 @@ export function createInactiveHealthSync(): HealthSync {
     syncWeight: async () => 0,
     sendExistingMeals: async () => 0,
     removeWrittenRecords: async () => undefined,
+    wipe: async (_removeRecords, task) => task(),
     idle: async () => undefined,
     openSettings: () => undefined,
     openInstall: () => undefined,

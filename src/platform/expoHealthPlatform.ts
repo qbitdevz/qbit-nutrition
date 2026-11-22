@@ -45,9 +45,8 @@ const MEAL_TYPES: Record<HealthMealType, number> = {
 
 /** A page is at most this many records; the loop below reads every page. */
 const PAGE_SIZE = 500;
-/** Far enough back for "every record this app wrote" and far enough ahead to include one with a clock in the future. */
+/** Far enough back for "every record this app wrote"; the delete has no end, so a record dated in the future is included too. */
 const EPOCH = '2000-01-01T00:00:00.000Z';
-const DAY_MS = 86_400_000;
 
 /** The Health Connect record for a meal: energy in kilocalories, every other value in grams, entered by the person. */
 export function toNutritionRecord(record: HealthNutritionRecord): NutritionRecord {
@@ -114,7 +113,7 @@ export function createExpoHealthPlatform(): HealthPlatform {
     },
     async deleteAllNutritionWritten() {
       await ready();
-      await deleteRecordsByTimeRange('Nutrition', { operator: 'between', startTime: EPOCH, endTime: new Date(Date.now() + DAY_MS).toISOString() });
+      await deleteRecordsByTimeRange('Nutrition', { operator: 'after', startTime: EPOCH });
     },
     async readWeights({ from, to }) {
       await ready();

@@ -333,7 +333,7 @@ describe('Settings → Data: delete all (S3)', () => {
     await press('Delete all data');
     await fireEvent.changeText(screen.getByTestId('confirm-word'), 'DELETE');
     await press('Delete everything');
-    expect(await screen.findByText('Not everything could be deleted. Your data is still here; try again.')).toBeOnTheScreen();
+    expect(await screen.findByText(/Removed: your AI provider keys and 0 of 1 meal photo.*Not removed: 1 meal photo and all your data\. Trying again is safe/)).toBeOnTheScreen();
     expect(await h.repos.profile.get()).not.toBeNull();
     expect(screen.getByTestId('probe').props.children).toBe('onboarded');
 

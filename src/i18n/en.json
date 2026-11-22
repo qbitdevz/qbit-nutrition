@@ -970,7 +970,8 @@
       "deleteFailed": "The provider could not be deleted. Try again.",
       "moreModels": "Showing the first {{count}} of {{total}}. You can type any other model name.",
       "firstActive": "This is your first provider, so it will become the active one: photos you scan will be sent to it.",
-      "savedNoTest": "Provider saved, but the test result could not be kept."
+      "savedNoTest": "Provider saved, but the test result could not be kept.",
+      "keyGoesTo": "This key is sent only to {{host}}."
     },
     "url": {
       "required": "Enter the provider's address.",
@@ -1024,6 +1025,12 @@
       "body": "The provider and its saved key are removed from this phone. Meals you already saved are not affected.",
       "confirm": "Delete it",
       "keep": "Keep it"
+    },
+    "imported": {
+      "tag": "Imported, not confirmed",
+      "title": "This profile was imported from a file",
+      "banner": "This profile was imported from a file. Its name can say anything: it sends data to {{host}}. It is not active, and no key can be added, until you confirm that address.",
+      "confirm": "I checked the address: use {{host}}"
     }
   },
   "data": {
@@ -1050,7 +1057,9 @@
       "errorKeys": "The export was stopped because the stored API keys could not be checked. Nothing was written. Try again.",
       "errorValue": "The export was stopped: {{where}} holds a value the export file cannot take. Shorten or correct it, then export again.",
       "photosSkipped_one": "{{count}} meal photo could not be read and is not in the file. Its meal is exported without it.",
-      "photosSkipped_other": "{{count}} meal photos could not be read and are not in the file. Their meals are exported without them."
+      "photosSkipped_other": "{{count}} meal photos could not be read and are not in the file. Their meals are exported without them.",
+      "rowsSkipped_one": "{{count}} entry was left out of the file because its value is outside what the app accepts: {{what}}. The rest was exported.",
+      "rowsSkipped_other": "{{count}} entries were left out of the file because their values are outside what the app accepts: {{what}}. The rest was exported."
     },
     "import": {
       "title": "Import data",
@@ -1120,12 +1129,21 @@
       "confirm": "Delete everything",
       "keep": "Keep my data",
       "deleting": "Deleting",
-      "error": "Not everything could be deleted. Your data is still here; try again.",
       "healthTitle": "Health Connect",
       "healthBody": "Qbit Nutrition has saved meals to Health Connect. Remove those records too?",
       "healthRemove": "Also remove the records this app wrote to Health Connect",
       "healthKeep": "Keep them in Health Connect",
-      "healthFailed": "The records in Health Connect could not be removed, so nothing was deleted. Try again, or choose to keep them."
+      "healthFailed": "The records in Health Connect could not be removed, so nothing was deleted. Try again, or choose to keep them.",
+      "incomplete": {
+        "unknown": "Deleting did not finish, and it is not known what was removed. Trying again is safe.",
+        "keys": "{{count}} of your AI provider keys could not be removed. Nothing else was deleted. Trying again is safe.",
+        "keysUnlistable": "The secure key storage could not be read, so your AI provider keys could not be checked. Nothing was deleted. Trying again is safe.",
+        "photos_one": "Removed: your AI provider keys and {{removed}} of {{total}} meal photos. Not removed: {{count}} meal photo and all your data. Trying again is safe and finishes the rest.",
+        "photos_other": "Removed: your AI provider keys and {{removed}} of {{total}} meal photos. Not removed: {{count}} meal photos and all your data. Trying again is safe and finishes the rest.",
+        "photosUnlistable": "Removed: your AI provider keys. Not removed: the meal photos could not be listed, and all your data. Trying again is safe and finishes the rest.",
+        "data": "Removed: your AI provider keys and all meal photos. Not removed: your data could not be cleared. Trying again is safe.",
+        "health": "The records this app wrote to Health Connect were removed."
+      }
     }
   },
   "barcode": {
@@ -1349,7 +1367,9 @@
       "failing": "The last attempt did not work. Your meals are safe in this app and will be sent when Health Connect answers.",
       "retry": "Try again now",
       "weightAt": "Weight last read on {{date}}.",
-      "weightNever": "Weight has not been read yet."
+      "weightNever": "Weight has not been read yet.",
+      "weightsIgnored_one": "{{count}} weight reading from Health Connect is outside the range this app accepts and was left out.",
+      "weightsIgnored_other": "{{count}} weight readings from Health Connect are outside the range this app accepts and were left out."
     },
     "existing": {
       "title": "Meals you already logged",

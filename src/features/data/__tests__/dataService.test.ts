@@ -7,7 +7,7 @@ import { createHarness, type Harness } from '@/data/testing/harness';
 import { sql } from 'drizzle-orm';
 import { ImportError, MAX_FILE_BYTES, type ImportErrorCode } from '../dataService';
 import { ExportDocumentSchema } from '../exportFormat';
-import { createDevice, documentText, everyByteOf, jpeg, lastShared, pickAndPrepare, NOW, type Device } from '../../testing/dataKit';
+import { createDevice, documentText, fullState, everyByteOf, jpeg, lastShared, pickAndPrepare, NOW, type Device } from '../../testing/dataKit';
 
 let a: Harness; // the phone the data comes from
 let b: Harness; // the new installation
@@ -169,12 +169,16 @@ describe('import round trip (S3)', () => {
     expect(copy.foodUsage).toEqual(source.foodUsage);
     expect(copy.matchMemory).toEqual(source.matchMemory);
     // Imported profiles get fresh ids (a key is stored under the id): everything else is the same.
-    const withoutId = (providers: typeof copy.aiProviders) => providers.map(({ id: _id, ...rest }) => rest);
+    // Imported profiles are never active on arrival, whatever the file says (the person turns one on after looking at its address).
+    const withoutId = (providers: typeof copy.aiProviders) => providers.map(({ id: _id, isActive: _active, ...rest }) => rest);
+    expect(copy.aiProviders.every((p) => !p.isActive)).toBe(true);
     expect(withoutId(copy.aiProviders)).toEqual(withoutId(source.aiProviders));
     expect(copy.aiProviders.map((p) => p.id).filter((id) => source.aiProviders.some((q) => q.id === id))).toEqual([]);
     // The scan row is not exported, so the meal that came from it has no link; the photo was not exported either.
     expect(copy.meals).toEqual(source.meals.map((m) => ({ ...m, scanId: null, photoPath: null })));
-    expect(copy.settings).toEqual({
+    // Each imported profile carries a local mark until it is confirmed (not part of the file).
+    expect(Object.keys(copy.settings).filter((key) => key.startsWith('ai_imported.'))).toHaveLength(copy.aiProviders.length);
+    expect(Object.fromEntries(Object.entries(copy.settings).filter(([key]) => !key.startsWith('ai_imported.')))).toEqual({
       locale: 'es',
       keep_photos: 'true',
       minimum_daily_kcal: '1400',
@@ -302,9 +306,9 @@ describe('files that cannot be imported leave everything as it was (S3)', () => 
       await seedEverything(b, { photoPath: 'photos/dest-1.jpg' });
       to.platform.addPhoto('photos/dest-1.jpg', jpeg(7));
       await to.services.secrets.set('some-provider', 'dest-key');
+      for (const provider of await b.repos.aiProviders.list()) await to.services.secrets.set(provider.id, `key-of-${provider.label}-0123456789`);
     }
-    const dbBefore = dumpAll(b);
-    const photosBefore = [...to.platform.state.photos.entries()];
+    const stateBefore = await fullState(to);
 
     const error = await pickAndPrepare(to, 'file.json', bytes).then(
       () => null,
@@ -313,9 +317,7 @@ describe('files that cannot be imported leave everything as it was (S3)', () => 
     expect(error).toBeInstanceOf(ImportError);
     expect(error).toMatchObject({ code, ...extra });
 
-    expect(dumpAll(b)).toEqual(dbBefore); // byte for byte
-    expect([...to.platform.state.photos.entries()]).toEqual(photosBefore);
-    expect(await to.services.secrets.get('some-provider')).toBe('dest-key');
+    expect(await fullState(to)).toEqual(stateBefore); // every row, every photo and every stored key, byte for byte
     expect(to.platform.state.cache.size).toBe(0); // the picked copy is not left behind
   }
 
@@ -411,21 +413,20 @@ describe('the replacement is all or nothing (S3)', () => {
     to.platform.addPhoto('photos/dest-1.jpg', jpeg(7));
     to.platform.addPhoto('photos/dest-orphan.jpg', jpeg(6));
     await to.services.secrets.set('dest-provider', 'dest-key');
+    for (const provider of await b.repos.aiProviders.list()) await to.services.secrets.set(provider.id, `key-of-${provider.label}-0123456789`);
   }
 
   it('a failure injected midway through the write rolls everything back, and removes neither old photos nor keys, nor leaves new ones', async () => {
     const prepared = await prepareFromSource(true);
     await seedDestination();
-    const dbBefore = dumpAll(b);
-    const photosBefore = [...to.platform.state.photos.entries()];
+    const stateBefore = await fullState(to);
 
     b.client.exec(`CREATE TRIGGER boom BEFORE INSERT ON custom_food BEGIN SELECT RAISE(ABORT, 'injected failure'); END`);
     await expect(to.service.applyImport(prepared)).rejects.toMatchObject({ code: 'write_failed' });
     b.client.exec('DROP TRIGGER boom');
 
-    expect(dumpAll(b)).toEqual(dbBefore);
-    expect([...to.platform.state.photos.entries()]).toEqual(photosBefore); // the staged copies are removed again, the old photos untouched
-    expect(await to.services.secrets.get('dest-provider')).toBe('dest-key');
+    // Every row, every photo (the staged copies are removed again, the old ones untouched) and every stored key.
+    expect(await fullState(to)).toEqual(stateBefore);
   });
 
   it('a failure while storing the second photo leaves no stray file and the old data as it was', async () => {
@@ -446,13 +447,11 @@ describe('the replacement is all or nothing (S3)', () => {
     expect(prepared.preview.counts.photos).toBe(2);
 
     await seedDestination();
-    const dbBefore = dumpAll(b);
-    const photosBefore = [...to.platform.state.photos.entries()];
+    const stateBefore = await fullState(to);
     to.platform.state.failPhotoWriteAt = 2;
     await expect(to.service.applyImport(prepared)).rejects.toMatchObject({ code: 'write_failed' });
 
-    expect(dumpAll(b)).toEqual(dbBefore);
-    expect([...to.platform.state.photos.entries()]).toEqual(photosBefore);
+    expect(await fullState(to)).toEqual(stateBefore);
   });
 
   it('after a failed import the same file can be imported again', async () => {

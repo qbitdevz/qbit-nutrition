@@ -435,7 +435,7 @@ describe('settings entry', () => {
     const onOpen = jest.fn();
     await renderApp(<SettingsScreen onOpen={onOpen} />, { services });
     expect(await screen.findByRole('button', { name: t('settings.providers') })).toBeOnTheScreen();
-    expect(await screen.findByText('Alpha · m-1')).toBeOnTheScreen();
+    expect(await screen.findByText('Alpha (llm.example.test) · m-1')).toBeOnTheScreen();
     await press(t('settings.providers'));
     expect(onOpen).toHaveBeenCalledWith('providers');
   });

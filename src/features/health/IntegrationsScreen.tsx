@@ -19,7 +19,7 @@ interface IntegrationsScreenProps {
 type Busy = 'turnOn' | 'retry' | 'send' | 'grant' | null;
 type Notice = { kind: 'declined' } | { kind: 'unavailable'; availability: HealthAvailability } | { kind: 'sent'; count: number } | null;
 
-const UNKNOWN: HealthStatus = { enabled: false, availability: null, grants: null, pending: 0, failing: false, lastWeightSyncAt: null };
+const UNKNOWN: HealthStatus = { enabled: false, availability: null, grants: null, pending: 0, failing: false, lastWeightSyncAt: null, weightsIgnored: 0 };
 const GRANTS: readonly HealthGrant[] = ['writeNutrition', 'readWeight'];
 
 /**
@@ -181,6 +181,12 @@ export function IntegrationsScreen({ onBack, onOpenPrivacy }: IntegrationsScreen
                   <View style={styles.note}>
                     <Icon name="alert" color={colors.warning} />
                     <AppText style={styles.noteText}>{t('health.sync.failing')}</AppText>
+                  </View>
+                ) : null}
+                {status.weightsIgnored > 0 ? (
+                  <View style={styles.note}>
+                    <Icon name="alert" color={colors.warning} />
+                    <AppText style={styles.noteText}>{t('health.sync.weightsIgnored', { count: status.weightsIgnored })}</AppText>
                   </View>
                 ) : null}
                 <AppText variant="bodySm" tone="muted">

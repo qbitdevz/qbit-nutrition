@@ -10,6 +10,7 @@ import { readMinimumKcal } from '../goals/minimum';
 import { readKeepPhotos, writeKeepPhotos } from '../scan/photoSettings';
 import { useSession } from '../session/AppSession';
 import { useServices } from '../startup/AppProvider';
+import { destinationOf } from './destination';
 import { saveLocale } from './language';
 
 export type SettingsSection = 'profile' | 'goal' | 'minimum' | 'providers' | 'integrations' | 'data' | 'about';
@@ -46,7 +47,7 @@ export function SettingsScreen({ onOpen, onBack }: { onOpen: (section: SettingsS
           profile: profile ? t(`profile.units.${profile.unitSystem}`) : undefined,
           goal: goal?.kcalTarget != null ? `${formatNumber(locale, goal.kcalTarget)} kcal · ${t(`goal.type.${goal.type}`)}` : t('goal.none'),
           integrations: t(healthOn ? 'settings.integrationsOn' : 'settings.integrationsOff'),
-          providers: provider ? `${provider.label} · ${provider.model}` : t('settings.providersNone'),
+          providers: provider ? `${destinationOf(provider)} · ${provider.model}` : t('settings.providersNone'),
           minimum: minimum !== null ? t('minimum.current', { kcal: formatNumber(locale, minimum) }) : `${formatNumber(locale, DEFAULT_MINIMUM_DAILY_KCAL.female)} / ${formatNumber(locale, DEFAULT_MINIMUM_DAILY_KCAL.male)} kcal`,
         });
       },

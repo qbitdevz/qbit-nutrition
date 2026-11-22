@@ -1,3 +1,4 @@
+import { destinationOf, hostOf } from '../settings/destination';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
@@ -99,7 +100,7 @@ function SuggestBody({ active, day, onClose, onProviderSettings, onSetupTargets,
         if (!alive.current || abort.signal.aborted || error instanceof CancelledError) return;
         if (error instanceof NothingToSuggestError) return setView({ kind: 'blocked', reason: 'nothing_left' });
         if (error instanceof ScanSetupError && error.code === 'no_provider') return setView({ kind: 'blocked', reason: 'no_provider' });
-        setView({ kind: 'failed', failure: { ...classifyFailure(error).failure, providerLabel: provider.label } });
+        setView({ kind: 'failed', failure: { ...classifyFailure(error).failure, providerLabel: provider.label, providerHost: hostOf(provider.baseUrl) } });
       }
     },
     [scan, locale],
@@ -162,9 +163,9 @@ function SuggestBody({ active, day, onClose, onProviderSettings, onSetupTargets,
       {view.kind === 'notice' ? (
         <View style={styles.body}>
           <AppText variant="heading" accessibilityRole="header">
-            {t('suggest.notice.title', { provider: view.provider.label })}
+            {t('suggest.notice.title', { provider: destinationOf(view.provider) })}
           </AppText>
-          <AppText tone="muted">{t('suggest.notice.body', { provider: view.provider.label })}</AppText>
+          <AppText tone="muted">{t('suggest.notice.body', { provider: destinationOf(view.provider) })}</AppText>
           <AppText variant="bodyMd" testID="suggest-sends">
             {t('suggest.notice.sends', {
               kcal: n(view.request.remaining.kcal),
@@ -186,7 +187,7 @@ function SuggestBody({ active, day, onClose, onProviderSettings, onSetupTargets,
           <Skeleton height={72} radius={16} />
           <AppText variant="itemName">{t('suggest.loading')}</AppText>
           <AppText variant="bodySm" tone="muted">
-            {t('suggest.loadingHint', { provider: view.provider.label })}
+            {t('suggest.loadingHint', { provider: destinationOf(view.provider) })}
           </AppText>
           <Button label={t('common.cancel')} variant="secondary" onPress={onClose} testID="suggest-cancel" />
         </View>

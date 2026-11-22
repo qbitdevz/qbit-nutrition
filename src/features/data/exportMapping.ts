@@ -1,7 +1,7 @@
 import type { NutrientAmounts } from '@/core/nutrition';
 import type { BackupSnapshot, MealWithItems, Profile } from '@/data';
 import { EXPORT_FORMAT, EXPORT_FORMAT_VERSION, isKnownTestResult, type ExportDocument } from './exportFormat';
-import { portableSettings } from './settingsPolicy';
+import { IMPORTED_PROVIDER_PREFIX, portableSettings } from './settingsPolicy';
 
 /**
  * The base URL as it travels: without credentials. `assertSecureBaseUrl` refuses credentials when a profile is created, so
@@ -224,6 +224,8 @@ export function snapshotFromDocument(doc: ExportDocument, { storedPhotos, localP
     })),
   }));
 
+  const providers = doc.ai_providers.map((p) => ({ id: newId(), p }));
+
   return {
     // A file without a profile leaves this installation's own profile in place: it holds the accepted health notice and the units,
     // and an onboarded app without one would be incoherent. (With no profile here the app is not onboarded, so onboarding asks.)
@@ -278,8 +280,8 @@ export function snapshotFromDocument(doc: ExportDocument, { storedPhotos, localP
       timesConfirmed: m.times_confirmed,
       updatedAt: m.updated_at,
     })),
-    aiProviders: doc.ai_providers.map((p) => ({
-      id: newId(),
+    aiProviders: providers.map(({ id, p }) => ({
+      id,
       label: p.label,
       preset: p.preset,
       adapter: p.adapter,
@@ -287,11 +289,13 @@ export function snapshotFromDocument(doc: ExportDocument, { storedPhotos, localP
       model: p.model,
       outputMode: p.output_mode,
       timeoutS: p.timeout_s,
-      isActive: p.is_active,
+      // Never active on arrival, whatever the file says: the person turns a profile on after looking at where it points.
+      isActive: false,
       lastTestAt: p.last_test_at,
       lastTestResult: p.last_test_result,
     })),
     // Imported preferences, then this installation's own state on top (a document cannot overwrite it: the portable filter drops those keys first).
-    settings: { ...portableSettings(doc.settings), ...keptSettings },
+    // Every imported profile is marked until the person confirms it (the mark is local state: see `settingsPolicy.ts`).
+    settings: { ...portableSettings(doc.settings), ...keptSettings, ...Object.fromEntries(providers.map(({ id }) => [`${IMPORTED_PROVIDER_PREFIX}${id}`, '1'])) },
   };
 }

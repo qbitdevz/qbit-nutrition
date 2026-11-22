@@ -27,7 +27,7 @@ import { z } from 'zod';
 
 import { assertSecureBaseUrl, type ProviderErrorCode } from '@/core/ai';
 import { NUTRIENT_CODES } from '@/core/nutrition';
-import { MAX_TIMEOUT_S, MIN_TIMEOUT_S, PHOTO_PATH_PATTERN as STORED_PHOTO_PATH, TEXT_LIMITS, addDays, isLocalDate, schema } from '@/data';
+import { MAX_TIMEOUT_S, MIN_TIMEOUT_S, PHOTO_PATH_PATTERN as STORED_PHOTO_PATH, TEXT_LIMITS, VALUE_LIMITS, addDays, isLocalDate, schema } from '@/data';
 import { TARGET_RANGES } from '../goals/targetsForm';
 import { CUSTOM_FOOD_RANGES, GRAMS_RANGE } from '../logging/limits';
 import { HEIGHT_CM, MIN_BIRTH_AGE_YEARS, WEIGHT_KG } from '../profile/units';
@@ -46,16 +46,9 @@ export const PHOTO_PATH_PATTERN = STORED_PHOTO_PATH;
  * bounds comes from them (an item's calories at most the largest portion of the densest custom food) or is a sanity
  * limit named here.
  */
-const ITEM_MAX = {
-  kcal: (GRAMS_RANGE.max * CUSTOM_FOOD_RANGES.kcal.max) / 100,
-  protein: (GRAMS_RANGE.max * CUSTOM_FOOD_RANGES.protein.max) / 100,
-  carbs: (GRAMS_RANGE.max * CUSTOM_FOOD_RANGES.carbs.max) / 100,
-  fat: (GRAMS_RANGE.max * CUSTOM_FOOD_RANGES.fat.max) / 100,
-} as const;
-/** Micronutrients come from the catalog, not from a form: this only stops a value that cannot be real. */
-const NUTRIENT_MAX = 1_000_000;
-/** Counters (uses, confirmations) have no form; a million is far beyond any use of an app. */
-const COUNT_MAX = 1_000_000;
+const ITEM_MAX = VALUE_LIMITS.item;
+const NUTRIENT_MAX = VALUE_LIMITS.nutrientMax;
+const COUNT_MAX = VALUE_LIMITS.countMax;
 /** Earliest day any record may have (the app did not exist before). A birth date is bounded by `MIN_BIRTH_AGE_YEARS` instead. */
 export const EARLIEST_DAY = '2000-01-01';
 /** A file may name days up to this many days after it was exported (time zones, a clock a little ahead). */
@@ -178,7 +171,7 @@ const meal = z.object({
   note: nullable(longText),
   created_at: instant,
   updated_at: instant,
-  items: z.array(mealItem),
+  items: z.array(mealItem).min(1),
 });
 
 const customFood = z.object({
@@ -255,7 +248,7 @@ const aiProvider = z.object({
   last_test_result: nullable(z.enum(KNOWN_TEST_RESULTS)),
 });
 
-export const ExportDocumentSchema = z
+const documentShape = z
   .object({
     format: z.literal(EXPORT_FORMAT),
     format_version: z.literal(EXPORT_FORMAT_VERSION),
@@ -277,8 +270,14 @@ export const ExportDocumentSchema = z
         else if (!isValidSetting(key, setting)) ctx.addIssue({ code: 'custom', path: [key], message: `"${key}" has a value the app cannot read` });
       }
     }),
-  })
-  .superRefine((doc, ctx) => {
+  });
+
+/**
+ * The format as a schema. `clock` is the DEVICE's clock: every date is bounded by it (plus a little skew), never by the file's own
+ * `exported_at`, which a file can set to any year it likes.
+ */
+export function createExportSchema(clock: () => Date) {
+  return documentShape.superRefine((doc, ctx) => {
     const issue = (path: (string | number)[], message: string) => ctx.addIssue({ code: 'custom', path, message });
 
     /** Reports every row whose key was already seen. */
@@ -325,15 +324,16 @@ export const ExportDocumentSchema = z
       else if (previous.g.end_date >= next.g.start_date) issue(['goals', next.index, 'start_date'], 'goal periods must not overlap');
     }
 
-    // Dates: plausible, and consistent with each other.
-    const exportDay = doc.exported_at.slice(0, 10);
-    const latest = addDays(exportDay, FUTURE_SLACK_DAYS);
+    // Dates: plausible against the device clock, and consistent with each other.
+    const today = clock().toISOString().slice(0, 10);
+    const latest = addDays(today, FUTURE_SLACK_DAYS);
+    if (doc.exported_at.slice(0, 10) > latest) issue(['exported_at'], `a file cannot be exported after ${latest} on this device's clock`);
     const plausible = (path: (string | number)[], day: string) => {
       if (day < EARLIEST_DAY || day > latest) issue(path, `must be between ${EARLIEST_DAY} and ${latest}`);
     };
     if (doc.profile?.birth_date) {
-      const oldest = `${Number(exportDay.slice(0, 4)) - MIN_BIRTH_AGE_YEARS}-01-01`;
-      if (doc.profile.birth_date < oldest || doc.profile.birth_date > exportDay) issue(['profile', 'birth_date'], `must be between ${oldest} and the export date`);
+      const oldest = `${Number(today.slice(0, 4)) - MIN_BIRTH_AGE_YEARS}-01-01`;
+      if (doc.profile.birth_date < oldest || doc.profile.birth_date > today) issue(['profile', 'birth_date'], `must be between ${oldest} and today`);
     }
     if (doc.profile) {
       plausible(['profile', 'created_at'], doc.profile.created_at.slice(0, 10));
@@ -369,8 +369,11 @@ export const ExportDocumentSchema = z
       active = true;
     });
   });
+}
 
-export type ExportDocument = z.infer<typeof ExportDocumentSchema>;
+export const ExportDocumentSchema = createExportSchema(() => new Date());
+
+export type ExportDocument = z.infer<typeof documentShape>;
 
 export type ParseResult =
   | { ok: true; document: ExportDocument }
@@ -390,7 +393,7 @@ export function describePath(path: readonly PropertyKey[]): string {
  * Validates a parsed JSON value as an export document, in the order that gives the most useful message:
  * is it an export at all, is it from a newer format, then the whole structure. Nothing is written by this.
  */
-export function parseExportDocument(raw: unknown): ParseResult {
+export function parseExportDocument(raw: unknown, clock: () => Date = () => new Date()): ParseResult {
   if (typeof raw !== 'object' || raw === null || Array.isArray(raw) || (raw as Record<string, unknown>).format !== EXPORT_FORMAT) {
     return { ok: false, code: 'not_export' };
   }
@@ -398,7 +401,7 @@ export function parseExportDocument(raw: unknown): ParseResult {
   if (typeof version === 'number' && Number.isInteger(version) && version > EXPORT_FORMAT_VERSION) {
     return { ok: false, code: 'newer_version', fileVersion: version, supportedVersion: EXPORT_FORMAT_VERSION };
   }
-  const result = ExportDocumentSchema.safeParse(raw);
+  const result = createExportSchema(clock).safeParse(raw);
   if (result.success) return { ok: true, document: result.data };
   const first = result.error.issues[0];
   return { ok: false, code: 'invalid', where: describePath(first?.path ?? []) || 'file' };

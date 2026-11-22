@@ -30,7 +30,14 @@ export const OTHER_ACK_PREFIX = 'notice_ack.';
 const INSTALLATION_STATE: readonly string[] = [ONBOARDED_KEY, CATALOG_MARKER_SETTING, ...HEALTH_SETTING_KEYS];
 
 export const isInstallationState = (key: string): boolean => INSTALLATION_STATE.includes(key);
-export const isAcknowledgement = (key: string): boolean => key.startsWith(NOTICE_ACK_PREFIX) || key.startsWith(OTHER_ACK_PREFIX);
+/**
+ * Prefix of the mark "this profile came from an import and was not confirmed yet" (`importedKey` in `providerService.ts`; a test keeps
+ * them equal). Local state about this installation's profiles: never exported, and a file cannot carry it.
+ */
+export const IMPORTED_PROVIDER_PREFIX = 'ai_imported.';
+
+export const isAcknowledgement = (key: string): boolean =>
+  key.startsWith(NOTICE_ACK_PREFIX) || key.startsWith(OTHER_ACK_PREFIX) || key.startsWith(IMPORTED_PROVIDER_PREFIX);
 
 /** True for a setting that is part of the person's data: it goes into an export and comes back with an import. */
 export const isPortableSetting = (key: string): boolean => !isInstallationState(key) && !isAcknowledgement(key);

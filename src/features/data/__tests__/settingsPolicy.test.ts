@@ -3,13 +3,15 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { ONBOARDED_KEY } from '../../session/AppSession';
-import { noticeKey } from '../../settings/providerService';
-import { CATALOG_MARKER_SETTING, NOTICE_ACK_PREFIX, isPortableSetting, keptSettings, portableSettings } from '../settingsPolicy';
+import { importedKey, noticeKey } from '../../settings/providerService';
+import { CATALOG_MARKER_SETTING, IMPORTED_PROVIDER_PREFIX, NOTICE_ACK_PREFIX, isPortableSetting, keptSettings, portableSettings } from '../settingsPolicy';
 
 describe('which settings travel', () => {
   it('keeps the names equal to the ones the app writes', () => {
     expect(isPortableSetting(ONBOARDED_KEY)).toBe(false);
     expect(noticeKey('some-id').startsWith(NOTICE_ACK_PREFIX)).toBe(true);
+    expect(importedKey('some-id').startsWith(IMPORTED_PROVIDER_PREFIX)).toBe(true);
+    expect(isPortableSetting(importedKey('some-id'))).toBe(false); // local state about this installation's profiles: never exported
     // The catalog installer needs native modules, so its constant is read from the source instead of imported.
     const source = readFileSync(path.resolve(__dirname, '../../../data/expo/catalogDatabase.ts'), 'utf8');
     expect(source).toContain(`CATALOG_MARKER_KEY = '${CATALOG_MARKER_SETTING}'`);

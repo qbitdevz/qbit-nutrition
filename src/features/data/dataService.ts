@@ -2,7 +2,7 @@ import { deriveMealTime, newId as defaultNewId, type Repositories } from '@/data
 import type { Locale } from '@/i18n/locale';
 import { SUPPORTED_LOCALES } from '@/i18n/locale';
 import type { DataPlatform, PickedFile } from '@/platform/dataPlatform';
-import type { ProviderService } from '../settings/providerService';
+import { KeysNotRemovedError, type ProviderService } from '../settings/providerService';
 import {
   ArchiveError,
   DEFAULT_LIMITS,
@@ -14,7 +14,7 @@ import {
   writeZip,
   type ArchiveLimits,
 } from './archive';
-import { ExportDocumentSchema, PHOTO_PATH_PATTERN, describePath, parseExportDocument, referencedPhotos, type ExportDocument } from './exportFormat';
+import { PHOTO_PATH_PATTERN, createExportSchema, describePath, parseExportDocument, referencedPhotos, type ExportDocument } from './exportFormat';
 import { documentFromSnapshot, snapshotFromDocument } from './exportMapping';
 import { keptSettings } from './settingsPolicy';
 
@@ -75,6 +75,11 @@ export type ExportErrorCode =
   /** The file could not be written or shared. */
   | 'failed';
 
+/** The collections whose rows are independent leaves: leaving one out loses that row and nothing else (no day total, target or reference changes). */
+const SKIPPABLE = ['body_measurements', 'food_usage', 'match_memory', 'barcode_products'] as const;
+type SkippableCollection = (typeof SKIPPABLE)[number];
+const isSkippable = (name: unknown): name is SkippableCollection => (SKIPPABLE as readonly unknown[]).includes(name);
+
 export class ExportError extends Error {
   readonly code: ExportErrorCode;
   readonly where?: string;
@@ -94,6 +99,45 @@ export class NotConfirmedError extends Error {
     this.name = 'NotConfirmedError';
   }
 }
+
+/**
+ * "Delete all data" did not finish. It says exactly where it stopped and what is already gone, so the person is never told "your data is
+ * still here" when part of it is not. Running it again is always safe and finishes the rest.
+ */
+export class DeleteIncompleteError extends Error {
+  readonly code = 'delete_incomplete' as const;
+  readonly dataRemoved = false as const;
+  constructor(
+    /** `keys` (nothing else was touched), `photos` (the keys are gone), `data` (keys and photos are gone). */
+    readonly stage: 'keys' | 'photos' | 'data',
+    readonly details: { keysFailed?: number; keysUnlistable?: boolean; photosRemoved?: number; photosFailed?: number; photosUnlistable?: boolean } = {},
+    options?: { cause?: unknown },
+  ) {
+    super(`delete_incomplete:${stage}`, options);
+    this.name = 'DeleteIncompleteError';
+  }
+  get keysRemoved(): boolean {
+    return this.stage !== 'keys';
+  }
+  get keysFailed(): number {
+    return this.details.keysFailed ?? 0;
+  }
+  get keysUnlistable(): boolean {
+    return this.details.keysUnlistable ?? false;
+  }
+  get photosRemoved(): number {
+    return this.details.photosRemoved ?? 0;
+  }
+  get photosFailed(): number {
+    return this.details.photosFailed ?? 0;
+  }
+  get photosUnlistable(): boolean {
+    return this.details.photosUnlistable ?? false;
+  }
+}
+
+/** A kept photo is left alone by the startup sweep for this long: its meal may not be saved yet. */
+export const PHOTO_SWEEP_MIN_AGE_MS = 10 * 60_000;
 
 /** What a file holds, shown before anything is replaced. */
 export interface ImportPreview {
@@ -142,6 +186,19 @@ export interface ExportResult {
   bytes: number;
   /** Kept photos that were asked for but are not in the file (missing or unreadable). Their meals are exported without a photo. */
   skippedPhotos: string[];
+  /**
+   * Rows left out of the file because a stored value is outside what the format (and the app) accepts. Only rows whose absence cannot
+   * change what the rest of the file means can be skipped: measurements, recents/favorites, learned matches, barcode products.
+   * Anything else stops the export (`invalid_value`).
+   */
+  skippedRows: SkippedRow[];
+}
+
+export interface SkippedRow {
+  collection: SkippableCollection | 'meals';
+  id: string;
+  /** A few words that tell the person which row it was ("weight 2026-06-04"). */
+  detail: string;
 }
 
 export interface SweepSummary {
@@ -219,6 +276,12 @@ function buildPreview(doc: ExportDocument, photos: number): ImportPreview {
   };
 }
 
+const schemaFor = createExportSchema;
+
+const rowId = (collection: SkippableCollection, row: Record<string, unknown>): string => String(collection === 'barcode_products' ? row.barcode : collection === 'food_usage' ? row.food_ref : collection === 'match_memory' ? row.detected_name_normalized : row.id);
+const rowDetail = (collection: SkippableCollection, row: Record<string, unknown>): string =>
+  collection === 'body_measurements' ? `${String(row.kind)} ${String(row.measured_on)}` : collection === 'food_usage' ? String(row.food_ref) : collection === 'match_memory' ? String(row.detected_name_normalized) : String(row.barcode);
+
 const quietly = async (action: () => Promise<unknown>): Promise<boolean> => {
   try {
     await action();
@@ -273,7 +336,10 @@ export function createDataService(deps: DataServiceDeps): DataService {
     },
 
     async exportData({ withPhotos, shareTitle }) {
-      const snapshot = await repos.backup.read();
+      const read = await repos.backup.read();
+      // A meal with no items holds nothing (the app never makes one, and deleting a meal's last item deletes the meal): it is left out and reported.
+      const emptyMeals = read.meals.filter((m) => m.items.length === 0);
+      const snapshot = emptyMeals.length > 0 ? { ...read, meals: read.meals.filter((m) => m.items.length > 0) } : read;
 
       // The keys are read first: if they cannot be, there is no way to know that none is in the file, so nothing is written.
       let hasKeyIn: (text: string) => boolean;
@@ -294,7 +360,29 @@ export function createDataService(deps: DataServiceDeps): DataService {
         }
       }
 
-      const parsed = ExportDocumentSchema.safeParse(documentFromSnapshot(snapshot, { appVersion, exportedAt: now(), includedPhotos: new Set(photos.keys()) }));
+      // A stored value the format does not accept: a row in a skippable collection is left out and reported; anything else stops the export,
+      // naming the field. (Skipping a meal or a goal would silently change totals and targets; skipping a stray measurement changes nothing else.)
+      let raw = documentFromSnapshot(snapshot, { appVersion, exportedAt: now(), includedPhotos: new Set(photos.keys()) });
+      let parsed = schemaFor(now).safeParse(raw);
+      const skippedRows: SkippedRow[] = emptyMeals.map((m) => ({ collection: 'meals' as const, id: m.id, detail: `meal ${m.localDate} ${m.slot} (no items)` }));
+      if (!parsed.success) {
+        const bad = new Map<SkippableCollection, Set<number>>();
+        let onlySkippable = true;
+        for (const issue of parsed.error.issues) {
+          const [collection, index] = issue.path;
+          if (isSkippable(collection) && typeof index === 'number') bad.set(collection, (bad.get(collection) ?? new Set()).add(index));
+          else onlySkippable = false;
+        }
+        if (onlySkippable && bad.size > 0) {
+          const rows = raw as unknown as Record<SkippableCollection, Record<string, unknown>[]>;
+          for (const [collection, indexes] of bad) {
+            for (const index of [...indexes].sort((x, y) => x - y)) skippedRows.push({ collection, id: rowId(collection, rows[collection]![index]!), detail: rowDetail(collection, rows[collection]![index]!) });
+            rows[collection] = rows[collection]!.filter((_, i) => !indexes.has(i));
+          }
+          raw = rows as unknown as typeof raw;
+          parsed = schemaFor(now).safeParse(raw);
+        }
+      }
       if (!parsed.success) throw new ExportError('invalid_value', describePath(parsed.error.issues[0]?.path ?? []) || 'file');
       const document = parsed.data;
 
@@ -324,7 +412,7 @@ export function createDataService(deps: DataServiceDeps): DataService {
       // (Android), the file stays in the app's private cache until the next app start sweeps it (`sweepStartup`): the worst case is
       // that file lingering for as long as the app is not restarted (or until "Delete all data").
       if (platform.share.completesWhenDone) await quietly(() => platform.cache.remove(uri));
-      return { fileName, photos: photos.size, bytes: bytes.byteLength, skippedPhotos };
+      return { fileName, photos: photos.size, bytes: bytes.byteLength, skippedPhotos, skippedRows };
     },
 
     async prepareImport(file) {
@@ -356,7 +444,7 @@ export function createDataService(deps: DataServiceDeps): DataService {
         throw new ImportError(error instanceof ArchiveError ? (error.code === 'photo_invalid' ? 'damaged' : error.code) : 'damaged', { cause: error });
       }
 
-      const parsed = parseExportDocument(raw);
+      const parsed = parseExportDocument(raw, now);
       if (!parsed.ok) {
         if (parsed.code === 'newer_version') throw new ImportError('newer_version', { fileVersion: parsed.fileVersion, supportedVersion: parsed.supportedVersion });
         throw new ImportError(parsed.code, parsed.code === 'invalid' ? { where: parsed.where } : {});
@@ -431,20 +519,33 @@ export function createDataService(deps: DataServiceDeps): DataService {
 
       // Keys first: every key, with or without a profile. If any cannot be removed nothing else is deleted, so the person is never
       // left with keys they cannot reach.
-      await providers.removeAllKeys();
+      try {
+        await providers.removeAllKeys();
+      } catch (cause) {
+        if (cause instanceof KeysNotRemovedError) throw new DeleteIncompleteError('keys', { keysFailed: cause.failed, keysUnlistable: cause.unlistable }, { cause });
+        throw new DeleteIncompleteError('keys', { keysFailed: 1 }, { cause });
+      }
 
       // Photos next, by what is on disk (referenced or not), so a retry finds whatever is left.
-      let failure: unknown = null;
-      for (const path of await platform.photos.list()) {
-        try {
-          await platform.photos.remove(path);
-        } catch (error) {
-          failure ??= error;
-        }
+      let paths: string[];
+      try {
+        paths = await platform.photos.list();
+      } catch (cause) {
+        throw new DeleteIncompleteError('photos', { photosUnlistable: true }, { cause });
       }
-      if (failure) throw failure;
+      let photosRemoved = 0;
+      let photosFailed = 0;
+      for (const path of paths) {
+        if (await quietly(() => platform.photos.remove(path))) photosRemoved += 1;
+        else photosFailed += 1;
+      }
+      if (photosFailed > 0) throw new DeleteIncompleteError('photos', { photosRemoved, photosFailed });
 
-      await repos.backup.deleteAll();
+      try {
+        await repos.backup.deleteAll();
+      } catch (cause) {
+        throw new DeleteIncompleteError('data', { photosRemoved, photosFailed: 0 }, { cause });
+      }
       await clearCache();
     },
 
@@ -458,11 +559,13 @@ export function createDataService(deps: DataServiceDeps): DataService {
       try {
         // A kept photo no meal refers to: left by a crash (an old photo after an import's commit, a staged one before it) or a failed removal.
         // If either list cannot be read nothing is deleted: "unreferenced" cannot be told.
-        const onDisk = await platform.photos.list();
+        // A photo kept a moment ago may be waiting for its meal to be saved: files younger than `PHOTO_SWEEP_MIN_AGE_MS` are left for the next start.
+        const onDisk = await platform.photos.listDetailed();
         const used = new Set(await repos.meals.photoPaths());
+        const at = now().getTime();
         let failed = false;
-        for (const path of onDisk) {
-          if (used.has(path)) continue;
+        for (const { path, modifiedAt } of onDisk) {
+          if (used.has(path) || at - modifiedAt < PHOTO_SWEEP_MIN_AGE_MS) continue;
           if (await quietly(() => platform.photos.remove(path))) summary.photos += 1;
           else failed = true;
         }

@@ -11,7 +11,8 @@ import { AppText, BottomSheet, Button, ChoiceChips, ErrorState, FieldMessage, Ic
 import { useSession } from '../session/AppSession';
 import { useServices } from '../startup/AppProvider';
 import { useDataPlatform } from './DataPlatformContext';
-import { ExportError, ImportError, createDataService, type ImportResult, type ImportPreview, type PreparedImport } from './dataService';
+import { HealthRecordsNotRemovedError, WipeFailedError } from '../health/healthSync';
+import { DeleteIncompleteError, ExportError, ImportError, createDataService, type ImportResult, type ImportPreview, type PreparedImport, type SkippedRow } from './dataService';
 
 interface DataScreenProps {
   onBack?: () => void;
@@ -70,6 +71,7 @@ export function DataScreen({ onBack, onOpenProviders, now }: DataScreenProps) {
   const [exporting, setExporting] = useState(false);
   const [exportProblem, setExportProblem] = useState<ExportError | 'failed' | null>(null);
   const [skippedPhotos, setSkippedPhotos] = useState(0);
+  const [skippedRows, setSkippedRows] = useState<SkippedRow[]>([]);
   // Import.
   const [imported, setImported] = useState<ImportState>({ kind: 'idle' });
   // Delete.
@@ -80,6 +82,8 @@ export function DataScreen({ onBack, onOpenProviders, now }: DataScreenProps) {
   const [healthOn, setHealthOn] = useState(false);
   const [removeHealth, setRemoveHealth] = useState(true);
   const [healthFailed, setHealthFailed] = useState(false);
+  // What a delete that did not finish left behind, stated exactly.
+  const [deleteReport, setDeleteReport] = useState<{ incomplete: DeleteIncompleteError | null; healthRemoved: boolean } | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -108,10 +112,12 @@ export function DataScreen({ onBack, onOpenProviders, now }: DataScreenProps) {
     setReminder(false);
     setExportProblem(null);
     setSkippedPhotos(0);
+    setSkippedRows([]);
     setExporting(true);
     try {
       const result = await service.exportData({ withPhotos: withPhotos && photoCount > 0, shareTitle: t('data.export.shareTitle') });
       setSkippedPhotos(result.skippedPhotos.length);
+      setSkippedRows(result.skippedRows);
       snackbar.show({ message: t('data.export.done', { name: result.fileName }), bottomOffset: spacing.s6 });
     } catch (error) {
       setExportProblem(error instanceof ExportError ? error : 'failed');
@@ -158,26 +164,28 @@ export function DataScreen({ onBack, onOpenProviders, now }: DataScreenProps) {
   const deleteEverything = async () => {
     setDeleting('working');
     setHealthFailed(false);
-    if (healthOn && removeHealth) {
-      try {
-        // First, while the integration is still on: if Health Connect refuses, nothing has been deleted yet.
-        await health.removeWrittenRecords();
-      } catch {
+    setDeleteReport(null);
+    try {
+      // One exclusive step: a Health Connect sync already under way finishes first, the records this app wrote are removed first (if
+      // Health Connect refuses, nothing has been deleted), and no sync can add anything after the wipe.
+      await health.wipe(healthOn && removeHealth, () => service.deleteAll({ confirmation: word }));
+    } catch (error) {
+      if (error instanceof HealthRecordsNotRemovedError) {
         setHealthFailed(true);
         setDeleting('confirm');
         return;
       }
-    }
-    try {
-      await service.deleteAll({ confirmation: word });
-      setDeleting('closed');
-      setWord('');
-      // First launch again: the language is the device's, not the one chosen on the data that is gone.
-      await i18n.changeLanguage(deviceLocale()).catch(() => undefined);
-      session.resetOnboarding();
-    } catch {
+      const wipe = error instanceof WipeFailedError ? error : null;
+      const cause = wipe ? wipe.cause : error;
+      setDeleteReport({ incomplete: cause instanceof DeleteIncompleteError ? cause : null, healthRemoved: wipe?.recordsRemoved ?? false });
       setDeleting('failed');
+      return;
     }
+    setDeleting('closed');
+    setWord('');
+    // First launch again: the language is the device's, not the one chosen on the data that is gone.
+    await i18n.changeLanguage(deviceLocale()).catch(() => undefined);
+    session.resetOnboarding();
   };
 
   const closeDelete = () => {
@@ -217,6 +225,7 @@ export function DataScreen({ onBack, onOpenProviders, now }: DataScreenProps) {
           {exporting ? <Busy label={t('data.export.preparing')} /> : null}
           {exportProblem ? <FieldMessage message={exportMessage(t, exportProblem)} /> : null}
           {skippedPhotos > 0 ? <FieldMessage message={t('data.export.photosSkipped', { count: skippedPhotos })} /> : null}
+          {skippedRows.length > 0 ? <FieldMessage message={t('data.export.rowsSkipped', { count: skippedRows.length, what: skippedRows.slice(0, 3).map((row) => row.detail).join(', ') + (skippedRows.length > 3 ? '…' : '') })} /> : null}
           <Button label={t('data.export.button')} icon="copy" disabled={exporting} onPress={() => setReminder(true)} testID="export-button" />
         </View>
 
@@ -307,13 +316,36 @@ export function DataScreen({ onBack, onOpenProviders, now }: DataScreenProps) {
           </View>
         ) : null}
         {deleting === 'working' ? <Busy label={t('data.delete.deleting')} /> : null}
-        {deleting === 'failed' ? <FieldMessage message={t('data.delete.error')} /> : null}
+        {deleting === 'failed' && deleteReport ? <DeleteReportView report={deleteReport} /> : null}
         <View style={styles.actions}>
           <Button label={t('data.delete.keep')} disabled={deleting === 'working'} onPress={closeDelete} />
           <Button label={t('data.delete.confirm')} variant="secondary" disabled={!wordMatches || deleting === 'working'} onPress={() => void deleteEverything()} testID="delete-everything" />
         </View>
       </BottomSheet>
     </ScreenFrame>
+  );
+}
+
+function DeleteReportView({ report }: { report: { incomplete: DeleteIncompleteError | null; healthRemoved: boolean } }) {
+  const { t } = useTranslation();
+  const e = report.incomplete;
+  const lines: string[] = [];
+  if (!e) lines.push(t('data.delete.incomplete.unknown'));
+  else if (e.stage === 'keys') lines.push(e.keysUnlistable && e.keysFailed === 0 ? t('data.delete.incomplete.keysUnlistable') : t('data.delete.incomplete.keys', { count: e.keysFailed }));
+  else if (e.stage === 'photos') {
+    lines.push(
+      e.photosUnlistable
+        ? t('data.delete.incomplete.photosUnlistable')
+        : t('data.delete.incomplete.photos', { removed: e.photosRemoved, total: e.photosRemoved + e.photosFailed, count: e.photosFailed }),
+    );
+  } else lines.push(t('data.delete.incomplete.data'));
+  if (report.healthRemoved) lines.push(t('data.delete.incomplete.health'));
+  return (
+    <View style={styles.group} testID="delete-report">
+      {lines.map((line) => (
+        <FieldMessage key={line} message={line} />
+      ))}
+    </View>
   );
 }
 

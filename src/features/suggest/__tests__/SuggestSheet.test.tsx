@@ -102,14 +102,14 @@ describe('the first use explains what is sent, once (S9)', () => {
   it('shows the notice with the provider and the numbers, sends nothing until "Get suggestions", then never again', async () => {
     await openToday();
     await press('Suggest foods');
-    expect(await screen.findByText('Send what is left today to Test provider?')).toBeOnTheScreen();
-    expect(screen.getByText(/To suggest foods, these numbers are sent to Test provider/)).toBeOnTheScreen();
+    expect(await screen.findByText('Send what is left today to Test provider (llm.example.test)?')).toBeOnTheScreen();
+    expect(screen.getByText(/To suggest foods, these numbers are sent to Test provider \(llm\.example\.test\)/)).toBeOnTheScreen();
     expect(screen.getByText(/No photos, no meals, no profile and no history are sent/)).toBeOnTheScreen();
     expect(screen.getByTestId('suggest-sends')).toHaveTextContent('Sent: 520 kcal, 38 g protein, 60 g carbs and 14 g fat left. Goal: Lose fat. Language: English.');
     expect(fetched.calls).toHaveLength(0);
 
     await fireEvent.press(screen.getByTestId('suggest-notice-decline'));
-    await waitFor(() => expect(screen.queryByText('Send what is left today to Test provider?')).toBeNull());
+    await waitFor(() => expect(screen.queryByText('Send what is left today to Test provider (llm.example.test)?')).toBeNull());
     expect(fetched.calls).toHaveLength(0);
     expect(await services.scan.suggestNoticeAcknowledged(providerId)).toBe(false);
 
@@ -124,14 +124,14 @@ describe('the first use explains what is sent, once (S9)', () => {
     await waitFor(() => expect(screen.queryByText('Greek yogurt')).toBeNull());
     await press('Suggest foods');
     expect(await screen.findByText('Greek yogurt')).toBeOnTheScreen();
-    expect(screen.queryByText('Send what is left today to Test provider?')).toBeNull();
+    expect(screen.queryByText('Send what is left today to Test provider (llm.example.test)?')).toBeNull();
     expect(fetched.calls).toHaveLength(2);
   });
 
   it('is in Spanish too', async () => {
     await openToday({ locale: 'es' });
     await fireEvent.press(await screen.findByRole('button', { name: 'Sugerir alimentos' }));
-    expect(await screen.findByText('¿Enviar a Test provider lo que te queda hoy?')).toBeOnTheScreen();
+    expect(await screen.findByText('¿Enviar a Test provider (llm.example.test) lo que te queda hoy?')).toBeOnTheScreen();
     expect(screen.getByTestId('suggest-sends')).toHaveTextContent('Se envía: te quedan 520 kcal, 38 g de proteínas, 60 g de carbohidratos y 14 g de grasa. Objetivo: Perder grasa. Idioma: Español.');
     expect(fetched.calls).toHaveLength(0);
   });

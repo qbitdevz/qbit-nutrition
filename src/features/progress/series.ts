@@ -2,9 +2,9 @@
  * Pure helpers behind the weight and measurement charts: one point per day, the selectable ranges,
  * a tidy axis, and entry in the units of the profile with metric storage (FR-04).
  */
-import { addDays, type Measurement } from '@/data';
+import { VALUE_LIMITS, addDays, type Measurement } from '@/data';
 import { parseNumber, roundTo, type FieldError } from '../forms/numbers';
-import { KG_PER_POUND, CM_PER_INCH, WEIGHT_KG, WEIGHT_LB, type UnitSystem } from '../profile/units';
+import { KG_PER_POUND, CM_PER_INCH, WEIGHT_LB, type UnitSystem } from '../profile/units';
 
 export type MeasureKind = Measurement['kind'];
 
@@ -109,13 +109,13 @@ export function fromMetric(kind: MeasureKind, value: number, units: UnitSystem):
   return roundTo(value, 1);
 }
 
-/** Plausible entry ranges in the unit typed. Anything outside is rejected with a message, never clamped. */
+/** Plausible entry ranges in the unit typed. Anything outside is rejected with a message, never clamped. The metric side is the repositories' own limit. */
 export const LIMITS: Record<MeasureKind, Record<UnitSystem, { min: number; max: number }>> = {
-  weight: { metric: WEIGHT_KG, imperial: WEIGHT_LB },
-  waist: { metric: { min: 20, max: 300 }, imperial: { min: 8, max: 120 } },
-  hips: { metric: { min: 20, max: 300 }, imperial: { min: 8, max: 120 } },
-  chest: { metric: { min: 20, max: 300 }, imperial: { min: 8, max: 120 } },
-  body_fat_pct: { metric: { min: 2, max: 70 }, imperial: { min: 2, max: 70 } },
+  weight: { metric: VALUE_LIMITS.measurement.weight, imperial: WEIGHT_LB },
+  waist: { metric: VALUE_LIMITS.measurement.waist, imperial: { min: 8, max: 120 } },
+  hips: { metric: VALUE_LIMITS.measurement.hips, imperial: { min: 8, max: 120 } },
+  chest: { metric: VALUE_LIMITS.measurement.chest, imperial: { min: 8, max: 120 } },
+  body_fat_pct: { metric: VALUE_LIMITS.measurement.body_fat_pct, imperial: VALUE_LIMITS.measurement.body_fat_pct },
 };
 
 export type EntryResult = { ok: true; value: number } | { ok: false; error: FieldError };
@@ -134,11 +134,5 @@ export function parseEntry(kind: MeasureKind, text: string, units: UnitSystem): 
   return { ok: true, value: roundTo(parsed.value, 3) };
 }
 
-/** The metric range of each kind: what an entry may be once stored (kg, cm, percent). The export format validates with the same numbers. */
-export const METRIC_LIMITS: Record<MeasureKind, { min: number; max: number }> = {
-  weight: LIMITS.weight.metric,
-  waist: LIMITS.waist.metric,
-  hips: LIMITS.hips.metric,
-  chest: LIMITS.chest.metric,
-  body_fat_pct: LIMITS.body_fat_pct.metric,
-};
+/** The metric range of each kind: what an entry may be once stored (kg, cm, percent). Same object the repositories enforce. */
+export const METRIC_LIMITS = VALUE_LIMITS.measurement;

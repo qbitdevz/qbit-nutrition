@@ -1,6 +1,7 @@
 import { and, asc, desc, eq, gte, lte } from 'drizzle-orm';
 import { DataError } from '../errors';
 import { bodyMeasurement } from '../schema';
+import { VALUE_LIMITS, requireWithin } from './limits';
 import { invalid, requireLocalDate, type RepositoryContext } from './shared';
 
 export type Measurement = typeof bodyMeasurement.$inferSelect;
@@ -38,6 +39,7 @@ export function createMeasurementRepository({ db, newId }: RepositoryContext): M
       if (!Number.isFinite(input.value) || input.value <= 0) {
         throw invalid(`value must be a positive finite number, got ${input.value}`);
       }
+      requireWithin(input.value, VALUE_LIMITS.measurement[input.kind], `${input.kind} value`);
       const source = input.source ?? 'manual';
       return db.transaction((tx) => {
         tx.insert(bodyMeasurement)
@@ -96,6 +98,7 @@ export function createMeasurementRepository({ db, newId }: RepositoryContext): M
       return db.transaction((tx) => {
         const current = tx.select().from(bodyMeasurement).where(eq(bodyMeasurement.id, id)).get();
         if (!current) throw new DataError('not_found', `measurement not found: ${id}`);
+        if (patch.value !== undefined) requireWithin(patch.value, VALUE_LIMITS.measurement[current.kind], `${current.kind} value`);
         const measuredOn = patch.measuredOn ?? current.measuredOn;
         if (measuredOn !== current.measuredOn) {
           const taken = tx

@@ -1,10 +1,11 @@
+import { VALUE_LIMITS } from '@/data';
 import { parseNumber, type FieldError } from '../forms/numbers';
 
 /** Grams of one item: a typo guard, not a nutrition rule. Outside it the value is rejected, never clamped. */
-export const GRAMS_RANGE = { min: 1, max: 5000 } as const;
+export const GRAMS_RANGE = { min: 1, max: VALUE_LIMITS.gramsMax } as const;
 
 /** Per 100 g of a custom food, as the form accepts it. The export format reuses these, so a file cannot hold a food the form would refuse. */
-export const CUSTOM_FOOD_RANGES = { kcal: { min: 0, max: 1000 }, protein: { min: 0, max: 100 }, carbs: { min: 0, max: 100 }, fat: { min: 0, max: 100 }, portion: GRAMS_RANGE } as const;
+export const CUSTOM_FOOD_RANGES = { ...VALUE_LIMITS.per100g, portion: GRAMS_RANGE } as const;
 
 /** Grams moved by one press of the stepper. */
 export const GRAM_STEP = 10;

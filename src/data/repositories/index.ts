@@ -87,3 +87,4 @@ export type { AiAdapterId, AiOutputMode, AiProvider, AiProviderInput, AiProvider
 export type { FoodResolver } from './foodResolver';
 export { createMatchMemoryRepository } from './matchMemory';
 export { PHOTO_PATH_PATTERN, TEXT_LIMITS } from './shared';
+export { VALUE_LIMITS } from './limits';

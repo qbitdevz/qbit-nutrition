@@ -93,7 +93,8 @@ describe('the device implementation', () => {
     await platform.deleteNutrition([]);
     expect(mockLib.deleteRecordsByUuids).toHaveBeenCalledTimes(1);
     await platform.deleteAllNutritionWritten();
-    expect(mockLib.deleteRecordsByTimeRange).toHaveBeenCalledWith('Nutrition', expect.objectContaining({ operator: 'between', startTime: '2000-01-01T00:00:00.000Z' }));
+    // Every record this app wrote: from the start of time, with no end (a record dated in the future is included).
+    expect(mockLib.deleteRecordsByTimeRange).toHaveBeenCalledWith('Nutrition', { operator: 'after', startTime: '2000-01-01T00:00:00.000Z' });
   });
 
   it('maps the two grants separately, and asks only for what was requested', async () => {

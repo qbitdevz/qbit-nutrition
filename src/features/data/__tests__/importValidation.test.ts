@@ -110,6 +110,12 @@ describe('rows must not contradict each other (S3)', () => {
   });
 });
 
+describe('a meal always has something in it (S3)', () => {
+  it('refuses a meal with no items, which the app never produces', () => {
+    refusedAt((d) => (d.meals[0].items = []), 'meals[0].items');
+  });
+});
+
 describe('settings: only known keys, with values the app can read (S3)', () => {
   it('accepts the settings the app writes', () => {
     accepted((d) => (d.settings = { locale: 'es', keep_photos: 'false', minimum_daily_kcal: '1400', scan_tip_count: '2' }));

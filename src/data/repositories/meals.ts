@@ -6,6 +6,7 @@ import { deriveMealTime } from '../localDate';
 import { meal, mealItem, mealItemNutrient, REF_FOOD_SOURCES } from '../schema';
 import type { FoodResolver } from './foodResolver';
 import { upsertUsage } from './foodUsage';
+import { requireItemWithinLimits } from './limits';
 import {
   PHOTO_PATH_PATTERN,
   TEXT_LIMITS,
@@ -233,6 +234,7 @@ export function createMealRepository(
         if (item.displayName.trim() === '') throw invalid(`items[${i}].displayName must not be blank`);
         requireMaxLength(item.displayName, TEXT_LIMITS.name, `items[${i}].displayName`);
         nutrientEntries(item.nutrients, `items[${i}].nutrients`);
+        requireItemWithinLimits(item.grams, item.nutrients, `items[${i}]`);
       });
 
       const at = now().toISOString();
@@ -363,6 +365,7 @@ export function createMealRepository(
         }
       }
       const snapshot = amounts;
+      requireItemWithinLimits(grams, snapshot, 'item');
 
       db.transaction((tx) => {
         const row = tx.select().from(mealItem).where(eq(mealItem.id, itemId)).get();

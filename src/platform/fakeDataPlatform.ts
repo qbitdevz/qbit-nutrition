@@ -7,6 +7,8 @@ export interface FakeDataState {
   cache: Map<string, { bytes: Uint8Array; modifiedAt: number }>;
   /** Kept photos by relative path. */
   photos: Map<string, Uint8Array>;
+  /** When each kept photo was last changed (ms since the epoch); a photo without an entry counts as written at `now`. */
+  photoTimes: Map<string, number>;
   /** What the share sheet received: the name and the contents at the time (the file is deleted afterwards). */
   shared: { uri: string; name: string; mimeType: string; bytes: Uint8Array }[];
   /** What the next pick returns; null: the person closed the picker. */
@@ -31,7 +33,7 @@ export interface FakeDataState {
 export interface FakeDataPlatform extends DataPlatform {
   state: FakeDataState;
   /** Puts a photo in the kept-photos folder as if a scan had kept it. */
-  addPhoto(path: string, bytes: Uint8Array): void;
+  addPhoto(path: string, bytes: Uint8Array, modifiedAt?: number): void;
 }
 
 /** Test and development stand-in for the device: in-memory cache, photos, share sheet and picker; every file stays visible in `state`. */
@@ -39,6 +41,7 @@ export function createFakeDataPlatform(initial: Partial<FakeDataState> = {}): Fa
   const state: FakeDataState = {
     cache: new Map(),
     photos: new Map(),
+    photoTimes: new Map(),
     shared: [],
     nextPick: null,
     failPhotoWriteAt: null,
@@ -58,7 +61,10 @@ export function createFakeDataPlatform(initial: Partial<FakeDataState> = {}): Fa
 
   return {
     state,
-    addPhoto: (path, bytes) => void state.photos.set(path, bytes),
+    addPhoto: (path, bytes, modifiedAt) => {
+      state.photos.set(path, bytes);
+      if (modifiedAt !== undefined) state.photoTimes.set(path, modifiedAt);
+    },
     cache: {
       async write(name, data) {
         if (state.failCacheWrite) throw new Error('No space left on device.');
@@ -120,6 +126,10 @@ export function createFakeDataPlatform(initial: Partial<FakeDataState> = {}): Fa
         if (state.failPhotoList) throw new Error('The photo folder could not be read.');
         return [...state.photos.keys()];
       },
+      async listDetailed() {
+        if (state.failPhotoList) throw new Error('The photo folder could not be read.');
+        return [...state.photos.keys()].map((path) => ({ path, modifiedAt: state.photoTimes.get(path) ?? state.now }));
+      },
       async read(path) {
         if (state.failPhotoRead.has(path)) throw new Error('The photo could not be read.');
         return state.photos.get(path) ?? null;
@@ -130,11 +140,13 @@ export function createFakeDataPlatform(initial: Partial<FakeDataState> = {}): Fa
         counter += 1;
         const path = `photos/new-${counter}.jpg`;
         state.photos.set(path, bytes);
+        state.photoTimes.set(path, Date.now());
         return path;
       },
       async remove(path) {
         if (state.failPhotoRemove.has(path)) throw new Error('The photo could not be deleted.');
         state.photos.delete(path);
+        state.photoTimes.delete(path);
       },
     },
   };

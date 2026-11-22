@@ -22,12 +22,9 @@ export function createExpoDataPlatform(): DataPlatform {
         return file.uri;
       },
       async remove(uri) {
-        try {
-          const file = new File(uri);
-          if (file.exists) file.delete();
-        } catch {
-          // Already gone, or not ours to delete.
-        }
+        // A file that is not there is already removed; one that cannot be deleted is an error the caller must hear about.
+        const file = new File(uri);
+        if (file.exists) file.delete();
       },
       read: (uri) => new File(uri).bytes(),
       async size(uri) {
@@ -54,15 +51,11 @@ export function createExpoDataPlatform(): DataPlatform {
     picker: {
       async clearCopies() {
         // expo-document-picker copies the chosen file into `<cache>/DocumentPicker/<id>/<name>`.
-        try {
-          const folder = new Directory(Paths.cache, 'DocumentPicker');
-          if (!folder.exists) return 0;
-          const copies = folder.list().length;
-          folder.delete();
-          return copies;
-        } catch {
-          return 0; // Not there, or not ours to delete.
-        }
+        const folder = new Directory(Paths.cache, 'DocumentPicker');
+        if (!folder.exists) return 0;
+        const copies = folder.list().length;
+        folder.delete();
+        return copies;
       },
       async pick(): Promise<PickedFile | null> {
         // Any type: exports are .json or .zip and the system picker's MIME filters for them differ by provider.
@@ -76,6 +69,11 @@ export function createExpoDataPlatform(): DataPlatform {
         const directory = photoDirectory();
         if (!directory.exists) return [];
         return directory.list().flatMap((entry) => (entry instanceof File ? [`${PHOTO_DIR}/${entry.name}`] : []));
+      },
+      async listDetailed() {
+        const directory = photoDirectory();
+        if (!directory.exists) return [];
+        return directory.list().flatMap((entry) => (entry instanceof File ? [{ path: `${PHOTO_DIR}/${entry.name}`, modifiedAt: entry.lastModified ?? 0 }] : []));
       },
       async read(path) {
         const file = new File(Paths.document, path);
@@ -91,12 +89,8 @@ export function createExpoDataPlatform(): DataPlatform {
         return `${PHOTO_DIR}/${name}`;
       },
       async remove(path) {
-        try {
-          const file = new File(Paths.document, path);
-          if (file.exists) file.delete();
-        } catch {
-          // Already gone.
-        }
+        const file = new File(Paths.document, path);
+        if (file.exists) file.delete();
       },
     },
   };

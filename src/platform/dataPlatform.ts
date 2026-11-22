@@ -23,7 +23,7 @@ export interface DataPlatform {
   cache: {
     /** Writes a temporary file in the app's cache and returns its URI. */
     write(name: string, data: string | Uint8Array): Promise<string>;
-    /** Deletes a cache file. A file that is already gone is not an error. */
+    /** Deletes a cache file. A file that is already gone is not an error; one that cannot be deleted REJECTS. */
     remove(uri: string): Promise<void>;
     read(uri: string): Promise<Uint8Array>;
     /** Size in bytes without reading the file, or null if it is not there. */
@@ -44,17 +44,19 @@ export interface DataPlatform {
   picker: {
     /** Opens the system file picker; null when the person closes it without choosing. */
     pick(): Promise<PickedFile | null>;
-    /** Removes the copies the picker made in the cache (a crash can leave one). */
+    /** Removes the copies the picker made in the cache (a crash can leave one) and returns how many. Nothing there is not an error; a folder that cannot be cleared REJECTS. */
     clearCopies(): Promise<number>;
   };
   photos: {
     /** Relative paths (`photos/<name>.jpg`) of every kept photo on disk, referenced or not. */
     list(): Promise<string[]>;
+    /** The same, with the time each file was last changed (ms since the epoch), so a sweep can leave a photo that was kept a moment ago. */
+    listDetailed(): Promise<{ path: string; modifiedAt: number }[]>;
     /** The photo's bytes, or null when the file is missing. */
     read(path: string): Promise<Uint8Array | null>;
     /** Stores a photo under a new unique name and returns its relative path. Never overwrites an existing photo. */
     write(bytes: Uint8Array): Promise<string>;
-    /** Deletes a kept photo. A missing file is not an error. */
+    /** Deletes a kept photo. A missing file is not an error; a file that cannot be deleted REJECTS (the caller reports what was and was not removed). */
     remove(path: string): Promise<void>;
   };
 }

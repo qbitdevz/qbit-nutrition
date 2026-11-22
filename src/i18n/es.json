@@ -970,7 +970,8 @@
       "deleteFailed": "No se pudo eliminar el proveedor. Inténtalo de nuevo.",
       "moreModels": "Se muestran los primeros {{count}} de {{total}}. Puedes escribir cualquier otro nombre de modelo.",
       "firstActive": "Este es tu primer proveedor, así que quedará como el activo: las fotos que escanees se enviarán a él.",
-      "savedNoTest": "Proveedor guardado, pero no se pudo conservar el resultado de la prueba."
+      "savedNoTest": "Proveedor guardado, pero no se pudo conservar el resultado de la prueba.",
+      "keyGoesTo": "Esta clave se envía solo a {{host}}."
     },
     "url": {
       "required": "Escribe la dirección del proveedor.",
@@ -1024,6 +1025,12 @@
       "body": "El proveedor y su clave guardada se quitan de este teléfono. Las comidas que ya guardaste no se ven afectadas.",
       "confirm": "Eliminarlo",
       "keep": "Conservarlo"
+    },
+    "imported": {
+      "tag": "Importado, sin confirmar",
+      "title": "Este perfil se importó desde un archivo",
+      "banner": "Este perfil se importó desde un archivo. Su nombre puede decir cualquier cosa: envía datos a {{host}}. No está activo, y no se puede añadir una clave, hasta que confirmes esa dirección.",
+      "confirm": "Revisé la dirección: usar {{host}}"
     }
   },
   "data": {
@@ -1050,7 +1057,9 @@
       "errorKeys": "Se detuvo la exportación porque no se pudieron revisar las claves de API guardadas. No se escribió nada. Inténtalo de nuevo.",
       "errorValue": "Se detuvo la exportación: {{where}} tiene un valor que el archivo no admite. Acórtalo o corrígelo y vuelve a exportar.",
       "photosSkipped_one": "{{count}} foto de comida no se pudo leer y no está en el archivo. Su comida se exporta sin ella.",
-      "photosSkipped_other": "{{count}} fotos de comidas no se pudieron leer y no están en el archivo. Sus comidas se exportan sin ellas."
+      "photosSkipped_other": "{{count}} fotos de comidas no se pudieron leer y no están en el archivo. Sus comidas se exportan sin ellas.",
+      "rowsSkipped_one": "{{count}} registro se dejó fuera del archivo porque su valor está fuera de lo que acepta la aplicación: {{what}}. El resto se exportó.",
+      "rowsSkipped_other": "{{count}} registros se dejaron fuera del archivo porque sus valores están fuera de lo que acepta la aplicación: {{what}}. El resto se exportó."
     },
     "import": {
       "title": "Importar datos",
@@ -1120,12 +1129,21 @@
       "confirm": "Borrar todo",
       "keep": "Conservar mis datos",
       "deleting": "Borrando",
-      "error": "No se pudo borrar todo. Tus datos siguen aquí; inténtalo de nuevo.",
       "healthTitle": "Health Connect",
       "healthBody": "Qbit Nutrition ha guardado comidas en Health Connect. ¿Quieres eliminar también esos registros?",
       "healthRemove": "Eliminar también los registros que esta aplicación escribió en Health Connect",
       "healthKeep": "Conservarlos en Health Connect",
-      "healthFailed": "No se pudieron eliminar los registros de Health Connect, así que no se borró nada. Inténtalo de nuevo o elige conservarlos."
+      "healthFailed": "No se pudieron eliminar los registros de Health Connect, así que no se borró nada. Inténtalo de nuevo o elige conservarlos.",
+      "incomplete": {
+        "unknown": "El borrado no terminó y no se sabe qué se quitó. Volver a intentarlo es seguro.",
+        "keys": "{{count}} de tus claves de proveedores de IA no se pudieron quitar. No se borró nada más. Volver a intentarlo es seguro.",
+        "keysUnlistable": "No se pudo leer el almacenamiento seguro de claves, así que no se pudieron revisar tus claves de proveedores de IA. No se borró nada. Volver a intentarlo es seguro.",
+        "photos_one": "Quitado: tus claves de proveedores de IA y {{removed}} de {{total}} fotos de comidas. Sin quitar: {{count}} foto de comida y todos tus datos. Volver a intentarlo es seguro y termina el resto.",
+        "photos_other": "Quitado: tus claves de proveedores de IA y {{removed}} de {{total}} fotos de comidas. Sin quitar: {{count}} fotos de comidas y todos tus datos. Volver a intentarlo es seguro y termina el resto.",
+        "photosUnlistable": "Quitado: tus claves de proveedores de IA. Sin quitar: no se pudo leer la lista de fotos de comidas, y todos tus datos. Volver a intentarlo es seguro y termina el resto.",
+        "data": "Quitado: tus claves de proveedores de IA y todas las fotos de comidas. Sin quitar: no se pudieron borrar tus datos. Volver a intentarlo es seguro.",
+        "health": "Los registros que esta aplicación escribió en Health Connect se quitaron."
+      }
     }
   },
   "barcode": {
@@ -1349,7 +1367,9 @@
       "failing": "El último intento no funcionó. Tus comidas están a salvo en esta aplicación y se enviarán cuando Health Connect responda.",
       "retry": "Intentar de nuevo ahora",
       "weightAt": "Peso leído por última vez el {{date}}.",
-      "weightNever": "Todavía no se ha leído el peso."
+      "weightNever": "Todavía no se ha leído el peso.",
+      "weightsIgnored_one": "{{count}} lectura de peso de Health Connect está fuera del rango que acepta esta aplicación y se dejó fuera.",
+      "weightsIgnored_other": "{{count}} lecturas de peso de Health Connect están fuera del rango que acepta esta aplicación y se dejaron fuera."
     },
     "existing": {
       "title": "Comidas que ya registraste",
