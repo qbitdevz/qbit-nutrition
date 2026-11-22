@@ -103,7 +103,7 @@ jobs:
           distribution: temurin
           # React Native's setup guide recommends JDK 17; Gradle 9 needs 17 or newer.
           java-version: '17'
-          cache: gradle
+          # No Gradle cache here: android/ does not exist until expo prebuild runs, and the cache step fails without Gradle files.
 
       - name: Install the dependencies
         # Also writes catalog-build/licenses.json (the About screen's license list) in the postinstall step.
