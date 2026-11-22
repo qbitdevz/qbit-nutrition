@@ -93,10 +93,7 @@ export function createMeasurementRepository({ db, newId, dayClock }: RepositoryC
     },
 
     async update(id, patch) {
-      if (patch.measuredOn !== undefined) {
-        requireLocalDate(patch.measuredOn, 'measuredOn');
-        requireDayInBounds(patch.measuredOn, 'measuredOn', dayClock());
-      }
+      if (patch.measuredOn !== undefined) requireLocalDate(patch.measuredOn, 'measuredOn');
       if (patch.value !== undefined && (!Number.isFinite(patch.value) || patch.value <= 0)) {
         throw invalid(`value must be a positive finite number, got ${patch.value}`);
       }
@@ -106,6 +103,8 @@ export function createMeasurementRepository({ db, newId, dayClock }: RepositoryC
         if (patch.value !== undefined) requireWithin(patch.value, VALUE_LIMITS.measurement[current.kind], `${current.kind} value`);
         const measuredOn = patch.measuredOn ?? current.measuredOn;
         if (measuredOn !== current.measuredOn) {
+          // Only a day the entry MOVES to is bounded: editing the value of an entry already stored out of range must work (it is the way to fix it).
+          requireDayInBounds(measuredOn, 'measuredOn', dayClock());
           const taken = tx
             .select({ id: bodyMeasurement.id })
             .from(bodyMeasurement)

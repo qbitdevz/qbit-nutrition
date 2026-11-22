@@ -273,3 +273,43 @@ describe('picking several files and reading them in sequence (B2)', () => {
     expect(await pickAndAnalyse(platform, h.repos, {})).toEqual({ kind: 'cancelled' });
   });
 });
+
+describe('the same content twice in one batch (final verification, item 1)', () => {
+  it('flags the second file as a copy of the first, and imports only one by default', async () => {
+    const a = await analyse(CLEAN, 'a.csv');
+    const b = await analyse(CLEAN, 'copia de a.csv');
+    const plan = await planOf([a, b]);
+    expect(plan.duplicateOf).toEqual({ [b.id]: a.id });
+    expect(plan.selected).toEqual({ [a.id]: true, [b.id]: false });
+    expect(plan.units.map((u) => u.files.map((f) => f.fileName))).toEqual([['a.csv']]);
+    expect(plan.notImported).toEqual([expect.objectContaining({ reason: 'duplicate_in_batch' })]);
+    const report = await runPlan(h.repos, plan);
+    expect(report.imported).toHaveLength(1);
+    expect(await h.repos.importedFoods.listCollections()).toHaveLength(1);
+  });
+
+  it('imports both as separate tables only when the person ticks the copy', async () => {
+    const a = await analyse(CLEAN, 'a.csv');
+    const b = await analyse(CLEAN, 'b.csv');
+    const plan = await planOf([a, b], { selected: { [b.id]: true } });
+    expect(plan.selected[b.id]).toBe(true);
+    expect(plan.units).toHaveLength(2);
+  });
+
+  it('in a combined collection the foods of an identical file are never added twice, even when ticked', async () => {
+    const files = [await analyse(CEREALES, 'cereales.csv'), await analyse(CEREALES, 'cereales otra vez.csv'), await analyse(FRUTAS, 'frutas.csv')];
+    for (const choices of [{}, { selected: { [files[1]!.id]: true } }]) {
+      const plan = await planOf(files, choices);
+      expect(plan.units).toHaveLength(1);
+      expect(plan.units[0]!.foods).toHaveLength(5);
+    }
+    await runPlan(h.repos, await planOf(files, { selected: { [files[1]!.id]: true } }));
+    expect((await h.repos.importedFoods.listCollections())[0]).toMatchObject({ foodCount: 5 });
+    expect((await h.repos.importedFoods.search('arroz', 10)).length).toBe(1);
+  });
+
+  it('files with different content are not flagged', async () => {
+    const plan = await planOf([await analyse(CLEAN, 'a.csv'), await analyse(SPANISH_CSV, 'b.csv')]);
+    expect(plan.duplicateOf).toEqual({});
+  });
+});

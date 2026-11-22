@@ -32,6 +32,13 @@ export const isBlankText = (value: string): boolean => value.trim() === '';
 /** A file's own name, never a path: no folder separator of either kind and no control characters. One rule for the importer, the repository and the backup file. */
 export const isPlainFileName = (value: string): boolean => !/[\\/\u0000-\u001f]/.test(value);
 
+/** The base name of a stored file name (what is after the last folder separator, without control characters), or null when nothing is left. */
+export function plainFileName(value: string | null): string | null {
+  if (value === null) return null;
+  const base = value.slice(Math.max(value.lastIndexOf('/'), value.lastIndexOf('\\')) + 1).replace(/[\u0000-\u001f]/g, '').trim();
+  return base === '' ? null : base;
+}
+
 export function requireMaxLength(value: string | null | undefined, max: number, label: string): void {
   if (value != null && value.length > max) throw invalid(`${label} must be at most ${max} characters, got ${value.length}`);
 }

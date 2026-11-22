@@ -1506,8 +1506,8 @@
       "renameFailed": "The name could not be saved. Try again.",
       "remove": "Remove",
       "removeTitle": "Remove “{{name}}”?",
-      "removeBody_one": "This removes its {{count}} food from this phone, with any favorites and recents that use it. Meals you already logged keep their values.",
-      "removeBody_other": "This removes its {{count}} foods from this phone, with any favorites and recents that use them. Meals you already logged keep their values.",
+      "removeBody_one": "This removes its {{count}} food from this phone, with any favorites, recents and learned matches that use it. Meals you already logged keep their values.",
+      "removeBody_other": "This removes its {{count}} foods from this phone, with any favorites, recents and learned matches that use them. Meals you already logged keep their values.",
       "removeConfirm": "Remove table",
       "removeKeep": "Keep it",
       "removed": "Removed “{{name}}”.",
@@ -1526,8 +1526,8 @@
         "remove_one": "Remove {{count}} duplicate",
         "remove_other": "Remove {{count}} duplicates",
         "confirmTitle": "Remove the duplicates?",
-        "confirmBody_one": "This removes {{count}} table ({{foods}} foods), with any favorites and recents that use it. The copy you chose to keep stays. Meals you already logged keep their values.",
-        "confirmBody_other": "This removes {{count}} tables ({{foods}} foods), with any favorites and recents that use them. The copies you chose to keep stay. Meals you already logged keep their values.",
+        "confirmBody_one": "This removes {{count}} table ({{foods}} foods), with any favorites, recents and learned matches that use it. The copy you chose to keep stays. Meals you already logged keep their values.",
+        "confirmBody_other": "This removes {{count}} tables ({{foods}} foods), with any favorites, recents and learned matches that use them. The copies you chose to keep stay. Meals you already logged keep their values.",
         "confirm": "Remove duplicates",
         "keepThem": "Keep them",
         "done_one": "Removed {{count}} duplicate.",
@@ -1727,7 +1727,7 @@
         "replace": "Replace it",
         "keep": "Keep both",
         "skip": "Do not import",
-        "replaceHint": "Replacing removes the old table with its favorites and recents, and adds this one. Meals you logged keep their values.",
+        "replaceHint": "Replacing removes the old table with its favorites, recents and learned matches, and adds this one. Meals you logged keep their values.",
         "keepHint": "Both will be in food search, so each food shows twice.",
         "skipHint": "Nothing is imported for this file."
       },
@@ -1765,8 +1765,10 @@
         "needs_mapping": "{{file}}: could not be imported as it was read.",
         "refused": "{{file}}: could not be read.",
         "deselected": "{{file}}: left out by you.",
-        "notDone": "{{file}}: still needed a choice, so it was not imported."
-      }
+        "notDone": "{{file}}: still needed a choice, so it was not imported.",
+        "duplicate_in_batch": "{{file}}: same content as another file in this import, imported once."
+      },
+      "sameInBatch": "Same content as “{{file}}” in this import. Only one of them is imported unless you tick this one too."
     }
   }
 }

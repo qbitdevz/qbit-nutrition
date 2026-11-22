@@ -1,4 +1,5 @@
 import type { NutrientAmounts } from '@/core/nutrition';
+import { plainFileName } from '@/data';
 import type { BackupSnapshot, DayBounds, MealWithItems, Measurement, Profile } from '@/data';
 import { EXPORT_FORMAT, EXPORT_FORMAT_VERSION, isKnownTestResult, type ExportDocument } from './exportFormat';
 import { IMPORTED_PROVIDER_PREFIX, portableSettings } from './settingsPolicy';
@@ -101,7 +102,8 @@ export function documentFromSnapshot(snapshot: BackupSnapshot, { appVersion, exp
     imported_collections: snapshot.importedCollections.map((c) => ({
       id: c.id,
       name: c.name,
-      file_name: c.fileName,
+      // A stored name with a path or control character (an older build) is exported as its base name: the file would be refused otherwise.
+      file_name: plainFileName(c.fileName),
       imported_at: c.importedAt,
       preset_id: c.presetId,
       basis: c.basis,

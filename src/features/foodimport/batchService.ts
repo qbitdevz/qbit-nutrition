@@ -189,13 +189,17 @@ export type Blocker =
 
 export type PlanBlocker = Blocker | { kind: 'too_many_tables'; limit: number; existing: number; adding: number; replacing: number };
 
-export type NotImportedReason = 'nothing_usable' | 'needs_mapping' | 'refused' | 'deselected';
+export type NotImportedReason = 'nothing_usable' | 'needs_mapping' | 'refused' | 'deselected' | 'duplicate_in_batch';
 
 export interface Plan {
   units: Unit[];
   /** Files of the same recognised table (two or more) and whether they are offered/imported as one. */
   groups: { presetId: string; presetName: string; files: string[]; combined: boolean }[];
   notImported: { file: AnalysedFile; reason: NotImportedReason }[];
+  /** A file with the same content as an EARLIER file of the batch, by file id (the id of that earlier file). Only the first is imported unless the person ticks the copy. */
+  duplicateOf: Record<string, string>;
+  /** Whether each ready file is selected: what the person chose, or by default every file except a copy of an earlier one. */
+  selected: Record<string, boolean>;
   blockedBy: PlanBlocker[];
   /** Something would be written and nothing is left to decide or confirm. */
   canImport: boolean;
@@ -204,10 +208,21 @@ export interface Plan {
 const uniqueById = (collections: ImportedCollection[]): ImportedCollection[] => [...new Map(collections.map((c) => [c.id, c])).values()];
 
 export function buildPlan(files: readonly AnalysedFile[], choices: Choices, existingTables: number): Plan {
-  const active = files.filter((f) => f.outcome.kind === 'ready' && choices.selected[f.id] !== false);
+  // The same content twice in one batch: the later file is a copy of the earlier one and is left out by default.
+  const firstOfHash = new Map<string, string>();
+  const duplicateOf: Record<string, string> = {};
+  for (const file of files) {
+    if (file.outcome.kind !== 'ready' || !file.contentHash) continue;
+    const first = firstOfHash.get(file.contentHash);
+    if (first === undefined) firstOfHash.set(file.contentHash, file.id);
+    else duplicateOf[file.id] = first;
+  }
+  const selected: Record<string, boolean> = {};
+  for (const file of files) if (file.outcome.kind === 'ready') selected[file.id] = choices.selected[file.id] ?? !(file.id in duplicateOf);
+  const active = files.filter((f) => f.outcome.kind === 'ready' && selected[f.id]);
   const notImported: Plan['notImported'] = files.flatMap((file) => {
     if (active.includes(file)) return [];
-    const reason: NotImportedReason = file.outcome.kind === 'ready' ? 'deselected' : file.outcome.kind;
+    const reason: NotImportedReason = file.outcome.kind === 'ready' ? (file.id in duplicateOf && choices.selected[file.id] === undefined ? 'duplicate_in_batch' : 'deselected') : file.outcome.kind;
     return [{ file, reason }];
   });
 
@@ -229,7 +244,13 @@ export function buildPlan(files: readonly AnalysedFile[], choices: Choices, exis
     seen.add(key);
     const members = together ? active.filter((f) => f.preset?.id === presetId) : [file];
     const basis = basisOf(file.preview!);
-    const foods = members.flatMap((m) => foodsOf(m.preview!));
+    // A file with the same content as an earlier member of the same table adds no foods: they would be there twice.
+    const seenHash = new Set<string>();
+    const foods = members.flatMap((m) => {
+      if (m.contentHash && seenHash.has(m.contentHash)) return [];
+      if (m.contentHash) seenHash.add(m.contentHash);
+      return foodsOf(m.preview!);
+    });
     const matches = together ? uniqueById([...members.flatMap((m) => m.matches), ...(choices.groupMatches?.[presetId!]?.matches ?? [])]) : file.matches;
     units.push({
       key,
@@ -263,7 +284,7 @@ export function buildPlan(files: readonly AnalysedFile[], choices: Choices, exis
   if (writing.length > 0 && existingTables - replacing + writing.length > IMPORT_LIMITS.collections) {
     blockedBy.push({ kind: 'too_many_tables', limit: IMPORT_LIMITS.collections, existing: existingTables, adding: writing.length, replacing });
   }
-  return { units, groups, notImported, blockedBy, canImport: writing.length > 0 && blockedBy.length === 0 };
+  return { units, groups, notImported, duplicateOf, selected, blockedBy, canImport: writing.length > 0 && blockedBy.length === 0 };
 }
 
 /** The tables already here that have the content of a whole group of files of one recognised table (importing the same combined table again). */

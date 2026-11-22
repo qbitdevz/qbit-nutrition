@@ -134,7 +134,8 @@ export function BatchPreviewView({ files, plan, choices, locale, nameProblem, on
 
       {files.map((file, index) => {
         const unit = unitOf(file);
-        const active = file.outcome.kind === 'ready' && choices.selected[file.id] !== false;
+        const active = file.outcome.kind === 'ready' && plan.selected[file.id] === true;
+        const copyOf = files.find((f) => f.id === plan.duplicateOf[file.id]);
         const first = unit?.files[0] === file;
         return (
           <View key={file.id} style={[styles.card, { backgroundColor: colors.surface }]} testID={`file-${index}`}>
@@ -151,6 +152,11 @@ export function BatchPreviewView({ files, plan, choices, locale, nameProblem, on
                       {recognisedLine(t, file)}
                     </AppText>
                   </View>
+                ) : null}
+                {copyOf ? (
+                  <AppText variant="bodySm" tone="muted" testID={`same-in-batch-${index}`}>
+                    {t('import.batch.sameInBatch', { file: copyOf.fileName })}
+                  </AppText>
                 ) : null}
                 {!single ? <CheckRow label={t('import.batch.include')} checked={active} onChange={(on) => onToggle(file.id, on)} testID={`include-${index}`} /> : null}
                 {active && file.assessment && !file.assessment.confident ? (

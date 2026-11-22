@@ -465,8 +465,7 @@ export function createMealRepository(
       requireMaxLength(saved.name, TEXT_LIMITS.mealName, 'name');
       requireMaxLength(saved.note, TEXT_LIMITS.note, 'note');
       requireLocalDate(saved.localDate, 'localDate');
-      requireDayInBounds(saved.localDate, 'localDate', dayClock());
-      requireDayInBounds(saved.eatenAt.slice(0, 10), 'eatenAt', dayClock());
+      // Restoring a row that existed (Undo) is not an entry: its stored date is what it was, even when that is out of range, or the meal and its photo would be lost.
       if (saved.photoPath != null && !PHOTO_PATH_PATTERN.test(saved.photoPath)) throw invalid(`photoPath must be photos/<name>.jpg, got "${saved.photoPath}"`);
       saved.items.forEach((item, i) => {
         if (item.mealId !== saved.id) throw invalid(`items[${i}] belongs to another meal`);

@@ -182,7 +182,7 @@ export function createBackupRepository({ db }: RepositoryContext): BackupReposit
               SELECT ${mealItem.foodRef} FROM ${mealItem} WHERE ${mealItem.foodSource} = 'barcode' AND ${mealItem.foodRef} IS NOT NULL
               UNION SELECT ${foodUsage.foodRef} FROM ${foodUsage} WHERE ${foodUsage.foodSource} = 'barcode'
               UNION SELECT ${matchMemory.foodRef} FROM ${matchMemory} WHERE ${matchMemory.foodSource} = 'barcode')
-            OR json_extract(${barcodeProduct.rawJson}, '$.edited') = 1`,
+            OR CASE WHEN json_valid(${barcodeProduct.rawJson}) THEN json_extract(${barcodeProduct.rawJson}, '$.edited') = 1 ELSE 0 END`,
           )
           .orderBy(asc(barcodeProduct.barcode))
           .all()

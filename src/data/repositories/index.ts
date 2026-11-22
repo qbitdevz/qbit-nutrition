@@ -104,6 +104,6 @@ export { MAX_TIMEOUT_S, MIN_TIMEOUT_S } from './aiProviders';
 export type { AiAdapterId, AiOutputMode, AiProvider, AiProviderInput, AiProviderRepository } from './aiProviders';
 export type { FoodResolver } from './foodResolver';
 export { createMatchMemoryRepository } from './matchMemory';
-export { PHOTO_PATH_PATTERN, TEXT_LIMITS, isBlankText, isPlainFileName } from './shared';
+export { PHOTO_PATH_PATTERN, TEXT_LIMITS, isBlankText, isPlainFileName, plainFileName } from './shared';
 export { IMPORT_LIMITS, VALUE_LIMITS, importedPer100gMax, requireImportedPer100g } from './limits';
 export { canonicalFood, contentFingerprint, sampleIndexes } from './fingerprint';

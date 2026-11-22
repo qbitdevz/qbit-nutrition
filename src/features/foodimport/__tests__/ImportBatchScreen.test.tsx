@@ -173,7 +173,7 @@ describe('a table that is already here (B1)', () => {
     pickMany(['cereales.csv', CEREALES]);
     await choose();
     await fireEvent.press(await screen.findByRole('radio', { name: 'Replace it' }));
-    expect(await screen.findByText(/Replacing removes the old table with its favorites and recents/)).toBeTruthy();
+    expect(await screen.findByText(/Replacing removes the old table with its favorites, recents and learned matches/)).toBeTruthy();
     await fireEvent.press(screen.getByTestId('confirm-import'));
     const done = await screen.findByTestId('import-done');
     expect(within(done).getByText('It replaced 1 table that was already here.')).toBeTruthy();

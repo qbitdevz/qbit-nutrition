@@ -292,7 +292,8 @@ export function createProviderService({ aiProviders, settings, secrets: store, c
       let removed = 0;
       for (const id of new Set([...rowIds, ...listed])) {
         try {
-          const held = await store.has(id).catch(() => true);
+          // Only a key known to have existed is counted: a store that cannot say counts none.
+          const held = await store.has(id).catch(() => false);
           await secrets.remove(id);
           if (held) removed += 1;
         } catch {

@@ -45,13 +45,13 @@ describe('a date is bounded where it enters, with the same limits the export che
     expect((await h.repos.measurements.list('weight')).map((m) => m.measuredOn)).toEqual(['2026-06-10']);
   });
 
-  it('refuses a goal that starts outside the range, and a restored meal outside it', async () => {
+  it('refuses a goal that starts outside the range; restoring a stored meal is not an entry and is allowed', async () => {
     await expect(
       h.repos.goals.set({ type: 'maintain', startDate: '2031-01-01', kcalTarget: 2000, proteinGTarget: 100, carbsGTarget: 250, fatGTarget: 67, isCustom: false }),
     ).rejects.toMatchObject({ code: 'date_out_of_range' });
     const saved = await h.repos.meals.save(meal('2026-06-15T10:00:00.000Z'));
     await h.repos.meals.deleteMeal(saved.id);
-    await expect(h.repos.meals.restoreMeal({ ...saved, localDate: '2031-06-15' })).rejects.toMatchObject({ code: 'date_out_of_range' });
+    await expect(h.repos.meals.restoreMeal({ ...saved, localDate: '2031-06-15' })).resolves.toMatchObject({ localDate: '2031-06-15' });
   });
 
   it('says that the phone’s date may be wrong when the clock itself is out of range', async () => {

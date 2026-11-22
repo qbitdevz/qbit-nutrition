@@ -1506,8 +1506,8 @@
       "renameFailed": "No se pudo guardar el nombre. Inténtalo de nuevo.",
       "remove": "Quitar",
       "removeTitle": "¿Quitar «{{name}}»?",
-      "removeBody_one": "Se quita {{count}} alimento de este teléfono, junto con los favoritos y recientes que lo usan. Las comidas que ya registraste conservan sus valores.",
-      "removeBody_other": "Se quitan {{count}} alimentos de este teléfono, junto con los favoritos y recientes que los usan. Las comidas que ya registraste conservan sus valores.",
+      "removeBody_one": "Se quita {{count}} alimento de este teléfono, junto con los favoritos, recientes y coincidencias aprendidas que lo usan. Las comidas que ya registraste conservan sus valores.",
+      "removeBody_other": "Se quitan {{count}} alimentos de este teléfono, junto con los favoritos, recientes y coincidencias aprendidas que los usan. Las comidas que ya registraste conservan sus valores.",
       "removeConfirm": "Quitar tabla",
       "removeKeep": "Conservarla",
       "removed": "Se quitó «{{name}}».",
@@ -1526,8 +1526,8 @@
         "remove_one": "Quitar {{count}} duplicado",
         "remove_other": "Quitar {{count}} duplicados",
         "confirmTitle": "¿Quitar los duplicados?",
-        "confirmBody_one": "Esto quita {{count}} tabla ({{foods}} alimentos), con los favoritos y recientes que la usen. La copia que elegiste conservar se queda. Las comidas que ya registraste conservan sus valores.",
-        "confirmBody_other": "Esto quita {{count}} tablas ({{foods}} alimentos), con los favoritos y recientes que las usen. Las copias que elegiste conservar se quedan. Las comidas que ya registraste conservan sus valores.",
+        "confirmBody_one": "Esto quita {{count}} tabla ({{foods}} alimentos), con los favoritos, recientes y coincidencias aprendidas que la usen. La copia que elegiste conservar se queda. Las comidas que ya registraste conservan sus valores.",
+        "confirmBody_other": "Esto quita {{count}} tablas ({{foods}} alimentos), con los favoritos, recientes y coincidencias aprendidas que las usen. Las copias que elegiste conservar se quedan. Las comidas que ya registraste conservan sus valores.",
         "confirm": "Quitar duplicados",
         "keepThem": "Conservarlas",
         "done_one": "Se quitó {{count}} duplicado.",
@@ -1727,7 +1727,7 @@
         "replace": "Reemplazarla",
         "keep": "Conservar ambas",
         "skip": "No importar",
-        "replaceHint": "Reemplazar quita la tabla anterior con sus favoritos y recientes, y añade esta. Las comidas que registraste conservan sus valores.",
+        "replaceHint": "Reemplazar quita la tabla anterior con sus favoritos, recientes y coincidencias aprendidas, y añade esta. Las comidas que registraste conservan sus valores.",
         "keepHint": "Las dos estarán en la búsqueda de alimentos, así que cada alimento aparece dos veces.",
         "skipHint": "No se importa nada de este archivo."
       },
@@ -1765,8 +1765,10 @@
         "needs_mapping": "{{file}}: no se pudo importar tal como se leyó.",
         "refused": "{{file}}: no se pudo leer.",
         "deselected": "{{file}}: lo dejaste fuera.",
-        "notDone": "{{file}}: aún faltaba una elección, así que no se importó."
-      }
+        "notDone": "{{file}}: aún faltaba una elección, así que no se importó.",
+        "duplicate_in_batch": "{{file}}: mismo contenido que otro archivo de esta importación, se importó una vez."
+      },
+      "sameInBatch": "Mismo contenido que «{{file}}» en esta importación. Solo se importa uno de los dos a menos que marques también este."
     }
   }
 }

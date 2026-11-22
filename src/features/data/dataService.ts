@@ -87,7 +87,7 @@ export type ExportErrorCode =
   | 'failed';
 
 /** The collections whose rows are independent leaves: leaving one out loses that row and nothing else (no day total, target or reference changes). */
-const SKIPPABLE = ['body_measurements', 'food_usage', 'match_memory', 'barcode_products'] as const;
+const SKIPPABLE = ['body_measurements', 'food_usage', 'match_memory', 'barcode_products', 'goals'] as const;
 type SkippableCollection = (typeof SKIPPABLE)[number];
 const isSkippable = (name: unknown): name is SkippableCollection => (SKIPPABLE as readonly unknown[]).includes(name);
 
@@ -383,7 +383,7 @@ function mealOfIssue(raw: ExportDocument, path: readonly PropertyKey[]): ExportM
 
 const rowId = (collection: SkippableCollection, row: Record<string, unknown>): string => String(collection === 'barcode_products' ? row.barcode : collection === 'food_usage' ? row.food_ref : collection === 'match_memory' ? row.detected_name_normalized : row.id);
 const rowDetail = (collection: SkippableCollection, row: Record<string, unknown>): string =>
-  collection === 'body_measurements' ? `${String(row.kind)} ${String(row.measured_on)}` : collection === 'food_usage' ? String(row.food_ref) : collection === 'match_memory' ? String(row.detected_name_normalized) : String(row.barcode);
+  collection === 'goals' ? `goal ${String(row.start_date)} to ${row.end_date === null ? 'now' : String(row.end_date)}` : collection === 'body_measurements' ? `${String(row.kind)} ${String(row.measured_on)}` : collection === 'food_usage' ? String(row.food_ref) : collection === 'match_memory' ? String(row.detected_name_normalized) : String(row.barcode);
 
 const quietly = async (action: () => Promise<unknown>): Promise<boolean> => {
   try {
@@ -459,8 +459,8 @@ export function createDataService(deps: DataServiceDeps): DataService {
       if (withPhotos) {
         for (const path of new Set(snapshot.meals.flatMap((m) => (m.photoPath ? [m.photoPath] : [])))) {
           const bytes = PHOTO_PATH_PATTERN.test(path) ? await platform.photos.read(path).catch(() => null) : null;
-          // A photo the importer would refuse (over the per-photo limit) is left out and reported, like one that cannot be read.
-          if (bytes && bytes.byteLength <= limits.maxPhotoBytes) photos.set(path, bytes);
+          // A photo the importer would refuse (over the per-photo limit, or not a JPEG) is left out and reported, like one that cannot be read.
+          if (bytes && bytes.byteLength <= limits.maxPhotoBytes && isJpeg(bytes)) photos.set(path, bytes);
           else skippedPhotos.push(path);
         }
       }
@@ -479,7 +479,9 @@ export function createDataService(deps: DataServiceDeps): DataService {
         let onlySkippable = true;
         for (const issue of parsed.error.issues) {
           const [collection, index] = issue.path;
-          if (isSkippable(collection) && typeof index === 'number') bad.set(collection, (bad.get(collection) ?? new Set()).add(index));
+          // A goal period is only left out for a DATE outside the limits (a clock that was wrong when it was set): any other goal problem stops the export.
+          const goalDate = collection !== 'goals' || issue.path[2] === 'start_date' || issue.path[2] === 'end_date';
+          if (isSkippable(collection) && goalDate && typeof index === 'number') bad.set(collection, (bad.get(collection) ?? new Set()).add(index));
           else onlySkippable = false;
         }
         if (onlySkippable && bad.size > 0) {
