@@ -40,6 +40,8 @@ export interface RepositoryOptions {
   /** Source of catalog foods when an item's grams are edited (`createCatalog` from core). */
   catalog: Pick<Catalog, 'getFood'>;
   now?: () => Date;
+  /** The clock dates are bounded against (`dayBounds`); default `now`. */
+  dayClock?: () => Date;
   newId?: () => string;
 }
 
@@ -48,7 +50,8 @@ export interface RepositoryOptions {
  * run SQL themselves (docs/09 section 1.5).
  */
 export function createRepositories(options: RepositoryOptions): Repositories {
-  const context = { db: options.db, now: options.now ?? (() => new Date()), newId: options.newId ?? defaultNewId };
+  const now = options.now ?? (() => new Date());
+  const context = { db: options.db, now, dayClock: options.dayClock ?? now, newId: options.newId ?? defaultNewId };
   return {
     profile: createProfileRepository(context),
     goals: createGoalRepository(context),
@@ -66,7 +69,7 @@ export function createRepositories(options: RepositoryOptions): Repositories {
   };
 }
 
-export type { BackupRepository, BackupSnapshot } from './backup';
+export type { BackupCounts, BackupRepository, BackupSnapshot } from './backup';
 export type { Profile, ProfileInput, ProfileRepository } from './profile';
 export type { Goal, GoalInput, GoalRepository } from './goals';
 export type {
@@ -85,6 +88,7 @@ export type { BarcodeProductRecord, BarcodeProductRepository } from './barcodePr
 export type { FoodUsageEntry, FoodUsageRepository } from './foodUsage';
 export type {
   CollectionBasis,
+  DuplicateCandidate,
   ImportCollectionInput,
   ImportedCollection,
   ImportedCollectionWithFoods,
@@ -100,5 +104,6 @@ export { MAX_TIMEOUT_S, MIN_TIMEOUT_S } from './aiProviders';
 export type { AiAdapterId, AiOutputMode, AiProvider, AiProviderInput, AiProviderRepository } from './aiProviders';
 export type { FoodResolver } from './foodResolver';
 export { createMatchMemoryRepository } from './matchMemory';
-export { PHOTO_PATH_PATTERN, TEXT_LIMITS } from './shared';
+export { PHOTO_PATH_PATTERN, TEXT_LIMITS, isBlankText, isPlainFileName } from './shared';
 export { IMPORT_LIMITS, VALUE_LIMITS, importedPer100gMax, requireImportedPer100g } from './limits';
+export { canonicalFood, contentFingerprint, sampleIndexes } from './fingerprint';

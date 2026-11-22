@@ -5,10 +5,11 @@ import { StyleSheet, View } from 'react-native';
 import type { ImportedCollection } from '@/data';
 import { formatInstantDate } from '@/i18n/format';
 import type { Locale } from '@/i18n/locale';
-import { AppText, BottomSheet, Button, ConfirmSheet, EmptyState, ErrorState, Icon, ScreenFrame, Skeleton, TextField, TopBar, layout, radius, spacing, useSnackbar, useTheme } from '@/ui';
+import { AppText, BottomSheet, Button, ConfirmSheet, EmptyState, ErrorState, Icon, OptionList, ScreenFrame, Skeleton, TextField, TopBar, layout, radius, spacing, useSnackbar, useTheme } from '@/ui';
 import { useSession } from '../session/AppSession';
 import { useServices } from '../startup/AppProvider';
 import { presetById } from './presets';
+import { yieldToUi } from './readTypes';
 
 interface ImportedTablesScreenProps {
   onBack?: () => void;
@@ -19,6 +20,9 @@ interface ImportedTablesScreenProps {
 }
 
 type State = { status: 'loading' } | { status: 'error' } | { status: 'ready'; tables: ImportedCollection[] };
+
+/** Tables with identical content: `checking` while their fingerprints are worked out (once; later looks are instant). */
+type Duplicates = { status: 'checking' } | { status: 'error' } | { status: 'ready'; groups: ImportedCollection[][] };
 
 /**
  * Settings → Data → Imported tables (S1, S5): the food tables the person loaded from a file. Add, rename, remove (after a confirmation
@@ -38,6 +42,11 @@ export function ImportedTablesScreen({ onBack, onAdd, onChanged }: ImportedTable
   const [renameProblem, setRenameProblem] = useState<string | null>(null);
   const [removing, setRemoving] = useState<ImportedCollection | null>(null);
   const [removeFailed, setRemoveFailed] = useState(false);
+  const [lookedUp, setDuplicates] = useState<Duplicates>({ status: 'checking' });
+  /** The copy to keep in each group (by the id of its first copy); the oldest unless the person chose another. */
+  const [keep, setKeep] = useState<Record<string, string>>({});
+  const [removingDuplicates, setRemovingDuplicates] = useState(false);
+  const [duplicatesFailed, setDuplicatesFailed] = useState(false);
 
   const load = useCallback(() => {
     repos.importedFoods.listCollections().then(
@@ -46,6 +55,40 @@ export function ImportedTablesScreen({ onBack, onAdd, onChanged }: ImportedTable
     );
   }, [repos]);
   useEffect(load, [load, revision]);
+
+  // Looking for tables with the same content: only when there are two or more, and never at the cost of showing the list late.
+  const tableCount = state.status === 'ready' ? state.tables.length : 0;
+  useEffect(() => {
+    if (tableCount < 2) return;
+    let active = true;
+    repos.importedFoods.duplicateGroups({ yieldToUi }).then(
+      (groups) => active && setDuplicates({ status: 'ready', groups }),
+      () => active && setDuplicates({ status: 'error' }),
+    );
+    return () => {
+      active = false;
+    };
+  }, [repos, tableCount, revision]);
+  // With fewer than two tables there is nothing to compare.
+  const duplicates: Duplicates = tableCount < 2 ? { status: 'ready', groups: [] } : lookedUp;
+
+  const groups = duplicates.status === 'ready' ? duplicates.groups : [];
+  const keeperOf = (group: ImportedCollection[]): string => keep[group[0]!.id] ?? group[0]!.id;
+  const toRemove = groups.flatMap((group) => group.filter((copy) => copy.id !== keeperOf(group)));
+  const removeDuplicates = async () => {
+    try {
+      await repos.importedFoods.removeCollections(toRemove.map((copy) => copy.id));
+    } catch {
+      setDuplicatesFailed(true);
+      return;
+    }
+    setRemovingDuplicates(false);
+    setDuplicatesFailed(false);
+    setKeep({});
+    snackbar.show({ message: t('import.list.dups.done', { count: toRemove.length }), bottomOffset: spacing.s6 });
+    load();
+    onChanged?.();
+  };
 
   const startRename = (table: ImportedCollection) => {
     setRenaming(table);
@@ -108,6 +151,39 @@ export function ImportedTablesScreen({ onBack, onAdd, onChanged }: ImportedTable
 
         {state.status === 'ready' && state.tables.length > 0 ? (
           <>
+            {duplicates.status === 'checking' ? (
+              <AppText variant="bodySm" tone="muted" accessibilityLiveRegion="polite">
+                {t('import.list.dups.checking')}
+              </AppText>
+            ) : null}
+            {duplicates.status === 'error' ? <AppText variant="bodySm" tone="muted">{t('import.list.dups.checkFailed')}</AppText> : null}
+            {groups.length > 0 ? (
+              <View style={[styles.card, { backgroundColor: colors.warningSoft }]} testID="duplicates-card">
+                <View style={styles.titleRow}>
+                  <Icon name="alert" color={colors.warning} />
+                  <AppText variant="heading" accessibilityRole="header" style={styles.noteText}>
+                    {t('import.list.dups.title', { count: groups.length })}
+                  </AppText>
+                </View>
+                <AppText variant="bodyMd">{t('import.list.dups.body')}</AppText>
+                {groups.map((group) => (
+                  <View key={group[0]!.id} style={styles.group} testID={`dup-group-${group[0]!.id}`}>
+                    <AppText variant="itemName">{t('import.list.dups.group', { count: group.length, foods: group[0]!.foodCount })}</AppText>
+                    <OptionList<string>
+                      label={t('import.list.dups.keepLabel')}
+                      options={group.map((copy) => ({
+                        value: copy.id,
+                        label: t('import.list.dups.copy', { name: copy.name, date: formatInstantDate(locale, new Date(copy.importedAt)) }),
+                        hint: copy.fileName ? t('import.list.file', { file: copy.fileName }) : undefined,
+                      }))}
+                      value={keeperOf(group)}
+                      onChange={(value) => value && setKeep((current) => ({ ...current, [group[0]!.id]: value }))}
+                    />
+                  </View>
+                ))}
+                <Button label={t('import.list.dups.remove', { count: toRemove.length })} variant="secondary" icon="trash" onPress={() => setRemovingDuplicates(true)} testID="remove-duplicates" />
+              </View>
+            ) : null}
             <View style={styles.list}>
               {state.tables.map((table) => {
                 const preset = table.presetId ? presetById(table.presetId) : null;
@@ -168,6 +244,21 @@ export function ImportedTablesScreen({ onBack, onAdd, onChanged }: ImportedTable
       </BottomSheet>
 
       <ConfirmSheet
+        visible={removingDuplicates}
+        title={t('import.list.dups.confirmTitle')}
+        body={t('import.list.dups.confirmBody', { count: toRemove.length, foods: toRemove.reduce((sum, copy) => sum + copy.foodCount, 0) })}
+        note={duplicatesFailed ? t('import.list.dups.failed') : undefined}
+        confirmLabel={t('import.list.dups.confirm')}
+        cancelLabel={t('import.list.dups.keepThem')}
+        closeLabel={t('common.close')}
+        onConfirm={() => void removeDuplicates()}
+        onCancel={() => {
+          setRemovingDuplicates(false);
+          setDuplicatesFailed(false);
+        }}
+      />
+
+      <ConfirmSheet
         visible={removing !== null}
         title={t('import.list.removeTitle', { name: removing?.name ?? '' })}
         body={t('import.list.removeBody', { count: removing?.foodCount ?? 0 })}
@@ -190,6 +281,8 @@ const styles = StyleSheet.create({
   list: { gap: spacing.s3 },
   card: { borderRadius: radius.lg, padding: spacing.s5, gap: spacing.s2 },
   actions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.s2, marginTop: spacing.s2 },
+  titleRow: { flexDirection: 'row', gap: spacing.s3, alignItems: 'center' },
+  group: { gap: spacing.s2 },
   sheetActions: { gap: 10, marginTop: spacing.s3 },
   note: { flexDirection: 'row', gap: spacing.s3, alignItems: 'flex-start' },
   noteText: { flex: 1 },

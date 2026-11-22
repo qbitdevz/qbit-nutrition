@@ -44,6 +44,12 @@ export interface DataPlatform {
   picker: {
     /** Opens the system file picker; null when the person closes it without choosing. */
     pick(): Promise<PickedFile | null>;
+    /**
+     * The same picker with multiple selection on: every file the person chose (each already copied into the cache, so each `uri` is ours to delete
+     * once it is read), or an empty list when they close it. expo-document-picker supports `multiple` on Android (the system picker's
+     * `EXTRA_ALLOW_MULTIPLE`) and on the web.
+     */
+    pickMany(): Promise<PickedFile[]>;
     /** Removes the copies the picker made in the cache (a crash can leave one) and returns how many. Nothing there is not an error; a folder that cannot be cleared REJECTS. */
     clearCopies(): Promise<number>;
   };

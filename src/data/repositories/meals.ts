@@ -1,6 +1,7 @@
 import { and, asc, eq, gte, lte, sql, type SQL } from 'drizzle-orm';
 import { computeItemNutrients, type NutrientAmounts } from '../../core/nutrition';
 import type { AppDatabase, AppTransaction } from '../database';
+import { requireDayInBounds } from '../dayBounds';
 import { DataError } from '../errors';
 import { deriveMealTime } from '../localDate';
 import { meal, mealItem, mealItemNutrient, REF_FOOD_SOURCES } from '../schema';
@@ -247,7 +248,7 @@ function queryTotals(db: Pick<AppDatabase, 'select'>, from: string, to: string):
 }
 
 export function createMealRepository(
-  { db, now, newId }: RepositoryContext,
+  { db, now, dayClock, newId }: RepositoryContext,
   resolveFood: FoodResolver,
 ): MealRepository {
   const loadMeal = (id: string): MealWithItems | null => loadMeals(db, eq(meal.id, id))[0] ?? null;
@@ -267,6 +268,8 @@ export function createMealRepository(
     async save(input) {
       if (input.items.length === 0) throw invalid('a meal needs at least one item');
       const { eatenAt, localDate } = deriveMealTime(input.eatenAt, input.timeZone);
+      requireDayInBounds(localDate, 'localDate', dayClock());
+      requireDayInBounds(eatenAt.slice(0, 10), 'eatenAt', dayClock());
       requireMaxLength(input.name, TEXT_LIMITS.mealName, 'name');
       requireMaxLength(input.note, TEXT_LIMITS.note, 'note');
       if (input.photoPath != null && !PHOTO_PATH_PATTERN.test(input.photoPath)) throw invalid(`photoPath must be photos/<name>.jpg, got "${input.photoPath}"`);
@@ -462,6 +465,8 @@ export function createMealRepository(
       requireMaxLength(saved.name, TEXT_LIMITS.mealName, 'name');
       requireMaxLength(saved.note, TEXT_LIMITS.note, 'note');
       requireLocalDate(saved.localDate, 'localDate');
+      requireDayInBounds(saved.localDate, 'localDate', dayClock());
+      requireDayInBounds(saved.eatenAt.slice(0, 10), 'eatenAt', dayClock());
       if (saved.photoPath != null && !PHOTO_PATH_PATTERN.test(saved.photoPath)) throw invalid(`photoPath must be photos/<name>.jpg, got "${saved.photoPath}"`);
       saved.items.forEach((item, i) => {
         if (item.mealId !== saved.id) throw invalid(`items[${i}] belongs to another meal`);

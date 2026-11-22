@@ -1,7 +1,8 @@
-import { deriveMealTime, newId as defaultNewId, type Repositories } from '@/data';
+import { dayBounds, deriveMealTime, deviceDateLooksWrong, deviceDay, newId as defaultNewId, type BackupCounts, type Repositories } from '@/data';
 import type { Locale } from '@/i18n/locale';
 import { SUPPORTED_LOCALES } from '@/i18n/locale';
 import type { DataPlatform, PickedFile } from '@/platform/dataPlatform';
+import { hostOf } from '../settings/destination';
 import { KeysNotRemovedError, type ProviderService } from '../settings/providerService';
 import {
   ArchiveError,
@@ -15,7 +16,7 @@ import {
   type ArchiveLimits,
 } from './archive';
 import { PHOTO_PATH_PATTERN, createExportSchema, describePath, parseExportDocument, referencedPhotos, type ExportDocument } from './exportFormat';
-import { documentFromSnapshot, snapshotFromDocument } from './exportMapping';
+import { boundAuditTimestamps, documentFromSnapshot, measurementsFromDocument, snapshotFromDocument } from './exportMapping';
 import { keptSettings } from './settingsPolicy';
 
 export { MAX_FILE_BYTES } from './archive';
@@ -55,13 +56,19 @@ export class ImportError extends Error {
   readonly where?: string;
   readonly fileVersion?: number;
   readonly supportedVersion?: number;
-  constructor(code: ImportErrorCode, details: { where?: string; fileVersion?: number; supportedVersion?: number; cause?: unknown } = {}) {
+  /**
+   * Set when a refusal ('invalid') is likely down to this phone's date: the file was exported after the phone's own date, or the phone's date
+   * is before 2000. A phone with a wrong clock rejects every valid file, so the message says that the date looks wrong.
+   */
+  readonly clock?: { deviceDate: string; fileDate: string | null };
+  constructor(code: ImportErrorCode, details: { where?: string; fileVersion?: number; supportedVersion?: number; clock?: { deviceDate: string; fileDate: string | null }; cause?: unknown } = {}) {
     super(code, details.cause === undefined ? undefined : { cause: details.cause });
     this.name = 'ImportError';
     this.code = code;
     this.where = details.where;
     this.fileVersion = details.fileVersion;
     this.supportedVersion = details.supportedVersion;
+    this.clock = details.clock;
   }
 }
 
@@ -70,8 +77,12 @@ export type ExportErrorCode =
   | 'secret_in_field'
   /** The stored keys could not be read, so it cannot be known that none is in the file: the file is not written. */
   | 'keys_unreadable'
-  /** A stored value is outside what the format allows; `where` names it. */
+  /** A stored value is outside what the format allows; `where` names it (and `meal` says which meal when it is one). */
   | 'invalid_value'
+  /** A meal's day is outside the days a record may have (`dayBounds`): `meal` names it, so the person can open it and change it or delete it. */
+  | 'meal_out_of_range'
+  /** The file would be bigger than the importer reads (the same limits): nothing was written or shared. See `kind`. */
+  | 'too_large'
   /** The file could not be written or shared. */
   | 'failed';
 
@@ -80,14 +91,48 @@ const SKIPPABLE = ['body_measurements', 'food_usage', 'match_memory', 'barcode_p
 type SkippableCollection = (typeof SKIPPABLE)[number];
 const isSkippable = (name: unknown): name is SkippableCollection => (SKIPPABLE as readonly unknown[]).includes(name);
 
+/** The meal an export problem is about, in words the person can recognise, with the id the screen opens it by. */
+export interface ExportMealRef {
+  id: string;
+  /** `YYYY-MM-DD`. */
+  date: string;
+  name: string | null;
+  slot: string;
+}
+
+export interface ExportErrorDetails {
+  cause?: unknown;
+  meal?: ExportMealRef;
+  /** Other meals with the same problem, besides `meal`. */
+  moreMeals?: number;
+  /** `too_large`: what is over its limit: the document, the document and photos together, the file itself, or the number of photos. */
+  kind?: 'document' | 'total' | 'file' | 'photos';
+  size?: number;
+  limit?: number;
+  /** `too_large` with photos: leaving the photos out would fit. */
+  withoutPhotosFits?: boolean;
+}
+
 export class ExportError extends Error {
   readonly code: ExportErrorCode;
   readonly where?: string;
-  constructor(code: ExportErrorCode, where?: string, options?: { cause?: unknown }) {
-    super(code, options);
+  readonly meal?: ExportMealRef;
+  readonly moreMeals?: number;
+  readonly kind?: ExportErrorDetails['kind'];
+  readonly size?: number;
+  readonly limit?: number;
+  readonly withoutPhotosFits?: boolean;
+  constructor(code: ExportErrorCode, where?: string, details: ExportErrorDetails = {}) {
+    super(code, details.cause === undefined ? undefined : { cause: details.cause });
     this.name = 'ExportError';
     this.code = code;
     this.where = where;
+    this.meal = details.meal;
+    this.moreMeals = details.moreMeals;
+    this.kind = details.kind;
+    this.size = details.size;
+    this.limit = details.limit;
+    this.withoutPhotosFits = details.withoutPhotosFits;
   }
 }
 
@@ -110,7 +155,7 @@ export class DeleteIncompleteError extends Error {
   constructor(
     /** `keys` (nothing else was touched), `photos` (the keys are gone), `data` (keys and photos are gone). */
     readonly stage: 'keys' | 'photos' | 'data',
-    readonly details: { keysFailed?: number; keysUnlistable?: boolean; photosRemoved?: number; photosFailed?: number; photosUnlistable?: boolean } = {},
+    readonly details: { keysFailed?: number; keysDeleted?: number; keysUnlistable?: boolean; photosRemoved?: number; photosFailed?: number; photosUnlistable?: boolean } = {},
     options?: { cause?: unknown },
   ) {
     super(`delete_incomplete:${stage}`, options);
@@ -121,6 +166,10 @@ export class DeleteIncompleteError extends Error {
   }
   get keysFailed(): number {
     return this.details.keysFailed ?? 0;
+  }
+  /** Keys that were removed before the stop (every key is tried), so "nothing was deleted" is never said when some were. */
+  get keysDeleted(): number {
+    return this.details.keysDeleted ?? 0;
   }
   get keysUnlistable(): boolean {
     return this.details.keysUnlistable ?? false;
@@ -146,24 +195,41 @@ export interface ImportPreview {
   exportedAt: string;
   /** False: the file has no profile, and this installation's own profile stays. */
   hasProfile: boolean;
-  counts: {
-    meals: number;
-    items: number;
-    /** Weight entries. */
-    weights: number;
-    /** Waist, hips, chest and body fat entries. */
-    measurements: number;
-    goals: number;
-    customFoods: number;
-    /** Food tables the person imported, which the file carries with all their foods. */
-    importedTables: number;
-    providers: number;
-    photos: number;
-  };
+  counts: ImportCounts;
+  /** What is on this phone now, counted the same way: what "replace" would remove, shown next to `counts`. */
+  current: ImportCounts;
   /** Earliest and latest day of any meal or measurement; null for a file with none. */
   dateRange: { from: string; to: string } | null;
   /** Provider profiles in the file: they arrive without keys. */
   providersNeedingKey: number;
+  /** Each provider profile of the file with the host it points to: it must be checked before the profile is used. */
+  providerHosts: { label: string; host: string }[];
+  /** Weights the file carries that Health Connect had read; they arrive as the person's own history (`measurementsFromDocument`). */
+  healthConnectWeights: number;
+  /** Of those, readings not stored because the person also has their own entry for the same day. */
+  mergedWeights: number;
+}
+
+/** The kinds of data a replace removes and a file brings, counted the same way on both sides. */
+export interface ImportCounts {
+  meals: number;
+  items: number;
+  /** Weight entries. */
+  weights: number;
+  /** Waist, hips, chest and body fat entries. */
+  measurements: number;
+  goals: number;
+  customFoods: number;
+  /** Food tables the person imported, which the file carries with all their foods. */
+  importedTables: number;
+  importedFoods: number;
+  /** Favorites and recents. */
+  favoritesAndRecents: number;
+  /** Learned matches between a detected name and a food. */
+  learnedMatches: number;
+  barcodeProducts: number;
+  providers: number;
+  photos: number;
 }
 
 /** A validated file, ready to replace the current data once the person confirms. Nothing has been written. */
@@ -194,6 +260,8 @@ export interface ExportResult {
    * Anything else stops the export (`invalid_value`).
    */
   skippedRows: SkippedRow[];
+  /** Timestamps of when a row was written (not days the person chose) that a wrong clock had put beyond the day limits, brought to the limit. */
+  clampedDates: number;
 }
 
 export interface SkippedRow {
@@ -233,11 +301,22 @@ export interface DataService {
    * replaced profiles are removed after the commit as housekeeping; if that fails or the process dies first, they sit under ids no
    * profile has, are never read, and are removed by the next start's sweep. No failure at any step can pair a key with an imported profile.
    */
-  applyImport(prepared: PreparedImport): Promise<ImportResult>;
-  /** Removes every key (including keys without a profile), every kept photo and every row. Needs the typed word. Safe to run again after a failure. */
-  deleteAll(options?: { confirmation: string }): Promise<void>;
+  applyImport(prepared: PreparedImport, options?: { onProgress?: (progress: ImportProgress) => void }): Promise<ImportResult>;
+  /**
+   * Removes every key (including keys without a profile), every kept photo and every row. Needs the typed word. Safe to run again after a
+   * failure. Resolves with `exportFilesLeft: true` when everything was deleted but an earlier (unencrypted) export file could not be removed from the cache.
+   */
+  deleteAll(options?: { confirmation: string }): Promise<DeleteResult>;
   /** At every start: removes what a crash or a failed cleanup left behind (unreferenced photos, export files, picker copies, keys without a profile). */
   sweepStartup(): Promise<SweepSummary>;
+}
+
+/** The steps of an import, in order. The data write itself is one synchronous transaction, so it reports `writing` before it starts, never inside. */
+export type ImportProgress = { step: 'photos'; done: number; total: number } | { step: 'writing' } | { step: 'cleaning' };
+
+export interface DeleteResult {
+  /** Everything was deleted, but a copy of an export could not be removed from the cache. */
+  exportFilesLeft: boolean;
 }
 
 export interface DataServiceDeps {
@@ -249,15 +328,18 @@ export interface DataServiceDeps {
   now?: () => Date;
   /** Ids for imported provider profiles. */
   newId?: () => string;
-  /** Size limits for an import (tests lower them). */
+  /** Size limits for an import AND for an export: the export is refused when the importer would refuse the file (tests lower them). */
   limits?: Partial<ArchiveLimits>;
+  /** Gives the screen a turn between the steps of an import (default: a short timeout). */
+  yieldToUi?: () => Promise<void>;
 }
 
 const isLocale = (value: string | undefined): value is Locale => value !== undefined && (SUPPORTED_LOCALES as readonly string[]).includes(value);
 
-function buildPreview(doc: ExportDocument, photos: number): ImportPreview {
+function buildPreview(doc: ExportDocument, photos: number, current: ImportCounts): ImportPreview {
   const days = [...doc.meals.map((m) => m.local_date), ...doc.body_measurements.map((m) => m.measured_on)].sort();
   const weights = doc.body_measurements.filter((m) => m.kind === 'weight').length;
+  const weightRule = measurementsFromDocument(doc);
   return {
     formatVersion: doc.format_version,
     appVersion: doc.app_version,
@@ -271,15 +353,33 @@ function buildPreview(doc: ExportDocument, photos: number): ImportPreview {
       goals: doc.goals.length,
       customFoods: doc.custom_foods.length,
       importedTables: doc.imported_collections.length,
+      importedFoods: doc.imported_collections.reduce((sum, c) => sum + c.foods.length, 0),
+      favoritesAndRecents: doc.food_usage.length,
+      learnedMatches: doc.match_memory.length,
+      barcodeProducts: doc.barcode_products.length,
       providers: doc.ai_providers.length,
       photos,
     },
+    current,
     dateRange: days.length > 0 ? { from: days[0]!, to: days[days.length - 1]! } : null,
     providersNeedingKey: doc.ai_providers.length,
+    providerHosts: doc.ai_providers.map((p) => ({ label: p.label, host: hostOf(p.base_url) })),
+    healthConnectWeights: weightRule.fromHealthConnect,
+    mergedWeights: weightRule.merged,
   };
 }
 
 const schemaFor = createExportSchema;
+
+/** One frame or so: enough for the screen to paint "importing" before a long synchronous step starts. */
+const defaultYield = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 16));
+
+/** The meal an issue of the parsed document is about, or null when the issue is not inside a meal. */
+function mealOfIssue(raw: ExportDocument, path: readonly PropertyKey[]): ExportMealRef | null {
+  if (path[0] !== 'meals' || typeof path[1] !== 'number') return null;
+  const m = raw.meals[path[1]];
+  return m ? { id: m.id, date: m.local_date, name: m.name, slot: m.slot } : null;
+}
 
 const rowId = (collection: SkippableCollection, row: Record<string, unknown>): string => String(collection === 'barcode_products' ? row.barcode : collection === 'food_usage' ? row.food_ref : collection === 'match_memory' ? row.detected_name_normalized : row.id);
 const rowDetail = (collection: SkippableCollection, row: Record<string, unknown>): string =>
@@ -316,6 +416,7 @@ export function createDataService(deps: DataServiceDeps): DataService {
   const now = deps.now ?? (() => new Date());
   const newId = deps.newId ?? defaultNewId;
   const limits: ArchiveLimits = { ...DEFAULT_LIMITS, ...deps.limits };
+  const yieldToUi = deps.yieldToUi ?? defaultYield;
 
   /** Removes every export file and picker copy in the cache. Only called when no share can be in progress (at start, and by "Delete all"). */
   const clearCache = async (): Promise<{ removed: number; failed: boolean }> => {
@@ -358,14 +459,19 @@ export function createDataService(deps: DataServiceDeps): DataService {
       if (withPhotos) {
         for (const path of new Set(snapshot.meals.flatMap((m) => (m.photoPath ? [m.photoPath] : [])))) {
           const bytes = PHOTO_PATH_PATTERN.test(path) ? await platform.photos.read(path).catch(() => null) : null;
-          if (bytes) photos.set(path, bytes);
+          // A photo the importer would refuse (over the per-photo limit) is left out and reported, like one that cannot be read.
+          if (bytes && bytes.byteLength <= limits.maxPhotoBytes) photos.set(path, bytes);
           else skippedPhotos.push(path);
         }
       }
 
       // A stored value the format does not accept: a row in a skippable collection is left out and reported; anything else stops the export,
       // naming the field. (Skipping a meal or a goal would silently change totals and targets; skipping a stray measurement changes nothing else.)
-      let raw = documentFromSnapshot(snapshot, { appVersion, exportedAt: now(), includedPhotos: new Set(photos.keys()) });
+      const exportedAt = now();
+      let raw = documentFromSnapshot(snapshot, { appVersion, exportedAt, includedPhotos: new Set(photos.keys()) });
+      // A phone whose clock was wrong for a day wrote timestamps beyond the limits: they only say when a row was touched, so they are brought to the limit
+      // and counted. A day the person chose (a meal's date) is never changed: it is reported below, by meal.
+      const clampedDates = boundAuditTimestamps(raw, dayBounds(exportedAt), exportedAt);
       let parsed = schemaFor(now).safeParse(raw);
       const skippedRows: SkippedRow[] = emptyMeals.map((m) => ({ collection: 'meals' as const, id: m.id, detail: `meal ${m.localDate} ${m.slot} (no items)` }));
       if (!parsed.success) {
@@ -386,7 +492,25 @@ export function createDataService(deps: DataServiceDeps): DataService {
           parsed = schemaFor(now).safeParse(raw);
         }
       }
-      if (!parsed.success) throw new ExportError('invalid_value', describePath(parsed.error.issues[0]?.path ?? []) || 'file');
+      if (!parsed.success) {
+        // Name the meal (its date and name), never an array index the person cannot act on; the screen offers to open it.
+        const meals = new Map<string, { ref: ExportMealRef; dayProblem: boolean; field: string }>();
+        for (const issue of parsed.error.issues) {
+          const ref = mealOfIssue(raw, issue.path);
+          if (!ref) continue;
+          const dayProblem = issue.path[2] === 'local_date' || issue.path[2] === 'eaten_at';
+          const known = meals.get(ref.id);
+          // The field without its array positions ("items.grams"): the meal is named by its date and name instead.
+          const field = issue.path.slice(2).filter((part) => typeof part === 'string').join('.');
+          meals.set(ref.id, { ref, dayProblem: dayProblem || (known?.dayProblem ?? false), field: known?.field ?? field });
+        }
+        const first = [...meals.values()].find((m) => m.dayProblem) ?? [...meals.values()][0];
+        if (first) {
+          const meal = `meal ${first.ref.date} ${first.ref.name ?? first.ref.slot}`;
+          throw new ExportError(first.dayProblem ? 'meal_out_of_range' : 'invalid_value', first.dayProblem ? meal : `${first.field} of ${meal}`, { meal: first.ref, moreMeals: meals.size - 1 });
+        }
+        throw new ExportError('invalid_value', describePath(parsed.error.issues[0]?.path ?? []) || 'file');
+      }
       const document = parsed.data;
 
       // S4: a key the person pasted into their own data (a label, a note, a URL) is still a key. The export is not written; the
@@ -395,8 +519,22 @@ export function createDataService(deps: DataServiceDeps): DataService {
       const leak = findString(document, hasKeyIn);
       if (leak !== null) throw new ExportError('secret_in_field', leak);
 
+      // The importer's own limits apply to what is written (one definition: `limits`), checked before anything is written or shared, so the app
+      // never makes a file it then refuses to read. Compact JSON keeps the document as small as the format allows.
+      const documentBytes = writeJson(document);
       const zipped = photos.size > 0;
-      const bytes = zipped ? writeZip(document, photos) : writeJson(document);
+      const photoBytes = [...photos.values()].reduce((sum, p) => sum + p.byteLength, 0);
+      const tooLarge = (kind: NonNullable<ExportErrorDetails['kind']>, size: number, limit: number) => {
+        // Would the same data fit as a plain file, with no photos (so no photo paths in the document either)?
+        const plain = zipped ? writeJson({ ...document, meals: document.meals.map((m) => ({ ...m, photo_path: null })) }).byteLength : documentBytes.byteLength;
+        const fits = plain <= limits.maxDocumentBytes && plain <= limits.maxTotalBytes && plain <= limits.maxFileBytes;
+        return new ExportError('too_large', kind, { kind, size, limit, withoutPhotosFits: zipped && fits });
+      };
+      if (documentBytes.byteLength > limits.maxDocumentBytes) throw tooLarge('document', documentBytes.byteLength, limits.maxDocumentBytes);
+      if (zipped && photos.size > limits.maxPhotos) throw tooLarge('photos', photos.size, limits.maxPhotos);
+      if (zipped && documentBytes.byteLength + photoBytes > limits.maxTotalBytes) throw tooLarge('total', documentBytes.byteLength + photoBytes, limits.maxTotalBytes);
+      const bytes = zipped ? writeZip(documentBytes, photos) : documentBytes;
+      if (bytes.byteLength > limits.maxFileBytes) throw tooLarge('file', bytes.byteLength, limits.maxFileBytes);
       const fileName = `${EXPORT_FILE_PREFIX}${deriveMealTime(now()).localDate}.${zipped ? 'zip' : 'json'}`;
 
       let uri: string;
@@ -415,7 +553,7 @@ export function createDataService(deps: DataServiceDeps): DataService {
       // (Android), the file stays in the app's private cache until the next app start sweeps it (`sweepStartup`): the worst case is
       // that file lingering for as long as the app is not restarted (or until "Delete all data").
       if (platform.share.completesWhenDone) await quietly(() => platform.cache.remove(uri));
-      return { fileName, photos: photos.size, bytes: bytes.byteLength, skippedPhotos, skippedRows };
+      return { fileName, photos: photos.size, bytes: bytes.byteLength, skippedPhotos, skippedRows, clampedDates };
     },
 
     async prepareImport(file) {
@@ -450,7 +588,15 @@ export function createDataService(deps: DataServiceDeps): DataService {
       const parsed = parseExportDocument(raw, now);
       if (!parsed.ok) {
         if (parsed.code === 'newer_version') throw new ImportError('newer_version', { fileVersion: parsed.fileVersion, supportedVersion: parsed.supportedVersion });
-        throw new ImportError(parsed.code, parsed.code === 'invalid' ? { where: parsed.where } : {});
+        if (parsed.code === 'invalid') {
+          // A phone whose clock is wrong rejects every valid file. When the phone's date is before 2000, or the file was exported after the
+          // phone's own date, the date is the likely cause and the message says so (with both dates, so the person can compare).
+          const exported = (raw as { exported_at?: unknown }).exported_at;
+          const fileDate = typeof exported === 'string' && /^\d{4}-\d{2}-\d{2}/.test(exported) ? exported.slice(0, 10) : null;
+          const clockLikely = deviceDateLooksWrong(now()) || (fileDate !== null && fileDate > dayBounds(now()).latest);
+          throw new ImportError('invalid', { where: parsed.where, ...(clockLikely ? { clock: { deviceDate: deviceDay(now()), fileDate } } : {}) });
+        }
+        throw new ImportError(parsed.code);
       }
 
       // Only now, and only for the photos the document names, anything else is unpacked.
@@ -470,10 +616,25 @@ export function createDataService(deps: DataServiceDeps): DataService {
         if (!isJpeg(data) || data.byteLength > limits.maxPhotoBytes) throw new ImportError('photo_invalid', { where: path });
         photos.set(path, data);
       }
-      return { preview: buildPreview(parsed.document, photos.size), document: parsed.document, photos };
+      // What is on this phone now, counted the same way, so the person sees what replacing removes next to what the file brings.
+      let current: ImportCounts;
+      try {
+        const counts: BackupCounts = await repos.backup.counts();
+        current = { ...counts, photos: (await platform.photos.list().catch(() => [])).length };
+      } catch (cause) {
+        throw new ImportError('storage_unreadable', { cause });
+      }
+      return { preview: buildPreview(parsed.document, photos.size, current), document: parsed.document, photos };
     },
 
-    async applyImport({ document, photos }) {
+    async applyImport({ document, photos }, options = {}) {
+      const report = (progress: ImportProgress) => {
+        try {
+          options.onProgress?.(progress);
+        } catch {
+          // A broken progress display must never fail an import.
+        }
+      };
       // What is here now, read first. If any of it cannot be read, nothing can be replaced safely: the import stops before changing anything.
       let current: Awaited<ReturnType<typeof repos.backup.read>>;
       let oldPhotos: Set<string>;
@@ -491,7 +652,15 @@ export function createDataService(deps: DataServiceDeps): DataService {
         for (const path of stored.values()) await quietly(() => platform.photos.remove(path));
       };
       try {
-        for (const [path, bytes] of photos) stored.set(path, await platform.photos.write(bytes));
+        if (photos.size > 0) {
+          report({ step: 'photos', done: 0, total: photos.size });
+          await yieldToUi();
+        }
+        for (const [path, bytes] of photos) {
+          stored.set(path, await platform.photos.write(bytes));
+          report({ step: 'photos', done: stored.size, total: photos.size });
+          await yieldToUi();
+        }
       } catch (cause) {
         await discardStaged();
         throw new ImportError('write_failed', { cause });
@@ -499,6 +668,10 @@ export function createDataService(deps: DataServiceDeps): DataService {
 
       // 2. One transaction replaces every row. A failure rolls it back; then the staged photos go and nothing else changed.
       const snapshot = snapshotFromDocument(document, { storedPhotos: stored, localProfile: current.profile, keptSettings: keptSettings(current.settings), newId });
+      // The write is ONE synchronous transaction on the JavaScript thread (the SQLite driver is synchronous): nothing can be shown or tapped
+      // while it runs, and it cannot report progress from inside. So the screen is told first and given a turn to paint, then it runs.
+      report({ step: 'writing' });
+      await yieldToUi();
       try {
         await repos.backup.replaceAll(snapshot);
       } catch (cause) {
@@ -509,6 +682,8 @@ export function createDataService(deps: DataServiceDeps): DataService {
       // 3. The new data is in. Housekeeping: the old photos, and the keys of the replaced profiles. Imported profiles have fresh ids,
       // so nothing here is needed for correctness; whatever fails is left to the next start's sweep.
       const leftovers = { photos: false, keys: false };
+      report({ step: 'cleaning' });
+      await yieldToUi();
       for (const path of oldPhotos) if (!(await quietly(() => platform.photos.remove(path)))) leftovers.photos = true;
       if (!(await quietly(() => providers.removeKeys(oldProviderIds)))) leftovers.keys = true;
 
@@ -525,7 +700,7 @@ export function createDataService(deps: DataServiceDeps): DataService {
       try {
         await providers.removeAllKeys();
       } catch (cause) {
-        if (cause instanceof KeysNotRemovedError) throw new DeleteIncompleteError('keys', { keysFailed: cause.failed, keysUnlistable: cause.unlistable }, { cause });
+        if (cause instanceof KeysNotRemovedError) throw new DeleteIncompleteError('keys', { keysFailed: cause.failed, keysDeleted: cause.removed, keysUnlistable: cause.unlistable }, { cause });
         throw new DeleteIncompleteError('keys', { keysFailed: 1 }, { cause });
       }
 
@@ -549,7 +724,9 @@ export function createDataService(deps: DataServiceDeps): DataService {
       } catch (cause) {
         throw new DeleteIncompleteError('data', { photosRemoved, photosFailed: 0 }, { cause });
       }
-      await clearCache();
+      // The data is gone. A copy of an earlier export (unencrypted health data) that cannot be removed is said, never hidden.
+      const cache = await clearCache();
+      return { exportFilesLeft: cache.failed };
     },
 
     async sweepStartup() {

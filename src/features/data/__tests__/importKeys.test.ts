@@ -147,7 +147,7 @@ describe('an id the secure store would refuse never blocks anything (S4)', () =>
     expect(b.db.select().from(aiProvider).all().map((r) => r.label)).toEqual(['Main']);
 
     b.client.exec(`INSERT INTO ai_provider (id, label, adapter, base_url, model, timeout_s, is_active) VALUES ('another/bad id', 'X', 'gemini', 'https://x.example.com', 'm', 30, 0)`);
-    await expect(to.service.deleteAll({ confirmation: 'DELETE' })).resolves.toBeUndefined();
+    await expect(to.service.deleteAll({ confirmation: 'DELETE' })).resolves.toEqual({ exportFilesLeft: false });
     expect(b.db.select().from(aiProvider).all()).toEqual([]);
   });
 });

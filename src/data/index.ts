@@ -10,6 +10,8 @@ export { newId } from './ids';
 export type { AppDatabase, MigrationBundle } from './database';
 export { DataError, isDataError } from './errors';
 export type { DataErrorCode } from './errors';
+export { EARLIEST_DAY, FUTURE_SLACK_DAYS, DateOutOfRangeError, dayBounds, deviceDateLooksWrong, deviceDay, isDayInBounds, requireDayInBounds } from './dayBounds';
+export type { DayBounds } from './dayBounds';
 export { deriveMealTime, addDays, isLocalDate, deviceTimeZone } from './localDate';
 export type { MealTime } from './localDate';
 export { createSqliteCatalogDb } from './catalog/sqliteCatalogDb';

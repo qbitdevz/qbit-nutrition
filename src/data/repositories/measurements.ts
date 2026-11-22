@@ -1,4 +1,5 @@
 import { and, asc, desc, eq, gte, lte } from 'drizzle-orm';
+import { requireDayInBounds } from '../dayBounds';
 import { DataError } from '../errors';
 import { bodyMeasurement } from '../schema';
 import { VALUE_LIMITS, requireWithin } from './limits';
@@ -32,10 +33,11 @@ export interface MeasurementRepository {
   delete(id: string): Promise<void>;
 }
 
-export function createMeasurementRepository({ db, newId }: RepositoryContext): MeasurementRepository {
+export function createMeasurementRepository({ db, newId, dayClock }: RepositoryContext): MeasurementRepository {
   return {
     async record(input) {
       requireLocalDate(input.measuredOn, 'measuredOn');
+      requireDayInBounds(input.measuredOn, 'measuredOn', dayClock());
       if (!Number.isFinite(input.value) || input.value <= 0) {
         throw invalid(`value must be a positive finite number, got ${input.value}`);
       }
@@ -91,7 +93,10 @@ export function createMeasurementRepository({ db, newId }: RepositoryContext): M
     },
 
     async update(id, patch) {
-      if (patch.measuredOn !== undefined) requireLocalDate(patch.measuredOn, 'measuredOn');
+      if (patch.measuredOn !== undefined) {
+        requireLocalDate(patch.measuredOn, 'measuredOn');
+        requireDayInBounds(patch.measuredOn, 'measuredOn', dayClock());
+      }
       if (patch.value !== undefined && (!Number.isFinite(patch.value) || patch.value <= 0)) {
         throw invalid(`value must be a positive finite number, got ${patch.value}`);
       }

@@ -70,7 +70,8 @@ describe('BackupRepository.replaceAll', () => {
     expect(after.meals).toHaveLength(1);
     expect(after.settings).toEqual({ keep_photos: 'false' });
     expect(count(other, 'scan')).toBe(0);
-    expect(count(other, 'barcode_product')).toBe(0);
+    expect(count(other, 'barcode_product')).toBe(snapshot.barcodeProducts.length); // only the products of the file; the old cache is gone
+    expect(count(other, 'barcode_product')).not.toBe(0);
   });
 
   it('is all or nothing: a failure midway rolls back and leaves the old data byte for byte', async () => {
@@ -124,6 +125,39 @@ describe('BackupRepository.deleteAll', () => {
     await expect(h.repos.backup.deleteAll()).rejects.toMatchObject({ cause: { message: expect.stringContaining('injected failure') } });
     h.client.exec('DROP TRIGGER boom');
     expect(dumpAll(h)).toEqual(before);
+  });
+});
+
+describe('the shared seed covers every table, so the all-or-nothing tests cover every row (A9)', () => {
+  it('fills every user table, imported collections, their foods and search entries, and barcode products included', async () => {
+    await seedEverything(h);
+    const empty = userTables(h).filter((table) => count(h, table) === 0);
+    expect(empty).toEqual([]);
+  });
+
+  it('a failure at the last write rolls back the imported tables and barcode products too', async () => {
+    await seedEverything(h);
+    const snapshot = await h.repos.backup.read();
+    expect(snapshot.importedCollections.length).toBeGreaterThan(0);
+    expect(snapshot.barcodeProducts.length).toBeGreaterThan(0);
+    await seedEverything(other);
+    other.client.exec(`DELETE FROM food_collection`);
+    other.client.exec(`DELETE FROM barcode_product`);
+    const before = dumpAll(other);
+    other.client.exec(`CREATE TRIGGER boom BEFORE INSERT ON setting BEGIN SELECT RAISE(ABORT, 'injected failure'); END`);
+    await expect(other.repos.backup.replaceAll(snapshot)).rejects.toThrow();
+    other.client.exec('DROP TRIGGER boom');
+    expect(dumpAll(other)).toEqual(before); // no collection, food, token or product of the file was left behind
+    expect(count(other, 'imported_food_token')).toBe(0);
+  });
+});
+
+describe('a barcode product the person completed by hand is part of the backup (A7)', () => {
+  it('is read even when nothing refers to it; a product that is only cache is not', async () => {
+    await seedEverything(h);
+    const barcodes = (await h.repos.backup.read()).barcodeProducts.map((p) => [p.barcode, p.edited]);
+    expect(barcodes).toEqual(expect.arrayContaining([['12345670', true], ['5449000000996', false]]));
+    expect(barcodes.map(([code]) => code)).not.toContain('4006381333931');
   });
 });
 

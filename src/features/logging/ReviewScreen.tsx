@@ -4,6 +4,7 @@ import { BackHandler, StyleSheet, View } from 'react-native';
 
 import { isRecipeRef, type FoodRef } from '@/core/catalog';
 import { computeItemNutrients, sumNutrients, type MealSlot } from '@/core/nutrition';
+import { isDataError } from '@/data';
 import { formatDecimal, formatNumber } from '@/i18n/format';
 import type { Locale } from '@/i18n/locale';
 import {
@@ -88,7 +89,7 @@ export function ReviewScreen({ now = systemNow, onAddItem, onSwap, onRetake, onS
   const [footerHeight, setFooterHeight] = useState(240);
   const [confirmExit, setConfirmExit] = useState<Exit | null>(null);
   const [saving, setSaving] = useState(false);
-  const [saveFailed, setSaveFailed] = useState(false);
+  const [saveFailed, setSaveFailed] = useState<false | 'save' | 'date'>(false);
   const [method, setMethod] = useState<{ ref: FoodRef; name: string } | null>(null);
 
   const slot: MealSlot = draft.slot ?? pickSlot(now());
@@ -156,10 +157,11 @@ export function ReviewScreen({ now = systemNow, onAddItem, onSwap, onRetake, onS
         name: review?.dishName || null,
         items: draftToSaveItems(draft.items),
       });
-    } catch {
+    } catch (error) {
       // The items stay exactly as they are; the person can try again. A photo copied for this save is not left behind.
       if (photoPath) await platform.files.remove(photoPath).catch(() => undefined);
-      setSaveFailed(true);
+      // A meal is dated "now": refused only when this phone's date is outside what the app accepts, so that is what the message says.
+      setSaveFailed(isDataError(error, 'date_out_of_range') ? 'date' : 'save');
       setSaving(false);
       return;
     }
@@ -249,7 +251,7 @@ export function ReviewScreen({ now = systemNow, onAddItem, onSwap, onRetake, onS
             value={slot}
             onChange={(value) => value && draft.setSlot(value)}
           />
-          {saveFailed ? <FieldMessage message={t('log.review.saveError')} /> : null}
+          {saveFailed ? <FieldMessage message={t(saveFailed === 'date' ? 'log.review.dateError' : 'log.review.saveError')} /> : null}
           {disabledReason ? (
             <AppText variant="bodySm" tone="muted" style={styles.center}>
               {disabledReason}

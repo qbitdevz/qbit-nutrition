@@ -13,6 +13,8 @@ export interface FakeDataState {
   shared: { uri: string; name: string; mimeType: string; bytes: Uint8Array }[];
   /** What the next pick returns; null: the person closed the picker. */
   nextPick: { name: string; bytes: Uint8Array } | null;
+  /** What the next `pickMany` returns when set (several files); otherwise `nextPick` as a single file, or nothing. */
+  nextPicks: { name: string; bytes: Uint8Array }[] | null;
   /** Fails the n-th photo write from now on (1 = the next one). */
   failPhotoWriteAt: number | null;
   failShare: boolean;
@@ -44,6 +46,7 @@ export function createFakeDataPlatform(initial: Partial<FakeDataState> = {}): Fa
     photoTimes: new Map(),
     shared: [],
     nextPick: null,
+    nextPicks: null,
     failPhotoWriteAt: null,
     failShare: false,
     failPhotoRead: new Set(),
@@ -58,6 +61,13 @@ export function createFakeDataPlatform(initial: Partial<FakeDataState> = {}): Fa
   };
   let counter = 0;
   let writes = 0;
+  /** What the system picker does: a copy of the chosen file in the cache, with its name and (when it reports one) its size. */
+  const copyIn = ({ name, bytes }: { name: string; bytes: Uint8Array }): PickedFile => {
+    counter += 1;
+    const uri = `file:///cache/picked-${counter}-${name}`;
+    state.cache.set(uri, { bytes, modifiedAt: state.now });
+    return { uri, name, size: state.reportSize ? bytes.byteLength : null };
+  };
 
   return {
     state,
@@ -114,11 +124,11 @@ export function createFakeDataPlatform(initial: Partial<FakeDataState> = {}): Fa
       },
       async pick(): Promise<PickedFile | null> {
         if (!state.nextPick) return null;
-        const { name, bytes } = state.nextPick;
-        counter += 1;
-        const uri = `file:///cache/picked-${counter}-${name}`;
-        state.cache.set(uri, { bytes, modifiedAt: state.now });
-        return { uri, name, size: state.reportSize ? bytes.byteLength : null };
+        return copyIn(state.nextPick);
+      },
+      async pickMany(): Promise<PickedFile[]> {
+        const files = state.nextPicks ?? (state.nextPick ? [state.nextPick] : []);
+        return files.map(copyIn);
       },
     },
     photos: {

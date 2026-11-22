@@ -261,6 +261,12 @@ export const foodCollection = sqliteTable(
     /** The preset that recognised the file's layout, or null for the generic mapping. */
     presetId: text('preset_id'),
     basis: text('basis', { enum: COLLECTION_BASES }).notNull().default('g'),
+    /**
+     * Fingerprint of the table's content (every food's name, group and values, and the basis; the order of the foods does not matter), so the
+     * same table imported twice is noticed. Null for a table imported before this column existed: those are compared by name, count and a
+     * sample of food names, and get their fingerprint the first time the duplicates are looked for.
+     */
+    contentHash: text('content_hash'),
   },
   (t) => [check('food_collection_basis_check', oneOf(t.basis, COLLECTION_BASES)), check('food_collection_count_check', sql`${t.foodCount} >= 0`)],
 );

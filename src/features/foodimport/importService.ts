@@ -1,5 +1,5 @@
 import type { ImportedCollection, Repositories } from '@/data';
-import type { DataPlatform } from '@/platform/dataPlatform';
+import type { DataPlatform, PickedFile } from '@/platform/dataPlatform';
 import type { ImportPreview } from './mapping';
 import { ImportReadError, READ_LIMITS, readTableFile, type ImportReadErrorCode, type ReadOptions, type TableFile } from './readFile';
 
@@ -10,12 +10,10 @@ export type PickResult =
   | { kind: 'refused'; code: ImportReadErrorCode; limit?: number };
 
 /**
- * Opens the system file picker, checks the size BEFORE reading a byte, reads the table, and always removes the copy the picker
- * made in the cache. Nothing leaves the phone: the file is read from the device's own cache and no network client is involved (S6).
+ * Reads a file the picker already copied into the cache: checks the size BEFORE reading a byte, reads the table, and always removes the copy.
+ * Nothing leaves the phone: the file is read from the device's own cache and no network client is involved (S6).
  */
-export async function pickTableFile(platform: Pick<DataPlatform, 'picker' | 'cache'>, options: ReadOptions = {}): Promise<PickResult> {
-  const picked = await platform.picker.pick();
-  if (!picked) return { kind: 'cancelled' };
+export async function readPicked(platform: Pick<DataPlatform, 'cache'>, picked: PickedFile, options: ReadOptions = {}): Promise<Exclude<PickResult, { kind: 'cancelled' }>> {
   const maxFileBytes = options.limits?.maxFileBytes ?? READ_LIMITS.maxFileBytes;
   try {
     const size = picked.size ?? (await platform.cache.size(picked.uri));
@@ -29,6 +27,13 @@ export async function pickTableFile(platform: Pick<DataPlatform, 'picker' | 'cac
   } finally {
     await platform.cache.remove(picked.uri).catch(() => undefined);
   }
+}
+
+/** Opens the system file picker (one file) and reads what the person chose (`readPicked`). */
+export async function pickTableFile(platform: Pick<DataPlatform, 'picker' | 'cache'>, options: ReadOptions = {}): Promise<PickResult> {
+  const picked = await platform.picker.pick();
+  if (!picked) return { kind: 'cancelled' };
+  return readPicked(platform, picked, options);
 }
 
 /** The name offered for the table: the file's name without its folder and extension. */

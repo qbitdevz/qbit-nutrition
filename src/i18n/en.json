@@ -223,7 +223,9 @@
       "keep": "Keep entry",
       "deleted": "Entry deleted",
       "deleteError": "It could not be deleted. Try again.",
-      "undoFailed": "The entry could not be restored."
+      "undoFailed": "The entry could not be restored.",
+      "dateOutOfRange": "That date is outside what the app accepts ({{from}} to {{to}}). If this phone’s date is wrong, correct it in the phone’s Date & time settings.",
+      "previousDayUnavailable": "No earlier day"
     }
   },
   "scan": {
@@ -802,7 +804,8 @@
       "noNumbers": "No numbers yet",
       "photoKept": "The photo could not be kept. The meal was saved without it.",
       "barcode": "Barcode",
-      "gramsAnnounce": "{{value}} grams"
+      "gramsAnnounce": "{{value}} grams",
+      "dateError": "The meal could not be saved: this phone’s date looks wrong. Correct it in the phone’s Date & time settings, then try again. Your items are still here."
     },
     "custom": {
       "title": "Create custom food",
@@ -1081,7 +1084,18 @@
       "photosSkipped_other": "{{count}} meal photos could not be read and are not in the file. Their meals are exported without them.",
       "rowsSkipped_one": "{{count}} entry was left out of the file because its value is outside what the app accepts: {{what}}. The rest was exported.",
       "rowsSkipped_other": "{{count}} entries were left out of the file because their values are outside what the app accepts: {{what}}. The rest was exported.",
-      "reminderTables": "You imported {{count}} food table(s). This file contains them in full: keep it for yourself and do not share it."
+      "reminderTables": "You imported {{count}} food table(s). This file contains them in full: keep it for yourself and do not share it.",
+      "errorMeal": "The export was stopped: the meal “{{name}}” on {{date}} has a date this app cannot export (it must fall between {{from}} and {{to}}). Copy it to today if you want to keep it, then delete it. If this phone’s date was wrong when you logged it, correct the phone’s date first. Nothing was written.",
+      "errorMealMore_one": "{{count}} more meal has the same problem.",
+      "errorMealMore_other": "{{count}} more meals have the same problem.",
+      "errorMealValue": "The export was stopped: the meal “{{name}}” on {{date}} holds a value the file cannot take ({{where}}). Open it to correct or delete it. Nothing was written.",
+      "openMeal": "Open this meal",
+      "errorTooLarge": "Your data is too large for one file ({{size}}; the most this app can read back is {{limit}}). Nothing was shared. Remove imported food tables you no longer use (Settings → Data → Imported tables), then export again.",
+      "errorTooLargePhotos": "Your data is too large for one file with the photos ({{size}}; the most this app can read back is {{limit}}). Nothing was shared. Choose “Without photos” and export again.",
+      "errorTooLargeFile": "The file would be {{size}}, more than the {{limit}} this app can read back. Nothing was shared. Remove imported food tables you no longer use (Settings → Data → Imported tables), then export again.",
+      "datesCorrected_one": "{{count}} date written while this phone’s clock was wrong was corrected in the file.",
+      "datesCorrected_other": "{{count}} dates written while this phone’s clock was wrong were corrected in the file.",
+      "errorTooManyPhotos": "You have {{count}} photos, more than the {{limit}} this app can read back in one file. Nothing was shared. Choose “Without photos” and export again."
     },
     "import": {
       "title": "Import data",
@@ -1110,7 +1124,7 @@
       "photos_one": "{{count}} meal photo",
       "photos_other": "{{count}} meal photos",
       "contents": "In the file",
-      "replaceWarning": "Importing replaces everything on this phone: your profile, goals, meals, weights, custom foods and settings. This cannot be undone.",
+      "replaceWarning": "Importing replaces everything on this phone, and this cannot be undone: your profile, goals, meals, weights and measurements, custom foods, imported food tables with all their foods, kept meal photos, favorites and recents, learned matches, the barcode cache, AI provider profiles (without keys) and settings.",
       "providersNote": "AI provider profiles come without their keys: you add each key again.",
       "noticeNote": "The health notice you accepted on this phone stays as it is.",
       "replace": "Replace my data",
@@ -1137,8 +1151,36 @@
         "writeFailed": "The import could not be completed and was undone. Your current data is as it was.",
         "retry": "Choose another file",
         "archiveTooLarge": "The file would unpack to more than this app accepts. Choose a smaller export.",
-        "storageUnreadable": "This phone's data or photo folder could not be read, so nothing could be replaced safely."
-      }
+        "storageUnreadable": "This phone's data or photo folder could not be read, so nothing could be replaced safely.",
+        "invalidClock": "This phone’s date is {{deviceDate}}, but the file was exported on {{fileDate}}. If this phone’s date is wrong, correct it in the phone’s Date & time settings and choose the file again. (The first place that does not fit: {{where}}.)",
+        "invalidClockNoFile": "This phone’s date is {{deviceDate}}, which looks wrong. Correct it in the phone’s Date & time settings and choose the file again. (The first place that does not fit: {{where}}.)"
+      },
+      "columnNow": "On this phone now",
+      "columnFile": "In the file",
+      "rows": {
+        "meals": "Meals",
+        "weights": "Weight entries",
+        "measurements": "Body measurements",
+        "goals": "Goal periods",
+        "customFoods": "Custom foods",
+        "importedTables": "Imported food tables",
+        "importedFoods": "Foods in imported tables",
+        "favoritesAndRecents": "Favorites and recents",
+        "learnedMatches": "Learned matches",
+        "barcodeProducts": "Barcode products",
+        "providers": "AI providers",
+        "photos": "Meal photos"
+      },
+      "providersHosts": "AI providers in this file",
+      "providersCheck": "Check each address before you use a profile: they arrive switched off and without keys, and nothing is sent to them until you confirm it.",
+      "healthWeights_one": "{{count}} weight that Health Connect read on the other phone arrives as your own entry, so a sync here never removes it.",
+      "healthWeights_other": "{{count}} weights that Health Connect read on the other phone arrive as your own entries, so a sync here never removes them.",
+      "healthMerged_one": "{{count}} of them shares a day with an entry of yours and is not added: yours is kept.",
+      "healthMerged_other": "{{count}} of them share a day with an entry of yours and are not added: yours are kept.",
+      "progressPhotos": "Importing: saving photo {{done}} of {{total}}",
+      "progressWriting": "Importing: writing your data. The screen may stop responding for a moment.",
+      "progressCleaning": "Importing: cleaning up old files",
+      "rowLabel": "{{label}}: {{now}} on this phone now, {{file}} in the file"
     },
     "delete": {
       "title": "Delete all data",
@@ -1166,8 +1208,14 @@
         "photos_other": "Removed: your AI provider keys and {{removed}} of {{total}} meal photos. Not removed: {{count}} meal photos and all your data. Trying again is safe and finishes the rest.",
         "photosUnlistable": "Removed: your AI provider keys. Not removed: the meal photos could not be listed, and all your data. Trying again is safe and finishes the rest.",
         "data": "Removed: your AI provider keys and all meal photos. Not removed: your data could not be cleared. Trying again is safe.",
-        "health": "The records this app wrote to Health Connect were removed."
-      }
+        "health": "The records this app wrote to Health Connect were removed.",
+        "keysUnlistableSome_one": "Removed: {{count}} AI provider key. The secure key storage could not be read, so other keys could not be checked. Not removed: your data and photos. Trying again is safe.",
+        "keysUnlistableSome_other": "Removed: {{count}} AI provider keys. The secure key storage could not be read, so other keys could not be checked. Not removed: your data and photos. Trying again is safe.",
+        "keysSome_one": "Removed: {{removed}} AI provider keys. Not removed: {{count}} key. Nothing else was deleted. Trying again is safe.",
+        "keysSome_other": "Removed: {{removed}} AI provider keys. Not removed: {{count}} keys. Nothing else was deleted. Trying again is safe."
+      },
+      "continue": "Continue",
+      "leftover": "Your data was deleted, but a copy of an earlier export could not be removed from this phone’s cache. It is not encrypted. Remove it by clearing this app’s cache in Android Settings → Apps → Qbit Nutrition → Storage."
     }
   },
   "barcode": {
@@ -1464,7 +1512,30 @@
       "removeKeep": "Keep it",
       "removed": "Removed “{{name}}”.",
       "removeFailed": "The table could not be removed. Nothing was changed.",
-      "exportNote": "A personal export includes these tables. Keep that file for yourself."
+      "exportNote": "A personal export includes these tables. Keep that file for yourself.",
+      "dups": {
+        "checking": "Looking for duplicates…",
+        "title_one": "{{count}} table is repeated",
+        "title_other": "{{count}} tables are repeated",
+        "body": "These tables have exactly the same content. Keep one of each and remove the rest.",
+        "group_one": "{{count}} copy · {{foods}} foods each",
+        "group_other": "{{count}} copies · {{foods}} foods each",
+        "keep": "Keep this one",
+        "keepLabel": "Which copy to keep",
+        "copy": "{{name}} · imported {{date}}",
+        "remove_one": "Remove {{count}} duplicate",
+        "remove_other": "Remove {{count}} duplicates",
+        "confirmTitle": "Remove the duplicates?",
+        "confirmBody_one": "This removes {{count}} table ({{foods}} foods), with any favorites and recents that use it. The copy you chose to keep stays. Meals you already logged keep their values.",
+        "confirmBody_other": "This removes {{count}} tables ({{foods}} foods), with any favorites and recents that use them. The copies you chose to keep stay. Meals you already logged keep their values.",
+        "confirm": "Remove duplicates",
+        "keepThem": "Keep them",
+        "done_one": "Removed {{count}} duplicate.",
+        "done_other": "Removed {{count}} duplicates.",
+        "failed": "The duplicates could not be removed. Nothing was changed.",
+        "checkFailed": "The tables could not be checked for duplicates."
+      },
+      "parts": "Imported from {{file}}"
     },
     "add": {
       "title": "Add a table",
@@ -1472,7 +1543,7 @@
       "notice": "Download the table yourself from its publisher: this app never downloads one. Each table has its own license. Use it for yourself, and do not share the file or a data export that contains it. The table stays on this phone and nothing is sent anywhere.",
       "formats": "Reads spreadsheets (.xlsx, .xls) and text files (.csv). A PDF or a web page cannot be read: look for the spreadsheet version.",
       "limit": "Files up to {{size}} MB.",
-      "choose": "Choose a file",
+      "choose": "Choose files",
       "reading": "Reading the file…",
       "readingPercent": "Reading the file… {{percent}}%",
       "cancel": "Cancel",
@@ -1493,7 +1564,9 @@
       },
       "failedTitle": "Nothing was imported",
       "failed": "The phone could not save the table. Nothing was added and your data is unchanged. Try again.",
-      "failedRetry": "Try again"
+      "failedRetry": "Try again",
+      "multiHint": "You can pick several files at once, for example a table that is published in parts.",
+      "readingFile": "Reading file {{current}} of {{total}}: {{name}}"
     },
     "map": {
       "title": "Match the columns",
@@ -1595,6 +1668,105 @@
       "partial_other": "{{count}} rows were left out; the review listed why.",
       "search": "Search for a food to find them. Each one is tagged with the table’s name.",
       "button": "Done"
+    },
+    "batch": {
+      "summaryFiles_one": "{{count}} file chosen",
+      "summaryFiles_other": "{{count}} files chosen",
+      "ready_one": "{{count}} ready to import",
+      "ready_other": "{{count}} ready to import",
+      "already_one": "{{count}} already imported",
+      "already_other": "{{count}} already imported",
+      "unusable_one": "{{count}} with nothing the app can use",
+      "unusable_other": "{{count}} with nothing the app can use",
+      "problem_one": "{{count}} that cannot be imported as it is",
+      "problem_other": "{{count}} that cannot be imported as it is",
+      "fileSummary_one": "{{count}} food · {{nutrients}} nutrients",
+      "fileSummary_other": "{{count}} foods · {{nutrients}} nutrients",
+      "rowsLeftOut_one": "{{count}} row left out",
+      "rowsLeftOut_other": "{{count}} rows left out",
+      "basisG100": "per 100 g",
+      "basisMl100": "per 100 ml",
+      "basisKg1": "per 1 kg (converted to per 100 g)",
+      "basisOther": "per something else",
+      "recognisedPreset_one": "{{preset}} format recognised: {{count}} nutrient, values {{basis}}",
+      "recognisedPreset_other": "{{preset}} format recognised: {{count}} nutrients, values {{basis}}",
+      "recognisedHeaders_one": "Columns recognised from their headers: {{count}} nutrient, values {{basis}}",
+      "recognisedHeaders_other": "Columns recognised from their headers: {{count}} nutrients, values {{basis}}",
+      "recognisedOptional": "Nothing to check. You can still change the columns.",
+      "checkTitle": "Confirm before importing",
+      "checkIntro": "The importer is not sure about this. Confirm each point, or open “Change columns”.",
+      "include": "Import this file",
+      "nothingUsable": "Nothing the app can use: no column of a nutrient it tracks. This is not an error.",
+      "needsMapping": "This file cannot be imported as it was read. Choose its columns to try.",
+      "refusedTitle": "Could not be read",
+      "changeColumns": "Change columns",
+      "details": "Details",
+      "confirm": {
+        "weak_columns": "These columns were matched from an abbreviation: {{nutrients}}.",
+        "weak_columns_check": "These columns are what they seem",
+        "units_assumed": "The file does not state the unit of: {{units}}. The unit shown was assumed.",
+        "units_assumed_check": "Those units are right",
+        "basis_assumed": "The file does not say what the values are per. They are taken as per 100 g.",
+        "basis_assumed_check": "The values are per 100 g",
+        "basis_ml": "The values are per 100 ml. The app counts what you eat in grams, so 100 ml is used as 100 g (no density).",
+        "basis_ml_check": "That is fine for this table",
+        "name_guessed": "No header names the foods: column {{column}} was guessed from its contents.",
+        "name_guessed_check": "Column {{column}} holds the food names",
+        "energy_mismatch": "{{count}} of {{total}} foods have an energy that does not fit their protein, carbohydrate and fat. A column or a unit may be wrong.",
+        "energy_mismatch_check": "I checked: the energy values are right",
+        "many_skipped": "{{count}} of {{total}} rows were left out because a value is impossible for a food. A unit may be wrong.",
+        "many_skipped_check": "I checked: leaving them out is right",
+        "unit": "{{nutrient}}: {{unit}}"
+      },
+      "duplicate": {
+        "title": "Already here",
+        "body": "This table is already here as “{{name}}” ({{foods}} foods, imported {{date}}).",
+        "more_one": "And {{count}} more table with the same content.",
+        "more_other": "And {{count}} more tables with the same content.",
+        "choose": "What to do with it",
+        "replace": "Replace it",
+        "keep": "Keep both",
+        "skip": "Do not import",
+        "replaceHint": "Replacing removes the old table with its favorites and recents, and adds this one. Meals you logged keep their values.",
+        "keepHint": "Both will be in food search, so each food shows twice.",
+        "skipHint": "Nothing is imported for this file."
+      },
+      "combine": {
+        "title": "{{count}} files are parts of one table: {{preset}}",
+        "label": "Import them as",
+        "one": "One table",
+        "many": "One table per file",
+        "oneHint": "Removing it later removes all the files at once.",
+        "name": "Name of the table"
+      },
+      "blocked": {
+        "unconfirmed": "Confirm the points above, or leave those files out.",
+        "duplicate": "Choose what to do with the tables that are already here.",
+        "tooManyTables": "The app holds up to {{limit}} imported tables ({{existing}} are here now). This would add {{adding}}. Import the parts as one table, or remove tables you do not use.",
+        "tooManyFoods": "A table holds up to {{limit}} foods; this one has {{count}}.",
+        "nothing": "Nothing is selected to import."
+      },
+      "importButton_one": "Import {{count}} table",
+      "importButton_other": "Import {{count}} tables",
+      "saving": "Saving table {{current}} of {{total}}…",
+      "done": {
+        "title": "Import finished",
+        "summary_one": "{{count}} table was imported, with {{foods}} foods.",
+        "summary_other": "{{count}} tables were imported, with {{foods}} foods.",
+        "imported": "“{{name}}”: {{count}} foods",
+        "replaced_one": "It replaced {{count}} table that was already here.",
+        "replaced_other": "It replaced {{count}} tables that were already here.",
+        "failedTitle": "Not saved",
+        "failed": "“{{name}}” could not be saved. Nothing of it was written.",
+        "retryFailed": "Try the failed ones again",
+        "notImportedTitle": "Not imported",
+        "skipped": "{{file}}: already here, left as it is.",
+        "nothing_usable": "{{file}}: nothing the app can use.",
+        "needs_mapping": "{{file}}: could not be imported as it was read.",
+        "refused": "{{file}}: could not be read.",
+        "deselected": "{{file}}: left out by you.",
+        "notDone": "{{file}}: still needed a choice, so it was not imported."
+      }
     }
   }
 }

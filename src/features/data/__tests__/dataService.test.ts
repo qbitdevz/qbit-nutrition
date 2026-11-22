@@ -164,7 +164,8 @@ describe('import round trip (S3)', () => {
     // Profile: the person's own data is carried; the notice acceptance is the new installation's (see the next test).
     expect(copy.profile).toEqual({ ...source.profile, disclaimerAcceptedAt: '2026-11-20T09:00:00.000Z', disclaimerVersion: '2026-11-21' });
     expect(copy.goals).toEqual(source.goals);
-    expect(copy.measurements).toEqual(source.measurements);
+    // A weight Health Connect read on the source phone arrives as the person's own history (A2); the seed's one is on a day the person also has an entry, so it is merged into it.
+    expect(copy.measurements).toEqual(source.measurements.filter((m) => m.source !== 'health_connect'));
     expect(copy.customFoods).toEqual(source.customFoods);
     expect(copy.foodUsage).toEqual(source.foodUsage);
     expect(copy.matchMemory).toEqual(source.matchMemory);
@@ -197,7 +198,7 @@ describe('import round trip (S3)', () => {
     }
     expect(await b.repos.meals.totalsByDay('2026-06-01', '2026-06-30')).toEqual(await a.repos.meals.totalsByDay('2026-06-01', '2026-06-30'));
     expect((await b.repos.customFoods.get(seeded.customFoodIds[0]!))?.otherNutrients).toEqual({ fiber: 10, sodium: 5 });
-    expect((await b.repos.foodUsage.favorites()).map((u) => u.foodRef)).toEqual([seeded.customFoodIds[1]]);
+    expect((await b.repos.foodUsage.favorites()).map((u) => u.foodRef).sort()).toEqual([seeded.customFoodIds[1]!, '5449000000996'].sort());
   });
 
   it('with photos: every kept photo comes back with its own bytes, under a new name, and the old ones are gone', async () => {
@@ -274,9 +275,16 @@ describe('import round trip (S3)', () => {
       appVersion: '1.0.0',
       exportedAt: NOW.toISOString(),
       hasProfile: true,
-      counts: { meals: 3, items: 4, weights: 3, measurements: 2, goals: 2, customFoods: 2, importedTables: 0, providers: 2, photos: 1 },
+      counts: { meals: 3, items: 4, weights: 3, measurements: 2, goals: 2, customFoods: 2, importedTables: 1, importedFoods: 2, favoritesAndRecents: 3, learnedMatches: 1, barcodeProducts: 2, providers: 2, photos: 1 },
+      current: { meals: 0, items: 0, weights: 0, measurements: 0, goals: 0, customFoods: 0, importedTables: 0, importedFoods: 0, favoritesAndRecents: 0, learnedMatches: 0, barcodeProducts: 0, providers: 0, photos: 0 },
       dateRange: { from: '2026-06-01', to: '2026-06-03' },
       providersNeedingKey: 2,
+      providerHosts: [
+        { label: 'Local', host: '192.168.1.5:11434' },
+        { label: 'Main', host: 'api.example.com' },
+      ],
+      healthConnectWeights: 1,
+      mergedWeights: 1,
     });
     expect(dumpAll(b)).toEqual(before); // looking is not importing
     expect(to.platform.state.cache.size).toBe(0); // and the copy the picker made is gone

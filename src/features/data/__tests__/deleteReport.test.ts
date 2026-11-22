@@ -40,7 +40,7 @@ describe('"Delete all" says exactly what was and was not removed, and a retry fi
     expect(after.db).toEqual(before.db); // nothing deleted from the database
 
     device.platform.state.failPhotoRemove.clear();
-    await expect(device.service.deleteAll(CONFIRM)).resolves.toBeUndefined(); // retrying is safe and finishes
+    await expect(device.service.deleteAll(CONFIRM)).resolves.toEqual({ exportFilesLeft: false }); // retrying is safe and finishes
     expect((await fullState(device)).photos).toEqual([]);
     expect(await h.repos.profile.get()).toBeNull();
   });
@@ -72,7 +72,7 @@ describe('"Delete all" says exactly what was and was not removed, and a retry fi
 describe('"Delete all" and the secure store that cannot be listed (S4)', () => {
   it('is not blocked when the storage is unavailable (it cannot hold a key), and removes everything else', async () => {
     jest.spyOn(device.services.secrets, 'list').mockRejectedValue(new SecretStoreError('unavailable', 'no secure storage'));
-    await expect(device.service.deleteAll(CONFIRM)).resolves.toBeUndefined();
+    await expect(device.service.deleteAll(CONFIRM)).resolves.toEqual({ exportFilesLeft: false });
     expect(await h.repos.profile.get()).toBeNull();
     expect(device.platform.state.photos.size).toBe(0);
   });

@@ -63,6 +63,10 @@ export function createExpoDataPlatform(): DataPlatform {
         const asset = result.canceled ? null : result.assets[0];
         return asset ? { uri: asset.uri, name: asset.name, size: asset.size ?? null } : null;
       },
+      async pickMany(): Promise<PickedFile[]> {
+        const result = await DocumentPicker.getDocumentAsync({ type: '*/*', copyToCacheDirectory: true, multiple: true });
+        return result.canceled ? [] : result.assets.map((asset) => ({ uri: asset.uri, name: asset.name, size: asset.size ?? null }));
+      },
     },
     photos: {
       async list() {

@@ -1,4 +1,5 @@
 import { and, asc, desc, eq, gte, isNull, lte, or } from 'drizzle-orm';
+import { requireDayInBounds } from '../dayBounds';
 import { DataError } from '../errors';
 import { addDays } from '../localDate';
 import { goal } from '../schema';
@@ -46,7 +47,7 @@ export interface GoalRepository {
 
 const toGoal = (row: GoalRow): Goal => ({ ...row, isCustom: row.isCustom === 1 });
 
-export function createGoalRepository({ db, newId }: RepositoryContext): GoalRepository {
+export function createGoalRepository({ db, newId, dayClock }: RepositoryContext): GoalRepository {
   return {
     async current() {
       const row = db.select().from(goal).where(isNull(goal.endDate)).get();
@@ -71,6 +72,7 @@ export function createGoalRepository({ db, newId }: RepositoryContext): GoalRepo
 
     async set(input) {
       requireLocalDate(input.startDate, 'startDate');
+      requireDayInBounds(input.startDate, 'startDate', dayClock());
       for (const [label, value] of [
         ['kcalTarget', input.kcalTarget],
         ['proteinGTarget', input.proteinGTarget],

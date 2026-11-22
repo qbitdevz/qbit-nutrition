@@ -78,6 +78,28 @@ export async function seedEverything(h: Harness, options: { photoPath?: string }
   await repos.matchMemory.remember('soup', { source: 'custom', id: soup.id });
   await repos.matchMemory.remember('soup', { source: 'custom', id: soup.id });
 
+  // An imported food table (food_collection, imported_food and its search entries) and barcode products: a referenced one, one the person
+  // completed by hand that nothing refers to yet, and one that is only cache (never part of a backup).
+  await repos.importedFoods.importCollection({ name: 'Seed table', fileName: 'seed-table.csv', presetId: null, basis: 'g' }, [
+    { name: 'Seed lentils', group: 'Legumes', per100g: { kcal: 116, protein: 9, carbs: 20, fat: 0.4, fiber: 7.9 } },
+    { name: 'Seed rice, cooked', group: 'Cereals', per100g: { kcal: 130, protein: 2.7, carbs: 28, fat: 0.3 } },
+  ]);
+  const product = (barcode: string, name: string, edited: boolean) => ({
+    barcode,
+    name,
+    brand: 'Seedco',
+    per100g: { kcal: 42, protein: 0, carbs: 10.6, fat: 0 },
+    servingG: 330,
+    missing: [] as never[],
+    inconsistent: false,
+    edited,
+    fetchedAt: '2026-06-01T09:00:00.000Z',
+  });
+  await repos.barcodeProducts.put(product('5449000000996', 'Seed cola', false));
+  await repos.foodUsage.setFavorite({ source: 'barcode', id: '5449000000996' }, true);
+  await repos.barcodeProducts.put(product('12345670', 'Seed bar, completed by hand', true));
+  await repos.barcodeProducts.put(product('4006381333931', 'Seed cache only', false));
+
   const p1 = await repos.aiProviders.create({ label: 'Main', preset: 'openai', adapter: 'openai_compatible', baseUrl: 'https://api.example.com/v1', model: 'gpt-x', timeoutS: 60, outputMode: 'schema' });
   const p2 = await repos.aiProviders.create({ label: 'Local', preset: null, adapter: 'gemini', baseUrl: 'http://192.168.1.5:11434/v1', model: 'local-1', timeoutS: 90 });
   await repos.aiProviders.recordTest(p1.id, { result: 'ok', outputMode: 'schema' });

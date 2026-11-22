@@ -1,0 +1,1 @@
+ALTER TABLE `food_collection` ADD `content_hash` text;

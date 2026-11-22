@@ -25,7 +25,7 @@ you; without one you match the columns yourself (the generic import), which work
 
 | Table | Publisher's page | How it is published (checked 2026-11-22) | In the app |
 | --- | --- | --- | --- |
-| **ARGENFOODS** (Argentina, Universidad Nacional de Luján) | [argenfoods index](http://www.unlu.edu.ar/~argenfoods/Tablas/Varios/Indice.htm) | One Excel file (`.xls`) and one PDF per food group: 12 Excel files in all (cereals, vegetables, fruits, fats and oils, fish and shellfish, meats, milk, eggs, sugary products, miscellaneous; fish and meat each also have a fatty-acids file). The site is plain `http`. | **Preset.** Download the `.xls` of each group you want; each file is imported as its own table named "ARGENFOODS · group". The fatty-acid files hold individual fatty acids the app does not track, so they have little to import. |
+| **ARGENFOODS** (Argentina, Universidad Nacional de Luján) | [argenfoods index](http://www.unlu.edu.ar/~argenfoods/Tablas/Varios/Indice.htm) | One Excel file (`.xls`) and one PDF per food group: 12 Excel files in all (cereals, vegetables, fruits, fats and oils, fish and shellfish, meats, milk, eggs, sugary products, miscellaneous; fish and meat each also have a fatty-acids file). The site is plain `http`. | **Preset.** Download the `.xls` of each group you want; pick all the files at once and import them as one table "ARGENFOODS" (or one table per file, named "ARGENFOODS · group"). The fatty-acid files hold individual fatty acids the app does not track, so they have little to import. |
 | **BEDCA** (Spain, AESAN) | [bedca.net/bdpub](https://www.bedca.net/bdpub/) | A web query only ("Consulta"); no download. All rights reserved. | No preset. Nothing to download: the generic import works only if AESAN gives you a spreadsheet. |
 | **Mexico, INCMNSZ** (Tabla de Composición de Alimentos y Productos Alimenticios Mexicanos) | [incmnsz.mx](https://www.incmnsz.mx/) | Listed by INFOODS as a PDF at `incmnsz.mx/2019/TABLAS_ALIMENTOS.pdf`; that address answered "not found" on the check date. No spreadsheet. | No preset. Ask INCMNSZ for a spreadsheet version, then use the generic import. |
 | **Colombia, TCAC** (ICBF, Tabla de Composición de Alimentos Colombianos) | [ICBF, TCAC 2018](https://www.icbf.gov.co/tabla-de-composicion-de-alimentos-colombianos-tcac-2018) | A PDF only (2018; the 2015 edition is also a PDF). No spreadsheet. | No preset. Ask ICBF for a spreadsheet version, then use the generic import. |
@@ -38,19 +38,30 @@ PDF before relying on it.
 
 ## Steps in the app
 
-1. Download the file from the publisher's page above, to your phone (or move it there).
-2. Open **Settings → Data → Imported tables → Add a table**. Read the notice, then **Choose a file** and pick it. The app reads `.xlsx`, `.xls`
-   and `.csv` files up to 25 MB; a bigger or unreadable file is refused with the reason, and nothing is imported.
-3. **Match the columns.** A recognised table arrives filled in; otherwise the app suggests columns from the header labels (Spanish, English,
-   Portuguese and French) and you can change each one: the food name, an optional food group, what the values are per (100 g, 100 ml or 1 kg;
-   "per portion" and similar cannot be imported), and each nutrient with the unit its column is written in. The rules for reading values are on
-   the screen.
-4. **Review the import.** You see how many foods and nutrients were found, which rows were left out and why, how many cells are stored as
-   unknown, warnings (for example an energy that does not match protein, carbs and fat; it is imported as it is), and a sample of foods as they
-   will be stored. Give the table a name: it appears as a tag on every food from it.
-5. **Import.** It is all or nothing. Search for a food: foods from your table show the tag. They can be logged, starred and matched by the AI
-   scan like any food.
-6. To remove a table, go to **Imported tables** and choose **Remove**. All its foods go at once; your logged meals keep their values.
+1. Download the file (or all the files of a table published in parts) from the publisher's page above, to your phone (or move them there).
+2. Open **Settings → Data → Imported tables → Add a table**. Read the notice, then **Choose files** and pick one file **or several at once**. The
+   app reads `.xlsx`, `.xls` and `.csv` files up to 25 MB each; a bigger or unreadable file is listed with the reason, and nothing of it is imported.
+3. **Review everything in one preview.** The files are read one after the other, and you see one card per file:
+   - **What was recognised, in one line**, for example "ARGENFOODS format recognised: 11 nutrients, values per 100 g". When the app is
+     confident, that is all: the columns screen is optional (**Change columns**).
+   - **What to confirm, when it is not confident.** The preview says exactly which point is weak and waits for you to confirm it: a column matched only
+     from an abbreviation ("Prot", "CHO", "Na"), a unit the header does not state, values per 100 ml (used as per 100 g), a basis the table does not
+     state, a food-name column found by its contents, many foods whose energy does not fit their macros, or many rows left out for impossible values.
+     A file with an unconfirmed point is not imported; confirm it or untick the file.
+   - **A table that is already here.** If a file has the same content as a table you already imported, you choose: **Replace it** (the old table
+     goes with its favorites and recents; meals you logged keep their values), **Keep both**, or **Do not import**. Nothing is imported twice
+     unless you choose it.
+   - **Files that are parts of one table** (the same recognised layout, for example ARGENFOODS) are offered as **one table**, named after it,
+     or as one table per file. As one table, removing it later removes all the files at once.
+   - **A file with nothing the app can use** (for example a sheet of fatty acids only) is listed as such, not as an error.
+   - Untick a file to leave it out. **Change columns** opens the columns screen for one file: the food name, an optional food group, what the values
+     are per (100 g, 100 ml or 1 kg; "per portion" and similar cannot be imported), and each nutrient with the unit its column is written in.
+4. **Import.** Each table is saved all or nothing, one after the other: a file that fails saves nothing of itself and does not undo the tables
+   already saved. The summary says exactly which were imported (and what they replaced), which failed, and which were left out and why. Search
+   for a food: foods from your table show the tag. They can be logged, starred and matched by the AI scan like any food.
+5. To remove a table, go to **Imported tables** and choose **Remove**. All its foods go at once; your logged meals keep their values.
+6. **Duplicates that already exist.** If the same table was imported more than once, **Imported tables** shows it at the top: the copies of each
+   table are grouped, you choose which one stays (the oldest by default) and remove the rest. The copies are compared by content, not by name.
 
 ## Limits
 

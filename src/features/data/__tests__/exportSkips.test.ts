@@ -34,7 +34,7 @@ describe('one stored value outside the format never stops an export of everythin
     a.client.exec(`INSERT INTO body_measurement (id, measured_on, kind, value, source) VALUES ('bad-1', '2026-06-04', 'weight', 12.5, 'health_connect'), ('bad-2', '2026-06-05', 'waist', 4000, 'manual')`);
     a.client.exec(`UPDATE food_usage SET use_count = 2000000000`);
     const result = await exportIt();
-    expect(result.skippedRows.map((r) => r.collection).sort()).toEqual(['body_measurements', 'body_measurements', 'food_usage', 'food_usage']);
+    expect(result.skippedRows.map((r) => r.collection).sort()).toEqual(['body_measurements', 'body_measurements', 'food_usage', 'food_usage', 'food_usage']);
     const doc = docOf();
     expect(doc.food_usage).toEqual([]);
   });
@@ -53,7 +53,8 @@ describe('one stored value outside the format never stops an export of everythin
   it('still stops, naming the field, for a value whose omission would change what the rest means (a meal item)', async () => {
     a.client.exec(`UPDATE meal_item SET grams = 90000 WHERE display_name = 'Bread, estimated'`);
     const before = await fullState(device);
-    await expect(exportIt()).rejects.toMatchObject({ code: 'invalid_value', where: expect.stringMatching(/^meals\[\d\]\.items\[\d\]\.grams$/) });
+    // The field and the meal (its date and name), never an array position the person cannot act on; the meal comes with its id.
+    await expect(exportIt()).rejects.toMatchObject({ code: 'invalid_value', where: 'items.grams of meal 2026-06-02 lunch', meal: { date: '2026-06-02', slot: 'lunch' } });
     expect(device.platform.state.shared).toHaveLength(0);
     expect(await fullState(device)).toEqual(before);
   });
