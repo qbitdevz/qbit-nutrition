@@ -215,7 +215,7 @@ similar.
 | Table | Columns | Notes |
 | --- | --- | --- |
 | `nutrient` | `code` PK, `unit`, `name_en`, `name_es`, `sort_order` | The tracked nutrients from document 02 |
-| `food` | `id` PK, `source` (`usda_foundation`, `usda_sr_legacy`), `source_id`, `category`, `state` (`raw`, `cooked`, `processed`, `unknown`), `kcal_100g`, `protein_100g`, `carbs_100g`, `fat_100g` | Headline values inline for fast listing |
+| `food` | `id` PK, `source` (`usda_foundation`, `usda_sr_legacy`), `source_id`, `category`, `state` (`raw`, `cooked`, `processed`, `unknown`), `is_branded`, `kcal_100g`, `protein_100g`, `carbs_100g`, `fat_100g` | Headline values inline for fast listing |
 | `food_nutrient` | `food_id`, `nutrient_code`, `amount_100g` | PK on both columns |
 | `food_name` | `food_id`, `locale`, `name`, `is_alias` | English from USDA; Spanish from the repository's translation table |
 | `food_portion` | `food_id`, `locale`, `label`, `grams` | Household measures such as "1 cup" |
@@ -228,6 +228,7 @@ similar.
 - `body_measurement(kind, measured_on)`
 - `food_usage(last_used_at)`
 - `food_nutrient(food_id)` is covered by its primary key
+- `food_name(food_id)`, `food_portion(food_id)` in `catalog.db`
 
 ## 7. Derived data
 
