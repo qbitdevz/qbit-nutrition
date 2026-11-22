@@ -34,6 +34,8 @@ private, stop and decide again (RN-01).
 
 ## 3. Create the signing key (once)
 
+**Shortcut on Windows:** `pwsh scripts/release/create-signing-key.ps1` does sections 3 and 4 (store the secrets) in one step: it asks for a password, generates the key with a JDK container (Docker must be running), writes it outside the repository, and stores the four secrets with the GitHub CLI. It has not been run end to end yet; if it fails, follow the manual steps below. You still have to back the key up yourself.
+
 You need a JDK for `keytool` (any JDK 17 or newer). Do this on your own computer, **outside the repository folder**; the
 repository's `.gitignore` already refuses `*.jks`, `*.keystore` and similar files, but the safest place for the key is
 somewhere that is not a git working tree at all.
