@@ -119,6 +119,14 @@ describe('release.yml (S11)', () => {
     expect(publish).toMatch(/needs: build/);
   });
 
+  it('downloads the built APK into dist-apk before the publish script runs, because the publish job starts on a fresh runner', () => {
+    const publish = job(text, 'publish');
+    expect(publish).toMatch(/uses: actions\/download-artifact@[0-9a-f]{40}/);
+    expect(publish).toContain('name: ${{ needs.build.outputs.apk-name }}');
+    expect(publish).toContain('path: dist-apk');
+    expect(publish.indexOf('actions/download-artifact@')).toBeLessThan(publish.indexOf('bash scripts/release/publish-release.sh'));
+  });
+
   it('accepts a signed build only when apksigner reports the expected release certificate (S2)', () => {
     const build = job(text, 'build');
     const step = build.slice(build.indexOf('- name: Check the signature'));
