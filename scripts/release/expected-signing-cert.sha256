@@ -1,0 +1,8 @@
+# SHA-256 digest of the release signing certificate (public information, the same value as `keytool -list -v` "SHA256:" without
+# colons). The Release workflow accepts a signed APK only when apksigner reports exactly this certificate
+# (scripts/release/check-signing-cert.sh).
+#
+# KEY ROTATION is a deliberate edit of this file, in a pull request the owner approves: replace the line below with the new
+# certificate's digest and describe why in the pull request (docs/release.md, section "Rotate the signing key").
+# Android refuses updates signed with a different key, so rotating also needs a plan for existing installs.
+4dd734a64ca5a08cd267831e53596db231d6d760c4f22a988f5c7bf68b20a497

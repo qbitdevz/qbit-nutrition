@@ -3,8 +3,9 @@ name: Release
 # S11 (docs/06 section 7): a tagged release builds a signed APK and attaches it to a GitHub Release, at no cost (RN-01).
 #
 # - Push a tag `vX.Y.Z` (X.Y.Z must equal `expo.version` in app.json): the APK is signed with the owner's key and published as a
-#   GitHub Release. If the signing secrets are missing the run FAILS before building: an unsigned or debug-signed build is never
-#   published.
+#   GitHub Release (created as a draft, published only once both files are attached). If the signing secrets are missing the run
+#   FAILS before building: an unsigned or debug-signed build is never published. The APK must also carry the release certificate
+#   whose digest is committed in scripts/release/expected-signing-cert.sha256.
 # - Run it by hand (Actions -> Release -> Run workflow): the APK is uploaded as a workflow artifact, never as a release. With the
 #   signing secrets it is signed with the owner's key; without them it is debug-signed and its file name says it is not for
 #   distribution.
@@ -177,17 +178,18 @@ jobs:
         run: |
           set -euo pipefail
           apksigner="$(ls -d "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)"
+          # Two explicit paths, never one falling into the other:
+          #  - signed run: accepted only with the release certificate committed in scripts/release/expected-signing-cert.sha256
+          #    (a key rotation is an edit of that file, see docs/release.md);
+          #  - manual run without signing: only the public debug certificate is accepted, and the file name says NOT FOR DISTRIBUTION.
+          if [[ "$SIGNED" == "true" ]]; then
+            mode=release
+          else
+            mode=debug
+          fi
           # Print whatever apksigner says before judging it, so a failure here is diagnosable from the log.
           certs="$("$apksigner" verify --print-certs "$APK" 2>&1)" || { echo "$certs"; echo "::error title=Signature check::apksigner could not verify the APK."; exit 1; }
-          echo "$certs" | grep -E "certificate (DN|SHA-256 digest)" || echo "$certs"
-          if [[ "$SIGNED" == "true" ]] && echo "$certs" | grep -q "CN=Android Debug"; then
-            echo "::error title=Debug signature::The APK still carries the debug certificate. It will not be published."
-            exit 1
-          fi
-          if [[ "$SIGNED" != "true" ]] && ! echo "$certs" | grep -q "CN=Android Debug"; then
-            echo "::error title=Unexpected signature::An unsigned-run APK should carry the debug certificate."
-            exit 1
-          fi
+          printf '%s\n' "$certs" | bash scripts/release/check-signing-cert.sh "$mode" scripts/release/expected-signing-cert.sha256
 
       - name: Write the checksum
         working-directory: dist-apk
@@ -213,34 +215,17 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Download the APK
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+      - name: Check out the code
+        # Only for scripts/release/publish-release.sh, taken from the tagged commit.
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          name: ${{ needs.build.outputs.apk-name }}
-          path: dist-apk
-
-      - name: Create the release
+          persist-credentials: false
+      - name: Create the draft, check its assets, then publish
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
           VERSION: ${{ needs.build.outputs.version }}
           APK: ${{ needs.build.outputs.apk-name }}
           REPO: ${{ github.repository }}
-        run: |
-          set -euo pipefail
-          prerelease=""
-          if [[ "$TAG" == *-* ]]; then prerelease="--prerelease"; fi
-          cat > notes.md <<'NOTES'
-          **Not medical advice.** Values estimated from a photo are approximate and can be wrong. See the health notice in the app (Settings -> About).
-
-          Status of this build: it has not been verified by the maintainers on an Android device, and the accuracy of the photo analysis has not been measured. The privacy policy (PRIVACY.md) is a draft pending legal review.
-
-          Install: download the APK below, allow installs from your browser or file manager when Android asks, and open it. Check the download against the `.sha256` file if you like.
-          NOTES
-          gh release create "$TAG" "dist-apk/$APK" "dist-apk/$APK.sha256" \
-            --repo "$REPO" \
-            --verify-tag \
-            --title "Qbit Nutrition $VERSION" \
-            --notes-file notes.md \
-            --generate-notes \
-            $prerelease
+        # Retry-safe: a leftover draft is replaced, a published release is never touched (scripts/release/publish-release.sh).
+        run: bash scripts/release/publish-release.sh
